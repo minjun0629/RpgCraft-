@@ -60,6 +60,7 @@ public final class ResetPending {
         p.getInventory().clear();
         p.getEnderChest().clear();
         giveStarter(pl, p);
+        d.starterWorld = org.bukkit.Bukkit.getWorlds().get(0).getUID().toString();
         pl.stats().refresh(p);
         d.hp = d.stats.maxHp;
         p.teleport(p.getWorld().getSpawnLocation());

@@ -83,6 +83,7 @@ public class DataManager {
         d.thirdJob = y.getString("third-job");
         d.nick = y.getString("nick");
         d.starterGiven = y.getBoolean("starter-given");
+        d.starterWorld = y.getString("starter-world");
         d.passives.addAll(y.getStringList("passives"));
         d.hp = y.getDouble("hp", -1);
         d.quickSkill = y.getString("quick-skill");
@@ -121,6 +122,7 @@ public class DataManager {
         y.set("third-job", d.thirdJob);
         y.set("nick", d.nick);
         y.set("starter-given", d.starterGiven);
+        y.set("starter-world", d.starterWorld);
         y.set("passives", new ArrayList<>(d.passives));
         y.set("hp", d.hp);
         y.set("quick-skill", d.quickSkill);

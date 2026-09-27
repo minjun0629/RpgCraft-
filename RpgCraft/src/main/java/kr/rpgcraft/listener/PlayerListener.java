@@ -61,10 +61,17 @@ public class PlayerListener implements Listener {
         Player p = e.getPlayer();
         PlayerData d = plugin.data().get(p);
         d.name = p.getName();
-        // 기본 지급품: 처음 온 사람 + 맵(월드)을 새로 만들어 바닐라 인벤토리가 비어 버린 사람 (플러그인 기록은 남아 있어도)
+        // 기본 지급품: 처음 온 사람 + 맵(기본 월드)을 새로 만든 뒤 처음 온 사람 (플러그인 기록은 남아 있어도).
+        // 받은 월드 UID 를 기록해 두므로 나갔다 들어와도 다시 주지 않음 (v5.4.14: hasPlayedBefore 는 서버에 따라 믿을 수 없어 복제됐음)
+        String worldId = Bukkit.getWorlds().get(0).getUID().toString();
         boolean firstTime = !d.starterGiven;
-        if (!resetOnJoin && (firstTime || !p.hasPlayedBefore())) {
+        if (!firstTime && d.starterWorld == null) d.starterWorld = worldId;   // 예전 기록: 이미 받은 것으로 보고 현재 월드로 표시만
+        boolean newWorld = !worldId.equals(d.starterWorld);
+        if (resetOnJoin) d.starterWorld = worldId;
+        else if (firstTime || newWorld) {
             d.starterGiven = true;
+            d.starterWorld = worldId;
+            plugin.data().save(d);   // 지급 기록을 바로 저장 (서버가 갑자기 꺼져도 다시 받지 않게)
             if (firstTime) {
                 d.money += plugin.getConfig().getLong("player.starting-money", 0);
                 kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));

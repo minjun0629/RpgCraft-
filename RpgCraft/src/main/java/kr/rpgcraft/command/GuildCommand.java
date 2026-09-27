@@ -63,17 +63,17 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 if (!plugin.economy().has(p, cost)) { Text.msg(p, "&c길드 생성 비용 " + Text.money(cost) + "이 부족합니다."); return true; }
                 if (gm.create(p, name) == null) { Text.msg(p, "&c이미 존재하는 길드 이름입니다."); return true; }
                 plugin.economy().take(p, cost);
-                kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&b" + p.getName() + "&f님이 길드 &b[" + name + "]&f을(를) 창설했습니다!"));
+                kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&b" + Text.name(p) + "&f님이 길드 &b[" + name + "]&f을(를) 창설했습니다!"));
             }
             case "초대", "invite" -> {
                 if (!leader(p, g)) return true;
                 if (a.length < 2) { Text.msg(p, "&c/길드 초대 <플레이어>"); return true; }
-                Player t = Bukkit.getPlayerExact(a[1]);
+                Player t = Text.player(a[1]);
                 if (t == null) { Text.msg(p, "&c접속 중인 플레이어가 아닙니다."); return true; }
                 if (gm.of(t.getUniqueId()) != null) { Text.msg(p, "&c이미 길드가 있는 플레이어입니다."); return true; }
                 if (g.members.size() >= g.maxMembers()) { Text.msg(p, "&c길드 인원이 가득 찼습니다. (최대 " + g.maxMembers() + "명)"); return true; }
                 gm.invite(g, t);
-                Text.msg(p, "&a" + t.getName() + "님을 초대했습니다.");
+                Text.msg(p, "&a" + Text.name(t) + "님을 초대했습니다.");
                 kr.rpgcraft.feature.TradeManager.buttons(t, Text.c(Text.PREFIX + "&b[" + g.name + "]&f 길드에서 초대했습니다. &7(60초) "), "/길드 수락", "/길드 거절");
             }
             case "수락", "accept" -> {
@@ -83,7 +83,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 if (inv.members.size() >= inv.maxMembers()) { Text.msg(p, "&c길드 인원이 가득 찼습니다."); return true; }
                 gm.clearInvite(p.getUniqueId());
                 gm.addMember(inv, p.getUniqueId());
-                inv.broadcast(Text.PREFIX + Text.c("&a" + p.getName() + "님이 길드에 가입했습니다."));
+                inv.broadcast(Text.PREFIX + Text.c("&a" + Text.name(p) + "님이 길드에 가입했습니다."));
             }
             case "거절", "deny" -> {
                 gm.clearInvite(p.getUniqueId());
@@ -94,7 +94,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 if (g.isLeader(p.getUniqueId())) { Text.msg(p, "&c길드장은 위임 또는 해산만 가능합니다."); return true; }
                 gm.removeMember(g, p.getUniqueId());
                 d.guildChat = false;
-                g.broadcast(Text.PREFIX + Text.c("&c" + p.getName() + "님이 길드를 탈퇴했습니다."));
+                g.broadcast(Text.PREFIX + Text.c("&c" + Text.name(p) + "님이 길드를 탈퇴했습니다."));
                 Text.msg(p, "길드를 탈퇴했습니다.");
             }
             case "추방", "kick" -> {
@@ -149,7 +149,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 if (!plugin.economy().take(p, amt)) { Text.msg(p, "&c소지금이 부족합니다."); return true; }
                 g.bank += amt;
                 gm.save();
-                g.broadcast(Text.PREFIX + Text.c("&e" + p.getName() + "님이 길드 금고에 " + Text.money(amt) + "을 입금했습니다."));
+                g.broadcast(Text.PREFIX + Text.c("&e" + Text.name(p) + "님이 길드 금고에 " + Text.money(amt) + "을 입금했습니다."));
             }
             case "출금", "withdraw" -> {
                 if (!leader(p, g)) return true;
@@ -230,10 +230,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
     }
 
     private String nameOf(UUID id) {
-        Player p = Bukkit.getPlayer(id);
-        if (p != null) return p.getName();
-        OfflinePlayer op = Bukkit.getOfflinePlayer(id);
-        return op.getName() == null ? plugin.data().get(id).name : op.getName();
+        return Text.name(id);   // 닉네임이 있으면 닉네임
     }
 
     @Override

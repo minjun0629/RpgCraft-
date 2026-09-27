@@ -179,7 +179,13 @@ public class HudManager implements Listener {
         p.setPlayerListHeaderFooter(header, footer);
         String badge = plugin.pack().overlay() ? kr.rpgcraft.pack.HudFont.badge(d.level) + " " : Text.c("&7[" + d.level + "] ");
         String title = plugin.content() == null ? "" : plugin.content().title(d);
-        p.setPlayerListName(badge + Text.c((title.isEmpty() ? "" : "&d«" + title + "» ") + (g == null ? "&f" : "&b") + p.getName()));
+        p.setPlayerListName(badge + Text.c((title.isEmpty() ? "" : "&d«" + title + "» ") + (g == null ? "&f" : "&b") + Text.name(p)));
+    }
+
+    /** 닉네임을 바꿨을 때 탭 목록 이름 바로 갱신 */
+    public void refreshTab(Player p) {
+        PlayerData d = plugin.data().get(p);
+        updateTab(p, d, d.stats);
     }
 
     /** 설정에 맞춰 사이드바 표시/숨김 */
@@ -204,6 +210,7 @@ public class HudManager implements Listener {
             o.getScore(entry).setScore(LINES - i);
         }
         plugin.visuals().registerTeams(sb);
+        if (plugin.nicks() != null) plugin.nicks().registerTeam(sb);   // 닉네임 사용자는 바닐라 이름표 숨김
         boards.put(p.getUniqueId(), sb);
         p.setScoreboard(sb);
     }

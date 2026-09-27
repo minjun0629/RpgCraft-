@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "pender", "bounty", "hiddennpc", "worldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "pender", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -64,6 +64,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 dungeon <create <ID> <단계>|generate [개수]|list|delete <ID|all>> &7- 대형 던전");
         Text.msg(s, "&e/rpg관리 questnpc <scatter <수>|here <유형>> &7- 의뢰 NPC 배치");
         Text.msg(s, "&e/rpg관리 worldboss [random|desert_nightmare|siphonia|kain] [here] &7- 월드보스 + 전장");
+        Text.msg(s, "&e/rpg관리 fieldboss &7- 내 근처에 지역 레벨·바이옴에 맞는 필드 보스 등장");
         Text.msg(s, "&e/rpg관리 worldboss remove &7- 지금 있는 월드보스 모두 제거 (전장 복구)");
         Text.msg(s, "&e/rpg관리 npcs &7| &enpcbring &7- NPC 위치 목록 / 가까운 NPC 를 내 자리로");
         Text.msg(s, "&e/rpg관리 inv <플레이어> &7| &eenderchest <플레이어> &7- 인벤토리 · 엔더 상자 열기");
@@ -102,7 +103,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             if (ps.isEmpty()) return true;
             Player win = ps.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(ps.size()));
             for (org.bukkit.inventory.ItemStack l : win.getInventory().addItem(plugin.items().create(found.id, amt)).values()) win.getWorld().dropItemNaturally(win.getLocation(), l);
-            Text.announce(Text.PREFIX + Text.c("&d&l추첨! &f" + found.name + " x" + amt + " &7→ &e&l" + win.getName()));
+            Text.announce(Text.PREFIX + Text.c("&d&l추첨! &f" + found.name + " x" + amt + " &7→ &e&l" + Text.name(win)));
             for (Player op : Bukkit.getOnlinePlayers()) op.playSound(op.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
             return true;
         }
@@ -190,6 +191,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     Text.msg(s, plugin.events().spawnFlag(t) ? "&a" + t.getName() + " 근처에 웨이브 깃발 생성" : "&c깃발을 놓을 자리를 찾지 못했습니다.");
                 }
                 case "merchant" -> Text.msg(s, plugin.events().spawnHiddenMerchant() ? "&a히든 상인 등장" : "&c히든 상인을 소환하지 못했습니다.");
+                case "fieldboss" -> {   // 필드 보스 즉시 등장 (내 근처 또는 무작위 접속자 근처)
+                    String id = plugin.fieldBosses().spawnRandom(s instanceof Player fp ? fp : null);
+                    Text.msg(s, id != null ? "&a필드 보스 등장: &f" + plugin.bosses().def(id).name : "&c필드 보스를 부를 자리를 찾지 못했습니다.");
+                }
                 case "worldboss" -> {
                     if (a.length >= 2 && (a[1].equals("remove") || a[1].equals("clear") || a[1].equals("제거"))) {
                         int n = plugin.worldBoss().clearAll();

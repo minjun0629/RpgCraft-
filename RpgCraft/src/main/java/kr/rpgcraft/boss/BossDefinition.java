@@ -28,7 +28,8 @@ public class BossDefinition {
     public int level;
     public double hp, damage, defense, awakenMultiplier = 1.5;
     public long exp, money;
-    public boolean awaken;
+    public boolean awaken, field;
+    public final List<String> biomes = new ArrayList<>();
     public BarColor color = BarColor.RED;
     public final List<Skill> skills = new ArrayList<>();
     public final List<Drop> drops = new ArrayList<>();
@@ -47,6 +48,8 @@ public class BossDefinition {
         d.money = s.getLong("money", 10000);
         d.awaken = s.getBoolean("awaken", false);
         d.awakenMultiplier = s.getDouble("awaken-multiplier", 1.5);
+        d.field = s.getBoolean("field", false);
+        for (String b : s.getStringList("biomes")) d.biomes.add(b.toUpperCase());
         try {
             d.color = BarColor.valueOf(s.getString("bossbar-color", "RED"));
             if (d.color == BarColor.WHITE) d.color = BarColor.PINK; // 흰색 보스바는 나침반 전용 (리소스팩에서 투명)

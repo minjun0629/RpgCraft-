@@ -47,18 +47,18 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         switch (name) {
             case "menu" -> plugin.menu().open(p);
             case "stat" -> new StatGui(p).open(p);
-            case "info" -> info(p, a.length > 0 ? Bukkit.getPlayerExact(a[0]) : p);
+            case "info" -> info(p, a.length > 0 ? Text.player(a[0]) : p);
             case "money" -> Text.msg(p, "&f소지금: &e" + Text.money(d.money));
             case "pay" -> {
                 if (a.length < 2) { Text.msg(p, "&c/송금 <플레이어> <금액>"); return true; }
-                Player t = Bukkit.getPlayerExact(a[0]);
+                Player t = Text.player(a[0]);
                 long amt = Text.parseLong(a[1], -1);
                 if (t == null || t.equals(p)) { Text.msg(p, "&c접속 중인 다른 플레이어를 입력하세요."); return true; }
                 if (amt <= 0) { Text.msg(p, "&c금액이 올바르지 않습니다."); return true; }
                 if (!plugin.economy().take(p, amt)) { Text.msg(p, "&c소지금이 부족합니다."); return true; }
                 plugin.economy().give(t.getUniqueId(), amt);
-                Text.msg(p, "&a" + t.getName() + "님에게 " + Text.money(amt) + "을 송금했습니다.");
-                Text.msg(t, "&a" + p.getName() + "님이 " + Text.money(amt) + "을 송금했습니다.");
+                Text.msg(p, "&a" + Text.name(t) + "님에게 " + Text.money(amt) + "을 송금했습니다.");
+                Text.msg(t, "&a" + Text.name(p) + "님이 " + Text.money(amt) + "을 송금했습니다.");
             }
             case "check" -> {
                 long amt = a.length > 0 ? Text.parseLong(a[0], -1) : -1;
@@ -115,7 +115,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             case "runefuse" -> plugin.runeFusion().open(p);
             case "tpa" -> {   // 순간이동 요청
                 if (a.length < 1) { Text.msg(p, "&e/tpa <플레이어> &7(이름 입력 중 Tab 키로 자동완성)"); return true; }
-                Player t = Bukkit.getPlayerExact(a[0]);
+                Player t = Text.player(a[0]);
                 if (t == null || t.equals(p)) { Text.msg(p, "&c접속 중인 다른 플레이어를 입력하세요."); return true; }
                 if (d.onCooldown("tpa") && !p.hasPermission("rpgcraft.admin")) {
                     long left = d.remaining("tpa") / 1000 + 1;
@@ -123,9 +123,9 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                     return true;
                 }
                 tpaReq.put(t.getUniqueId(), new Object[]{p.getUniqueId(), System.currentTimeMillis()});
-                Text.msg(p, "&a" + t.getName() + "님에게 순간이동을 요청했습니다.");
+                Text.msg(p, "&a" + Text.name(t) + "님에게 순간이동을 요청했습니다.");
                 // 받은 사람은 채팅의 [수락] / [거절] 을 클릭 (명령어 /tpaccept · /tpdeny 도 그대로 됨)
-                kr.rpgcraft.feature.TradeManager.buttons(t, Text.c(Text.PREFIX + "&e" + p.getName() + "&f님이 순간이동을 요청했습니다 &7(60초) "), "/tpaccept", "/tpdeny");
+                kr.rpgcraft.feature.TradeManager.buttons(t, Text.c(Text.PREFIX + "&e" + Text.name(p) + "&f님이 순간이동을 요청했습니다 &7(60초) "), "/tpaccept", "/tpdeny");
                 t.playSound(t.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.4f);
             }
             case "tpaccept", "tpdeny" -> {
@@ -133,7 +133,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (r == null || System.currentTimeMillis() - (long) r[1] > 60_000) { Text.msg(p, "&7받은 요청이 없습니다."); return true; }
                 Player from = Bukkit.getPlayer((java.util.UUID) r[0]);
                 if (from == null) { Text.msg(p, "&7요청한 플레이어가 없습니다."); return true; }
-                if (name.equals("tpdeny")) { Text.msg(from, "&c" + p.getName() + "님이 순간이동을 거절했습니다."); Text.msg(p, "&7거절했습니다."); return true; }
+                if (name.equals("tpdeny")) { Text.msg(from, "&c" + Text.name(p) + "님이 순간이동을 거절했습니다."); Text.msg(p, "&7거절했습니다."); return true; }
                 if (plugin.dungeons() != null && (plugin.dungeons().runOf(from) != null || plugin.dungeons().runOf(p) != null)) { Text.msg(p, "&c던전 안에서는 할 수 없습니다."); return true; }
                 Text.msg(from, "&a3초 뒤 이동합니다. 움직이지 마세요.");
                 org.bukkit.Location start = from.getLocation().clone();
@@ -157,24 +157,31 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 y.set("open." + id + ".time", new java.text.SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
                 try { y.save(f); } catch (java.io.IOException ignored) { }
                 Text.msg(p, "&a문의 #" + id + " 이(가) 접수되었습니다.");
-                for (Player op : Bukkit.getOnlinePlayers()) if (op.hasPermission("rpgcraft.admin")) Text.msg(op, "&d[티켓 #" + id + "] &f" + p.getName() + "&7: &f" + msg);
+                for (Player op : Bukkit.getOnlinePlayers()) if (op.hasPermission("rpgcraft.admin")) Text.msg(op, "&d[티켓 #" + id + "] &f" + Text.name(p) + "(" + p.getName() + ")&7: &f" + msg);
             }
             case "partychat" -> {   // 파티 채팅
                 var party = plugin.party().of(p);
                 if (party == null) { Text.msg(p, "&c파티가 없습니다."); return true; }
                 if (a.length == 0) { Text.msg(p, "&e/pc <메시지>"); return true; }
-                String msg = Text.c("&b[파티] &f" + p.getName() + "&7: &b") + String.join(" ", a);
+                String msg = Text.c("&b[파티] &f" + Text.name(p) + "&7: &b") + String.join(" ", a);
                 for (Player m : party.online()) m.sendMessage(msg);
             }
-            case "nick" -> {   // 이름 바꾸기 (채팅·목록에 보이는 이름)
-                if (a.length == 0) { Text.msg(p, "&e/이름변경 <새 이름> &7(2~12자, 한글·영문·숫자)"); return true; }
+            case "nick" -> {   // 이름 바꾸기 — 채팅 · 목록 · 머리 위 이름표 · 공지 · 메뉴 등 보이는 모든 곳
+                if (a.length == 0) { Text.msg(p, "&e/닉네임 <새 이름> &7(2~12자, 한글·영문·숫자) · &e/닉네임 해제"); return true; }
+                if (a[0].equals("해제") || a[0].equalsIgnoreCase("reset")) {
+                    d.nick = null;
+                    if (plugin.nicks() != null) plugin.nicks().apply(p);
+                    Text.msg(p, "&a닉네임을 해제했습니다. &7(" + p.getName() + ")");
+                    return true;
+                }
                 String nn = a[0];
                 if (!nn.matches("[가-힣A-Za-z0-9_]{2,12}")) { Text.msg(p, "&c2~12자의 한글·영문·숫자만 쓸 수 있습니다."); return true; }
-                for (Player op : Bukkit.getOnlinePlayers()) if (!op.equals(p) && nn.equalsIgnoreCase(Text.strip(op.getDisplayName()))) { Text.msg(p, "&c이미 쓰는 이름입니다."); return true; }
+                for (Player op : Bukkit.getOnlinePlayers())   // 다른 사람의 닉네임 · 계정 이름과 겹치면 안 됨 (사칭 방지)
+                    if (!op.equals(p) && (nn.equalsIgnoreCase(Text.name(op)) || nn.equalsIgnoreCase(op.getName()))) { Text.msg(p, "&c이미 쓰는 이름입니다."); return true; }
                 d.nick = nn;
-                p.setDisplayName(nn);
-                p.setPlayerListName(nn);
-                Text.msg(p, "&a이름을 &f" + nn + "&a(으)로 바꿨습니다.");
+                if (plugin.nicks() != null) plugin.nicks().apply(p);
+                else { p.setDisplayName(nn); p.setPlayerListName(nn); }
+                Text.msg(p, "&a이름을 &f" + nn + "&a(으)로 바꿨습니다. &7(채팅 · 목록 · 머리 위 이름 · 공지 등 모든 곳)");
             }
             case "enderchest" -> p.openInventory(p.getEnderChest());
             case "limitbreak" -> plugin.limitBreak().open(p);
@@ -218,7 +225,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (a.length == 0) {
                     d.guildChat = !d.guildChat;
                     Text.msg(p, d.guildChat ? "&a길드 채팅 모드 켜짐" : "&7길드 채팅 모드 꺼짐");
-                } else g.broadcast(Text.c("&a[길드] &f" + p.getName() + "&7: &a") + String.join(" ", a));
+                } else g.broadcast(Text.c("&a[길드] &f" + Text.name(p) + "&7: &a") + String.join(" ", a));
             }
             case "shop" -> {
                 if (a.length == 0) {
@@ -335,7 +342,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         p.sendTitle(Text.c("&d&l✦ 환생 " + (n + 1) + " ✦"), Text.c("&f최대 레벨 " + plugin.levels().maxLevel(d)), 10, 70, 20);
         p.playSound(p.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.6f);
         p.getWorld().strikeLightningEffect(p.getLocation());
-        Text.announce(Text.PREFIX + Text.c("&d&l" + p.getName() + "&f님이 &d" + (n + 1) + "번째 환생&f을 했습니다!"));
+        Text.announce(Text.PREFIX + Text.c("&d&l" + Text.name(p) + "&f님이 &d" + (n + 1) + "번째 환생&f을 했습니다!"));
     }
 
     /** 동굴 탈출: 3초 동안 가만히 있으면 바로 위 지상으로 이동 (쿨타임) */
@@ -381,7 +388,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         PlayerData d = plugin.data().get(t);
         StatSnapshot s = d.stats;
         Guild g = plugin.guilds().of(t.getUniqueId());
-        viewer.sendMessage(Text.c("&6&m          &r &e" + t.getName() + " &7Lv." + d.level + " &6&m          "));
+        viewer.sendMessage(Text.c("&6&m          &r &e" + Text.name(t) + " &7Lv." + d.level + " &6&m          "));
         viewer.sendMessage(Text.c("&f길드: &b" + (g == null ? "없음" : g.name) + " &7| &f직업: " + (d.blacksmith ? "&6대장장이" : "&7없음")));
         viewer.sendMessage(Text.c("&f체력: &c" + Text.num(d.hp) + "/" + Text.num(s.maxHp) + " &7| &f공격력: &6" + Text.num(s.attack)
                 + " &7| &f원거리: &e" + Text.num(s.ranged)));
@@ -477,12 +484,11 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (a.length == 2 && a[0].equals("선택")) out.addAll(List.of("전사", "궁수", "도적", "수호자"));
             }
             case "trade" -> {
-                if (a.length == 1) { out.addAll(List.of("수락", "거절", "돈")); for (Player p : Bukkit.getOnlinePlayers()) out.add(p.getName()); }
+                if (a.length == 1) { out.addAll(List.of("수락", "거절", "돈")); out.addAll(Text.onlineNames(a[0], s)); }
             }
-            case "pay", "info", "absorb" -> { if (a.length == 1) for (Player p : Bukkit.getOnlinePlayers()) out.add(p.getName()); }
-            case "tpa" -> {   // /tpa <Tab> → 접속 중인 다른 플레이어 (입력한 글자로 시작하는 이름만)
-                if (a.length == 1) for (Player p : Bukkit.getOnlinePlayers())
-                    if (!p.equals(s) && p.getName().toLowerCase(java.util.Locale.ROOT).startsWith(a[0].toLowerCase(java.util.Locale.ROOT))) out.add(p.getName());
+            case "pay", "info", "absorb" -> { if (a.length == 1) out.addAll(Text.onlineNames(a[0], null)); }
+            case "tpa" -> {   // /tpa <Tab> → 접속 중인 다른 플레이어 (닉네임, 입력한 글자로 시작하는 이름만)
+                if (a.length == 1) out.addAll(Text.onlineNames(a[0], s));
             }
             default -> { }
         }

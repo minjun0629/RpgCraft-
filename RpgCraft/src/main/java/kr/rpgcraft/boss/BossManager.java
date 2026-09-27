@@ -237,6 +237,13 @@ public class BossManager {
             case "volcano_giant", "bungbung" -> Color.fromRGB(0xFF7A1F);
             case "void_apostle", "primordial_dragon" -> Color.fromRGB(0xC060FF);
             case "thunder_god", "harpy_queen" -> Color.fromRGB(0x6BD8FF);
+            case "field_boar_king", "field_ravager" -> Color.fromRGB(0xC8864A);
+            case "field_frost_bear", "field_frost_lich" -> Color.fromRGB(0xA8E0FF);
+            case "field_bandit_lord" -> Color.fromRGB(0xD0D0D0);
+            case "field_ancient_golem" -> Color.fromRGB(0x9FB0A0);
+            case "field_swamp_witch" -> Color.fromRGB(0x7AE05A);
+            case "field_flame_knight" -> Color.fromRGB(0xFF6A1F);
+            case "field_deep_warden" -> Color.fromRGB(0x1FC8C8);
             default -> Color.fromRGB(0xFF5050);
         };
     }
@@ -261,6 +268,11 @@ public class BossManager {
             case "witch" -> Particle.SPELL_WITCH;
             case "siphonia", "elf_queen" -> Particle.COMPOSTER;
             case "desert_nightmare" -> Particle.ASH;
+            case "field_frost_bear", "field_frost_lich" -> Particle.SNOWFLAKE;
+            case "field_flame_knight" -> Particle.LAVA;
+            case "field_swamp_witch" -> Particle.SPELL_WITCH;
+            case "field_deep_warden" -> Particle.SCULK_SOUL;
+            case "field_boar_king", "field_ravager", "field_ancient_golem", "field_bandit_lord" -> Particle.CAMPFIRE_COSY_SMOKE;
             default -> Particle.FLAME;
         };
     }
@@ -900,7 +912,7 @@ public class BossManager {
                 if (top != null) {
                     for (ItemStack l : top.getInventory().addItem(chest).values()) top.getWorld().dropItemNaturally(top.getLocation(), l);
                     top.playSound(top.getLocation(), Sound.BLOCK_CHEST_LOCKED, 1f, 1.2f);
-                    Text.announce(Text.PREFIX + Text.c("&6&l" + top.getName() + "&f님이 &6" + Text.strip(Text.c(d.name)) + "의 상자&f를 얻었습니다!"));
+                    Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(top) + "&f님이 &6" + Text.strip(Text.c(d.name)) + "의 상자&f를 얻었습니다!"));
                 } else {
                     e.getWorld().dropItemNaturally(e.getLocation(), chest);
                     Text.announce(Text.PREFIX + Text.c("&6보스 상자&f가 떨어졌습니다!"));
@@ -917,7 +929,7 @@ public class BossManager {
             Player p = Bukkit.getPlayer(en.getKey());
             double share = total <= 0 ? 0 : en.getValue() / total;
             if (rank < 3) {
-                String n = p != null ? p.getName() : plugin.data().get(en.getKey()).name;
+                String n = Text.name(en.getKey());
                 kr.rpgcraft.util.Text.announce(Text.c("  &e" + (rank + 1) + "위 &f" + n + " &7- " + Text.num(en.getValue()) + " (" + String.format("%.1f", share * 100) + "%)"));
             }
             rank++;
@@ -1003,7 +1015,7 @@ public class BossManager {
             give(p, it);
             var tp = plugin.items().get(dr.item);
             if (tp != null && tp.grade.atLeast(kr.rpgcraft.item.Grade.LEGEND))
-                Text.announce(Text.PREFIX + Text.c("&d&l" + p.getName() + "&f님이 보스 수정에서 " + tp.grade.nameColor() + tp.name + "&f을(를) 얻었습니다!"));
+                Text.announce(Text.PREFIX + Text.c("&d&l" + Text.name(p) + "&f님이 보스 수정에서 " + tp.grade.nameColor() + tp.name + "&f을(를) 얻었습니다!"));
         }
         return got;
     }

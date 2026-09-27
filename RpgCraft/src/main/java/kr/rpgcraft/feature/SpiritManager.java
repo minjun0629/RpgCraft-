@@ -101,7 +101,7 @@ public class SpiritManager implements Listener {
             plugin.visuals().obtain(p, ess);
             p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
             p.getWorld().spawnParticle(Particle.TOTEM, p.getLocation().add(0, 1, 0), 60, 0.5, 1, 0.5, 0.3);
-            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&d" + p.getName() + "&f님이 &d" + plugin.items().get("essence_" + el).name + "&f을(를) 획득했습니다!"));
+            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&d" + Text.name(p) + "&f님이 &d" + plugin.items().get("essence_" + el).name + "&f을(를) 획득했습니다!"));
         } else {
             p.playSound(p.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1f, 0.6f);
             Text.msg(p, "&7결정이 부서졌지만 아무것도 얻지 못했습니다...");
@@ -285,7 +285,7 @@ public class SpiritManager implements Listener {
                     ItemStack out = plugin.items().create(wt.id, 1);
                     give(p, out.clone());
                     plugin.visuals().obtain(p, out);
-                    kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + p.getName() + "&f님이 사신수 무기 &c" + wt.name + "&f을(를) 탄생시켰습니다!"));
+                    kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + Text.name(p) + "&f님이 사신수 무기 &c" + wt.name + "&f을(를) 탄생시켰습니다!"));
                     for (Player o : Bukkit.getOnlinePlayers()) o.playSound(o.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.5f);
                     p.closeInventory();
                 });
@@ -326,7 +326,7 @@ public class SpiritManager implements Listener {
                     ItemStack out = plugin.items().create(ft.id, 1);
                     give(p, out.clone());
                     plugin.visuals().obtain(p, out);
-                    kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&8&l" + p.getName() + "&7님이 사흉수 갑주 " + ft.name + "을(를) 손에 넣었습니다..."));
+                    kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&8&l" + Text.name(p) + "&7님이 사흉수 갑주 " + ft.name + "을(를) 손에 넣었습니다..."));
                     p.closeInventory();
                 });
             }

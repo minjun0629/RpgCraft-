@@ -181,7 +181,7 @@ public class RuinManager implements Listener {
         d.ruinId = null;
         int round = plugin.rounds().round();
         String counter = "ruin_" + r.id;
-        kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 유적 &6" + r.name + "&f을(를) 클리어했습니다! &7(" + String.format("%.1f", ms / 1000.0) + "초)"));
+        kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + Text.name(p) + "&f님이 유적 &6" + r.name + "&f을(를) 클리어했습니다! &7(" + String.format("%.1f", ms / 1000.0) + "초)"));
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
         if (!r.firstCleared && r.firstPassive != null) {
             r.firstCleared = true;

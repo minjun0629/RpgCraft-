@@ -115,7 +115,7 @@ public class BlacksmithManager {
             return;
         }
         d.blacksmith = true;
-        kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6" + p.getName() + "&f님이 &6대장장이&f로 전직했습니다!"));
+        kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6" + Text.name(p) + "&f님이 &6대장장이&f로 전직했습니다!"));
         p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 1f, 1f);
     }
 
@@ -158,7 +158,7 @@ public class BlacksmithManager {
             default -> st.add(Stat.ARMOR_PEN, 2 + rnd.nextInt(7));
         }
         ItemStack it = plugin.items().createEquipment(r.baseId(), null, Grade.UNIQUE, st);
-        ItemData.setString(it, Keys.CRAFTER, p.getName());
+        ItemData.setString(it, Keys.CRAFTER, Text.name(p));
         ItemData.setString(it, Keys.CRAFTER_UUID, p.getUniqueId().toString());
         if (d.has(Passive.GOLDEN_HAND)) ItemData.setInt(it, Keys.ENH, r.weapon() ? 8 : 3);
         ItemData.refresh(it);
@@ -167,7 +167,7 @@ public class BlacksmithManager {
         p.playSound(p.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1f, 1f);
         plugin.visuals().obtain(p, shown);
         Text.msg(p, "&6제작 완료: &f" + it.getItemMeta().getDisplayName() + " &7(품질 " + (int) (roll * 100) + "%)");
-        if (roll >= 0.97) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6" + p.getName() + "&f님이 최상급 품질의 " + it.getItemMeta().getDisplayName() + "&f을(를) 제작했습니다!"));
+        if (roll >= 0.97) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6" + Text.name(p) + "&f님이 최상급 품질의 " + it.getItemMeta().getDisplayName() + "&f을(를) 제작했습니다!"));
         return it;
     }
 

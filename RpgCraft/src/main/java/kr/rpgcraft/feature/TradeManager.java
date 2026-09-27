@@ -69,7 +69,7 @@ public class TradeManager {
 
     // ------------------------------------------------------------------ 요청
     public void request(Player from, String targetName) {
-        Player to = Bukkit.getPlayerExact(targetName);
+        Player to = Text.player(targetName);
         if (to == null || to.equals(from)) { Text.msg(from, "&c접속 중인 다른 플레이어를 입력하세요."); return; }
         if (sessions.containsKey(from.getUniqueId()) || sessions.containsKey(to.getUniqueId())) { Text.msg(from, "&c이미 거래 중입니다."); return; }
         double max = plugin.getConfig().getDouble("trade.max-distance", 16);
@@ -79,8 +79,8 @@ public class TradeManager {
         }
         requests.put(to.getUniqueId(), from.getUniqueId());
         requestTime.put(to.getUniqueId(), System.currentTimeMillis());
-        Text.msg(from, "&a" + to.getName() + "님에게 거래를 요청했습니다.");
-        buttons(to, Text.c(Text.PREFIX + "&e" + from.getName() + "&f님이 거래를 요청했습니다. &7(30초) "), "/거래 수락", "/거래 거절");
+        Text.msg(from, "&a" + Text.name(to) + "님에게 거래를 요청했습니다.");
+        buttons(to, Text.c(Text.PREFIX + "&e" + Text.name(from) + "&f님이 거래를 요청했습니다. &7(30초) "), "/거래 수락", "/거래 거절");
         to.playSound(to.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1f, 1.2f);
     }
 
@@ -120,7 +120,7 @@ public class TradeManager {
         requestTime.remove(to.getUniqueId());
         Text.msg(to, "거래 요청을 거절했습니다.");
         Player from = fromId == null ? null : Bukkit.getPlayer(fromId);
-        if (from != null) Text.msg(from, "&c" + to.getName() + "님이 거래를 거절했습니다.");
+        if (from != null) Text.msg(from, "&c" + Text.name(to) + "님이 거래를 거절했습니다.");
     }
 
     public void offerMoney(Player p, long amount) {
@@ -139,7 +139,7 @@ public class TradeManager {
         final Player me, other;
 
         TradeGui(Session s, Player me, Player other) {
-            super(6, "&8거래: " + me.getName() + " ⇄ " + other.getName());
+            super(6, "&8거래: " + Text.name(me) + " ⇄ " + Text.name(other));
             this.s = s;
             this.me = me;
             this.other = other;
@@ -209,7 +209,7 @@ public class TradeManager {
         @Override
         public void onClose(InventoryCloseEvent e) {
             if (s.done) return;
-            cancel(s, me.getName() + "님이 거래를 취소했습니다.");
+            cancel(s, Text.name(me) + "님이 거래를 취소했습니다.");
         }
     }
 

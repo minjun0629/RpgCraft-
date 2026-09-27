@@ -282,7 +282,7 @@ public class WarManager {
         }
         c.owner = w.attacker;
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6&l[공성전 승리] &b" + w.attacker + "&f 길드가 &e" + c.name + "&f을(를) 점령했습니다! &7(신호기 파괴: "
-                + breaker.getName() + ", 약탈 " + Text.money(loot) + ")"));
+                + Text.name(breaker) + ", 약탈 " + Text.money(loot) + ")"));
         for (Player o : Bukkit.getOnlinePlayers()) {
             o.sendTitle(Text.c("&6&l" + c.name + " 함락"), Text.c("&b" + w.attacker + " &f길드 승리"), 10, 60, 10);
             o.playSound(o.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);

@@ -104,7 +104,7 @@ public class PassiveManager implements Listener {
         String tl = ps.isActive() ? ps.type.label.replace("패시브", "액티브 스킬") : ps.type.label;
         p.sendTitle(Text.c("&d&l" + tl), Text.c("&f" + ps.label), 10, 50, 10);
         Text.msg(p, "&d[" + tl + "] &f" + ps.label + " &7- " + ps.desc);
-        if (announce) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&d" + p.getName() + "&f님이 " + ps.type.label + " &d" + ps.label + "&f을(를) 획득했습니다!"));
+        if (announce) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&d" + Text.name(p) + "&f님이 " + ps.type.label + " &d" + ps.label + "&f을(를) 획득했습니다!"));
     }
 
     public void revoke(PlayerData d, Passive ps) {
@@ -199,7 +199,7 @@ public class PassiveManager implements Listener {
         }
         if (d.has(Passive.JACKPOT) && r.nextDouble() < 0.001) {
             d.money = Math.min(Long.MAX_VALUE / 40, d.money) * 10;
-            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6&l잭팟! &e" + p.getName() + "&f님의 소지금이 10배가 되었습니다!"));
+            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&6&l잭팟! &e" + Text.name(p) + "&f님의 소지금이 10배가 되었습니다!"));
         }
         if (d.has(Passive.FC_GOBLIN) && r.nextDouble() < 0.1) {
             d.statPoints += 3;
@@ -210,7 +210,7 @@ public class PassiveManager implements Listener {
             d.exp = 0;
             d.str = d.dex = d.adv = 0;
             d.statPoints = 0;
-            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c" + p.getName() + "&7님이 도박에서 모든 것을 잃었습니다... (레벨/스탯 초기화)"));
+            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c" + Text.name(p) + "&7님이 도박에서 모든 것을 잃었습니다... (레벨/스탯 초기화)"));
         }
         if (killer != null && !killer.equals(p)) onKillPlayer(killer, p);
     }
@@ -238,8 +238,8 @@ public class PassiveManager implements Listener {
             k.statPoints += taken;
             k.absorbTarget = null;
             k.cooldown("absorb", 600_000);
-            Text.msg(killer, "&5흡수! &f" + victim.getName() + "에게서 스탯 " + taken + "을(를) 빼앗았습니다.");
-            Text.msg(victim, "&5" + killer.getName() + "에게 스탯 " + taken + "을(를) 흡수당했습니다...");
+            Text.msg(killer, "&5흡수! &f" + Text.name(victim) + "에게서 스탯 " + taken + "을(를) 빼앗았습니다.");
+            Text.msg(victim, "&5" + Text.name(killer) + "에게 스탯 " + taken + "을(를) 흡수당했습니다...");
             plugin.stats().refresh(victim);
         }
         plugin.stats().refresh(killer);
@@ -255,14 +255,14 @@ public class PassiveManager implements Listener {
             Text.msg(p, "&c대상 지정 쿨타임 " + (d.remaining("absorb_designate") / 60000 + 1) + "분");
             return;
         }
-        Player t = Bukkit.getPlayerExact(targetName);
+        Player t = Text.player(targetName);
         if (t == null || t.equals(p)) {
             Text.msg(p, "&c접속 중인 다른 플레이어를 지정하세요.");
             return;
         }
         d.absorbTarget = t.getUniqueId();
         d.cooldown("absorb_designate", 3_600_000);
-        Text.msg(p, "&5흡수 대상: &f" + t.getName());
+        Text.msg(p, "&5흡수 대상: &f" + Text.name(t));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

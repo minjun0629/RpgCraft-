@@ -123,7 +123,7 @@ public class AuctionManager implements CommandExecutor {
         Listing l = new Listing();
         l.id = Long.toString(System.nanoTime(), 36);
         l.seller = p.getUniqueId();
-        l.sellerName = p.getName();
+        l.sellerName = Text.name(p);
         l.item = hand.clone();
         l.price = price;
         l.expires = System.currentTimeMillis() + plugin.getConfig().getLong("auction.hours", 48) * 3_600_000L;

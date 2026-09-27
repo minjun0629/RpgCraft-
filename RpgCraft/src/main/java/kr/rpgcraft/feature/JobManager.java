@@ -232,7 +232,7 @@ public class JobManager {
         p.getWorld().strikeLightningEffect(p.getLocation());
         p.sendTitle(Text.c("&c&l3차 전직: " + t.label), Text.c("&f" + t.perk), 5, 70, 15);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.6f);
-        Text.announce(Text.PREFIX + Text.c("&c&l" + p.getName() + "&f님이 &c" + t.label + "&f(으)로 3차 전직했습니다!"));
+        Text.announce(Text.PREFIX + Text.c("&c&l" + Text.name(p) + "&f님이 &c" + t.label + "&f(으)로 3차 전직했습니다!"));
     }
 
     public JobManager(RpgCraft plugin) {
@@ -289,7 +289,7 @@ public class JobManager {
         plugin.stats().refresh(p);
         p.sendTitle(Text.c("&6&l" + b.label), Text.c("&7" + b.desc), 5, 50, 10);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
-        Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 &6" + b.label + "&f의 길을 걷기 시작했습니다."));
+        Text.announce(Text.PREFIX + Text.c("&e" + Text.name(p) + "&f님이 &6" + b.label + "&f의 길을 걷기 시작했습니다."));
     }
 
     public int dominant(PlayerData d) {
@@ -317,7 +317,7 @@ public class JobManager {
         Fx.helix(plugin, p, 2.6, 1.0, 30, Color.fromRGB(0xFFD23F), Color.fromRGB(0xE070FF));
         p.sendTitle(Text.c("&d&l전직: " + s.label), Text.c("&f" + s.perk), 5, 60, 15);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.8f);
-        Text.announce(Text.PREFIX + Text.c("&d" + p.getName() + "&f님이 &d" + s.label + "&f(으)로 전직했습니다!"));
+        Text.announce(Text.PREFIX + Text.c("&d" + Text.name(p) + "&f님이 &d" + s.label + "&f(으)로 전직했습니다!"));
     }
 
     public void reset(PlayerData d) {

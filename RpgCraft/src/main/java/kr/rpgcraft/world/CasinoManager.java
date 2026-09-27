@@ -156,7 +156,7 @@ public class CasinoManager {
             if (MULT[res] >= 5) {
                 plugin.data().get(p).counters.merge("ach_jackpot", 1.0, Double::sum);
                 p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
-                Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 행운의 룰렛에서 &6" + multText(res) + "&f 대박! &7(+" + Text.money(win) + ")"));
+                Text.announce(Text.PREFIX + Text.c("&e" + Text.name(p) + "&f님이 행운의 룰렛에서 &6" + multText(res) + "&f 대박! &7(+" + Text.money(win) + ")"));
             }
         }
     }

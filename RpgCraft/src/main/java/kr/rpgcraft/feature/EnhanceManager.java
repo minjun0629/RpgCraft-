@@ -86,7 +86,7 @@ public class EnhanceManager {
         if (r.nextDouble() * 100 < rate) {
             ItemData.setInt(it, Keys.ENH, lvl + 1);
             ItemData.refresh(it);
-            if (lvl + 1 >= 8) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 " + it.getItemMeta().getDisplayName() + "&f 강화에 성공했습니다!"));
+            if (lvl + 1 >= 8) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + Text.name(p) + "&f님이 " + it.getItemMeta().getDisplayName() + "&f 강화에 성공했습니다!"));
             return Result.SUCCESS;
         }
         if (destroy > 0 && r.nextDouble() * 100 < destroy) {
@@ -205,7 +205,7 @@ public class EnhanceManager {
                     owner.getWorld().spawnParticle(Particle.SMOKE_LARGE, owner.getLocation().add(0, 1, 0), 40, 0.4, 0.5, 0.4, 0.05);
                     kr.rpgcraft.util.Fx.shockwave(plugin, owner.getLocation(), 3, org.bukkit.Color.fromRGB(0x444444));
                     owner.sendTitle(Text.c("&4&l장비 파괴"), Text.c("&7장비가 산산조각 났습니다..."), 0, 40, 10);
-                    kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&7" + owner.getName() + "님의 장비가 강화 중 파괴되었습니다..."));
+                    kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&7" + Text.name(owner) + "님의 장비가 강화 중 파괴되었습니다..."));
                 }
             }
             render();

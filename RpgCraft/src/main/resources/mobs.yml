@@ -740,3 +740,180 @@ storm_harpy:
     - {type: CHARGE, interval: 7, power: 1.1}
   drops:
     - {item: loot_feather, chance: 0.6, min: 1, max: 3}
+
+# ===================== v5.1.9 추가 몬스터 =====================
+thorn_sprite:
+  name: "가시 요정"
+  type: VEX
+  level: {min: 5, max: 25}
+  biomes: [FOREST, FLOWER, BIRCH, MEADOW]
+  weight: 10
+  hp-mult: 0.7
+  on-hit: {POISON: 2}
+  abilities:
+    - {type: BLINK, interval: 9}
+  drops:
+    - {item: loot_feather, chance: 0.4}
+    - {item: herb_ginseng1, chance: 0.1}
+
+bone_marksman:
+  name: "해골 명사수"
+  type: SKELETON
+  level: {min: 12, max: 45}
+  weight: 12
+  equipment: {helmet: CHAINMAIL_HELMET}
+  abilities:
+    - {type: VOLLEY, interval: 7, amount: 3, power: 0.8}
+    - {type: BACKSTEP, interval: 6}
+  drops:
+    - {item: loot_bone, chance: 0.7, min: 1, max: 2}
+    - {item: loot_feather, chance: 0.2}
+
+mire_slime:
+  name: "늪 진흙 슬라임"
+  type: SLIME
+  size: 3
+  level: {min: 8, max: 35}
+  biomes: [SWAMP, MANGROVE]
+  weight: 14
+  hp-mult: 1.2
+  abilities:
+    - {type: LEAP, interval: 6, radius: 2.5, power: 1.0}
+    - {type: POISON_CLOUD, interval: 14, radius: 2.5}
+  drops:
+    - {item: loot_slime, chance: 0.7, min: 1, max: 3}
+
+frost_archer:
+  name: "빙결 궁수"
+  type: STRAY
+  level: {min: 20, max: 60}
+  biomes: [SNOWY, ICE, FROZEN, GROVE]
+  weight: 12
+  equipment: {helmet: LEATHER_HELMET}
+  on-hit: {SLOW: 2}
+  abilities:
+    - {type: VOLLEY, interval: 8, amount: 3, power: 0.9}
+    - {type: FROST, interval: 12, radius: 3, power: 1.0}
+  drops:
+    - {item: loot_frost, chance: 0.5}
+
+sand_wraith:
+  name: "모래 망령"
+  type: HUSK
+  level: {min: 25, max: 70}
+  biomes: [DESERT, BADLANDS]
+  weight: 12
+  on-hit: {HUNGER: 4}
+  abilities:
+    - {type: BLINK, interval: 10}
+    - {type: SLAM, interval: 9, radius: 3, power: 1.1}
+  drops:
+    - {item: loot_dust, chance: 0.5}
+    - {item: loot_bandage, chance: 0.3}
+
+canyon_raider:
+  name: "협곡 약탈자"
+  type: PILLAGER
+  level: {min: 30, max: 80}
+  biomes: [BADLANDS, SAVANNA, ERODED, WOODED]
+  weight: 10
+  abilities:
+    - {type: VOLLEY, interval: 7, amount: 3, power: 0.9}
+    - {type: BACKSTEP, interval: 7}
+  drops:
+    - {item: loot_ink, chance: 0.3}
+    - {item: loot_fang, chance: 0.3}
+
+cave_brute:
+  name: "동굴 거한"
+  type: ZOMBIE
+  level: {min: 35, max: 90}
+  biomes: [CAVE, DRIPSTONE, LUSH, DEEP]
+  weight: 8
+  hp-mult: 2.2
+  damage-mult: 1.3
+  speed: 0.85
+  equipment: {helmet: IRON_HELMET, chest: IRON_CHESTPLATE, hand: IRON_AXE}
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.3}
+    - {type: SLAM, interval: 10, radius: 3.5, power: 1.3}
+  drops:
+    - {item: loot_bone, chance: 0.6, min: 1, max: 3}
+    - {item: mat_iron, chance: 0.4, min: 1, max: 2}
+
+storm_caller:
+  name: "폭풍 주술사"
+  type: EVOKER
+  level: {min: 50, max: 120}
+  biomes: [PEAKS, MEADOW, SLOPES, WINDSWEPT]
+  weight: 6
+  hp-mult: 1.5
+  abilities:
+    - {type: FIREBALL, interval: 7, power: 1.1}
+    - {type: HEAL, interval: 14, power: 1.0}
+    - {type: BLINK, interval: 11}
+  drops:
+    - {item: loot_totem, chance: 0.3}
+    - {item: crystal_mid, chance: 0.2}
+
+magma_sentinel:
+  name: "용암 수호정령"
+  type: BLAZE
+  level: {min: 70, max: 150}
+  biomes: [BADLANDS, BASALT, NETHER, CRIMSON]
+  weight: 6
+  hp-mult: 1.6
+  on-hit: {FIRE: 3}
+  abilities:
+    - {type: FIREBALL, interval: 6, power: 1.2}
+    - {type: SLAM, interval: 11, radius: 4, power: 1.3}
+  drops:
+    - {item: loot_ember, chance: 0.6, min: 1, max: 2}
+    - {item: crystal_high, chance: 0.08}
+
+deep_horror:
+  name: "심연의 공포"
+  type: ENDERMAN
+  level: {min: 100, max: 200}
+  weight: 5
+  hp-mult: 1.8
+  damage-mult: 1.3
+  on-hit: {BLINDNESS: 3}
+  abilities:
+    - {type: BLINK, interval: 7}
+    - {type: CHARGE, interval: 9, power: 1.4}
+  drops:
+    - {item: loot_eye, chance: 0.4}
+    - {item: crystal_high, chance: 0.1}
+
+grave_knight:
+  name: "무덤 기사"
+  type: WITHER_SKELETON
+  level: {min: 130, max: 240}
+  weight: 5
+  hp-mult: 2.4
+  damage-mult: 1.4
+  equipment: {helmet: IRON_HELMET, chest: NETHERITE_CHESTPLATE, hand: STONE_SWORD}
+  on-hit: {WITHER: 3}
+  abilities:
+    - {type: CHARGE, interval: 7, power: 1.6}
+    - {type: SLAM, interval: 9, radius: 4, power: 1.6}
+  drops:
+    - {item: loot_core, chance: 0.3}
+    - {item: crystal_top, chance: 0.06}
+
+ancient_ravager:
+  name: "고대 약탈수"
+  type: RAVAGER
+  level: {min: 160, max: 280}
+  biomes: [PLAINS, SAVANNA, BADLANDS, DESERT]
+  weight: 4
+  hp-mult: 3.0
+  damage-mult: 1.5
+  abilities:
+    - {type: CHARGE, interval: 6, power: 1.8}
+    - {type: LEAP, interval: 9, radius: 4, power: 1.6}
+    - {type: SLAM, interval: 11, radius: 5, power: 1.8}
+  drops:
+    - {item: loot_horn, chance: 0.6, min: 1, max: 2}
+    - {item: loot_crown, chance: 0.05}

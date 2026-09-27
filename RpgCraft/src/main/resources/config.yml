@@ -385,6 +385,19 @@ loot-chest:                 # 구조물 · 보물 지도 보물 상자 (보물 �
   extra-items: 1             # 추가 개수 = 0 ~ (이 값 + 상자 등급 - 1)
   shard-chance: 0.03         # 최고 등급 상자에서 기운 파편 확률
 
+nick:
+  overhead: true             # /닉네임 을 머리 위 이름표에도 표시 (바닐라 이름표를 숨기고 닉네임 글자를 띄움)
+
+field-bosses:              # 필드 보스 (bosses.yml 의 field: true) - 접속자 근처 야외에 주기적으로 등장
+  enabled: true
+  interval-minutes: 25     # 등장 시도 간격
+  max-alive: 2             # 동시에 살아 있을 수 있는 수
+  min-distance: 30         # 고른 플레이어로부터 거리
+  max-distance: 50
+  level-range: 25          # 지역 레벨 ± 이 안의 보스만 (없으면 가장 가까운 레벨)
+  despawn-minutes: 10      # 근처(80칸)에 아무도 없으면 이 시간 뒤 사라짐
+  worlds: []               # 비우면 기본 월드 + 네더
+
 tpa:
   cooldown-seconds: 300      # /tpa 순간이동 쿨타임 (5분, 이동에 성공하면 시작)
 

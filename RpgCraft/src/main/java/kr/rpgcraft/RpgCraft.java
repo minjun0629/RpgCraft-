@@ -87,6 +87,8 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.WorldBossManager worldBoss;
     private kr.rpgcraft.feature.MountManager mounts;
     private kr.rpgcraft.feature.PetManager pets;
+    private kr.rpgcraft.feature.NickManager nicks;
+    private kr.rpgcraft.boss.FieldBossManager fieldBosses;
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
@@ -168,6 +170,8 @@ public final class RpgCraft extends JavaPlugin {
         mounts = new kr.rpgcraft.feature.MountManager(this);
         command("mount", mounts);
         pets = new kr.rpgcraft.feature.PetManager(this);
+        nicks = new kr.rpgcraft.feature.NickManager(this);
+        fieldBosses = new kr.rpgcraft.boss.FieldBossManager(this);
         command("pet", pets);
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
@@ -216,6 +220,8 @@ public final class RpgCraft extends JavaPlugin {
     public void onDisable() {
         if (mounts != null) mounts.cleanup();
         if (pets != null) pets.cleanup();
+        if (nicks != null) nicks.shutdown();
+        if (fieldBosses != null) fieldBosses.shutdown();
         for (org.bukkit.entity.Player op : getServer().getOnlinePlayers())   // 서버 종료 중에도 주문서 시간 보관
             if (data != null) kr.rpgcraft.listener.PlayerListener.pauseBuffs(data.get(op));
         if (pack != null) pack.shutdown();
@@ -398,6 +404,8 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.WorldBossManager worldBoss() { return worldBoss; }
     public kr.rpgcraft.feature.MountManager mounts() { return mounts; }
     public kr.rpgcraft.feature.PetManager pets() { return pets; }
+    public kr.rpgcraft.feature.NickManager nicks() { return nicks; }
+    public kr.rpgcraft.boss.FieldBossManager fieldBosses() { return fieldBosses; }
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }

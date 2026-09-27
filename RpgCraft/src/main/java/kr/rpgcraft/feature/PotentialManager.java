@@ -203,7 +203,7 @@ public class PotentialManager {
                 if (next != cur) {
                     p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.3f);
                     p.sendTitle("", Text.c(next.color + "&l등급 상승! " + next.label), 0, 40, 10);
-                    if (next == Tier.LEGENDARY) Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 &a레전드리 잠재능력&f을 얻었습니다!"));
+                    if (next == Tier.LEGENDARY) Text.announce(Text.PREFIX + Text.c("&e" + Text.name(p) + "&f님이 &a레전드리 잠재능력&f을 얻었습니다!"));
                 }
                 return null;
             }

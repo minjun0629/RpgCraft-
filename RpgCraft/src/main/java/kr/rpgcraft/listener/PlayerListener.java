@@ -84,12 +84,12 @@ public class PlayerListener implements Listener {
         Player p = e.getPlayer();
         PlayerData d = plugin.data().get(t);
         var s = d.stats;
-        kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(6, "&8" + t.getName() + " 님의 정보") {
+        kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(6, "&8" + Text.name(t) + " 님의 정보") {
         };
         org.bukkit.inventory.ItemStack head = new org.bukkit.inventory.ItemStack(Material.PLAYER_HEAD);
         var hm = (org.bukkit.inventory.meta.SkullMeta) head.getItemMeta();
         hm.setOwningPlayer(t);
-        hm.setDisplayName(Text.c("&e&l" + t.getName()));
+        hm.setDisplayName(Text.c("&e&l" + Text.name(t)));
         var guild = plugin.guilds().of(t.getUniqueId());
         String title = plugin.content() == null ? "" : plugin.content().title(d);
         hm.setLore(java.util.List.of(Text.c("&fLv." + d.level + " &7" + plugin.jobs().title(d)), Text.c("&f칭호 &d" + (title.isEmpty() ? "-" : title)),
@@ -123,7 +123,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onQuitTrade(PlayerQuitEvent e) {
         pauseBuffs(plugin.data().get(e.getPlayer()));
-        plugin.trades().abort(e.getPlayer(), e.getPlayer().getName() + "님이 나가서 거래가 취소되었습니다.");
+        plugin.trades().abort(e.getPlayer(), Text.name(e.getPlayer()) + "님이 나가서 거래가 취소되었습니다.");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -168,7 +168,7 @@ public class PlayerListener implements Listener {
         Player killer = p.getKiller();
         plugin.passives().onDeath(p, killer);
         if (killer != null && !killer.equals(p))
-            e.setDeathMessage(Text.c("&c☠ &f" + p.getName() + " &7님이 &f" + killer.getName() + " &7님에게 처치당했습니다."));
+            e.setDeathMessage(Text.c("&c☠ &f" + Text.name(p) + " &7님이 &f" + Text.name(killer) + " &7님에게 처치당했습니다."));
     }
 
     @EventHandler

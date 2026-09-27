@@ -275,7 +275,8 @@ public class ShopManager implements Listener {
                 }
                 ItemMeta m = icon.getItemMeta();
                 boolean equip = tpl != null && (tpl.category.isEquipment() || tpl.category == kr.rpgcraft.item.Category.BOW)
-                        && !plugin.getConfig().getStringList("shops.show-stats").contains(s.id);   // 지정한 상점은 능력치 전부 표시
+                        && !plugin.getConfig().getStringList("shops.show-stats").contains(s.id)
+                        && !(s.id.startsWith("armory") && plugin.getConfig().getBoolean("shops.show-armory-stats", true));   // 무기고는 능력치 표시   // 지정한 상점은 능력치 전부 표시
                 List<String> lore = equip ? new ArrayList<>() : m.hasLore() ? new ArrayList<>(m.getLore()) : new ArrayList<>();   // 장비는 능력치 숨김
                 if (equip) {   // 능력치는 숨기되 스탯 제한은 표시
                     var bs = ItemData.baseStats(icon);

@@ -89,6 +89,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             case "escape" -> escape(p);
             case "casino" -> plugin.casino().open(p);
             case "call" -> callAdmin(p, String.join(" ", a));
+            case "dismantle" -> plugin.dismantle().open(p);   // 장비 → 재료
             case "pack" -> {   // 리소스팩 다시 받기 (적용 실패 시)
                 Text.msg(p, "&e리소스팩을 다시 보냅니다...");
                 plugin.pack().resend(p);

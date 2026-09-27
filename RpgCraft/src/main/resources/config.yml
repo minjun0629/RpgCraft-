@@ -434,6 +434,7 @@ weapons:
   spear-pen-mult-cut: 0.3    # 창 무기의 방어 관통 -30%
 
 shops:
+  show-armory-stats: true    # 무기고 I·II·III 상점에서 장비 능력치 표시
   show-stats: [weapon, weapon2, armor_warrior, armor_assassin, armor_adventurer, armor_set]   # 장비 능력치를 보여 주는 상점 (나머지는 스탯 제한만)
 
 pvp:                        # PvP 밸런스

@@ -136,6 +136,7 @@ public class FishingManager implements Listener {
         Session s = sessions.remove(p.getUniqueId());
         if (s == null) return;
         s.task.cancel();
+        org.bukkit.Location hookAt = s.hook != null ? s.hook.getLocation() : null;
         if (s.hook != null && s.hook.isValid()) s.hook.remove();
         if (!success) {
             Text.actionBar(p, "&7물고기가 도망갔습니다...");
@@ -165,6 +166,7 @@ public class FishingManager implements Listener {
         plugin.levels().addExp(p, plugin.levels().need(plugin.data().get(p).level) * 0.01);
         plugin.data().get(p).counters.merge("fish_caught", 1.0, Double::sum);
         if (plugin.questNpcs() != null) plugin.questNpcs().onFish(p);
+        if (plugin.seaMonsters() != null) plugin.seaMonsters().onFishCatch(p, hookAt);   // 바다 낚시: 아주 낮은 확률로 메갈로돈 · 크라켄 (v5.4.32)
     }
 
     private int hits() {

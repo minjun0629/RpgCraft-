@@ -339,6 +339,8 @@ sea:
   megalodon-cooldown-minutes: 20
   kraken-chance: 0.0005      # 20초마다 크라켄 확률 (월드보스급)
   kraken-cooldown-minutes: 120
+  fishing-megalodon-chance: 0.003   # 바다에서 낚시에 성공할 때마다 메갈로돈 확률 (0.3%)
+  fishing-kraken-chance: 0.0005     # 바다에서 낚시에 성공할 때마다 크라켄 확률 (0.05%)
 
 bosses:
   exp-levels: 2.5           # 보스 처치 경험치 = 보스 레벨에서 필요한 경험치 × 이 값 (참가자끼리 나눔, 0 이면 bosses.yml 값)

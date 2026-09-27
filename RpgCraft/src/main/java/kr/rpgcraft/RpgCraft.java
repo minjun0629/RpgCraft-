@@ -169,7 +169,7 @@ public final class RpgCraft extends JavaPlugin {
         guide = new kr.rpgcraft.world.GuideManager(this);
         dummies = new kr.rpgcraft.world.DummyManager(this);
         worldBoss = new kr.rpgcraft.world.WorldBossManager(this);
-        new kr.rpgcraft.world.SeaMonsterManager(this);
+        seaMonsters = new kr.rpgcraft.world.SeaMonsterManager(this);
         mounts = new kr.rpgcraft.feature.MountManager(this);
         command("mount", mounts);
         pets = new kr.rpgcraft.feature.PetManager(this);
@@ -396,6 +396,8 @@ public final class RpgCraft extends JavaPlugin {
     public RuneManager runes() { return runes; }
     public SpiritManager spirits() { return spirits; }
     public RuinManager ruins() { return ruins; }
+    private kr.rpgcraft.world.SeaMonsterManager seaMonsters;
+    public kr.rpgcraft.world.SeaMonsterManager seaMonsters() { return seaMonsters; }
     public GuildManager guilds() { return guilds; }
     public WarManager wars() { return wars; }
     public PassiveManager passives() { return passives; }

@@ -367,6 +367,69 @@
           "type": "minecraft:model",
           "model": "rpgcraft:boss/pet_star"
         }
+      },
+      {
+        "threshold": 9038,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_boar_king"
+        }
+      },
+      {
+        "threshold": 9039,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_frost_bear"
+        }
+      },
+      {
+        "threshold": 9040,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_bandit_lord"
+        }
+      },
+      {
+        "threshold": 9041,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_ravager"
+        }
+      },
+      {
+        "threshold": 9042,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_ancient_golem"
+        }
+      },
+      {
+        "threshold": 9043,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_swamp_witch"
+        }
+      },
+      {
+        "threshold": 9044,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_flame_knight"
+        }
+      },
+      {
+        "threshold": 9045,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_deep_warden"
+        }
+      },
+      {
+        "threshold": 9046,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/field_frost_lich"
+        }
       }
     ],
     "fallback": {

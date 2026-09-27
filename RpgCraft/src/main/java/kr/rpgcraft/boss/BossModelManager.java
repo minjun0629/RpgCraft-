@@ -31,10 +31,15 @@ public class BossModelManager implements Listener {
     public static final List<String> ORDER = List.of("witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper",
             "bungbung", "desert_nightmare", "siphonia", "kain", "frost_queen", "volcano_giant", "void_apostle", "thunder_god", "primordial_dragon", "vengeful_spirit", "balrog",
             "megalodon", "kraken", "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon",
-            "pet_slime", "pet_chick", "pet_bunny", "pet_fox", "pet_penguin", "pet_owl", "pet_golem", "pet_fairy", "pet_ghost", "pet_phoenix", "pet_dragon", "pet_star");
+            "pet_slime", "pet_chick", "pet_bunny", "pet_fox", "pet_penguin", "pet_owl", "pet_golem", "pet_fairy", "pet_ghost", "pet_phoenix", "pet_dragon", "pet_star",
+            // v5.4.9 필드 보스 (뒤에 붙여 기존 CustomModelData 번호 유지 — tools/boss_models.py BOSS_ORDER 와 같아야 함)
+            "field_boar_king", "field_frost_bear", "field_bandit_lord", "field_ravager", "field_ancient_golem",
+            "field_swamp_witch", "field_flame_knight", "field_deep_warden", "field_frost_lich");
     private static final Map<String, Float> SCALE = new HashMap<>();
     /** 보스 모델 좌표는 장식 공간을 위해 (8,8,8) 기준 0.75 배로 줄여 저장됨 (tools/boss_models.py BOSS_SHRINK) → 그릴 때 되돌림 */
     private static final float MODEL_SHRINK = 0.75f;
+    /** 줄인 뒤 6px 아래로 내려 저장됨 (BOSS_DROP) → 6/16 × scale/0.75 = 0.5 × scale 블록 더 올림 */
+    private static final float MODEL_LIFT = 0.5f;
 
     static {
         String[] ids = {"witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper", "bungbung", "desert_nightmare", "siphonia", "kain",
@@ -42,6 +47,10 @@ public class BossModelManager implements Listener {
         // 월드보스는 압도적으로 크게, 나머지 보스도 전보다 크게
         float[] sc = {2.0f, 2.0f, 2.2f, 2.0f, 2.3f, 2.2f, 3.6f, 3.0f, 3.8f, 2.4f, 3.2f, 2.8f, 2.8f, 4.0f, 3.4f, 3.8f, 7.0f, 9.0f};   // 메갈로돈 · 크라켄은 압도적인 크기
         for (int i = 0; i < ids.length; i++) SCALE.put(ids[i], sc[i]);
+        String[] fids = {"field_boar_king", "field_frost_bear", "field_bandit_lord", "field_ravager", "field_ancient_golem",
+                "field_swamp_witch", "field_flame_knight", "field_deep_warden", "field_frost_lich"};
+        float[] fsc = {2.4f, 2.6f, 2.2f, 2.8f, 3.0f, 2.2f, 2.5f, 2.8f, 2.6f};
+        for (int i = 0; i < fids.length; i++) SCALE.put(fids[i], fsc[i]);
     }
 
     private final RpgCraft plugin;
@@ -76,7 +85,7 @@ public class BossModelManager implements Listener {
 
     private Transformation tf(float scale, float bob, float yawRad) {
         // 게임이 ItemDisplay 의 아이템을 Y축 180° 돌려 그리므로 π 를 더해 정면을 맞춤
-        return new Transformation(new Vector3f(0, 0.5f * scale + bob, 0), new AxisAngle4f(yawRad + (float) Math.PI, 0, 1, 0), new Vector3f(scale / MODEL_SHRINK), new AxisAngle4f());
+        return new Transformation(new Vector3f(0, (0.5f + MODEL_LIFT) * scale + bob, 0), new AxisAngle4f(yawRad + (float) Math.PI, 0, 1, 0), new Vector3f(scale / MODEL_SHRINK), new AxisAngle4f());
     }
 
     public void attach(LivingEntity boss, String id) {
@@ -190,7 +199,7 @@ public class BossModelManager implements Listener {
         float s = scales.getOrDefault(e.getEntity().getUniqueId(), 1.8f);
         d.setInterpolationDelay(0);
         d.setInterpolationDuration(2);
-        d.setTransformation(new Transformation(new Vector3f(0, 0.5f * s, 0), new AxisAngle4f(yawOffset() + 0.15f, 0, 1, 0), new Vector3f(s * 0.95f / MODEL_SHRINK), new AxisAngle4f()));
+        d.setTransformation(new Transformation(new Vector3f(0, (0.5f + MODEL_LIFT) * s, 0), new AxisAngle4f(yawOffset() + 0.15f, 0, 1, 0), new Vector3f(s * 0.95f / MODEL_SHRINK), new AxisAngle4f()));
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!d.isValid()) return;
             d.setInterpolationDelay(0);

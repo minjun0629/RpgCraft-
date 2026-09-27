@@ -315,6 +315,60 @@
         "custom_model_data": 9037
       },
       "model": "rpgcraft:boss/pet_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9038
+      },
+      "model": "rpgcraft:boss/field_boar_king"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9039
+      },
+      "model": "rpgcraft:boss/field_frost_bear"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9040
+      },
+      "model": "rpgcraft:boss/field_bandit_lord"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9041
+      },
+      "model": "rpgcraft:boss/field_ravager"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9042
+      },
+      "model": "rpgcraft:boss/field_ancient_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9043
+      },
+      "model": "rpgcraft:boss/field_swamp_witch"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9044
+      },
+      "model": "rpgcraft:boss/field_flame_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9045
+      },
+      "model": "rpgcraft:boss/field_deep_warden"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9046
+      },
+      "model": "rpgcraft:boss/field_frost_lich"
     }
   ]
 }

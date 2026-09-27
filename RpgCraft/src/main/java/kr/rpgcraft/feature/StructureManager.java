@@ -168,15 +168,20 @@ public class StructureManager implements Listener {
     }
 
     private void fillLoot(org.bukkit.inventory.Inventory inv, int tier) {
+        var c = plugin.getConfig();
         List<String> pool = new ArrayList<>(List.of("potion_1", "potion_2", "crystal_low", "mat_iron", "mat_silver", "loot_bone", "loot_fang", "herb_ginseng1"));
         if (tier >= 2) pool.addAll(List.of("potion_3", "crystal_mid", "mat_gold", "rune_low", "loot_totem", "ticket_rune"));
-        if (tier >= 3) pool.addAll(List.of("crystal_high", "rune_mid", "mat_crystal", "ticket_rate10", "loot_core", "shard_nature", "shard_earth"));
-        int n = 3 + rnd.nextInt(3 + tier);
+        if (tier >= 3) pool.addAll(List.of("crystal_high", "rune_mid", "mat_crystal", "ticket_rate10", "loot_core"));
+        // 보물 상자 전리품 하향: 개수 3~(5+등급) → 2~(2+등급), 수량도 줄임
+        int n = c.getInt("loot-chest.min-items", 2) + rnd.nextInt(Math.max(1, c.getInt("loot-chest.extra-items", 1) + tier));
         for (int i = 0; i < n; i++) {
-            ItemStack it = plugin.items().create(pool.get(rnd.nextInt(pool.size())), 1 + rnd.nextInt(tier == 1 ? 3 : 2));
+            ItemStack it = plugin.items().create(pool.get(rnd.nextInt(pool.size())), 1 + rnd.nextInt(tier == 1 ? 2 : 1));
             if (it != null) inv.setItem(rnd.nextInt(27), it);
         }
-        if (rnd.nextDouble() < plugin.getConfig().getDouble("treasure.map-chest-per-tier", 0.03) * tier) inv.setItem(rnd.nextInt(27), plugin.items().create("treasure_map", 1));
+        // 기운 파편: 전리품 목록에서 빼고 따로 낮은 확률로 (최고 등급 상자만)
+        if (tier >= 3 && rnd.nextDouble() < c.getDouble("loot-chest.shard-chance", 0.03))
+            inv.setItem(rnd.nextInt(27), plugin.items().create(rnd.nextBoolean() ? "shard_nature" : "shard_earth", 1));
+        // 보물 상자에서는 보물 지도가 나오지 않음
     }
 
     // ------------------------------------------------------------------ 건설

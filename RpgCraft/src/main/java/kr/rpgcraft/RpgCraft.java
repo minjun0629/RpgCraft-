@@ -86,6 +86,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.DummyManager dummies;
     private kr.rpgcraft.world.WorldBossManager worldBoss;
     private kr.rpgcraft.feature.MountManager mounts;
+    private kr.rpgcraft.feature.PetManager pets;
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.AuctionManager auction;
@@ -165,6 +166,8 @@ public final class RpgCraft extends JavaPlugin {
         new kr.rpgcraft.world.SeaMonsterManager(this);
         mounts = new kr.rpgcraft.feature.MountManager(this);
         command("mount", mounts);
+        pets = new kr.rpgcraft.feature.PetManager(this);
+        command("pet", pets);
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
         getServer().getPluginManager().registerEvents(hiddenJobs, this);
@@ -210,6 +213,7 @@ public final class RpgCraft extends JavaPlugin {
     @Override
     public void onDisable() {
         if (mounts != null) mounts.cleanup();
+        if (pets != null) pets.cleanup();
         for (org.bukkit.entity.Player op : getServer().getOnlinePlayers())   // 서버 종료 중에도 주문서 시간 보관
             if (data != null) kr.rpgcraft.listener.PlayerListener.pauseBuffs(data.get(op));
         if (pack != null) pack.shutdown();
@@ -307,6 +311,14 @@ public final class RpgCraft extends JavaPlugin {
         if (getConfig().getInt("structures.ruin-min-adv", 10) == 0) getConfig().set("structures.ruin-min-adv", 10);
         // 블록 재생성 30초 → 5초
         if (getConfig().getInt("world-protection.regen-seconds", 5) == 30) getConfig().set("world-protection.regen-seconds", 5);
+        // v5.1.0 패치 (한 번만): 민첩 치명타 0.12, 보물 상자·낚시 보물 상자에서 보물 지도 제거
+        if (getConfig().getInt("config-patch", 0) < 510) {
+            getConfig().set("player.dex-crit-per-point", 0.12);
+            getConfig().set("treasure.map-fishing", null);
+            getConfig().set("treasure.map-chest-per-tier", null);
+            getConfig().set("mounts.scale", null);   // 탈것 크기는 이제 안장 높이(mounts.seat-height)로 자동 계산
+            getConfig().set("config-patch", 510);
+        }
         saveConfig();
         if (renamed > 0) getLogger().info("config.yml 의 이전 이름 문구 " + renamed + "곳을 RpgCraft 로 바꿨습니다.");
     }
@@ -383,6 +395,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.DummyManager dummies() { return dummies; }
     public kr.rpgcraft.world.WorldBossManager worldBoss() { return worldBoss; }
     public kr.rpgcraft.feature.MountManager mounts() { return mounts; }
+    public kr.rpgcraft.feature.PetManager pets() { return pets; }
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.AuctionManager auction() { return auction; }

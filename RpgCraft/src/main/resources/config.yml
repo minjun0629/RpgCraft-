@@ -11,7 +11,7 @@ player:
   gambler-stat-per-level: 30 # [위키] ??? 패시브 '도박사'
   base-attack: 5
   str-atk-per-2: 5           # 힘 2 = 공격력 +5
-  dex-crit-per-point: 0.1    # 민첩 1 = 크리티컬 +0.1%
+  dex-crit-per-point: 0.12   # 민첩 1 = 크리티컬 +0.12%
   adv-hp-per-point: 90       # 모험 1 = 체력 +90 (체력은 모험으로 올리는 구조)
   adv-def-per-point: 0.065   # 모험 1 = 방어력 +0.065%
   str-magic-per-point: 2     # 힘 1 = 마력 +2 (무기 스킬 위력)
@@ -174,9 +174,6 @@ gather:
         ore_blue: 0.1
         ore_gray: 0.1
 
-fishing:
-  money: 300
-
 guild:
   allow-player-create: true  # false 면 rpgcraft.guild.create 권한자만 생성 (원작은 스트리머가 길드장 지정)
   create-cost: 1000000
@@ -309,7 +306,19 @@ world-boss:                 # 월드보스 출현 (전용 거대 전장과 함�
 
 mounts:
   draw-cost: 3000000         # 탈것 뽑기 1회 비용 (300만 원)
-  scale: 2.4                 # 탈것 모델 크기
+  speed: [0.24, 0.29, 0.34, 0.40]   # 등급별 이동 속도 (일반 / 희귀 / 영웅 / 전설)
+  jump: [0.55, 0.7, 0.85, 1.0]      # 등급별 점프력 (말 점프 강도)
+  fly-speed: 0.75            # 전설 탈것 비행 속도 (블록/틱)
+  seat-height: 1.45          # 안장 높이 (블록) — 탈것 모델 크기가 이 높이에 맞춰짐
+  scale-mult: 1.0            # 모델 크기 추가 배율
+  ride-height: 1.2           # 모델이 붙는 높이 (말 키 × 0.75). 모델이 땅에 묻히거나 뜨면 조절
+  model-lift: 0.0            # 모델 전체를 위(+)/아래(-)로 미세 조정
+
+pets:
+  draw-cost: 1500000         # 펫 뽑기 1회 비용
+  odds: [0.64, 0.27, 0.08, 0.01]    # 등급 확률 (일반 / 희귀 / 영웅 / 전설 1%)
+  duplicate-refund: 0.2      # 이미 가진 펫이 나오면 비용의 20% 환급
+  scale: 0.6                 # 펫 모델 크기
 
 sea:
   megalodon-chance: 0.004    # 바다에서 헤엄칠 때 20초마다 메갈로돈 확률
@@ -364,8 +373,14 @@ treasure:
   map-elite: 0.025           # 정예
   map-miniboss: 0.12         # 중간 보스
   map-bounty: 0.5            # 현상수배범
-  map-fishing: 0.4           # 낚시 보물 상자
-  map-chest-per-tier: 0.03   # 구조물 상자 (× 상자 등급)
+
+loot-chest:                 # 구조물 · 보물 지도 보물 상자 (보물 지도는 나오지 않음)
+  min-items: 2               # 최소 전리품 개수
+  extra-items: 1             # 추가 개수 = 0 ~ (이 값 + 상자 등급 - 1)
+  shard-chance: 0.03         # 최고 등급 상자에서 기운 파편 확률
+
+tpa:
+  cooldown-seconds: 300      # /tpa 순간이동 쿨타임 (5분, 이동에 성공하면 시작)
 
 bounty:                     # 현상수배
   prize-base: 800            # 현상금 = 800 × (1 + 레벨/10)
@@ -379,6 +394,8 @@ casino:
 
 fishing:
   enabled: true
+  money: 300
+  treasure-chance: 0.008     # 낚시 「가라앉은 보물 상자」 확률 (보물 지도는 나오지 않음)
 
 day-night:
   blood-moon-chance: 0.15

@@ -243,6 +243,78 @@
         "custom_model_data": 9025
       },
       "model": "rpgcraft:boss/mount_dragon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9026
+      },
+      "model": "rpgcraft:boss/pet_slime"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9027
+      },
+      "model": "rpgcraft:boss/pet_chick"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9028
+      },
+      "model": "rpgcraft:boss/pet_bunny"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9029
+      },
+      "model": "rpgcraft:boss/pet_fox"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9030
+      },
+      "model": "rpgcraft:boss/pet_penguin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9031
+      },
+      "model": "rpgcraft:boss/pet_owl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9032
+      },
+      "model": "rpgcraft:boss/pet_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9033
+      },
+      "model": "rpgcraft:boss/pet_fairy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9034
+      },
+      "model": "rpgcraft:boss/pet_ghost"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9035
+      },
+      "model": "rpgcraft:boss/pet_phoenix"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9036
+      },
+      "model": "rpgcraft:boss/pet_dragon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9037
+      },
+      "model": "rpgcraft:boss/pet_star"
     }
   ]
 }

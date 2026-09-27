@@ -90,7 +90,11 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             case "casino" -> plugin.casino().open(p);
             case "call" -> callAdmin(p, String.join(" ", a));
             case "coupon" -> {
-                if (a.length == 0) { Text.msg(p, "&e/쿠폰 <코드>"); return true; }
+                if (a.length == 0) { Text.msg(p, "&e/쿠폰 <코드>" + (p.hasPermission("rpgcraft.admin") ? " &7· 관리자: /쿠폰 list" : "")); return true; }
+                if (a.length == 1 && (a[0].equalsIgnoreCase("list") || a[0].equals("목록")) && p.hasPermission("rpgcraft.admin")) {
+                    listCoupons(p);
+                    return true;
+                }
                 String code = String.join(" ", a).trim();
                 java.util.List<String> rewards = plugin.getConfig().getStringList("coupons." + code);
                 if (rewards.isEmpty()) { Text.msg(p, "&c없는 쿠폰입니다."); return true; }
@@ -113,6 +117,11 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (a.length < 1) { Text.msg(p, "&e/tpa <플레이어> · /tpaccept · /tpdeny"); return true; }
                 Player t = Bukkit.getPlayerExact(a[0]);
                 if (t == null || t.equals(p)) { Text.msg(p, "&c접속 중인 다른 플레이어를 입력하세요."); return true; }
+                if (d.onCooldown("tpa") && !p.hasPermission("rpgcraft.admin")) {
+                    long left = d.remaining("tpa") / 1000 + 1;
+                    Text.msg(p, "&c순간이동 쿨타임 " + (left / 60 > 0 ? left / 60 + "분 " : "") + left % 60 + "초 남았습니다.");
+                    return true;
+                }
                 tpaReq.put(t.getUniqueId(), new Object[]{p.getUniqueId(), System.currentTimeMillis()});
                 Text.msg(p, "&a" + t.getName() + "님에게 순간이동을 요청했습니다.");
                 Text.msg(t, "&e" + p.getName() + "&f님이 순간이동을 요청했습니다. &a/tpaccept &7· &c/tpdeny &7(60초)");
@@ -130,6 +139,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                     if (!from.isOnline() || !p.isOnline()) return;
                     if (from.getLocation().distanceSquared(start) > 1) { Text.msg(from, "&c움직여서 취소되었습니다."); return; }
                     from.teleport(p.getLocation());
+                    plugin.data().get(from).cooldown("tpa", plugin.getConfig().getLong("tpa.cooldown-seconds", 300) * 1000L);   // 이동 성공 시 5분 쿨타임
                     from.playSound(from.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1.2f);
                 }, 60L);
             }
@@ -290,18 +300,35 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         return book;
     }
 
+    /** 관리자: /쿠폰 list — 등록된 쿠폰 코드와 보상 전부 */
+    private void listCoupons(Player p) {
+        var sec = plugin.getConfig().getConfigurationSection("coupons");
+        if (sec == null || sec.getKeys(false).isEmpty()) { Text.msg(p, "&7등록된 쿠폰이 없습니다. &8(config.yml 의 coupons)"); return; }
+        Text.msg(p, "&6&l쿠폰 목록 &7(" + sec.getKeys(false).size() + "개)");
+        for (String code : sec.getKeys(false)) {
+            java.util.List<String> names = new java.util.ArrayList<>();
+            for (String r : sec.getStringList(code)) {
+                String[] kv = r.split(":");
+                if (kv[0].equals("money")) { names.add("&e" + Text.money(kv.length > 1 ? Text.parseLong(kv[1], 0) : 0)); continue; }
+                var t = plugin.items().get(kv[0]);
+                names.add("&f" + (t == null ? kv[0] : t.name) + (kv.length > 1 ? " &7x" + kv[1] : ""));
+            }
+            int used = 0;
+            for (Player op : Bukkit.getOnlinePlayers()) if (plugin.data().get(op).counter("coupon_" + code) > 0) used++;
+            p.sendMessage(Text.c(" &a" + code + " &8→ " + String.join("&7, ", names) + " &8(접속자 중 사용 " + used + "명)"));
+        }
+    }
+
     private void rebirth(Player p, boolean confirm) {
         PlayerData d = plugin.data().get(p);
         var c = plugin.getConfig();
         int max = plugin.levels().maxLevel(d), n = (int) d.counter("rebirth"), cap = c.getInt("rebirth.max", 5);
         if (d.level < max) { Text.msg(p, "&c레벨 " + max + " 필요 &7(환생 " + n + "/" + cap + ")"); return; }
         if (n >= cap) { Text.msg(p, "&c더 이상 환생할 수 없습니다."); return; }
-        if (!confirm) { Text.msg(p, "&e/환생 확인 &7— 레벨 1, 스탯 포인트 초기화 (장비·돈 유지)"); return; }
+        if (!confirm) { Text.msg(p, "&e/환생 확인 &7— 레벨만 1로 초기화 (스탯·장비·돈 등 나머지는 모두 유지)"); return; }
         d.counters.put("rebirth", n + 1.0);
-        d.level = 0;   // 환생하면 Lv.0 부터, 최대 레벨은 +300
+        d.level = 1;   // 환생하면 레벨만 처음부터 (최대 레벨은 +300). 스탯 · 스탯 포인트 · 장비 · 돈은 그대로
         d.exp = 0;
-        d.str = d.dex = d.adv = 0;
-        d.statPoints = 0;
         plugin.stats().refresh(p);
         p.sendTitle(Text.c("&d&l✦ 환생 " + (n + 1) + " ✦"), Text.c("&f최대 레벨 " + plugin.levels().maxLevel(d)), 10, 70, 20);
         p.playSound(p.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.6f);
@@ -382,7 +409,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             strLore.add("");
             strLore.add("&a좌클릭 +1 &7| &a우클릭 +10 &7| &a쉬프트 전부");
             set(11, button(Material.IRON_SWORD, "&c힘 &f" + d.str, strLore.toArray(new String[0])), e -> add(p, e, 0));
-            java.util.List<String> dexLore = new java.util.ArrayList<>(java.util.List.of("&71포인트당 치명타 확률 +" + c.getDouble("player.dex-crit-per-point", 0.1) + "%, 치명타 피해 +" + c.getDouble("player.dex-critdmg-per-point", 0.6) + "%", ""));
+            java.util.List<String> dexLore = new java.util.ArrayList<>(java.util.List.of("&71포인트당 치명타 확률 +" + c.getDouble("player.dex-crit-per-point", 0.12) + "%, 치명타 피해 +" + c.getDouble("player.dex-critdmg-per-point", 0.6) + "%", ""));
             dexLore.addAll(kr.rpgcraft.stat.StatCalculator.dexMilestones(d));
             dexLore.add("");
             dexLore.add("&a좌클릭 +1 &7| &a우클릭 +10 &7| &a쉬프트 전부");

@@ -540,3 +540,161 @@ def write_party_fonts(pack_dir, write_json, vanilla_dir):
             if p["type"] == "bitmap":
                 assert p["ascent"] <= p["height"], p
         write_json(os.path.join(pack_dir, "assets", NS, "font", "party%d.json" % row), {"providers": prov})
+
+
+# ------------------------------------------------------------------ 보스 체력바 (v5.1.0 디자인)
+# 보스바 색 → (진한 색, 기본 색, 밝은 색). WHITE 는 나침반 문구용 투명 바라서 그리지 않는다.
+BOSS_BAR_COLORS = {
+    "pink": ((150, 30, 100), (255, 95, 185), (255, 190, 230)),
+    "blue": ((20, 70, 170), (70, 160, 255), (185, 230, 255)),
+    "red": ((130, 10, 20), (235, 45, 55), (255, 160, 140)),
+    "green": ((20, 110, 40), (75, 215, 100), (190, 255, 190)),
+    "yellow": ((160, 110, 10), (255, 205, 55), (255, 245, 180)),
+    "purple": ((80, 20, 150), (175, 85, 255), (230, 190, 255)),
+}
+BAR_W, BAR_H = 182, 5
+FRAME_W, FRAME_H, FRAME_MARGIN = 202, 11, 10   # 보스바 둘레 장식 틀 (바 양옆 10px)
+BOSS_FRAME = 0xE050
+
+
+def _lerp(a, b, t):
+    return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
+
+
+def boss_bar_images(dark, mid, light):
+    """(배경, 채움) 182x5. 배경: 어두운 테두리 + 색이 비치는 홈. 채움: 위 밝게·아래 진하게 + 왼→오 그라데이션 + 사선 광택"""
+    bg = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+    fg = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+    edge = (18, 10, 14, 255)
+    groove = _lerp((12, 8, 10), dark, 0.35)
+    for x in range(BAR_W):
+        for y in range(BAR_H):
+            if y in (0, 4) or x in (0, BAR_W - 1):
+                bg.putpixel((x, y), edge)
+            else:
+                g = _lerp(groove, (0, 0, 0), 0.25) if y == 3 else groove
+                bg.putpixel((x, y), g + (240,))
+            if y in (0, 4) or x == 0 or x == BAR_W - 1:
+                continue   # 채움은 테두리 안쪽만 → 조금만 차 있어도 테두리가 깨지지 않음
+            t = x / (BAR_W - 1)
+            base = _lerp(_lerp(mid, dark, 0.35), mid, min(1, t * 1.4))       # 왼쪽이 약간 진함
+            row = {1: _lerp(base, light, 0.55), 2: base, 3: _lerp(base, dark, 0.55)}[y]
+            if (x + y * 2) % 9 == 0 and y < 3:                                 # 사선 광택
+                row = _lerp(row, (255, 255, 255), 0.35)
+            fg.putpixel((x, y), row + (255,))
+    return bg, fg
+
+
+def boss_bar_notches(n):
+    """마디 오버레이 (배경용, 채움용)"""
+    bg = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+    fg = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+    for i in range(1, n):
+        x = round(i * BAR_W / n)
+        for y in (1, 2, 3):
+            bg.putpixel((x, y), (0, 0, 0, 150))
+            fg.putpixel((x, y), (10, 4, 8, 170))
+            if x + 1 < BAR_W - 1:
+                fg.putpixel((x + 1, y), (255, 255, 255, 55))
+    return bg, fg
+
+
+def write_boss_bars(pack_dir, vanilla_bars_path):
+    """1.20.1: textures/gui/bars.png / 1.20.2+: textures/gui/sprites/boss_bar/*.png"""
+    order = ["pink", "blue", "red", "green", "yellow", "purple", "white"]
+    bars = Image.open(vanilla_bars_path).convert("RGBA")
+    sp = os.path.join(pack_dir, "assets", "minecraft", "textures", "gui", "sprites", "boss_bar")
+    os.makedirs(sp, exist_ok=True)
+    clear = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+    for i, name in enumerate(order):
+        if name == "white":   # 나침반 문구 전용 → 투명
+            bg = fg = clear
+        else:
+            bg, fg = boss_bar_images(*BOSS_BAR_COLORS[name])
+        bars.paste(bg, (0, i * 10))
+        bars.paste(fg, (0, i * 10 + 5))
+        bg.save(os.path.join(sp, name + "_background.png"))
+        fg.save(os.path.join(sp, name + "_progress.png"))
+    for k, n in enumerate((6, 10, 12, 20)):
+        bg, fg = boss_bar_notches(n)
+        bars.paste(bg, (0, 80 + k * 10))
+        bars.paste(fg, (0, 85 + k * 10))
+        bg.save(os.path.join(sp, "notched_%d_background.png" % n))
+        fg.save(os.path.join(sp, "notched_%d_progress.png" % n))
+    bars.save(os.path.join(pack_dir, "assets", "minecraft", "textures", "gui", "bars.png"))
+    return bars
+
+
+def boss_frame():
+    """보스바를 감싸는 금속 틀 (제목 글리프). 가운데 창은 투명 → 바가 보인다.
+    글리프 윗부분 두 줄은 보스 이름 글자와 겹치므로 양 끝 장식만 그린다."""
+    img = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+    gold, gold_d, gold_l, dark = (214, 170, 72, 255), (120, 84, 30, 255), (255, 232, 150, 255), (22, 14, 18, 255)
+    L, R = FRAME_MARGIN - 1, FRAME_MARGIN + BAR_W          # 9 / 192 : 바 바로 바깥 세로줄
+    for x in range(L - 1, R + 2):                           # 위·아래 테두리 (2줄: 금 + 그림자)
+        img.putpixel((x, 2), gold_l if x % 6 == 0 else gold)
+        img.putpixel((x, 8), gold)
+        img.putpixel((x, 9), gold_d)
+    for y in range(2, 10):                                  # 양옆 세로 테두리
+        for x, c in ((L - 1, dark), (L, gold), (R, gold), (R + 1, dark)):
+            img.putpixel((x, y), c)
+    # 왼쪽 끝: 해골 문장
+    skull = ["..###..", ".#####.", "##.#.##", "#######", ".##.##.", "..#.#.."]
+    for yy, row in enumerate(skull):
+        for xx, ch in enumerate(row):
+            if ch == "#":
+                img.putpixel((xx, 2 + yy), (235, 228, 210, 255))
+            elif ch == "." and 0 < xx < 6 and 0 < yy < 5:
+                img.putpixel((xx, 2 + yy), dark)
+    for x in range(0, 7):
+        img.putpixel((x, 8), gold)
+        img.putpixel((x, 9), gold_d)
+    # 오른쪽 끝: 날개 장식
+    wing = ["....##", "..####", ".#####", "######", "..####", "....##"]
+    for yy, row in enumerate(wing):
+        for xx, ch in enumerate(row):
+            if ch == "#":
+                img.putpixel((R + 2 + xx, 2 + yy), gold if (xx + yy) % 3 else gold_l)
+    # 양 끝 위 뾰족 장식 (이름 글자와 겹치지 않는 가장자리)
+    for x0 in (L - 3, R + 1):
+        img.putpixel((x0 + 1, 0), gold_l)
+        img.putpixel((x0 + 1, 1), gold)
+    # 아래 가운데 보석
+    c = FRAME_W // 2
+    for dx, dy, col in ((0, 8, (255, 60, 60, 255)), (-1, 9, (200, 20, 30, 255)), (0, 9, (255, 120, 110, 255)), (1, 9, (200, 20, 30, 255)), (0, 10, (150, 10, 20, 255))):
+        img.putpixel((c + dx, dy), col)
+    for dx in (-3, -2, 2, 3):
+        img.putpixel((c + dx, 9), gold_l)
+    return img
+
+
+def boss_frame_provider(pack_dir):
+    """기본 폰트에 넣을 보스바 틀 글리프 (제목 글자 기준 아래로: ascent 0 → 틀 윗줄이 바 위 2px)"""
+    tex_dir = os.path.join(pack_dir, "assets", NS, "textures", "font")
+    os.makedirs(tex_dir, exist_ok=True)
+    boss_frame().save(os.path.join(tex_dir, "boss_frame.png"))
+    # 제목 글자 y 에서 바는 +9 ~ +13. 틀 이미지의 바 창(3~7행)이 거기에 오도록 윗변 = +6 → ascent 1
+    return {"type": "bitmap", "file": NS + ":font/boss_frame.png", "ascent": 1, "height": FRAME_H, "chars": [chr(BOSS_FRAME)]}
+
+
+def boss_bar_preview(out_path, scale=4):
+    """보스바 디자인 미리보기 (틀 + 색별 바 + 마디)"""
+    names = ["red", "purple", "blue", "yellow", "green", "pink"]
+    fills = [0.85, 0.6, 0.35, 1.0, 0.15, 0.5]
+    gap = 6
+    img = Image.new("RGBA", (FRAME_W + 16, len(names) * (FRAME_H + gap) + gap), (72, 96, 60, 255))
+    for i, name in enumerate(names):
+        bg, fg = boss_bar_images(*BOSS_BAR_COLORS[name])
+        nb, nf = boss_bar_notches(10)
+        bar = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+        bar.alpha_composite(bg)
+        bar.alpha_composite(nb)
+        prog = Image.new("RGBA", (BAR_W, BAR_H), (0, 0, 0, 0))
+        prog.alpha_composite(fg)
+        prog.alpha_composite(nf)
+        bar.alpha_composite(prog.crop((0, 0, int(BAR_W * fills[i]), BAR_H)))
+        row = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+        row.alpha_composite(bar, (FRAME_MARGIN, 3))
+        row.alpha_composite(boss_frame())
+        img.alpha_composite(row, (8, gap + i * (FRAME_H + gap)))
+    img.resize((img.width * scale, img.height * scale), Image.NEAREST).save(out_path)

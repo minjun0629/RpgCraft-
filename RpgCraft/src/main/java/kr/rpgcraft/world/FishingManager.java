@@ -139,10 +139,6 @@ public class FishingManager implements Listener {
         ItemStack it = plugin.items().create(id, 1);
         if (it == null) return;
         for (ItemStack l : p.getInventory().addItem(it).values()) p.getWorld().dropItemNaturally(p.getLocation(), l);
-        if (id.equals("fish_treasure") && java.util.concurrent.ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("treasure.map-fishing", 0.4)) {
-            ItemStack map = plugin.items().create("treasure_map", 1);
-            if (map != null) for (ItemStack l : p.getInventory().addItem(map).values()) p.getWorld().dropItemNaturally(p.getLocation(), l);
-        }
         var t = plugin.items().get(id);
         Text.actionBar(p, "&b낚시 성공! &f" + t.name);
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6f, 1.6f);
@@ -156,7 +152,7 @@ public class FishingManager implements Listener {
         double luck = (p.getWorld().hasStorm() ? 1.3 : 1.0) * (plugin.cycle() != null && plugin.cycle().phase() != CycleManager.Phase.DAY ? 1.2 : 1.0);
         double r = ThreadLocalRandom.current().nextDouble() / luck;
         if (r < 0.004) return "fish_legend";
-        if (r < 0.02) return "fish_treasure";
+        if (r < 0.004 + plugin.getConfig().getDouble("fishing.treasure-chance", 0.008)) return "fish_treasure";   // 가라앉은 보물 상자 1.6% → 0.8%
         if (r < 0.06) return "fish_gold";
         if (r < 0.14) return "fish_deep";
         if (r < 0.26) return "loot_scale";

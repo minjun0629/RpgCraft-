@@ -165,6 +165,7 @@ public class StatCalculator {
         applySpecialPassives(p, d, t);
         t.addAll(plugin.jobs().bonus(d));
         if (plugin.accessories() != null) t.addAll(plugin.accessories().bonus(d));
+        if (plugin.pets() != null) t.addAll(plugin.pets().bonus(d));   // 꺼내 둔 펫
         HiddenStat.apply(d, t);   // 히든 스탯
         t.addAll(kr.rpgcraft.world.HiddenJobManager.bonus(d));
         int reb = (int) d.counter("rebirth");
@@ -201,7 +202,7 @@ public class StatCalculator {
         s.ranged = Math.max(0, t.get(RANGED_ATK) + s.attack * 0.25) * plugin.getConfig().getDouble("weapon-skills.bow-damage-mult", 1.35);   // 활 피해 배율
         // 힘 → 공격력·마력 / 민첩 → 치명타 확률·치명타 피해·이동속도 / 모험 → 체력·방어력
         s.magic = Math.max(0, s.str * c.getDouble("player.str-magic-per-point", 2.0) + t.get(MAGIC));
-        s.crit = clamp(s.dex * c.getDouble("player.dex-crit-per-point", 0.1) + t.get(CRIT), 0, 100);
+        s.crit = clamp(s.dex * c.getDouble("player.dex-crit-per-point", 0.12) + t.get(CRIT), 0, 100);
         s.critDmg = t.get(CRIT_DMG) + s.dex * c.getDouble("player.dex-critdmg-per-point", 0.5);
         s.def = clamp(t.get(DEF) + s.adv * c.getDouble("player.adv-def-per-point", 0.05), 0, c.getDouble("player.max-defense", 85));
         double hp = c.getDouble("player.base-hp", 1000) + d.level * c.getDouble("player.hp-per-level", 200)

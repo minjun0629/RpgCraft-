@@ -28,6 +28,9 @@ public class BossManager {
         final Map<Integer, Long> next = new HashMap<>();
         long nextSignature;
         final long born = System.currentTimeMillis();
+        int phase = 1;              // 1: 평상 · 2: 분노(60%) · 3: 광폭(30%)
+        boolean seenAwake;
+        double aura;                // 주변 기운 회전 각도
     }
 
     private final RpgCraft plugin;
@@ -89,6 +92,7 @@ public class BossManager {
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + d.name + "&f(이)가 &e" + loc.getWorld().getName() + " "
                 + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "&f에 나타났습니다!"));
         for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.6f, 1f);
+        intro(e, d);
         return e;
     }
 
@@ -100,7 +104,8 @@ public class BossManager {
             Active a = new Active();
             a.entity = e;
             a.def = d;
-            a.bar = Bukkit.createBossBar(Text.c("&c" + d.name), d.color, BarStyle.SEGMENTED_10);
+            // WHITE 는 나침반 문구 전용 투명 바(리소스팩)라서 보스는 파란 바로
+            a.bar = Bukkit.createBossBar(Text.c("&c" + d.name), d.color == org.bukkit.boss.BarColor.WHITE ? org.bukkit.boss.BarColor.BLUE : d.color, BarStyle.SEGMENTED_10);
             long now = System.currentTimeMillis();
             for (int i = 0; i < d.skills.size(); i++) a.next.put(i, now + d.skills.get(i).interval * 1000L);
             active.put(e.getUniqueId(), a);
@@ -143,8 +148,11 @@ public class BossManager {
                 continue;
             }
             MobManager.MobState s = plugin.mobs().state(a.entity);
-            a.bar.setTitle(Text.c("&c&l" + s.baseName + " &f" + Text.num(s.hp) + " / " + Text.num(s.maxHp)));
-            a.bar.setProgress(Math.max(0, Math.min(1, s.hp / s.maxHp)));
+            double frac = Math.max(0, Math.min(1, s.hp / s.maxHp));
+            phase(a, s, frac);
+            a.bar.setTitle(barTitle(a, s, frac));
+            a.bar.setProgress(frac);
+            auraTick(a);
             Location bl = a.entity.getLocation();
             Set<Player> near = new HashSet<>();
             for (Player p : bl.getWorld().getPlayers()) if (p.getLocation().distanceSquared(bl) < 64 * 64) near.add(p);
@@ -176,7 +184,8 @@ public class BossManager {
                 if (now < a.next.getOrDefault(i, 0L)) continue;
                 BossDefinition.Skill k = a.def.skills.get(i);
                 int crowd = Math.max(1, near.size());
-                double faster = 1 + plugin.getConfig().getDouble("bosses.crowd-skill-speed", 0.25) * (crowd - 1);   // 여럿이면 기술 간격 단축
+                double faster = (1 + plugin.getConfig().getDouble("bosses.crowd-skill-speed", 0.25) * (crowd - 1))   // 여럿이면 기술 간격 단축
+                        * (a.phase == 3 ? 1.45 : a.phase == 2 ? 1.2 : 1.0);                                          // 분노 · 광폭 단계는 더 자주
                 a.next.put(i, now + (long) (k.interval * 1000L / faster));
                 if (crowd >= 3 && ThreadLocalRandom.current().nextDouble() < 0.35) {   // 3명 이상이면 다른 사람에게도 같은 기술
                     Player second = null;
@@ -546,6 +555,91 @@ public class BossManager {
         }
     }
 
+    // =================================================================== 보스 연출 (v5.1.0)
+    private static final String[] PHASE_NAME = {"", "", "분노", "광폭화"};
+
+    /** 보스바 제목: 리소스팩 모드면 금속 틀 글리프로 바를 감싸고 이름·체력·단계를 가운데에 */
+    private String barTitle(Active a, MobManager.MobState s, double frac) {
+        String phase = a.phase >= 2 ? (a.phase == 3 ? " &4&l" : " &6&l") + "[" + PHASE_NAME[a.phase] + "]" : "";
+        String text = Text.c("&c&l☠ " + s.baseName + phase + " &f" + Text.num(s.hp) + " &7/ " + Text.num(s.maxHp) + " &8(" + String.format("%.1f", frac * 100) + "%)");
+        if (!plugin.pack().overlay()) return text;
+        int fw = 202, adv = fw + 1, n = kr.rpgcraft.pack.HudFont.textWidth(text);   // 틀 이미지 202px (tools/ui_pack.py FRAME_W)
+        // 전체 폭 = 틀 폭 → 틀은 바 가운데, 이름은 그 위 가운데
+        return "§f" + '\uE050' + kr.rpgcraft.pack.PackManager.shift(fw / 2 - n / 2 - adv) + text + kr.rpgcraft.pack.PackManager.shift(fw / 2 - (n - n / 2));
+    }
+
+    /** 체력 60% · 30% 에서 단계 전환: 공격력 · 기술 빈도 상승, 주변 밀쳐내기 + 연출 */
+    private void phase(Active a, MobManager.MobState s, double frac) {
+        if (s.awakened && !a.seenAwake) { a.seenAwake = true; a.phase = 1; }   // 각성하면 체력이 다시 차므로 단계도 처음부터
+        int want = frac <= 0.3 ? 3 : frac <= 0.6 ? 2 : 1;
+        if (want <= a.phase) return;
+        a.phase = want;
+        LivingEntity b = a.entity;
+        s.damage *= want == 3 ? 1.15 : 1.12;
+        var sp = b.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED);
+        if (sp != null && want == 3) sp.setBaseValue(sp.getBaseValue() * 1.2);
+        Location o = b.getLocation();
+        Color c = want == 3 ? Color.fromRGB(0xFF1A1A) : Color.fromRGB(0xFF9A1A);
+        kr.rpgcraft.util.Fx.shockwave(plugin, o, 9, c);
+        kr.rpgcraft.util.Fx.helix(plugin, b, 3.5, 1.4, 30, c, Color.BLACK);
+        kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1.5, 0), 4, c);
+        b.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, o, 4, 1.5, 0.5, 1.5);
+        b.getWorld().playSound(o, want == 3 ? Sound.ENTITY_ENDER_DRAGON_GROWL : Sound.ENTITY_RAVAGER_ROAR, 2f, want == 3 ? 0.7f : 0.8f);
+        for (Player p : playersNear(o, 7)) p.setVelocity(p.getLocation().toVector().subtract(o.toVector()).setY(0).normalize().multiply(1.1).setY(0.45));
+        String msg = want == 3 ? "&4&l광폭화! &c" + s.baseName + "&7이(가) 이성을 잃었습니다" : "&6&l분노! &e" + s.baseName + "&7의 공격이 거세집니다";
+        for (Player p : a.bar.getPlayers()) p.sendTitle(Text.c(want == 3 ? "&4&l광폭화" : "&6&l분노"), Text.c(msg), 5, 40, 12);
+    }
+
+    /** 보스 주변 기운: 발밑 회전 고리 + 단계가 오를수록 진해짐 (0.5초마다) */
+    private void auraTick(Active a) {
+        LivingEntity b = a.entity;
+        Color c = a.phase == 3 ? Color.fromRGB(0xFF1A1A) : theme(a.def.id);
+        Location o = b.getLocation();
+        double r = Math.max(1.4, b.getWidth() * 0.9);
+        int pts = 6 + a.phase * 3;
+        a.aura += 0.5;
+        for (int i = 0; i < pts; i++) {
+            double ang = a.aura + Math.PI * 2 * i / pts;
+            b.getWorld().spawnParticle(Particle.REDSTONE, o.clone().add(Math.cos(ang) * r, 0.15, Math.sin(ang) * r), 1, 0, 0, 0, 0,
+                    new Particle.DustOptions(c, 1.4f));
+        }
+        if (a.phase >= 2) b.getWorld().spawnParticle(a.phase == 3 ? Particle.FLAME : Particle.SMOKE_NORMAL, o.clone().add(0, b.getHeight() * 0.6, 0), 3 * a.phase, r * 0.5, 0.6, r * 0.5, 0.01);
+    }
+
+    /** 등장 연출: 주변(64칸) 플레이어에게 경고 제목 + 번개 · 충격파 */
+    private void intro(LivingEntity e, BossDefinition d) {
+        Location o = e.getLocation();
+        e.getWorld().strikeLightningEffect(o);
+        kr.rpgcraft.util.Fx.shockwave(plugin, o, 12, theme(d.id));
+        kr.rpgcraft.util.Vfx.beam(o.clone(), o.clone().add(0, 18, 0), 2.2, theme(d.id));
+        for (Player p : o.getWorld().getPlayers()) {
+            if (p.getLocation().distanceSquared(o) > 64 * 64) continue;
+            p.sendTitle(Text.c("&4&l⚠ 보스 출현 ⚠"), Text.c("&c&l" + d.name + " &7Lv." + d.level), 10, 50, 15);
+            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.8f, 0.6f);
+        }
+    }
+
+    /** 토벌 연출: 빛기둥 + 폭죽 같은 폭발 + 참가자에게 제목 */
+    private void victory(Active a) {
+        LivingEntity b = a.entity;
+        if (b == null) return;
+        Location o = b.getLocation();
+        Color c = theme(a.def.id);
+        for (int k = 0; k < 4; k++) {
+            int kk = k;
+            later(k * 6L, () -> {
+                kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1.5 + kk, 0), 3 + kk, kk % 2 == 0 ? c : Color.fromRGB(0xFFD23F));
+                o.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, o.clone().add(0, 2 + kk, 0), 40, 1.2, 1.2, 1.2, 0.15);
+                o.getWorld().playSound(o, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.5f, 0.8f + kk * 0.1f);
+            });
+        }
+        kr.rpgcraft.util.Vfx.beam(o.clone(), o.clone().add(0, 25, 0), 1.6, Color.fromRGB(0xFFD23F));
+        for (Player p : a.bar.getPlayers()) {
+            p.sendTitle(Text.c("&6&l토벌 성공!"), Text.c("&e" + a.def.name + " &7처치"), 5, 50, 15);
+            p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+        }
+    }
+
     private void ring(Location c, double r, Particle p) {
         for (int i = 0; i < 24; i++) {
             double ang = Math.PI * 2 * i / 24;
@@ -556,7 +650,10 @@ public class BossManager {
     public void onBossDeath(LivingEntity e, MobManager.MobState s, EntityDeathEvent ev) {
         ev.getDrops().clear();
         Active a = active.remove(e.getUniqueId());
-        if (a != null) a.bar.removeAll();
+        if (a != null) {
+            victory(a);
+            a.bar.removeAll();
+        }
         BossDefinition d = defs.get(s.bossId);
         if (d == null) return;
         if (ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("bosses.chest-chance", 0.3)) {

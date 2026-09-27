@@ -110,6 +110,16 @@ public final class HudFont {
         return sb.toString();
     }
 
+    /**
+     * 파티 HUD 에 쓸 이름. 파티 HUD 글꼴(rpgcraft:party0~4)은 화면 위쪽으로 올려 그리느라 영문·숫자 글리프만 있어서
+     * /이름변경 으로 바꾼 한글 닉네임은 네모(□)로 깨지고 체력 바 위치도 어긋났다 → 그릴 수 없는 글자가 있으면 계정 이름(항상 영문)으로.
+     */
+    public static String hudName(String display, String account) {
+        if (display == null || display.isEmpty()) return account;
+        for (char ch : display.toCharArray()) if (ch < 0x20 || ch >= 0x7F) return account;
+        return display;
+    }
+
     /** 파티 HUD 한 줄 */
     public record PartyRow(String name, int level, double hp, double xp, boolean leader, boolean self, int dist) {}
 

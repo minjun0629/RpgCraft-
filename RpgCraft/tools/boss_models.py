@@ -13,7 +13,9 @@ from PIL import Image
 BOSS_ORDER = ["witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper", "bungbung", "desert_nightmare", "siphonia", "kain",
               "frost_queen", "volcano_giant", "void_apostle", "thunder_god", "primordial_dragon", "vengeful_spirit", "balrog",
               "megalodon", "kraken",
-              "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon"]
+              "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon",
+              "pet_slime", "pet_chick", "pet_bunny", "pet_fox", "pet_penguin", "pet_owl", "pet_golem", "pet_fairy", "pet_ghost",
+              "pet_phoenix", "pet_dragon", "pet_star"]
 BOSS_IDS = {"witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper", "bungbung", "desert_nightmare", "siphonia", "kain",
             "frost_queen", "volcano_giant", "void_apostle", "thunder_god", "primordial_dragon", "vengeful_spirit", "balrog", "kraken"}
 THEME = {"witch": "9cff4a", "elf_queen": "5affa0", "dwarf_king": "3f7fff", "harpy_queen": "6bd8ff", "sea_gatekeeper": "7fe8ff", "bungbung": "ff7a1f",
@@ -886,12 +888,204 @@ def kraken(m):
               rot=("y", 45, (8 + dx * 21, 7, 8 + dz * 21)))                             # 치켜든 끝
 
 
+# ---------------------------------------------------------------- 펫 (어깨 옆을 따라다니는 작은 동물, 앞 = +z)
+def _eyes(m, y, z, col="1a1a1a", gap=1.6, size=1.0, shine=True):
+    m.box(8 - gap - size, y, z, 8 - gap, y + size * 1.2, z + 0.3, col)
+    m.box(8 + gap, y, z, 8 + gap + size, y + size * 1.2, z + 0.3, col)
+    if shine:
+        m.box(8 - gap - size + 0.2, y + size * 0.7, z + 0.25, 8 - gap - size + 0.6, y + size * 1.1, z + 0.4, "ffffff")
+        m.box(8 + gap + 0.2, y + size * 0.7, z + 0.25, 8 + gap + 0.6, y + size * 1.1, z + 0.4, "ffffff")
+
+
+def pet_slime(m):
+    m.box(3, 0, 3, 13, 9, 13, "6fdc5a")                                   # 반투명 느낌 겉
+    m.box(4.5, 1.5, 4.5, 11.5, 7.5, 11.5, "4fb83e")                       # 속
+    m.box(3.4, 8.6, 3.4, 12.6, 9.4, 12.6, "a8f59a")                       # 윗면 하이라이트
+    _eyes(m, 4.6, 13, gap=1.4, size=1.4)
+    m.box(7, 3.2, 13, 9, 3.8, 13.3, "2a5a22")                             # 입
+    m.box(4.2, 3.6, 13, 5.4, 4.2, 13.2, "ff9aa8")                         # 볼
+    m.box(10.6, 3.6, 13, 11.8, 4.2, 13.2, "ff9aa8")
+
+
+def pet_chick(m):
+    m.box(4.5, 1.5, 4.5, 11.5, 8, 11.5, "ffe04a")                         # 몸
+    m.box(5.5, 7.5, 6, 10.5, 11.5, 11, "ffe86a")                          # 머리
+    m.box(7.2, 9, 11, 8.8, 10.2, 12.6, "ff9a2a")                          # 부리
+    _eyes(m, 10, 11, gap=1.2, size=0.8)
+    m.box(7.4, 11.5, 7.5, 8.6, 13, 8.5, "ffd02a")                         # 머리털
+    m.sym(3.6, 3.5, 6, 4.5, 6.5, 10, "f5c830")                            # 날개
+    m.sym(6.4, 0, 7.4, 7.2, 1.5, 8.2, "ff9a2a")                           # 다리
+    m.sym(6, 0, 7.4, 7.6, 0.3, 9.4, "ff9a2a")
+
+
+def pet_bunny(m):
+    m.box(4.5, 0, 4, 11.5, 6.5, 11, "f4f0ea")                             # 몸
+    m.box(5, 5.5, 8, 11, 10.5, 13, "ffffff")                              # 머리
+    m.sym(5.6, 10.5, 9.6, 6.9, 16, 10.8, "ffffff", rot=("x", -22.5, (6.2, 10.5, 10.2)))   # 귀
+    m.sym(5.9, 11, 10.3, 6.6, 15.2, 10.9, "ffb0c0", rot=("x", -22.5, (6.2, 10.5, 10.2)))
+    _eyes(m, 8, 13, col="c0304a", gap=1.2, size=0.8)
+    m.box(7.5, 7, 13, 8.5, 7.7, 13.4, "ff8aa0")                           # 코
+    m.box(6.8, 2, 2.6, 9.2, 4.4, 4, "ffffff")                             # 꼬리
+    m.sym(5, 0, 10.4, 6.6, 1, 12, "e8e0d6")                               # 앞발
+
+
+def pet_fox(m):
+    m.box(5, 2.5, 3.5, 11, 7.5, 11.5, "ff7a2a")                           # 몸
+    m.box(5.4, 2.4, 8, 10.6, 5, 11.4, "fff0e0")                           # 가슴
+    m.box(4.8, 6, 10, 11.2, 11, 14.5, "ff7a2a")                           # 머리
+    m.box(6.3, 6, 14.5, 9.7, 8.2, 16.5, "fff0e0")                         # 주둥이
+    m.box(7.4, 7.6, 16.4, 8.6, 8.5, 16.8, "1a1a1a")                       # 코
+    _eyes(m, 9, 14.5, col="2a1a0a", gap=1.4, size=0.8)
+    m.sym(5, 11, 11.2, 6.8, 13.4, 12.6, "ff7a2a")                         # 귀
+    m.sym(5.4, 11, 11.8, 6.4, 12.6, 12.4, "2a1a0a")
+    m.box(6.4, 4, -3, 9.6, 7.4, 3.6, "ff7a2a", rot=("x", 22.5, (8, 6, 3.5)))    # 꼬리
+    m.box(6.4, 4.3, -5, 9.6, 7.2, -2.5, "ffd23f", rot=("x", 22.5, (8, 6, 3.5)))  # 불꽃 꼬리 끝
+    for zz in (4, 9):
+        m.sym(5.4, 0, zz, 6.8, 2.6, zz + 1.4, "5a2a10")
+
+
+def pet_penguin(m):
+    m.box(4.5, 0.8, 5, 11.5, 11, 11, "1e2430")                            # 몸
+    m.box(5.3, 1, 10.6, 10.7, 9.4, 11.4, "f4f6fa")                        # 배
+    m.box(5, 10.5, 5.5, 11, 15, 10.8, "1e2430")                           # 머리
+    m.box(6, 11, 10.6, 10, 13.6, 11.1, "f4f6fa")                          # 얼굴
+    _eyes(m, 12.4, 11.1, gap=1.0, size=0.7)
+    m.box(7.2, 11.4, 11.1, 8.8, 12.2, 12.8, "ffa62a")                     # 부리
+    m.sym(3.6, 3, 6.5, 4.5, 9, 9.5, "1e2430", rot=("z", 22.5, (4, 9, 8)))   # 날개
+    m.sym(5.6, 0, 8.6, 7.6, 0.8, 11.6, "ffa62a")                          # 발
+    m.box(5, 13.2, 8.8, 11, 13.8, 9.6, "3fb0ff")                          # 목도리
+    m.box(9.8, 8.5, 9.4, 11.2, 13.8, 10.2, "3fb0ff")
+
+
+def pet_owl(m):
+    m.box(4.5, 1, 5, 11.5, 10, 11, "8a6a4a")                              # 몸
+    m.box(5.5, 1.5, 10.6, 10.5, 8, 11.3, "d8c0a0")                        # 가슴
+    m.box(4.5, 9.5, 5, 11.5, 15, 11.5, "8a6a4a")                          # 머리
+    m.box(5, 10.5, 11.2, 11, 14, 11.8, "e8d8c0")                          # 얼굴 판
+    m.box(5.5, 11.4, 11.7, 7.6, 13.5, 12.1, "ffd23f")                     # 큰 눈
+    m.box(8.4, 11.4, 11.7, 10.5, 13.5, 12.1, "ffd23f")
+    m.box(6.2, 12, 12, 7, 13, 12.3, "1a1a1a")
+    m.box(9.1, 12, 12, 9.9, 13, 12.3, "1a1a1a")
+    m.box(7.5, 10.6, 11.8, 8.5, 11.6, 12.8, "c08a2a")                     # 부리
+    m.sym(4.6, 15, 6, 5.8, 17, 7.4, "6a4a2a")                             # 귀깃
+    m.sym(3.6, 2.5, 5.5, 4.6, 9.5, 10.5, "6a4a2a")                        # 날개
+    m.box(5.2, 15, 5.4, 10.8, 15.6, 11, "3a2a6a")                         # 학자 모자
+    m.box(4.4, 15.6, 4.6, 11.6, 16.2, 11.8, "3a2a6a")
+    m.box(10.8, 13.8, 8, 11.2, 16, 8.4, "ffd23f")                         # 모자 술
+
+
+def pet_golem(m):
+    STONE, MOSS, RUNE = "8a8a94", "5a8a3a", "5ad8ff"
+    m.box(4, 3.5, 5, 12, 11, 11, STONE)                                   # 몸통
+    m.box(5.5, 11, 6, 10.5, 15, 10.5, STONE)                              # 머리
+    m.box(6, 12.5, 10.5, 10, 13.5, 10.8, RUNE)                            # 눈 띠
+    m.box(7.2, 5.5, 10.9, 8.8, 9, 11.3, RUNE)                             # 가슴 룬
+    m.box(6.2, 7, 10.9, 9.8, 7.6, 11.3, RUNE)
+    m.sym(1.5, 3, 6.5, 4, 11, 9.5, STONE)                                 # 팔
+    m.sym(1.3, 2, 6.3, 4.2, 4, 9.7, "6a6a74")                             # 주먹
+    m.sym(5, 0, 6.5, 7.5, 3.5, 9.5, "6a6a74")                             # 다리
+    m.box(4, 10.6, 5, 9, 11.4, 9, MOSS)                                   # 이끼
+    m.box(10.5, 14.6, 7, 11, 15.4, 9, MOSS)
+    m.box(5.5, 15, 7.5, 7, 16, 8.5, "ff6ab0")                             # 작은 꽃
+
+
+def pet_fairy(m):
+    SKIN, DRESS, WING = "ffe0c8", "5affa0", "c8fff0"
+    m.box(6.5, 2, 6.5, 9.5, 7, 9.5, DRESS)                                # 드레스
+    m.box(5.8, 1.5, 5.8, 10.2, 3.5, 10.2, "3ad880")
+    m.box(6, 7, 6, 10, 11, 10, SKIN)                                      # 머리
+    m.box(5.6, 9.5, 5.6, 10.4, 12, 9.4, "ffd23f")                         # 머리카락
+    _eyes(m, 8.4, 10, col="2a6a4a", gap=0.6, size=0.7, shine=False)
+    for sg in (-1, 1):                                                    # 날개 4장
+        x0, x1 = (1.5, 7.5) if sg < 0 else (8.5, 14.5)
+        rz = 22.5 if sg < 0 else -22.5
+        m.box(x0, 6, 6.2, x1, 11.5, 6.6, WING, rot=("z", rz, (8, 8, 6.4)))
+        m.box(x0 + 1, 2.5, 6.2, x1 - 1, 6.5, 6.6, "a8f0ff", rot=("z", -rz, (8, 6, 6.4)))
+    m.box(9.8, 3, 8, 10.4, 9, 8.6, "c8a060")                              # 지팡이
+    m.box(9.4, 9, 7.6, 10.8, 10.4, 9, "fff3b0")
+
+
+def pet_ghost(m):
+    BODY = "e8eeff"
+    m.box(4.5, 3.5, 5, 11.5, 13, 11.5, BODY)                              # 몸
+    m.box(5.2, 12.8, 5.7, 10.8, 14.2, 10.8, BODY)                         # 둥근 머리
+    for k, x in enumerate((4.5, 6.3, 8.1, 9.9)):                          # 물결 치맛자락
+        m.box(x, 1 + (k % 2) * 1.2, 5, x + 1.6, 3.6, 11.5, BODY)
+    m.box(5.5, 9, 11.5, 7.3, 11.4, 11.8, "2a2a3a")                        # 눈
+    m.box(8.7, 9, 11.5, 10.5, 11.4, 11.8, "2a2a3a")
+    m.box(7, 6.6, 11.5, 9, 8.2, 11.8, "5a2a4a")                           # 입
+    m.box(7.4, 6.6, 11.6, 8.6, 7.2, 11.9, "ff7aa0")                       # 혀
+    m.sym(3.2, 7, 7, 4.5, 9, 9.5, BODY, rot=("z", -22.5, (4.5, 8, 8)))    # 팔
+    m.box(3.8, 13.8, 7, 12.2, 14.4, 9.6, "c060ff")                        # 떠 있는 보랏빛 고리
+    m.box(4.5, 14.4, 6.2, 11.5, 14.6, 10.4, "a040e0")
+
+
+def pet_phoenix(m):
+    RED, ORA, YEL, GOLD = "ff3a1a", "ff7a1f", "ffd23f", "fff3b0"
+    m.box(5.5, 3, 5, 10.5, 8, 11, RED)                                    # 몸
+    m.box(6, 7.5, 8.5, 10, 11.5, 12.5, RED)                               # 머리
+    m.box(7.2, 9, 12.5, 8.8, 10, 14.2, GOLD)                              # 부리
+    _eyes(m, 10, 12.5, col="1a0a0a", gap=1.0, size=0.7)
+    for k in range(3):                                                    # 불꽃 볏
+        m.box(7.4, 11.5 + k * 0.4, 9 + k * 1.2, 8.6, 13.5 + k * 0.9, 10 + k * 1.2, YEL if k % 2 else ORA)
+    for sg in (-1, 1):                                                    # 펼친 불꽃 날개
+        x0, x1 = (-2, 5.5) if sg < 0 else (10.5, 18)
+        rz = -22.5 if sg < 0 else 22.5
+        m.box(x0, 7, 5.5, x1, 8, 10, RED, rot=("z", rz, (8, 7.5, 8)))
+        m.box(x0, 7.2, 4.5, x1, 7.8, 6, ORA, rot=("z", rz, (8, 7.5, 8)))
+        m.box(x0, 7.3, 3.5, x1 - 2 * sg, 7.7, 4.5, YEL, rot=("z", rz, (8, 7.5, 8)))
+    for k, (dx, c) in enumerate(((-1.5, ORA), (0, YEL), (1.5, ORA))):     # 긴 꼬리깃
+        m.box(7.4 + dx, 2 - k * 0.3, -4, 8.6 + dx, 3.2 - k * 0.3, 5, c, rot=("x", -22.5, (8, 3, 5)))
+    m.sym(6.4, 0.5, 7.5, 7.2, 3, 8.3, GOLD)
+
+
+def pet_dragon(m):
+    B, BELLY, HORN, WING = "3a1a5a", "c9a13b", "fff3b0", "7a3aa0"
+    m.box(5, 3, 4, 11, 8.5, 11, B)                                        # 몸
+    m.box(5.8, 3, 9, 10.2, 7, 11.4, BELLY)
+    m.box(5.2, 7.5, 9, 10.8, 12, 14, B)                                   # 큰 머리
+    m.box(6.2, 7.5, 14, 9.8, 9.8, 16.2, "4a2260")                         # 주둥이
+    m.box(6.6, 8.8, 16, 7.4, 9.4, 16.3, "1a0a24")
+    m.box(8.6, 8.8, 16, 9.4, 9.4, 16.3, "1a0a24")
+    _eyes(m, 10, 14, col="ff3030", gap=1.3, size=0.9)
+    m.sym(5.8, 12, 10, 6.8, 14.4, 11, HORN, rot=("x", -22.5, (6.3, 12, 10.5)))   # 뿔
+    for sg in (-1, 1):                                                    # 작은 날개
+        x0, x1 = (0.5, 5) if sg < 0 else (11, 15.5)
+        rz = -45 if sg < 0 else 45
+        m.box(x0, 8, 5, x1, 8.6, 9, WING, rot=("z", rz, (8, 8.3, 7)))
+    m.box(7, 4, -2.5, 9, 6, 4, B, rot=("x", 22.5, (8, 5, 4)))              # 꼬리
+    m.box(7.3, 4.5, -4.5, 8.7, 6.8, -2.5, HORN, rot=("x", 22.5, (8, 5, 4)))
+    for k in range(3):
+        m.box(7.6, 8.5, 5 + k * 2, 8.4, 9.6, 6 + k * 2, HORN)               # 등 가시
+    for zz in (4.5, 8.5):
+        m.sym(5.2, 0, zz, 6.8, 3, zz + 1.6, B)
+
+
+def pet_star(m):
+    import math as _m
+    CORE, GLOW, TIP = "fff3b0", "ffd23f", "7fe8ff"
+    m.box(5.5, 4.5, 5.5, 10.5, 9.5, 10.5, CORE)                           # 빛나는 핵
+    m.box(6.5, 3.5, 6.5, 9.5, 10.5, 9.5, GLOW)
+    m.box(4.5, 5.5, 6.5, 11.5, 8.5, 9.5, GLOW)
+    _eyes(m, 7, 10.5, col="3a2a6a", gap=0.9, size=0.8, shine=False)
+    for k in range(5):                                                    # 별 모양 다섯 갈래
+        a = k * 2 * _m.pi / 5 + _m.pi / 2
+        x, y = 8 + _m.cos(a) * 5.5, 7 + _m.sin(a) * 5.5
+        m.box(x - 1, y - 1, 7, x + 1, y + 1, 9, TIP, rot=("z", 45, (x, y, 8)))
+    for k in range(6):                                                    # 둘레를 도는 작은 별
+        a = k * _m.pi / 3
+        x, z = 8 + _m.cos(a) * 7, 8 + _m.sin(a) * 7
+        m.box(x - 0.5, 12.5 + (k % 2), z - 0.5, x + 0.5, 13.5 + (k % 2), z + 0.5, GLOW if k % 2 else "ffffff")
+
+
 BUILDERS = {"witch": witch, "elf_queen": elf_queen, "dwarf_king": dwarf_king, "harpy_queen": harpy_queen,
             "sea_gatekeeper": sea_gatekeeper, "bungbung": bungbung, "desert_nightmare": desert_nightmare,
             "siphonia": siphonia, "kain": kain, "frost_queen": frost_queen, "volcano_giant": volcano_giant,
             "void_apostle": void_apostle, "thunder_god": thunder_god, "primordial_dragon": primordial_dragon, "vengeful_spirit": vengeful_spirit, "balrog": balrog,
             "megalodon": megalodon, "kraken": kraken, "mount_wolf": mount_wolf, "mount_lizard": mount_lizard, "mount_warhorse": mount_warhorse,
-            "mount_icebear": mount_icebear, "mount_lion": mount_lion, "mount_panther": mount_panther, "mount_griffin": mount_griffin, "mount_dragon": mount_dragon}
+            "mount_icebear": mount_icebear, "mount_lion": mount_lion, "mount_panther": mount_panther, "mount_griffin": mount_griffin, "mount_dragon": mount_dragon,
+            "pet_slime": pet_slime, "pet_chick": pet_chick, "pet_bunny": pet_bunny, "pet_fox": pet_fox, "pet_penguin": pet_penguin, "pet_owl": pet_owl,
+            "pet_golem": pet_golem, "pet_fairy": pet_fairy, "pet_ghost": pet_ghost, "pet_phoenix": pet_phoenix, "pet_dragon": pet_dragon, "pet_star": pet_star}
 
 
 def write(pack_dir, ns, write_json):

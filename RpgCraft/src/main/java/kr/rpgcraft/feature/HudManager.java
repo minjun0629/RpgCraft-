@@ -127,7 +127,7 @@ public class HudManager implements Listener {
             PlayerData md = plugin.data().get(m);
             double need = Math.max(1, plugin.levels().need(md.level));
             int dist = m.getWorld().equals(p.getWorld()) ? (int) m.getLocation().distance(p.getLocation()) : -1;
-            rows.add(new kr.rpgcraft.pack.HudFont.PartyRow(Text.strip(m.getDisplayName()), md.level, md.hp / Math.max(1, md.stats.maxHp), md.exp / need,
+            rows.add(new kr.rpgcraft.pack.HudFont.PartyRow(kr.rpgcraft.pack.HudFont.hudName(Text.strip(m.getDisplayName()), m.getName()), md.level, md.hp / Math.max(1, md.stats.maxHp), md.exp / need,
                     party.leader.equals(m.getUniqueId()), m.equals(p), dist));
         }
         return kr.rpgcraft.pack.HudFont.party(rows, plugin.getConfig().getInt("party.hud-x", 320));

@@ -41,6 +41,7 @@ public final class ItemLore {
     public static void apply(ItemStack it) {
         ItemTemplate t = ItemData.template(it);
         if (t == null) return;
+        resyncTranscend(it, t);
         ItemMeta m = it.getItemMeta();
         Grade g = ItemData.grade(it);
         String custom = m.getPersistentDataContainer().get(Keys.NAME, PersistentDataType.STRING);
@@ -176,6 +177,17 @@ public final class ItemLore {
     }
 
     /** 강화 단계에 따른 모델 교체. 대장장이 /외형 으로 바꾼 모델은 건드리지 않는다. */
+    /** 초월 장비는 밸런스 패치(너프)를 이미 가진 장비에도 적용: 기본 스탯 · 세트 효과를 현재 정의로 맞춤 (강화 · 잠재 · 한계 돌파는 유지) */
+    private static void resyncTranscend(ItemStack it, ItemTemplate t) {
+        if (!t.id.startsWith("trans_") || !t.category.isEquipment()) return;
+        String want = t.stats.serialize();
+        if (!want.equals(ItemData.getString(it, Keys.STATS))) ItemData.setString(it, Keys.STATS, want);
+        if (t.setBonus != null) {
+            String sb = t.setBonus.serialize();
+            if (!sb.equals(ItemData.getString(it, Keys.SET_BONUS))) ItemData.setString(it, Keys.SET_BONUS, sb);
+        }
+    }
+
     private static void applyModel(ItemMeta m, ItemTemplate t, int e) {
         if (t.category != Category.WEAPON || !t.enhanceable || t.modelData <= 0) return;
         Integer cur = m.hasCustomModelData() ? m.getCustomModelData() : null;

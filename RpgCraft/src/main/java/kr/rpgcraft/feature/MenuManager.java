@@ -837,7 +837,7 @@ public class MenuManager implements Listener {
             set(10, Gui.button(Material.KNOWLEDGE_BOOK, "&e&l조작키", "&fF &7- 포션가방 포션 사용", "&f쉬프트 + F &7- 메인 메뉴",
                     "&f쉬프트 + Q &7- 퀵 액티브 스킬 (스킬 메뉴에서 우클릭으로 지정)", "&f우클릭 &7- 사신수 무기 스킬 / 기운 결정 개봉"));
             set(11, Gui.button(Material.NETHER_STAR, "&e&l레벨과 스탯", "&7레벨업마다 스탯 5, 체력 200", "&c힘 &72포인트당 공격력 +3",
-                    "&a민첩 &71포인트당 크리티컬 +0.1%", "&b모험 &71포인트당 체력 +40", "&7장비는 요구 스탯을 채워야 효과 발동"));
+                    "&a민첩 &71포인트당 크리티컬 +" + plugin.getConfig().getDouble("player.dex-crit-per-point", 0.12) + "%", "&b모험 &71포인트당 체력 +40", "&7장비는 요구 스탯을 채워야 효과 발동"));
             set(12, Gui.button(Material.IRON_SWORD, "&e&l전투", "&7크리티컬: 대미지 2배 + 방어 무시", "&7무기마다 공격 속도가 다름 (단검 빠름, 도끼 느림)",
                     "&7너무 빨리 때리면 대미지 감소", "&7검은 크리티컬 -20%, 방패는 방어력 제공"));
             set(13, Gui.button(Material.ANVIL, "&e&l강화", "&7+8 부터 실패 시 파괴 가능", "&7파괴 방지권: 파괴 1회 방지", "&7강화 확률 10% 증가권: 성공률 +10%",

@@ -453,8 +453,11 @@ public class ItemRegistry {
     private void registerTranscend() {
         String[] tn = {"여명", "황혼", "성운", "공허", "태초"};
         int[] lv = {120, 160, 200, 250, 300};
-        double[] atk = {3800, 5000, 6400, 7800, 9500};   // 신화 유물(Lv.95, 3600)보다 위
-        long[] price = {3_000_000, 8_000_000, 20_000_000, 45_000_000, 90_000_000};
+        // v5.1.0 대폭 너프: 공격력 약 60% 감소 (이전 3800~9500), 부가 옵션 · 방어구 체력 · 세트 효과 절반 이하
+        double[] atk = {1500, 1950, 2500, 3050, 3700};
+        // 가격 5배 인상 (이전 300만~9000만). 판매가는 이전 수준 유지 (이전 구매가의 1/5)
+        long[] price = {15_000_000, 40_000_000, 100_000_000, 225_000_000, 450_000_000};
+        long[] sell = {600_000, 1_600_000, 4_000_000, 9_000_000, 18_000_000};
         Grade[] gr = {Grade.UNIQUE, Grade.UNIQUE, Grade.LEGEND, Grade.LEGEND, Grade.MYTHIC};
         String[] parts = {"투구", "갑주", "각반", "군화"};
         ArmorSlot[] slots = ArmorSlot.values();
@@ -463,17 +466,17 @@ public class ItemRegistry {
             int L = lv[t], req = (int) (L * 3.2);
             String pre = "초월 · " + tn[t] + "의 ";
             reg(new ItemTemplate("trans_sword_" + (t + 1), pre + "대검", Material.NETHERITE_SWORD, Category.WEAPON).weapon(WeaponClass.SWORD).grade(gr[t])
-                    .stats(StatMap.of(ATK, atk[t], CRIT, -10, ARMOR_PEN, 10 + t * 4, REQ_STR, req, LEVEL_REQ, L)).price(price[t], price[t] / 5).model(1101 + t).glow());
+                    .stats(StatMap.of(ATK, atk[t], CRIT, -10, ARMOR_PEN, 4 + t * 2, REQ_STR, req, LEVEL_REQ, L)).price(price[t], sell[t]).model(1101 + t).glow());
             reg(new ItemTemplate("trans_dagger_" + (t + 1), pre + "단검", Material.SHEARS, Category.WEAPON).weapon(WeaponClass.DAGGER).grade(gr[t])
-                    .stats(StatMap.of(ATK, atk[t] * 0.6, CRIT, 10 + t * 2, CRIT_DMG, 20 + t * 8, REQ_DEX, req, LEVEL_REQ, L)).price(price[t], price[t] / 5).model(1101 + t).glow());
+                    .stats(StatMap.of(ATK, atk[t] * 0.6, CRIT, 4 + t, CRIT_DMG, 8 + t * 3, REQ_DEX, req, LEVEL_REQ, L)).price(price[t], sell[t]).model(1101 + t).glow());
             reg(new ItemTemplate("trans_axe_" + (t + 1), pre + "전투 도끼", Material.NETHERITE_AXE, Category.WEAPON).weapon(WeaponClass.AXE).grade(gr[t])
-                    .stats(StatMap.of(ATK, atk[t] * 1.3, ARMOR_PEN, 15 + t * 5, REQ_STR, req * 0.7, REQ_DEX, req * 0.7, LEVEL_REQ, L)).price(price[t], price[t] / 5).model(1101 + t).glow());
+                    .stats(StatMap.of(ATK, atk[t] * 1.3, ARMOR_PEN, 6 + t * 2, REQ_STR, req * 0.7, REQ_DEX, req * 0.7, LEVEL_REQ, L)).price(price[t], sell[t]).model(1101 + t).glow());
             reg(new ItemTemplate("trans_shield_" + (t + 1), pre + "방패", Material.SHIELD, Category.WEAPON).weapon(WeaponClass.SHIELD).grade(gr[t])
-                    .stats(StatMap.of(ATK, atk[t] * 0.5, DEF, 6 + t * 2, HP, 800 + t * 500, REQ_ADV, req, LEVEL_REQ, L)).price(price[t], price[t] / 5).model(1101 + t).glow());
+                    .stats(StatMap.of(ATK, atk[t] * 0.5, DEF, 3 + t, HP, 300 + t * 200, REQ_ADV, req, LEVEL_REQ, L)).price(price[t], sell[t]).model(1101 + t).glow());
             for (int s = 0; s < 4; s++) {
                 reg(new ItemTemplate("trans_armor_" + (t + 1) + "_" + s, pre + parts[s], am[s], Category.ARMOR).slot(slots[s]).grade(gr[t])
-                        .stats(StatMap.of(DEF, 4 + t * 2, HP, 4000 + t * 3000, REQ_ADV, req, LEVEL_REQ, L)).set("trans_" + (t + 1), 4, StatMap.of(HP_PCT, 8 + t * 3, DEF, 4 + t))
-                        .price(price[t] / 2, price[t] / 10).model(1200 + t * 4 + s).trim(new String[]{"sentry", "rib", "silence", "eye", "spire"}[t], new String[]{"quartz", "amethyst", "gold", "diamond", "netherite"}[t]));
+                        .stats(StatMap.of(DEF, 2 + t, HP, 1500 + t * 1100, REQ_ADV, req, LEVEL_REQ, L)).set("trans_" + (t + 1), 4, StatMap.of(HP_PCT, 3 + t, DEF, 2 + t * 0.5))
+                        .price(price[t] / 2, sell[t] / 2).model(1200 + t * 4 + s).trim(new String[]{"sentry", "rib", "silence", "eye", "spire"}[t], new String[]{"quartz", "amethyst", "gold", "diamond", "netherite"}[t]));
             }
         }
         // 렉스의 명작 (상점 판매 없음, 렉스에게 제작)

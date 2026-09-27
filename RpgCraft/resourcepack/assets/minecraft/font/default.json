@@ -222,6 +222,15 @@
       ]
     },
     {
+      "type": "bitmap",
+      "file": "rpgcraft:font/boss_frame.png",
+      "ascent": 1,
+      "height": 11,
+      "chars": [
+        ""
+      ]
+    },
+    {
       "type": "reference",
       "id": "minecraft:include/space"
     },

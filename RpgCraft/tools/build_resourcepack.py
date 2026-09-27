@@ -499,6 +499,7 @@ def main():
     # 로고 · 레벨 배지
     extra, logo_img = ui_pack.default_font_extra(PACK, art.weapon_image("relic_sword", 2))
     providers.extend(extra)
+    providers.append(ui_pack.boss_frame_provider(PACK))   # 보스바 장식 틀
     # 바닐라 기본 폰트 참조 (다른 팩과 합쳐지지 않는 환경에서도 글자가 깨지지 않도록)
     for ref in ("minecraft:include/space", "minecraft:include/default", "minecraft:include/unifont"):
         providers.append({"type": "reference", "id": ref})
@@ -526,15 +527,9 @@ def main():
     ui_pack.write_modern_hud_sprites(PACK)
     # 1.20.1 사이드바 오른쪽 빨간 점수 숫자 숨김 (화면 가장 오른쪽 끝의 빨간 GUI 글자만)
     ui_pack.write_score_shader(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "rendertype_text.vsh"))
-    bars = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "bars.png")).convert("RGBA")
-    for y in range(60, 70):
-        for x in range(bars.width):
-            bars.putpixel((x, y), (0, 0, 0, 0))
-    bars.save(os.path.join(PACK, "assets", "minecraft", "textures", "gui", "bars.png"))
-    wb = os.path.join(PACK, "assets", "minecraft", "textures", "gui", "sprites", "boss_bar")
-    os.makedirs(wb, exist_ok=True)
-    for n in ("white_background", "white_progress"):
-        Image.new("RGBA", (182, 5), (0, 0, 0, 0)).save(os.path.join(wb, n + ".png"))
+    # 보스 체력바 디자인 (1.20.1 bars.png + 1.20.2+ 스프라이트). WHITE 는 나침반 문구용 투명 바
+    ui_pack.write_boss_bars(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "bars.png"))
+    ui_pack.boss_bar_preview(os.path.join(ROOT, "dist", "bossbar-preview.png"))
     # 1.21.4+ 클라이언트: 새 아이템 정의 형식(items/*.json)으로 커스텀 모델 연결
     ui_pack.write_item_definitions(PACK, overrides, write_json)
 

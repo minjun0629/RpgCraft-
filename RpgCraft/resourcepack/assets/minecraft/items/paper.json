@@ -283,6 +283,90 @@
           "type": "minecraft:model",
           "model": "rpgcraft:boss/mount_dragon"
         }
+      },
+      {
+        "threshold": 9026,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_slime"
+        }
+      },
+      {
+        "threshold": 9027,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_chick"
+        }
+      },
+      {
+        "threshold": 9028,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_bunny"
+        }
+      },
+      {
+        "threshold": 9029,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_fox"
+        }
+      },
+      {
+        "threshold": 9030,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_penguin"
+        }
+      },
+      {
+        "threshold": 9031,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_owl"
+        }
+      },
+      {
+        "threshold": 9032,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_golem"
+        }
+      },
+      {
+        "threshold": 9033,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_fairy"
+        }
+      },
+      {
+        "threshold": 9034,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_ghost"
+        }
+      },
+      {
+        "threshold": 9035,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_phoenix"
+        }
+      },
+      {
+        "threshold": 9036,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_dragon"
+        }
+      },
+      {
+        "threshold": 9037,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_star"
+        }
       }
     ],
     "fallback": {

@@ -29,7 +29,8 @@ import java.util.*;
 public class BossModelManager implements Listener {
     public static final List<String> ORDER = List.of("witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper",
             "bungbung", "desert_nightmare", "siphonia", "kain", "frost_queen", "volcano_giant", "void_apostle", "thunder_god", "primordial_dragon", "vengeful_spirit", "balrog",
-            "megalodon", "kraken", "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon");
+            "megalodon", "kraken", "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon",
+            "pet_slime", "pet_chick", "pet_bunny", "pet_fox", "pet_penguin", "pet_owl", "pet_golem", "pet_fairy", "pet_ghost", "pet_phoenix", "pet_dragon", "pet_star");
     private static final Map<String, Float> SCALE = new HashMap<>();
 
     static {

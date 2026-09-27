@@ -264,7 +264,18 @@ public class PetManager implements Listener, CommandExecutor {
             if (d == null || !d.isValid() || !d.getWorld().equals(p.getWorld()) || d.getLocation().distanceSquared(want) > 64) {
                 if (d != null) d.remove();
                 d = spawn(p, pet, want);
-            } else d.teleport(want);
+            } else {
+                // 렉 줄이기 (v5.4.29): 주인이 움직이거나 돌았을 때만 순간이동, 둥실거림은 0.5초마다 부드럽게 보간
+                Location cl = d.getLocation();
+                if (cl.distanceSquared(want) > 0.0004 || Math.abs(cl.getYaw() - want.getYaw()) > 0.5) d.teleport(want);
+                if (tick % 10 == 0 && d instanceof ItemDisplay idp) {
+                    float sc = (float) plugin.getConfig().getDouble("pets.scale", 0.6);
+                    float bob = (float) (Math.sin((tick + 10 + p.getEntityId() * 7) / 9.0) * 0.12);
+                    idp.setInterpolationDelay(0);
+                    idp.setInterpolationDuration(10);
+                    idp.setTransformation(new Transformation(new Vector3f(0, bob, 0), new AxisAngle4f((float) Math.PI, 0, 1, 0), new Vector3f(sc), new AxisAngle4f()));
+                }
+            }
             if (pet.grade >= 2 && tick % 8 == 0)
                 p.getWorld().spawnParticle(Particle.REDSTONE, want.clone().add(0, 0.1, 0), 2, 0.15, 0.1, 0.15, 0, new Particle.DustOptions(TRAIL[pet.grade], 0.8f));
             if (pet == Pet.PHOENIX && tick % 6 == 0) p.getWorld().spawnParticle(Particle.FLAME, want, 1, 0.1, 0.05, 0.1, 0.005);
@@ -277,8 +288,7 @@ public class PetManager implements Listener, CommandExecutor {
         double yaw = Math.toRadians(l.getYaw());
         double side = 0.85, back = -0.45;
         double x = -Math.cos(yaw) * side - Math.sin(yaw) * back, z = -Math.sin(yaw) * side + Math.cos(yaw) * back;   // 오른쪽 · 뒤
-        double bob = Math.sin((tick + p.getEntityId() * 7) / 9.0) * 0.12;
-        Location out = l.clone().add(x, 1.25 + bob, z);
+        Location out = l.clone().add(x, 1.25, z);   // 둥실거림은 모델 변형(보간)으로 (v5.4.29)
         out.setPitch(0);
         return out;
     }

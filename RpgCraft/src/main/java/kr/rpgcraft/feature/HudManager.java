@@ -176,10 +176,11 @@ public class HudManager implements Listener {
         Guild g = plugin.guilds().of(p.getUniqueId());
         String footer = Text.c("\n&f접속 &a" + Bukkit.getOnlinePlayers().size() + "명 &8| &f전투력 &e"
                 + Text.num(Power.of(s)) + (g == null ? "" : " &8| &b" + g.name) + "\n&8쉬프트+F 메뉴 · F 포션 · 쉬프트+Q 퀵 스킬\n");
-        p.setPlayerListHeaderFooter(header, footer);
+        if (!header.equals(p.getPlayerListHeader()) || !footer.equals(p.getPlayerListFooter())) p.setPlayerListHeaderFooter(header, footer);
         String badge = plugin.pack().overlay() ? kr.rpgcraft.pack.HudFont.badge(d.level) + " " : Text.c("&7[" + d.level + "] ");
         String title = plugin.content() == null ? "" : plugin.content().title(d);
-        p.setPlayerListName(badge + Text.c((title.isEmpty() ? "" : "&d«" + title + "» ") + (g == null ? "&f" : "&b") + Text.name(p)));
+        String ln = badge + Text.c((title.isEmpty() ? "" : "&d«" + title + "» ") + (g == null ? "&f" : "&b") + Text.name(p));
+        if (!ln.equals(p.getPlayerListName())) p.setPlayerListName(ln);
     }
 
     /** 닉네임을 바꿨을 때 탭 목록 이름 바로 갱신 */
@@ -243,7 +244,8 @@ public class HudManager implements Listener {
         if (gl != null) lines.add(gl);
         for (int i = 0; i < LINES; i++) {
             Team t = sb.getTeam("l" + i);
-            if (t != null) t.setPrefix(Text.c(i < lines.size() ? lines.get(i) : ""));
+            String line = Text.c(i < lines.size() ? lines.get(i) : "");
+            if (t != null && !line.equals(t.getPrefix())) t.setPrefix(line);   // 렉 줄이기: 바뀐 줄만 전송 (v5.4.29)
         }
     }
 

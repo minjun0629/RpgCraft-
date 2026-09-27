@@ -50,6 +50,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
+        Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
         Text.msg(s, "&e/rpg관리 npc <상점ID> &7- 현재 위치에 상점 NPC (제거: 쉬프트+방벽 우클릭)");
@@ -720,6 +721,36 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private void ruin(CommandSender s, String[] a) {
         RuinManager rm = plugin.ruins();
         String sub = a.length > 1 ? a[1] : "list";
+        if (sub.equals("themes")) {
+            StringBuilder sb = new StringBuilder("&e유적 테마: ");
+            for (var t : StructureManager.RUIN_THEMES) sb.append("&f").append(t.key()).append("&7(").append(t.label()).append(") ");
+            Text.msg(s, sb.toString());
+            return;
+        }
+        if (sub.equals("build")) {   // /rpg관리 ruin build [테마|random] [here|random]
+            var theme = a.length > 2 && !a[2].equalsIgnoreCase("random") ? StructureManager.ruinTheme(a[2]) : null;
+            if (a.length > 2 && !a[2].equalsIgnoreCase("random") && theme == null) { Text.msg(s, "&c없는 테마입니다. &7/rpg관리 ruin themes"); return; }
+            boolean here = s instanceof Player && !(a.length > 3 && a[3].equalsIgnoreCase("random"));
+            if (here) {
+                Player p = (Player) s;
+                String res = plugin.structures().buildRuin(p.getLocation().getBlock().getLocation(), theme, null);
+                Text.msg(s, "&a유적 생성: " + res);
+            } else {
+                Object[] res = plugin.structures().buildRuinRandom(theme);
+                if (res == null) { Text.msg(s, "&c유적을 지을 땅을 찾지 못했습니다."); return; }
+                Location at = (Location) res[1];
+                Text.msg(s, "&a유적 생성: " + res[0] + " &7@ " + at.getBlockX() + ", " + at.getBlockY() + ", " + at.getBlockZ());
+            }
+            return;
+        }
+        if (sub.equals("tp")) {
+            if (!(s instanceof Player p) || a.length < 3) { Text.msg(s, "&c/rpg관리 ruin tp <id>"); return; }
+            RuinManager.Ruin r = rm.get(a[2]);
+            Location l = r == null ? null : rm.startOf(r);
+            if (l == null) { Text.msg(s, "&c없는 유적입니다."); return; }
+            p.teleport(l);
+            return;
+        }
         if (sub.equals("list")) {
             for (RuinManager.Ruin r : rm.all())
                 Text.msg(s, "&e" + r.id + " &f" + r.name + " &7모험 " + r.minAdv + " 시작 " + r.start + " 도착 " + r.end + " 보상패시브 " + r.passive + "/" + r.firstPassive);
@@ -787,8 +818,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 if (a.length == 3) plugin.wars().castles().forEach(ca -> out.add(ca.id));
             }
             case "ruin" -> {
-                if (a.length == 2) out.addAll(List.of("create", "start", "end", "adv", "limit", "passive", "first", "delete", "list"));
-                if (a.length == 3) plugin.ruins().all().forEach(r -> out.add(r.id));
+                if (a.length == 2) out.addAll(List.of("build", "themes", "tp", "create", "start", "end", "adv", "limit", "passive", "first", "delete", "list"));
+                if (a.length == 3 && a[1].equals("build")) { out.add("random"); StructureManager.RUIN_THEMES.forEach(t -> out.add(t.key())); }
+                else if (a.length == 3) plugin.ruins().all().forEach(r -> out.add(r.id));
+                if (a.length == 4 && a[1].equals("build")) out.addAll(List.of("here", "random"));
                 if (a.length == 4 && (a[1].equals("passive") || a[1].equals("first"))) for (Passive p : Passive.values()) out.add(p.name());
             }
             case "passive" -> {

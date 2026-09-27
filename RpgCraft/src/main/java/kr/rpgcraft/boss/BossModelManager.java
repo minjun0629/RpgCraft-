@@ -64,7 +64,7 @@ public class BossModelManager implements Listener {
     public BossModelManager(RpgCraft plugin) {
         this.plugin = plugin;
         Bukkit.getScheduler().runTaskTimer(plugin, this::follow, 1L, 1L);
-        Bukkit.getScheduler().runTaskTimer(plugin, this::scan, 20L, 20L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::scan, 20L, 100L);   // 렉 줄이기: 전체 엔티티 검사는 5초마다 (새 보스는 등장 때 바로 붙임, v5.4.29)
     }
 
     private boolean enabled() {
@@ -81,6 +81,11 @@ public class BossModelManager implements Listener {
                 attach(le, id);
             }
         }
+    }
+
+    /** 보스가 등장할 때 바로 모델을 붙임 */
+    public void ensure(LivingEntity le, String id) {
+        if (enabled() && id != null && !displays.containsKey(le.getUniqueId()) && ORDER.contains(id)) attach(le, id);
     }
 
     private Transformation tf(float scale, float bob, float yawRad) {

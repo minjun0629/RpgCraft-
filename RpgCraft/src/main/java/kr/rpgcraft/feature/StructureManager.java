@@ -294,32 +294,122 @@ public class StructureManager implements Listener {
         return Math.max(base, Math.min(plugin.getConfig().getInt("structures.max-adv", 250), v));
     }
 
+    // ------------------------------------------------------------------ 점프맵 유적 (v5.4.29: 테마 7종)
+    /** 유적 테마: 발판 재료 · 쉼터 · 벽(사다리 · 입구) · 받침 기둥 · 도착 바닥 · 불빛 · 코스 모양(0 기본 / 1 나선 탑 / 2 하늘 섬) */
+    public record RuinTheme(String key, String label, Material[] mats, Material rest, Material wall, Material pillar, Material floor, Material light, int layout) {}
+
+    public static final List<RuinTheme> RUIN_THEMES = List.of(
+            new RuinTheme("ancient", "고대", new Material[]{Material.STONE_BRICKS, Material.MOSSY_STONE_BRICKS, Material.CRACKED_STONE_BRICKS, Material.CHISELED_STONE_BRICKS},
+                    Material.POLISHED_ANDESITE, Material.STONE_BRICKS, Material.STONE_BRICK_WALL, Material.CHISELED_STONE_BRICKS, Material.LANTERN, 0),
+            new RuinTheme("glacier", "빙하", new Material[]{Material.PACKED_ICE, Material.BLUE_ICE, Material.SNOW_BLOCK, Material.PACKED_ICE},
+                    Material.SNOW_BLOCK, Material.PACKED_ICE, Material.DIORITE_WALL, Material.SNOW_BLOCK, Material.SEA_LANTERN, 0),
+            new RuinTheme("jungle", "정글", new Material[]{Material.JUNGLE_LOG, Material.JUNGLE_PLANKS, Material.MOSS_BLOCK, Material.MOSSY_COBBLESTONE},
+                    Material.JUNGLE_PLANKS, Material.JUNGLE_LOG, Material.MOSSY_COBBLESTONE_WALL, Material.MOSS_BLOCK, Material.LANTERN, 0),
+            new RuinTheme("abyss", "심연", new Material[]{Material.BLACKSTONE, Material.POLISHED_BLACKSTONE_BRICKS, Material.CRACKED_POLISHED_BLACKSTONE_BRICKS, Material.CRYING_OBSIDIAN},
+                    Material.POLISHED_BLACKSTONE, Material.POLISHED_BLACKSTONE_BRICKS, Material.BLACKSTONE_WALL, Material.GILDED_BLACKSTONE, Material.SOUL_LANTERN, 0),
+            new RuinTheme("desert", "사막", new Material[]{Material.SANDSTONE, Material.CUT_SANDSTONE, Material.SMOOTH_SANDSTONE, Material.CHISELED_SANDSTONE},
+                    Material.SMOOTH_SANDSTONE, Material.CUT_SANDSTONE, Material.SANDSTONE_WALL, Material.CHISELED_SANDSTONE, Material.LANTERN, 0),
+            new RuinTheme("spiral", "나선 탑", new Material[]{Material.DEEPSLATE_BRICKS, Material.DEEPSLATE_TILES, Material.POLISHED_DEEPSLATE, Material.CRACKED_DEEPSLATE_BRICKS},
+                    Material.POLISHED_DEEPSLATE, Material.DEEPSLATE_BRICKS, Material.DEEPSLATE_BRICK_WALL, Material.CHISELED_DEEPSLATE, Material.SEA_LANTERN, 1),
+            new RuinTheme("sky", "하늘 섬", new Material[]{Material.GRASS_BLOCK, Material.MOSS_BLOCK, Material.GRASS_BLOCK, Material.PODZOL},
+                    Material.MOSS_BLOCK, Material.OAK_LOG, Material.OAK_FENCE, Material.MOSS_BLOCK, Material.LANTERN, 2));
+
+    public static RuinTheme ruinTheme(String key) {
+        if (key == null) return null;
+        for (RuinTheme t : RUIN_THEMES) if (t.key().equalsIgnoreCase(key) || t.label().replace(" ", "").equals(key.replace(" ", ""))) return t;
+        return null;
+    }
+
+    /** 다음에 짓는 유적의 테마 (null 이면 무작위) */
+    private RuinTheme nextTheme;
+
+    /** 관리자: 테마를 정해 유적 짓기 */
+    public String buildRuin(Location at, RuinTheme theme, String id) {
+        nextTheme = theme;
+        try { return build("ruin", at, id, null); } finally { nextTheme = null; }
+    }
+
+    /** 스폰에서 300~1500칸 사이 무작위 땅에 유적을 짓고 [결과, 위치] 반환 (실패하면 null) */
+    public Object[] buildRuinRandom(RuinTheme theme) {
+        World w = Bukkit.getWorlds().get(0);
+        for (int i = 0; i < 15; i++) {
+            double a = rnd.nextDouble() * Math.PI * 2, d = 300 + rnd.nextDouble() * 1200;
+            Location l = w.getSpawnLocation().clone().add(Math.cos(a) * d, 0, Math.sin(a) * d);
+            Block top = kr.rpgcraft.util.Locs.surface(w, l);
+            if (top.isLiquid()) continue;
+            Location at = top.getLocation().add(0, 1, 0);
+            return new Object[]{buildRuin(at, theme, null), at};
+        }
+        return null;
+    }
+
+    private void themedBox(RuinTheme t, int x1, int y1, int z1, int x2, int y2, int z2, double missing) {
+        for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++)
+            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++)
+                for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
+                    if (y > Math.min(y1, y2) && rnd.nextDouble() < missing * (y - Math.min(y1, y2) + 1) / (Math.abs(y2 - y1) + 1)) continue;
+                    set(x, y, z, t.mats()[rnd.nextInt(t.mats().length)]);
+                }
+    }
+
     /**
      * 점프맵 유적: 누구나 평범한 점프로 오를 수 있는 코스만 만든다.
      *  - 발판은 전부 온 블록(반 블록 없음), 한 칸 올라갈 땐 가로 2칸 이내, 같은 높이는 3칸 이내
-     *  - 구간: 징검다리 → 사다리 벽 오르기 → 좁은 다리 → 계단, 12발판마다 쉼터(체크포인트)
+     *  - 코스 모양: 기본(징검다리 → 사다리 벽 → 좁은 다리 → 계단, 12발판마다 쉼터) · 나선 탑 · 하늘 섬
      *  - 이동 경로 위 3칸은 항상 비워 머리가 걸리지 않게
      */
     private String ruin(String id) {
+        RuinTheme t = nextTheme != null ? nextTheme : RUIN_THEMES.get(rnd.nextInt(RUIN_THEMES.size()));
         int adv = advByDistance(loc(0, 0, 0), 0);
         chestReqAdv = adv;
-        ruinBox(-3, 0, -3, 3, 3, -3, 0.4);
-        ruinBox(-3, 0, -3, -3, 3, 3, 0.4);
-        box(-2, -1, -2, 2, -1, 2, Material.CHISELED_STONE_BRICKS);
+        themedBox(t, -3, 0, -3, 3, 3, -3, 0.4);
+        themedBox(t, -3, 0, -3, -3, 3, 3, 0.4);
+        box(-2, -1, -2, 2, -1, 2, t.floor());
         clear(-2, 0, -2, 2, 4, 2);
         set(0, 0, 0, Material.GOLD_BLOCK); // 시작 발판
         int steps = plugin.getConfig().getInt("structures.ruin-steps", 48);
         int[] cur = {0, 0, 0};
-        Material[] mats = {Material.STONE_BRICKS, Material.MOSSY_STONE_BRICKS, Material.CRACKED_STONE_BRICKS, Material.CHISELED_STONE_BRICKS};
+        switch (t.layout()) {
+            case 1 -> ruinSpiral(t, cur, steps);
+            case 2 -> ruinSky(t, cur, steps);
+            default -> ruinClassic(t, cur, steps);
+        }
+        int x = cur[0], y = cur[1], z = cur[2] + 3;
+        clear(x - 3, y + 1, cur[2], x + 3, y + 5, z + 3);
+        box(x - 2, y, cur[2] + 1, x + 2, y, z + 2, t.floor());
+        set(x, y + 1, z, Material.DIAMOND_BLOCK); // 도착 발판
+        for (int[] c : new int[][]{{-2, -1}, {2, -1}, {-2, 2}, {2, 2}}) box(x + c[0], y + 1, z + c[1], x + c[0], y + 3, z + c[1], t.mats()[1]);
+        set(x - 2, y + 4, z - 1, t.light());
+        set(x + 2, y + 4, z + 2, t.light());
+        chest(x + 1, y + 1, z + 1, adv >= 100 ? 3 : 2);
+        var rm = plugin.ruins();
+        var r = rm.get(id);
+        if (r == null) r = rm.create(id, t.label() + " 유적 " + id.replaceAll("\\D", ""));
+        rm.setPoint(r, loc(0, 0, 0), true);
+        rm.setPoint(r, loc(x, y + 1, z), false);
+        r.minAdv = adv;
+        r.money = 50_000L + steps * 4_000L + adv * 800L;
+        rm.save();
+        String rn = r.name;
+        TextDisplay label = w.spawn(loc(0, 3, 0).add(0.5, 0, 0.5), TextDisplay.class, td -> {
+            td.setText(Text.c("&6&l" + rn + "\n&7필요 모험 &e" + adv + "\n&8금 블록을 밟으면 시작"));
+            td.setBillboard(Display.Billboard.CENTER);
+        });
+        return "유적 '" + id + "' [" + t.label() + "] (" + steps + "발판, 필요 모험 " + adv + ", 금 블록 = 시작, 다이아 블록 = 도착)";
+    }
+
+    /** 기본 코스: 징검다리 → 사다리 벽 오르기 → 좁은 다리 → 계단, 12발판마다 쉼터 */
+    private void ruinClassic(RuinTheme t, int[] cur, int steps) {
+        Material[] mats = t.mats();
         int[][] flat = {{0, 3}, {1, 2}, {-1, 2}, {2, 2}, {-2, 2}};
         int[][] up = {{0, 2}, {1, 2}, {-1, 2}, {1, 1}, {-1, 1}};
         int placed = 0;
         while (placed < steps) {
             int section = (placed / 6) % 4;
             if (placed > 0 && placed % 12 == 0) {                  // 쉼터
-                step(cur, 0, 3, 0, Material.POLISHED_ANDESITE);
-                box(cur[0] - 1, cur[1], cur[2] - 1, cur[0] + 1, cur[1], cur[2] + 1, Material.POLISHED_ANDESITE);
-                set(cur[0] + 1, cur[1] + 1, cur[2] + 1, Material.LANTERN);
+                step(cur, 0, 3, 0, t.rest());
+                box(cur[0] - 1, cur[1], cur[2] - 1, cur[0] + 1, cur[1], cur[2] + 1, t.rest());
+                set(cur[0] + 1, cur[1] + 1, cur[2] + 1, t.light());
                 placed++;
                 continue;
             }
@@ -327,8 +417,8 @@ public class StructureManager implements Listener {
                 int h = 5;
                 int zx = cur[0], zz = cur[2] + 2;
                 clear(zx - 1, cur[1] + 1, cur[2], zx + 1, cur[1] + h + 3, zz + 1);
-                box(zx, cur[1], zz, zx, cur[1] + h, zz, Material.STONE_BRICKS);
-                box(zx, cur[1], zz - 1, zx, cur[1], zz - 1, Material.STONE_BRICKS);   // 사다리 앞 발판
+                box(zx, cur[1], zz, zx, cur[1] + h, zz, t.wall());
+                box(zx, cur[1], zz - 1, zx, cur[1], zz - 1, t.wall());   // 사다리 앞 발판
                 for (int yy = cur[1] + 1; yy <= cur[1] + h; yy++) {
                     Block lb = w.getBlockAt(ox + zx, oy + yy, oz + zz - 1);
                     remember(lb);
@@ -347,29 +437,61 @@ public class StructureManager implements Listener {
             else if (rnd.nextInt(3) > 0) { mv = up[rnd.nextInt(up.length)]; dy = 1; }
             else { mv = flat[rnd.nextInt(flat.length)]; dy = 0; }
             step(cur, mv[0], mv[1], dy, mats[rnd.nextInt(mats.length)]);
-            if (section == 0 && placed % 4 == 0) for (int yy = cur[1] - 1; yy > cur[1] - 8; yy--) set(cur[0], yy, cur[2], Material.STONE_BRICK_WALL);
+            if (section == 0 && placed % 4 == 0) for (int yy = cur[1] - 1; yy > cur[1] - 8; yy--) set(cur[0], yy, cur[2], t.pillar());
             placed++;
         }
-        int x = cur[0], y = cur[1], z = cur[2] + 3;
-        clear(x - 3, y + 1, cur[2], x + 3, y + 5, z + 3);
-        box(x - 2, y, cur[2] + 1, x + 2, y, z + 2, Material.CHISELED_STONE_BRICKS);
-        set(x, y + 1, z, Material.DIAMOND_BLOCK); // 도착 발판
-        for (int[] c : new int[][]{{-2, -1}, {2, -1}, {-2, 2}, {2, 2}}) box(x + c[0], y + 1, z + c[1], x + c[0], y + 3, z + c[1], Material.MOSSY_STONE_BRICKS);
-        chest(x + 1, y + 1, z + 1, adv >= 100 ? 3 : 2);
-        var rm = plugin.ruins();
-        var r = rm.get(id);
-        if (r == null) r = rm.create(id, "고대 유적 " + id.replaceAll("\\D", ""));
-        rm.setPoint(r, loc(0, 0, 0), true);
-        rm.setPoint(r, loc(x, y + 1, z), false);
-        r.minAdv = adv;
-        r.money = 50_000L + steps * 4_000L + adv * 800L;
-        rm.save();
-        String rn = r.name;
-        TextDisplay label = w.spawn(loc(0, 3, 0).add(0.5, 0, 0.5), TextDisplay.class, t -> {
-            t.setText(Text.c("&6&l" + rn + "\n&7필요 모험 &e" + adv + "\n&8금 블록을 밟으면 시작"));
-            t.setBillboard(Display.Billboard.CENTER);
-        });
-        return "유적 '" + id + "' (" + steps + "발판, 필요 모험 " + adv + ", 금 블록 = 시작, 다이아 블록 = 도착)";
+    }
+
+    /** 나선 탑: 가운데 기둥을 반지름 4 로 돌며 한 칸씩 오름 (한 바퀴 12발판) */
+    private void ruinSpiral(RuinTheme t, int[] cur, int steps) {
+        int cx = 0, cz = 6;
+        int[][] ring = {{4, 0}, {3, 2}, {2, 3}, {0, 4}, {-2, 3}, {-3, 2}, {-4, 0}, {-3, -2}, {-2, -3}, {0, -4}, {2, -3}, {3, -2}};
+        box(cx - 1, 0, cz - 1, cx + 1, steps + 1, cz + 1, t.wall());          // 가운데 기둥
+        for (int y = 3; y <= steps; y += 6) set(cx + (y / 6 % 2 == 0 ? 1 : -1), y, cz, t.light() == Material.SOUL_LANTERN ? Material.SHROOMLIGHT : Material.SEA_LANTERN);
+        int idx = 9;   // (0,-4) → 시작 발판 (0,0,0) 에서 2칸 앞
+        for (int i = 0; i < steps; i++) {
+            if (i > 0) idx = (idx + 1) % ring.length;
+            int tx = cx + ring[idx][0], tz = cz + ring[idx][1];
+            step(cur, tx - cur[0], tz - cur[2], 1, t.mats()[rnd.nextInt(t.mats().length)]);
+            if (i % 12 == 11) set(cur[0] + Integer.signum(ring[idx][0]), cur[1] + 1, cur[2] + Integer.signum(ring[idx][1]), t.pillar());   // 바깥 난간 장식
+        }
+        // 꼭대기: 기둥 위 넓은 발판으로 한 칸 오르면 도착 구역
+        int top = cur[1] + 1;
+        clear(cx - 3, top + 1, cz - 3, cx + 3, top + 5, cz + 3);
+        box(cx - 2, top, cz - 2, cx + 2, top, cz + 2, t.rest());
+        cur[0] = cx;
+        cur[1] = top;
+        cur[2] = cz - 2;
+    }
+
+    /** 하늘 섬: 사다리로 10칸 올라간 뒤 떠 있는 3x3 섬들을 건너뜀 */
+    private void ruinSky(RuinTheme t, int[] cur, int steps) {
+        int h = 10, zz = 2;
+        clear(-1, 1, 0, 1, h + 3, zz + 1);
+        box(0, 0, zz, 0, h, zz, t.wall());
+        for (int yy = 1; yy <= h; yy++) {
+            Block lb = w.getBlockAt(ox, oy + yy, oz + zz - 1);
+            remember(lb);
+            lb.setType(Material.LADDER, false);
+            if (lb.getBlockData() instanceof Directional dl) { dl.setFacing(BlockFace.NORTH); lb.setBlockData(dl, false); }
+        }
+        cur[1] = h;
+        cur[2] = zz;
+        int islands = Math.max(6, steps / 3);
+        for (int i = 0; i < islands; i++) {
+            int dy = i > 0 && rnd.nextInt(3) == 0 ? 1 : 0;
+            int dx = i == 0 ? 0 : rnd.nextInt(5) - 2, dz = i == 0 ? 3 : dy == 1 ? 4 : 4 + rnd.nextInt(2);   // 섬 가장자리 사이 1~2칸 (오를 땐 1칸, 사다리 꼭대기에서 첫 섬은 1칸)
+            int nx = cur[0] + dx, ny = cur[1] + dy, nz = cur[2] + dz;
+            clear(Math.min(cur[0], nx) - 2, Math.min(cur[1], ny) + 1, cur[2], Math.max(cur[0], nx) + 2, Math.max(cur[1], ny) + 4, nz + 1);
+            box(nx - 1, ny, nz - 1, nx + 1, ny, nz + 1, t.mats()[rnd.nextInt(t.mats().length)]);
+            box(nx - 1, ny - 1, nz, nx + 1, ny - 1, nz, Material.DIRT);
+            box(nx, ny - 1, nz - 1, nx, ny - 2, nz + 1, Material.DIRT);
+            if (rnd.nextInt(3) == 0) set(nx + (rnd.nextBoolean() ? 1 : -1), ny + 1, nz + (rnd.nextBoolean() ? 1 : -1), rnd.nextBoolean() ? Material.POPPY : Material.DANDELION);
+            if (i % 5 == 4) set(nx, ny - 3, nz, t.light());
+            cur[0] = nx;
+            cur[1] = ny;
+            cur[2] = nz;
+        }
     }
 
     /** 발판 하나: 이전 발판과 새 발판 사이 머리 공간을 비우고 온 블록을 놓는다 */
@@ -1024,7 +1146,7 @@ public class StructureManager implements Listener {
             Location l = w.getSpawnLocation().clone().add(Math.cos(a) * d, 0, Math.sin(a) * d);
             Block top = kr.rpgcraft.util.Locs.surface(w, l);
             if (top.isLiquid()) continue;
-            String res = doBuild("ruin", null, null, top.getLocation().add(0, 1, 0));
+            String res = buildRuin(top.getLocation().add(0, 1, 0), null, null);
             plugin.getLogger().info("유적 자동 생성 @ " + top.getX() + ", " + top.getZ() + " (" + res + ")");
             return;
         }

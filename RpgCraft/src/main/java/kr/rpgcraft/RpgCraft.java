@@ -188,6 +188,7 @@ public final class RpgCraft extends JavaPlugin {
         getServer().getPluginManager().registerEvents(hiddenQuests, this);
         new kr.rpgcraft.world.BgmManager(this);
         command("guide", guide);
+        command("ruins", ruins);   // /유적 : 유적 위치 안내 (v5.4.29)
         casino = new kr.rpgcraft.world.CasinoManager(this);
         command("party", party);
         if (getCommand("party") != null) getCommand("party").setTabCompleter(party);
@@ -215,7 +216,7 @@ public final class RpgCraft extends JavaPlugin {
             hud.setup(p);
         }
         Bukkit.getScheduler().runTaskTimer(this, () -> {
-            data.saveAll();
+            data.saveAllAsync();   // 파일 쓰기는 비동기 (렉 줄이기, v5.4.29)
             guilds.save();
         }, 6000L, 6000L);
         getLogger().info("서버 버전: " + Bukkit.getBukkitVersion());
@@ -269,6 +270,7 @@ public final class RpgCraft extends JavaPlugin {
         if (Math.abs(getConfig().getDouble("spirit-summon.drop-chance", 0.0003) - 0.0008) < 1e-9) getConfig().set("spirit-summon.drop-chance", 0.0003);
         if (!getConfig().contains("spirit-summon.balrog-chance")) { getConfig().set("spirit-summon.balrog-chance", 0.00005); getConfig().set("spirit-summon.balrog-min-level", 120); }
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
+        if (Math.abs(getConfig().getDouble("weapon-skills.bolt-range", 14) - 18) < 1e-9) getConfig().set("weapon-skills.bolt-range", 14);   // 지팡이 평타 18 → 14칸 (v5.4.29)
         if (Math.abs(getConfig().getDouble("boss.exp-even-share", 0.75) - 0.5) < 1e-9) getConfig().set("boss.exp-even-share", 0.75);   // 보스 경험치 더 고르게 (v5.4.0)
         if (Math.abs(getConfig().getDouble("boss.exp-max-share", 0.4) - 0.5) < 1e-9) getConfig().set("boss.exp-max-share", 0.4);
         if (Math.abs(getConfig().getDouble("player.max-defense", 90) - 85) < 1e-9) getConfig().set("player.max-defense", 90);   // 방어력 상한 85 → 90% (v5.3.8)

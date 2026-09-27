@@ -101,6 +101,7 @@ public class BossManager {
         var kb = e.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
         if (kb != null) kb.setBaseValue(1.0);
         initState(e, d);
+        if (plugin.bossModels() != null) plugin.bossModels().ensure(e, id);
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + d.name + "&f(이)가 &e" + loc.getWorld().getName() + " "
                 + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "&f에 나타났습니다!"));
         for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.6f, 1f);

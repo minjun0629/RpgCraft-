@@ -26,7 +26,7 @@ import java.util.*;
  * 유적(점프맵/던전). 시작 블록을 밟으면 기록 시작, 도착 블록을 밟으면 클리어.
  * 모험 스탯 요구치, 회차당 1회 보상, 최초 클리어 패시브 보상을 지원한다.
  */
-public class RuinManager implements Listener {
+public class RuinManager implements Listener, org.bukkit.command.CommandExecutor {
     public static class Ruin {
         public String id, name, start, end, passive, firstPassive;
         public int minAdv, timeLimit;
@@ -206,6 +206,62 @@ public class RuinManager implements Listener {
             if (ps != null) plugin.passives().grant(p, ps, false);
         }
         Text.msg(p, "&a유적 보상: " + Text.money(r.money) + ", 경험치 " + Text.num(r.exp));
+    }
+
+    // ------------------------------------------------------------------ /유적 (v5.4.29): 위치 안내
+    public Location startOf(Ruin r) {
+        Location l = Locs.parse(r.start);
+        return l == null ? null : l.add(0.5, 1, 0.5);
+    }
+
+    private static String dir(double dx, double dz) {
+        String[] n = {"남", "남서", "서", "북서", "북", "북동", "동", "남동"};   // 마인크래프트: +z = 남
+        double deg = (Math.toDegrees(Math.atan2(-dx, dz)) + 360 + 22.5) % 360;
+        return n[(int) (deg / 45) % 8];
+    }
+
+    /** 가까운 순 유적 목록 */
+    private List<Ruin> sorted(Player p) {
+        List<Ruin> ls = new ArrayList<>();
+        for (Ruin r : ruins.values()) if (startOf(r) != null) ls.add(r);
+        ls.sort(Comparator.comparingDouble(r -> {
+            Location l = startOf(r);
+            return l.getWorld() == p.getWorld() ? l.distanceSquared(p.getLocation()) : Double.MAX_VALUE;
+        }));
+        return ls;
+    }
+
+    @Override
+    public boolean onCommand(org.bukkit.command.CommandSender s, org.bukkit.command.Command c, String label, String[] a) {
+        if (!(s instanceof Player p)) return true;
+        PlayerData d = plugin.data().get(p);
+        List<Ruin> ls = sorted(p);
+        if (ls.isEmpty()) { Text.msg(p, "&7아직 발견된 유적이 없습니다."); return true; }
+        int round = plugin.rounds().round();
+        if (a.length >= 1) {   // /유적 <번호> : 방향 안내 + 나침반
+            int i = Text.parseInt(a[0], 0) - 1;
+            Ruin r = i >= 0 && i < ls.size() ? ls.get(i) : get(a[0]);
+            if (r == null) { Text.msg(p, "&c/유적 <번호> &7(번호는 /유적 목록)"); return true; }
+            Location l = startOf(r);
+            if (l.getWorld() != p.getWorld()) { Text.msg(p, "&e" + r.name + "&7은(는) 다른 월드(" + l.getWorld().getName() + ")에 있습니다."); return true; }
+            p.setCompassTarget(l);
+            double dx = l.getX() - p.getLocation().getX(), dz = l.getZ() - p.getLocation().getZ();
+            Text.msg(p, "&6" + r.name + " &f→ &e" + dir(dx, dz) + "쪽 " + (int) Math.hypot(dx, dz) + "칸 &7(좌표 " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")");
+            Text.msg(p, "&7나침반이 이 유적을 가리킵니다. 필요 모험 &e" + r.minAdv + (d.stats.adv < r.minAdv ? " &c(현재 " + (int) d.stats.adv + " — 부족)" : " &a(입장 가능)"));
+            return true;
+        }
+        Text.msg(p, "&6&l유적 목록 &7(가까운 순 · /유적 <번호> 로 방향 안내)");
+        for (int i = 0; i < ls.size() && i < 15; i++) {
+            Ruin r = ls.get(i);
+            Location l = startOf(r);
+            String where = l.getWorld() == p.getWorld()
+                    ? (int) Math.hypot(l.getX() - p.getLocation().getX(), l.getZ() - p.getLocation().getZ()) + "칸 " + dir(l.getX() - p.getLocation().getX(), l.getZ() - p.getLocation().getZ()) + "쪽"
+                    : l.getWorld().getName();
+            boolean done = d.roundCounter("ruin_" + r.id, round) >= 1;
+            p.sendMessage(Text.c(" &e" + (i + 1) + ". &f" + r.name + " &7모험 " + (d.stats.adv >= r.minAdv ? "&a" : "&c") + r.minAdv
+                    + " &7· " + where + " &8(" + l.getBlockX() + ", " + l.getBlockZ() + ")" + (done ? " &a[이번 회차 클리어]" : "")));
+        }
+        return true;
     }
 
     private void timeoutTick() {

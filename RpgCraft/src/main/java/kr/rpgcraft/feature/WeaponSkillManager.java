@@ -386,6 +386,8 @@ public class WeaponSkillManager implements Listener {
         Location start = p.getEyeLocation().add(p.getEyeLocation().getDirection().multiply(0.8)).add(0, -0.2, 0);
         Vector step = p.getEyeLocation().getDirection().normalize().multiply(1.3);
         double dmg = (d.stats.magic + d.stats.attack * 0.3) * plugin.getConfig().getDouble("weapon-skills.bolt-damage", 0.9);
+        // 날아가는 거리 (v5.4.25: 약 23칸 → 18칸)
+        int maxSteps = Math.max(1, (int) Math.round(plugin.getConfig().getDouble("weapon-skills.bolt-range", 18) / 1.3));
         World w = p.getWorld();
         w.playSound(p.getLocation(), Sound.ENTITY_EVOKER_CAST_SPELL, 0.6f, 1.8f);
         Vfx.burst(start, 0.9, c);
@@ -395,7 +397,7 @@ public class WeaponSkillManager implements Listener {
 
             @Override
             public void run() {
-                if (!p.isOnline() || ++n > 18) { cancel(); return; }
+                if (!p.isOnline() || ++n > maxSteps) { cancel(); return; }
                 pos.add(step);
                 if (n % 2 == 0) Vfx.burst(pos, 0.7, c);
                 w.spawnParticle(Particle.END_ROD, pos, 1, 0, 0, 0, 0);

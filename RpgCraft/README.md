@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.4.25
+- **지팡이 평타 사거리 조금 줄임**: 좌클릭 마법탄이 날아가는 거리 약 23칸 → **18칸**. `config.yml` 의 `weapon-skills.bolt-range` 로 바꿀 수 있습니다. (지팡이 스킬 사거리는 그대로)
+
 ## v5.4.24
 - **보스가 끝없이 쫓아오던 문제 수정**
   - 보스는 등장한 위치를 기억합니다. 등장 위치에서 **28칸** 넘게 끌려가면 연기와 함께 제자리로 돌아갑니다.

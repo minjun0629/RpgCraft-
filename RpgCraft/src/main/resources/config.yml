@@ -393,7 +393,7 @@ guild-raid:                # 길드 토벌전 (/길드 토벌전)
   enabled: true
   min-members: 2           # 시작할 때 길드장 근처(40칸)에 있어야 하는 길드원 수
   time-limit-minutes: 15   # 제한 시간
-  cooldown-hours: 12       # 길드마다 재도전 대기 시간
+  cooldown-hours: 24       # 길드마다 재도전 대기 시간
 
 field-bosses:              # 필드 보스 (bosses.yml 의 field: true) - 접속자 근처 야외에 주기적으로 등장
   enabled: true

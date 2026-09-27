@@ -267,6 +267,7 @@ public final class RpgCraft extends JavaPlugin {
         if (Math.abs(getConfig().getDouble("spirit-summon.drop-chance", 0.0003) - 0.0008) < 1e-9) getConfig().set("spirit-summon.drop-chance", 0.0003);
         if (!getConfig().contains("spirit-summon.balrog-chance")) { getConfig().set("spirit-summon.balrog-chance", 0.00005); getConfig().set("spirit-summon.balrog-min-level", 120); }
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
+        if (Math.abs(getConfig().getDouble("guild-raid.cooldown-hours", 24) - 12) < 1e-9) getConfig().set("guild-raid.cooldown-hours", 24);   // 토벌전 쿨타임 12 → 24시간 (v5.3.3)
         String[][] v47 = {{"player.dex-crit-per-point", "0.2", "0.07"}, {"player.adv-hp-per-point", "140", "70"}, {"player.adv-def-per-point", "0.08", "0.05"},
                 {"player.dex-critdmg-per-point", "0.8", "0.6"}, {"player.str-atk-per-2", "6", "5"}, {"player.hp-per-level", "60", "25"},
                 {"world-boss.interval-minutes", "120", "0"}, {"world-boss.stay-minutes", "60", "30"}, {"enhance.max-normal", "15", "30"}, {"enhance.max-legend", "15", "30"},

@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 길드 토벌전 (v5.3.2)
  * 길드장이 /길드 토벌전 <1~5> 로 길드 금고에서 참가비를 내고 시작 → 길드장 근처에 그 단계의 토벌 보스 등장.
  * 그 길드원만 때릴 수 있고, 제한 시간(15분) 안에 잡으면 길드 금고 · 참가자에게 보상, 클리어 기록(최단 시간) 저장.
- * 실패하면 보스는 사라지고 참가비는 돌아오지 않는다. 길드마다 재도전 대기 시간이 있다.
+ * 실패하면 보스는 사라지고 참가비는 돌아오지 않는다. 길드마다 24시간에 한 번.
  */
 public class GuildRaidManager implements Listener {
     /** 단계: 목표 보스 레벨 · 체력 배율 · 참가비 · 길드 금고 보상 · 참가자 1인 보상 · 참가자 아이템 · 필요 길드 레벨 */
@@ -74,7 +74,7 @@ public class GuildRaidManager implements Listener {
     }
 
     private long cooldownMs() {
-        return (long) (plugin.getConfig().getDouble("guild-raid.cooldown-hours", 12) * 3_600_000L);
+        return (long) (plugin.getConfig().getDouble("guild-raid.cooldown-hours", 24) * 3_600_000L);
     }
 
     private long timeLimitMs() {

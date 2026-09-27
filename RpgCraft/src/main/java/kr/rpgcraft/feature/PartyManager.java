@@ -70,6 +70,7 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
      * 돈은 처치자에게. 낮/밤 배율 · 레전더리 「미다스의 손」 포함.
      */
     public void giveKillReward(Player killer, kr.rpgcraft.mob.MobManager.MobState st, double exp, long money) {
+        plugin.jobs().onKill(killer);   // 약탈자: 처치 후 5초 피해 증가
         double timeMult = plugin.cycle() == null ? 1 : plugin.cycle().rewardMult();
         exp *= timeMult;
         money = (long) (money * timeMult * (plugin.legendary() == null ? 1 : plugin.legendary().moneyMult(killer)));

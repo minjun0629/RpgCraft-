@@ -267,8 +267,13 @@ public class ShopManager implements Listener {
             for (int i = 0; i < 45 && from + i < s.entries.size(); i++) {
                 Entry en = s.entries.get(from + i);
                 ItemStack icon = plugin.items().create(en.id(), 1);
-                ItemMeta m = icon.getItemMeta();
                 var tpl = plugin.items().get(en.id());
+                boolean randomOpt = tpl != null && tpl.category == kr.rpgcraft.item.Category.RUNE;   // 룬 · 장신구: 옵션이 구매할 때 정해지므로 미리보기에서 가림
+                if (randomOpt) {
+                    ItemData.setString(icon, kr.rpgcraft.Keys.RUNE, "");
+                    ItemData.refresh(icon);
+                }
+                ItemMeta m = icon.getItemMeta();
                 boolean equip = tpl != null && (tpl.category.isEquipment() || tpl.category == kr.rpgcraft.item.Category.BOW)
                         && !plugin.getConfig().getStringList("shops.show-stats").contains(s.id);   // 지정한 상점은 능력치 전부 표시
                 List<String> lore = equip ? new ArrayList<>() : m.hasLore() ? new ArrayList<>(m.getLore()) : new ArrayList<>();   // 장비는 능력치 숨김
@@ -279,6 +284,10 @@ public class ShopManager implements Listener {
                     if (bs.get(kr.rpgcraft.stat.Stat.REQ_DEX) > 0) req.add("민첩 " + (int) bs.get(kr.rpgcraft.stat.Stat.REQ_DEX));
                     if (bs.get(kr.rpgcraft.stat.Stat.REQ_ADV) > 0) req.add("모험 " + (int) bs.get(kr.rpgcraft.stat.Stat.REQ_ADV));
                     lore.add(Text.c(req.isEmpty() ? "&7요구 스탯 없음" : "&c요구: &f" + String.join(" &7· &f", req)));
+                }
+                if (randomOpt) {
+                    int lines = tpl.id.startsWith("acc_") && tpl.tier >= 3 ? 4 : 3;
+                    lore.add(Text.c("&d✦ 효과: &f무작위 " + lines + "줄 &7(구매할 때 정해짐)"));
                 }
                 lore.add("");
                 long bp = buyPrice(s, en);

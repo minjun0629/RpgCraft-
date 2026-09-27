@@ -113,7 +113,11 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 p.playSound(p.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
                 Text.msg(p, "&a쿠폰 보상을 받았습니다!");
             }
-            case "rebirth" -> rebirth(p, a.length > 0 && a[0].equals("확인"));
+            case "rebirth" -> {
+                if (a.length > 0 && (a[0].equals("상점") || a[0].equals("shop"))) plugin.rebirthShop().open(p);
+                else rebirth(p, a.length > 0 && a[0].equals("확인"));
+            }
+            case "rebirthshop" -> plugin.rebirthShop().open(p);
             case "potential" -> plugin.potentials().open(p);
             case "bounty" -> plugin.content().tellBounty(p);
             case "dummy" -> plugin.dummies().spawn(p);
@@ -339,7 +343,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         int max = plugin.levels().maxLevel(d), n = (int) d.counter("rebirth"), cap = c.getInt("rebirth.max", 5);
         if (d.level < max) { Text.msg(p, "&c레벨 " + max + " 필요 &7(환생 " + n + "/" + cap + ")"); return; }
         if (n >= cap) { Text.msg(p, "&c더 이상 환생할 수 없습니다."); return; }
-        if (!confirm) { Text.msg(p, "&e/환생 확인 &7— 레벨만 1로 초기화 (직업 · 히든 직업 · 스탯 · 장비 · 돈 등 나머지는 모두 유지)"); return; }
+        if (!confirm) { Text.msg(p, "&d환생 상점: &e/환생 상점 &7(환생 포인트로 영구 강화)"); Text.msg(p, "&e/환생 확인 &7— 레벨만 1로 초기화 (직업 · 히든 직업 · 스탯 · 장비 · 돈 등 나머지는 모두 유지)"); return; }
         String job = d.job, sub = d.subJob, third = d.thirdJob;   // 직업은 환생해도 그대로 (1·2·3차 · 히든 직업 모두)
         boolean smith = d.blacksmith;
         d.counters.put("rebirth", n + 1.0);
@@ -349,6 +353,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         d.subJob = sub;
         d.thirdJob = third;
         d.blacksmith = smith;
+        plugin.rebirthShop().onRebirth(p);   // 환생 포인트
         plugin.stats().refresh(p);
         p.sendTitle(Text.c("&d&l✦ 환생 " + (n + 1) + " ✦"), Text.c("&f최대 레벨 " + plugin.levels().maxLevel(d) + " &7· 직업 " + plugin.jobs().title(d) + " 유지"), 10, 70, 20);
         p.playSound(p.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.6f);

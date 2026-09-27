@@ -91,6 +91,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.boss.FieldBossManager fieldBosses;
     private kr.rpgcraft.feature.DismantleManager dismantle;
     private kr.rpgcraft.guild.GuildRaidManager guildRaids;
+    private kr.rpgcraft.feature.RebirthShop rebirthShop;
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
@@ -176,6 +177,7 @@ public final class RpgCraft extends JavaPlugin {
         fieldBosses = new kr.rpgcraft.boss.FieldBossManager(this);
         dismantle = new kr.rpgcraft.feature.DismantleManager(this);
         guildRaids = new kr.rpgcraft.guild.GuildRaidManager(this);
+        rebirthShop = new kr.rpgcraft.feature.RebirthShop(this);
         command("pet", pets);
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
@@ -195,7 +197,7 @@ public final class RpgCraft extends JavaPlugin {
         playerCommands = pc;
         getServer().getPluginManager().registerEvents(pc, this);
         for (String c : new String[]{"stat", "info", "money", "pay", "check", "potionbag", "rune", "skill", "enhance", "job",
-                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle"}) command(c, pc);
+                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
         command("guild", new GuildCommand(this));
         command("war", new WarCommand(this));
         AdminCommand adminCmd = new AdminCommand(this);
@@ -417,6 +419,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.boss.FieldBossManager fieldBosses() { return fieldBosses; }
     public kr.rpgcraft.feature.DismantleManager dismantle() { return dismantle; }
     public kr.rpgcraft.guild.GuildRaidManager guildRaids() { return guildRaids; }
+    public kr.rpgcraft.feature.RebirthShop rebirthShop() { return rebirthShop; }
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }

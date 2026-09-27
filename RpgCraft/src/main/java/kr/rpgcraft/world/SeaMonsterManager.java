@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 바다의 괴물: 바다에서 헤엄치는 플레이어 근처에 아주 드물게 등장
  *  · 메갈로돈 (Lv.50 보스급)       — 20초마다 0.4% (헤엄치는 동안)
  *  · 거대한 크라켄 (Lv.150 월드보스급) — 20초마다 0.05%, 전체 공지 · 나침반 ☠
- *  · 바다에서 낚시에 성공할 때도 아주 낮은 확률 (v5.4.32): 메갈로돈 0.3% · 크라켄 0.05% (쿨타임 공유)
+ *  · 낚시에 성공할 때도 아주 낮은 확률 (v5.4.32, v5.4.33 부터 바다가 아니어도): 메갈로돈 0.3% · 크라켄 0.05% (쿨타임 공유)
  */
 public class SeaMonsterManager {
     private final RpgCraft plugin;
@@ -41,10 +41,10 @@ public class SeaMonsterManager {
         return p.getLocation().clone().add(0, -3, 0);
     }
 
-    /** 낚시 성공 때: 바다(찌 위치)에서 아주 낮은 확률로 메갈로돈 / 크라켄 */
+    /** 낚시 성공 때: 찌 위치에서 아주 낮은 확률로 메갈로돈 / 크라켄 */
     public void onFishCatch(Player p, Location hook) {
         if (hook == null || hook.getWorld() == null || hook.getWorld().getEnvironment() != World.Environment.NORMAL) return;
-        if (!hook.getBlock().getBiome().name().contains("OCEAN") || plugin.bosses().nearSpawn(hook)) return;
+        if (plugin.bosses().nearSpawn(hook)) return;   // v5.4.33: 바다뿐 아니라 어디서 낚시하든 (스폰 300칸 안 제외)
         long now = System.currentTimeMillis();
         ThreadLocalRandom r = ThreadLocalRandom.current();
         var c = plugin.getConfig();

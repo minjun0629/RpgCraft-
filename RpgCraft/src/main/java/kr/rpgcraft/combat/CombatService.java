@@ -306,6 +306,7 @@ public class CombatService {
         if (victim.isDead() || !victim.isValid()) return;
         if (victim instanceof Player vp && (vp.getGameMode() == GameMode.CREATIVE || vp.getGameMode() == GameMode.SPECTATOR)) return;
         indicator(victim, amount, crit);
+        if (attacker != null && victim instanceof Player vp2 && !vp2.equals(attacker)) markPvp(attacker, vp2);
         boolean lethal = plugin.health().damage(victim, amount, attacker);
         if (lethal) kill(victim, source);
         else {
@@ -362,12 +363,34 @@ public class CombatService {
         if (ga != null && ga == gv && !plugin.getConfig().getBoolean("combat.guild-friendly-fire", false)) return false;
         if (ga != null && gv != null && plugin.wars().isAtWar(ga.name, gv.name)) return true;
         if (!plugin.getConfig().getBoolean("combat.pvp", true)) return false;
+        if (!kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(attacker))) {
+            Text.actionBar(attacker, "&cPvP 가 꺼져 있습니다. &7(메뉴 → 설정)");
+            return false;
+        }
+        if (!kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(vp))) {
+            Text.actionBar(attacker, "&c" + Text.name(vp) + " 님은 PvP 를 꺼 두었습니다.");
+            return false;
+        }
         int prot = plugin.getConfig().getInt("combat.newbie-protection-level", 10);
         if (plugin.data().get(vp).level < prot || plugin.data().get(attacker).level < prot) {
             Text.actionBar(attacker, "&cLv." + prot + " 미만은 PvP 보호 중입니다.");
             return false;
         }
         return true;
+    }
+
+    /** 최근 PvP 시각 (PvP 끄기 제한용) */
+    private final java.util.Map<java.util.UUID, Long> lastPvp = new java.util.HashMap<>();
+
+    public void markPvp(Player a, Player v) {
+        long now = System.currentTimeMillis();
+        lastPvp.put(a.getUniqueId(), now);
+        lastPvp.put(v.getUniqueId(), now);
+    }
+
+    /** 최근 15초 안에 PvP 로 때리거나 맞았는지 */
+    public boolean inPvp(Player p) {
+        return System.currentTimeMillis() - lastPvp.getOrDefault(p.getUniqueId(), 0L) < 15_000;
     }
 
     /** 범위 스킬 대상 판정 */
@@ -391,6 +414,7 @@ public class CombatService {
         if (ga != null && gv != null && plugin.wars().isAtWar(ga.name, gv.name)) return true;
         int prot = plugin.getConfig().getInt("combat.newbie-protection-level", 10);
         return plugin.getConfig().getBoolean("combat.pvp", true)
+                && kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(a)) && kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(v))
                 && plugin.data().get(v).level >= prot && plugin.data().get(a).level >= prot;
     }
 

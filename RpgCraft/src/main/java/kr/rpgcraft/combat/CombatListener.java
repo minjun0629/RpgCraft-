@@ -192,6 +192,7 @@ public class CombatListener implements Listener {
 
     private void finish(EntityDamageEvent e, LivingEntity victim, double amount, Player attacker, Entity source, boolean crit) {
         if (amount > 0) plugin.combat().indicator(victim, amount, crit);
+        if (attacker != null && victim instanceof Player vp && !vp.equals(attacker)) plugin.combat().markPvp(attacker, vp);
         boolean lethal = amount > 0 && plugin.health().damage(victim, amount, attacker);
         if (lethal) {
             e.setDamage(victim.getHealth() + 100000);

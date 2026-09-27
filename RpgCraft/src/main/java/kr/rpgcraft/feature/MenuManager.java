@@ -918,11 +918,15 @@ public class MenuManager implements Listener {
         SettingsGui(Player p) {
             super(3, "&8설정", "settings");
             PlayerData d = plugin.data().get(p);
-            int slot = 10;
+            int slot = Setting.values().length > 8 ? 9 : 10;   // 9개면 한 줄 꽉 채움 (18 은 뒤로가기)
             for (Setting s : Setting.values()) {
                 boolean on = s.get(d);
                 set(slot, icon(on ? s.icon : Material.GRAY_DYE, (on ? "&a&l" : "&7&l") + s.label + (on ? " ON" : " OFF"),
                         List.of("&7" + s.desc, "", "&e▶ 클릭하여 전환")), e -> {
+                    if (s == Setting.PVP && s.get(d) && plugin.combat().inPvp(p)) {   // 싸우다가 끄고 도망가기 방지
+                        Text.actionBar(p, "&cPvP 전투 중에는 끌 수 없습니다. &7(15초 뒤 다시)");
+                        return;
+                    }
                     boolean now = s.toggle(d);
                     plugin.data().save(d);   // 나갔다 와도 유지
                     if (s == Setting.SIDEBAR) plugin.hud().applySidebar(p);

@@ -936,6 +936,22 @@ public class BossManager {
         List<Map.Entry<UUID, Double>> ranking = new ArrayList<>(s.contrib.entrySet());
         ranking.sort((x, y) -> Double.compare(y.getValue(), x.getValue()));
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + d.name + "&f이(가) 토벌되었습니다!"));
+        // 경험치 분배 (v5.3.9): 한 명이 독식하지 않도록 절반은 참가자끼리 똑같이, 절반은 기여도대로 + 1인 상한
+        var cfg = plugin.getConfig();
+        double expMin = cfg.getDouble("boss.exp-min-contribution", 0.02), even = cfg.getDouble("boss.exp-even-share", 0.5), cap = cfg.getDouble("boss.exp-max-share", 0.5);
+        Map<UUID, Double> expShare = new HashMap<>();
+        double eligTotal = 0;
+        for (Map.Entry<UUID, Double> en : ranking)
+            if (total > 0 && en.getValue() / total >= expMin && Bukkit.getPlayer(en.getKey()) != null) { expShare.put(en.getKey(), en.getValue()); eligTotal += en.getValue(); }
+        int parts = expShare.size();
+        for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
+            double w = even / parts + (1 - even) * (eligTotal <= 0 ? 0 : en.getValue() / eligTotal);
+            en.setValue(parts >= 2 ? Math.min(cap, w) : w);
+        }
+        for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
+            Player p = Bukkit.getPlayer(en.getKey());
+            if (p != null) plugin.levels().addExp(p, bossExp(d) * en.getValue());
+        }
         int rank = 0;
         for (Map.Entry<UUID, Double> en : ranking) {
             Player p = Bukkit.getPlayer(en.getKey());
@@ -946,8 +962,7 @@ public class BossManager {
             }
             rank++;
             if (p == null || share < minShare) continue;
-            double mult = Math.max(0.1, share);
-            plugin.levels().addExp(p, bossExp(d) * mult);
+            double mult = Math.max(0.1, share);   // 돈 · 재료는 기여도대로 (경험치는 위에서 따로 분배)
             plugin.economy().give(p, (long) (d.money * mult * plugin.getConfig().getDouble("economy.boss-money-mult", 0.35)));
             // 재료 등은 바로 지급, 장비는 「보스 수정」으로 (마크에이지식: 수정을 쓰면 확률로 장비)
             for (BossDefinition.Drop dr : d.drops) {

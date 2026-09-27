@@ -543,3 +543,29 @@ def club():
         d.polygon([(x, y - 12), (x + 8, y), (x, y + 8), (x - 8, y)], fill=_c("c0c8d0"))
         d.polygon([(x, y - 12), (x - 8, y), (x, y)], fill=_c("f0f4f8"))
     return _done(img)
+
+
+def boss_crystal():
+    """보스 수정: 붉은 기운이 소용돌이치는 큰 다면체 결정 + 금 받침 + 해골 문양"""
+    img = _new()
+    d = ImageDraw.Draw(img)
+    d.polygon([(64, 206), (192, 206), (176, 236), (80, 236)], fill=_c("8a6a20"))   # 금 받침
+    d.polygon([(72, 206), (184, 206), (178, 218), (78, 218)], fill=_c("e0b030"))
+    outer = [(128, 12), (196, 80), (184, 200), (72, 200), (60, 80)]
+    d.polygon(outer, fill=_c("3a0a1e"))
+    d.polygon([(128, 24), (184, 84), (174, 190), (82, 190), (72, 84)], fill=_c("b01840"))
+    d.polygon([(128, 24), (184, 84), (128, 110), (72, 84)], fill=_c("ff5a7a"))    # 윗면 (밝음)
+    d.polygon([(72, 84), (128, 110), (82, 190)], fill=_c("8a0a2a"))               # 왼쪽 면 (어두움)
+    d.polygon([(128, 110), (184, 84), (174, 190)], fill=_c("d0204a"))
+    d.polygon([(128, 110), (82, 190), (174, 190)], fill=_c("a01034"))
+    d.line([(128, 24), (128, 110), (82, 190)], fill=_c("ffb0c0"), width=3)         # 모서리 반사
+    # 해골 문양
+    d.ellipse((108, 118, 148, 156), fill=_c("fff0e0"))
+    d.rectangle((116, 150, 140, 164), fill=_c("fff0e0"))
+    d.ellipse((114, 128, 126, 140), fill=_c("3a0a1e"))
+    d.ellipse((130, 128, 142, 140), fill=_c("3a0a1e"))
+    for x in (120, 128, 136):
+        d.line([(x, 156), (x, 164)], fill=_c("3a0a1e"), width=2)
+    _sparkle(d, 176, 44, 18, _c("ffe0e8"))
+    _sparkle(d, 70, 60, 10)
+    return _done(img)

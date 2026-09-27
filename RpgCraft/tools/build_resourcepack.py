@@ -147,6 +147,8 @@ def build_items():
     for i, (fid, mat) in enumerate([("fish_small", "cod"), ("fish_carp", "cod"), ("fish_salmon", "salmon"), ("fish_deep", "pufferfish"),
                                     ("fish_gold", "tropical_fish"), ("fish_treasure", "chest_minecart"), ("fish_legend", "tropical_fish")]):
         add(mat, 1430 + i, fid, False, (lambda st=0: MA.chest()) if fid == "fish_treasure" else (lambda st=0, fid=fid: MA.fish(fid)))
+    add("chest_minecart", 1436, "boss_chest", False, lambda st=0: MA.chest())          # 보스 상자 (이전엔 모델이 빠져 있었음)
+    add("echo_shard", 1446, "boss_crystal", False, lambda st=0: MA.boss_crystal())     # 보스 수정
     for i, kind in enumerate(["tyrant", "immortal", "storm_eye", "midas", "judge"]):
         add("echo_shard", 1440 + i, "legend_seal_" + kind, False, lambda st=0, kind=kind: MA.legend_seal(kind))
     add("iron_nugget", 1445, "loot_steel", False, lambda st=0: MA.steel_shard())

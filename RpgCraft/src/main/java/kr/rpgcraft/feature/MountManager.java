@@ -74,7 +74,7 @@ public class MountManager implements Listener, CommandExecutor {
     }
 
     private static final String[] GRADE = {"&f일반", "&9희귀", "&5영웅", "&6전설"};
-    private static final double[] ODDS = {0.62, 0.26, 0.10, 0.02};
+    private static final double[] ODDS = {0.63, 0.26, 0.10, 0.01};   // 전설 1% (config mounts.odds)
 
     private final RpgCraft plugin;
     private final NamespacedKey KEY, RIDE;
@@ -89,6 +89,11 @@ public class MountManager implements Listener, CommandExecutor {
         this.RIDE = new NamespacedKey(plugin, "mount_entity");
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
+    }
+
+    private double odds(int grade) {
+        List<Double> l = plugin.getConfig().getDoubleList("mounts.odds");
+        return grade < l.size() ? l.get(grade) : ODDS[grade];
     }
 
     public ItemStack token(Mount m) {
@@ -121,7 +126,7 @@ public class MountManager implements Listener, CommandExecutor {
         for (int i = 0; i < 4; i++) {
             StringBuilder names = new StringBuilder();
             for (Mount m : Mount.values()) if (m.grade == i) names.append(names.length() > 0 ? ", " : "").append(m.label);
-            lore.add(GRADE[i] + " &7" + String.format("%.0f", ODDS[i] * 100) + "% &8(" + names + ")");
+            lore.add(GRADE[i] + " &7" + String.format(odds(i) < 0.1 ? "%.1f" : "%.0f", odds(i) * 100) + "% &8(" + names + ")");
         }
         lore.add("");
         lore.add("&e▶ 클릭하여 뽑기");
@@ -136,7 +141,7 @@ public class MountManager implements Listener, CommandExecutor {
         if (!plugin.economy().take(p, cost)) { Text.actionBar(p, "&c돈이 부족합니다 (" + Text.money(cost) + ")"); return; }
         double r = ThreadLocalRandom.current().nextDouble(), acc = 0;
         int grade = 0;
-        for (int i = 0; i < 4; i++) { acc += ODDS[i]; if (r < acc) { grade = i; break; } }
+        for (int i = 0; i < 4; i++) { acc += odds(i); if (r < acc) { grade = i; break; } }
         List<Mount> pool = new ArrayList<>();
         for (Mount m : Mount.values()) if (m.grade == grade) pool.add(m);
         Mount got = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));

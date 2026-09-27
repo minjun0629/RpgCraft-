@@ -36,6 +36,12 @@
     },
     {
       "predicate": {
+        "custom_model_data": 1446
+      },
+      "model": "rpgcraft:item/boss_crystal"
+    },
+    {
+      "predicate": {
         "custom_model_data": 1498
       },
       "model": "rpgcraft:item/crystal_top"

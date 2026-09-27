@@ -40,6 +40,13 @@
         }
       },
       {
+        "threshold": 1446,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/boss_crystal"
+        }
+      },
+      {
         "threshold": 1498,
         "model": {
           "type": "minecraft:model",

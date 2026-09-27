@@ -697,16 +697,92 @@ public class BossManager {
             double mult = Math.max(0.1, share);
             plugin.levels().addExp(p, d.exp * mult);
             plugin.economy().give(p, (long) (d.money * mult * plugin.getConfig().getDouble("economy.boss-money-mult", 0.35)));
-            for (ItemStack it : roll(d.drops)) {
-                var tp = plugin.items().get(kr.rpgcraft.item.ItemData.id(it));
-                if (tp != null && (tp.category.isEquipment() || tp.category == kr.rpgcraft.item.Category.BOW)) {   // 고유 장비는 시체 자리에
-                    org.bukkit.entity.Item drop = e.getWorld().dropItemNaturally(e.getLocation(), it);
-                    drop.setGlowing(false);
-                    drop.setOwner(p.getUniqueId());   // 기여자 본인만 주울 수 있음
-                    Text.msg(p, "&6보스가 장비를 떨어뜨렸습니다! &7(시체 자리)");
-                } else give(p, it);
+            // 재료 등은 바로 지급, 장비는 「보스 수정」으로 (마크에이지식: 수정을 쓰면 확률로 장비)
+            for (BossDefinition.Drop dr : d.drops) {
+                if (isGear(dr.item) || ThreadLocalRandom.current().nextDouble() >= dr.chance) continue;
+                int amt = dr.max > dr.min ? ThreadLocalRandom.current().nextInt(dr.min, dr.max + 1) : dr.min;
+                ItemStack it = plugin.items().create(dr.item, amt);
+                if (it != null) give(p, it);
             }
         }
+        // 보스 수정 (마크에이지식): 30% 확률로 시체 자리에 수정 1개가 떨어짐 → 우클릭하면 확률로 장비 (최대 2개)
+        if (!gearDrops(d.id).isEmpty() && ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("boss-crystal.drop-chance", 0.3)) {
+            ItemStack cr = crystal(d.id, 1);
+            if (cr != null) {
+                e.getWorld().dropItemNaturally(e.getLocation(), cr);
+                e.getWorld().spawnParticle(Particle.END_ROD, e.getLocation().add(0, 1, 0), 40, 0.5, 1.5, 0.5, 0.05);
+                e.getWorld().playSound(e.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, 2f, 0.8f);
+                Text.announce(Text.PREFIX + Text.c("&d&l" + Text.strip(Text.c(d.name)) + "의 수정&f이 떨어졌습니다!"));
+            }
+        }
+    }
+
+    // =================================================================== 보스 수정
+    private final NamespacedKey CRYSTAL = new NamespacedKey("rpgcraft", "boss_crystal");
+
+    private boolean isGear(String itemId) {
+        var tp = plugin.items().get(itemId);
+        return tp != null && (tp.category.isEquipment() || tp.category == kr.rpgcraft.item.Category.BOW);
+    }
+
+    /** 보스 드롭표 중 장비만 */
+    public List<BossDefinition.Drop> gearDrops(String bossId) {
+        BossDefinition d = defs.get(bossId);
+        List<BossDefinition.Drop> out = new ArrayList<>();
+        if (d != null) for (BossDefinition.Drop dr : d.drops) if (isGear(dr.item)) out.add(dr);
+        return out;
+    }
+
+    private double crystalMult() {
+        return plugin.getConfig().getDouble("boss-crystal.chance-mult", 1.0);
+    }
+
+    /** 「○○의 수정」 아이템 (같은 보스 수정끼리 겹쳐짐) */
+    public ItemStack crystal(String bossId, int amount) {
+        BossDefinition d = defs.get(bossId);
+        ItemStack it = plugin.items().create("boss_crystal", Math.max(1, amount));
+        if (it == null || d == null) return it;
+        var m = it.getItemMeta();
+        m.getPersistentDataContainer().set(CRYSTAL, PersistentDataType.STRING, bossId);
+        m.setDisplayName(Text.c("&d&l" + Text.strip(Text.c(d.name)) + "의 수정"));
+        List<String> lore = new ArrayList<>();
+        lore.add(Text.c("&7보스의 힘이 응축된 수정"));
+        lore.add("");
+        lore.add(Text.c("&e사용하면 확률에 따라 장비가 나옵니다 &7(최대 " + plugin.getConfig().getInt("boss-crystal.max-items", 2) + "개)"));
+        for (BossDefinition.Drop dr : gearDrops(bossId)) {
+            var tp = plugin.items().get(dr.item);
+            lore.add(Text.c(" &8· " + tp.grade.nameColor() + tp.name + " &7" + String.format("%.1f", Math.min(1, dr.chance * crystalMult()) * 100) + "%"));
+        }
+        lore.add("");
+        lore.add(Text.c("&e▶ 우클릭: 사용 &7· &e쉬프트+우클릭: 모두 사용"));
+        m.setLore(lore);
+        it.setItemMeta(m);
+        return it;
+    }
+
+    /** 수정 사용: 장비마다 확률 판정 (한 번에 최대 boss-crystal.max-items 개, 기본 2). 반환: 얻은 장비 */
+    public List<ItemStack> openCrystal(Player p, String bossId) {
+        List<ItemStack> got = new ArrayList<>();
+        List<BossDefinition.Drop> pool = gearDrops(bossId);
+        Collections.shuffle(pool);   // 최대 개수에 걸려도 특정 장비만 유리하지 않게 판정 순서를 섞음
+        int max = plugin.getConfig().getInt("boss-crystal.max-items", 2);
+        for (BossDefinition.Drop dr : pool) {
+            if (got.size() >= max) break;
+            if (ThreadLocalRandom.current().nextDouble() >= dr.chance * crystalMult()) continue;
+            ItemStack it = plugin.items().create(dr.item, 1);
+            if (it == null) continue;
+            got.add(it);
+            give(p, it);
+            var tp = plugin.items().get(dr.item);
+            if (tp != null && tp.grade.atLeast(kr.rpgcraft.item.Grade.LEGEND))
+                Text.announce(Text.PREFIX + Text.c("&d&l" + p.getName() + "&f님이 보스 수정에서 " + tp.grade.nameColor() + tp.name + "&f을(를) 얻었습니다!"));
+        }
+        return got;
+    }
+
+    public String crystalBoss(ItemStack it) {
+        if (it == null || !it.hasItemMeta()) return null;
+        return it.getItemMeta().getPersistentDataContainer().get(CRYSTAL, PersistentDataType.STRING);
     }
 
     /** 보스 상자 우클릭: 그 보스의 드롭표로 한 번 뽑기 (아무것도 안 나오면 한 번 더) */

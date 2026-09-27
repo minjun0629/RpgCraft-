@@ -46,6 +46,7 @@ public class SeaMonsterManager {
         var c = plugin.getConfig();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR || !swimmingInOcean(p)) continue;
+            if (plugin.bosses().nearSpawn(p.getLocation())) continue;   // 스폰 300칸 안 바다에는 크라켄 · 메갈로돈이 나오지 않음 (v5.4.27)
             if (now > krakenCooldown && r.nextDouble() < c.getDouble("sea.kraken-chance", 0.0005)) {
                 Location l = seaSpot(p, 20);
                 if (plugin.worldBoss().start("kraken", l)) {

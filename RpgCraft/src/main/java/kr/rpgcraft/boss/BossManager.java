@@ -68,6 +68,15 @@ public class BossManager {
         }
     }
 
+    /** 월드 스폰에서 bosses.spawn-safe-radius(기본 300칸) 안인지 — 이 안에는 보스가 자연히 나오지 않음 (v5.4.27) */
+    public boolean nearSpawn(Location l) {
+        if (l == null || l.getWorld() == null) return false;
+        double safe = plugin.getConfig().getDouble("bosses.spawn-safe-radius", 300);
+        if (safe <= 0) return false;
+        Location sp = l.getWorld().getSpawnLocation();
+        return Math.hypot(l.getX() - sp.getX(), l.getZ() - sp.getZ()) < safe;
+    }
+
     public BossDefinition def(String id) {
         return defs.get(id);
     }

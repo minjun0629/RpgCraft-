@@ -74,7 +74,7 @@ public class WorldBossManager implements Listener {
         for (int i = 0; l == null && i < 20; i++) {
             double a = rnd.nextDouble() * Math.PI * 2, d = 400 + rnd.nextDouble() * plugin.getConfig().getDouble("world-boss.spread", 1200);
             Block top = kr.rpgcraft.util.Locs.surface(w, w.getSpawnLocation().clone().add(Math.cos(a) * d, 0, Math.sin(a) * d));
-            if (!top.isLiquid()) l = top.getLocation().add(0, 1, 0);
+            if (!top.isLiquid() && !plugin.bosses().nearSpawn(top.getLocation())) l = top.getLocation().add(0, 1, 0);
         }
         if (l == null) return false;
         Event ev = new Event();

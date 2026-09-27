@@ -226,6 +226,7 @@ public class PlayerListener implements Listener {
             useScroll(p, d, it, id);
         } else if ("ticket_job_reset".equals(id)) {
             e.setCancelled(true);
+            if (kr.rpgcraft.world.HiddenJobManager.of(d) != null) { Text.msg(p, "&5히든 직업은 초기화할 수 없습니다."); return; }
             if (d.job == null) { Text.msg(p, "&c직업이 없습니다."); return; }
             it.setAmount(it.getAmount() - 1);
             plugin.jobs().reset(d);

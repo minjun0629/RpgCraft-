@@ -113,8 +113,13 @@ public class JobManager {
         }
     }
 
+    /** 히든 직업이면 원래 직업(1·2·3차)은 쓰지 않음 (v5.3.0: 히든 직업이 원래 직업을 대신함) */
+    private static boolean hidden(PlayerData d) {
+        return kr.rpgcraft.world.HiddenJobManager.of(d) != null;
+    }
+
     public static Third third(PlayerData d) {
-        if (d.thirdJob == null) return null;
+        if (d.thirdJob == null || hidden(d)) return null;
         try {
             return Third.valueOf(d.thirdJob);
         } catch (IllegalArgumentException e) {
@@ -210,6 +215,7 @@ public class JobManager {
         int lv = plugin.getConfig().getInt("jobs.third-level", 100);
         long cost = plugin.getConfig().getLong("jobs.third-cost", 10_000_000);
         int cores = plugin.getConfig().getInt("jobs.third-cores", 10);
+        if (hidden(d)) { Text.msg(p, "&5히든 직업은 다른 직업으로 전직할 수 없습니다."); return; }
         if (s == null) { Text.msg(p, "&c2차 전직을 먼저 하세요."); return; }
         if (d.thirdJob != null) { Text.msg(p, "&c이미 " + title(d) + " 입니다."); return; }
         if (d.level < lv) { Text.msg(p, "&c레벨 " + lv + " 부터 3차 전직할 수 있습니다."); return; }
@@ -240,6 +246,7 @@ public class JobManager {
     }
 
     public static Base base(PlayerData d) {
+        if (hidden(d)) return null;
         try {
             return d.job == null ? null : Base.valueOf(d.job);
         } catch (IllegalArgumentException e) {
@@ -248,6 +255,7 @@ public class JobManager {
     }
 
     public static Sub sub(PlayerData d) {
+        if (hidden(d)) return null;
         try {
             return d.subJob == null ? null : Sub.valueOf(d.subJob);
         } catch (IllegalArgumentException e) {
@@ -283,6 +291,7 @@ public class JobManager {
     public void choose(Player p, Base b) {
         PlayerData d = plugin.data().get(p);
         int lv = plugin.getConfig().getInt("jobs.base-level", 10);
+        if (hidden(d)) { Text.msg(p, "&5히든 직업은 다른 직업을 가질 수 없습니다."); return; }
         if (d.job != null) { Text.msg(p, "&c이미 " + title(d) + " 입니다. (직업 초기화권으로 초기화 가능)"); return; }
         if (d.level < lv) { Text.msg(p, "&c레벨 " + lv + " 부터 직업을 고를 수 있습니다."); return; }
         d.job = b.name();
@@ -307,6 +316,7 @@ public class JobManager {
         Base b = base(d);
         int lv = plugin.getConfig().getInt("jobs.advance-level", 40);
         long cost = plugin.getConfig().getLong("jobs.advance-cost", 500_000);
+        if (hidden(d)) { Text.msg(p, "&5히든 직업은 다른 직업으로 전직할 수 없습니다."); return; }
         if (b == null) { Text.msg(p, "&c먼저 기초 직업을 선택하세요. (/직업 선택 <전사|궁수|도적|수호자>)"); return; }
         if (d.subJob != null) { Text.msg(p, "&c이미 " + title(d) + " 로 전직했습니다."); return; }
         if (d.level < lv) { Text.msg(p, "&c레벨 " + lv + " 부터 전직할 수 있습니다."); return; }

@@ -279,7 +279,6 @@ death:
 
 coupons:                    # /쿠폰 <코드> : 플레이어마다 한 번
   정식출시: ["scroll_exp:3"]
-  밸패: ["ticket_job_reset:1", "ticket_stat_reset:1"]   # 밸런스 패치 보상
 
 party:
   max-members: 5

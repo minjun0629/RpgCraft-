@@ -171,6 +171,34 @@ public class BlacksmithManager {
         return it;
     }
 
+    /** 제작 창 미리보기: 품질 75%~100% 일 때의 능력치 범위 + 추가 옵션 */
+    private List<String> preview(Recipe r) {
+        int t = r.tier();
+        List<String> out = new ArrayList<>();
+        out.add("&f능력치 &7(품질 75% ~ 100%):");
+        if (r.weapon()) {
+            double lo = SWORD_ATK[t] * 0.75, hi = SWORD_ATK[t];
+            switch (r.wc()) {
+                case SWORD -> { out.add(" &7공격력 &f" + Math.round(lo) + " ~ " + Math.round(hi)); out.add(" &7치명타 &c-20"); out.add(" &7요구 힘 &f" + REQ[t]); }
+                case DAGGER -> { out.add(" &7공격력 &f" + Math.round(lo * 0.66) + " ~ " + Math.round(hi * 0.66)); out.add(" &7요구 민첩 &f" + REQ[t]); }
+                case AXE -> { out.add(" &7공격력 &f" + Math.round(lo * 0.75) + " ~ " + Math.round(hi * 0.75)); out.add(" &7요구 힘 &f" + REQ[t] / 2 + " &7· 민첩 &f" + REQ[t] / 2); }
+                default -> {
+                    out.add(" &7공격력 &f" + Math.round(lo * 0.38) + " ~ " + Math.round(hi * 0.38));
+                    out.add(" &7방어력 &f" + Math.round(SHIELD_DEF[t] * 0.75 * 10) / 10.0 + " ~ " + SHIELD_DEF[t]);
+                    out.add(" &7요구 모험 &f" + REQ[t]);
+                }
+            }
+        } else {
+            out.add(" &7방어력 &f" + Math.round(ARMOR_DEF[t] * 0.75 * 10) / 10.0 + " ~ " + ARMOR_DEF[t]);
+            out.add(" &7체력 &f" + Math.round(ARMOR_HP[t] * 0.75) + " ~ " + Math.round(ARMOR_HP[t]));
+        }
+        out.add(" &7레벨 제한 &f" + LEVEL[t]);
+        out.add("&f추가 옵션 1줄 &7(각 25%):");
+        out.add(" &7치명타 +1~5 · 체력 +" + 100 * (t + 1) + "~" + 1000 * (t + 1));
+        out.add(" &7흡혈 +0.5~2.0% · 방어 관통 +2~8");
+        return out;
+    }
+
     private boolean isCrafter(Player p, ItemStack it) {
         return p.getUniqueId().toString().equals(ItemData.getString(it, Keys.CRAFTER_UUID)) || p.hasPermission("rpgcraft.admin");
     }
@@ -219,6 +247,8 @@ public class BlacksmithManager {
                     lore.add((have >= m.getValue() ? " &a" : " &c") + plugin.items().get(m.getKey()).name + " " + have + "/" + m.getValue());
                 }
                 lore.add("&f비용: &e" + Text.money(r.money()));
+                lore.add("");
+                lore.addAll(preview(r));   // 능력치 (v5.4.7)
                 lore.add("");
                 lore.add("&7능력치는 제작 시 75~100% 품질로 랜덤 결정");
                 lore.add("&e클릭하여 제작");

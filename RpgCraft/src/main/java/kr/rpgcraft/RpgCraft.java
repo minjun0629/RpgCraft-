@@ -310,7 +310,7 @@ public final class RpgCraft extends JavaPlugin {
         if (!getConfig().contains("gather.cooldown-by-tier")) getConfig().set("gather.cooldown-by-tier", java.util.List.of(180, 150, 120));
         if (!getConfig().contains("coupons")) getConfig().set("coupons.정식출시", java.util.List.of("scroll_exp:3"));
         if (Math.abs(getConfig().getDouble("boss.min-contribution", 0.07) - 0.03) < 1e-6) getConfig().set("boss.min-contribution", 0.07);
-        if (!getConfig().contains("coupons.밸패")) getConfig().set("coupons.밸패", java.util.List.of("ticket_job_reset:1", "ticket_stat_reset:1"));
+        if (getConfig().getStringList("coupons.밸패").equals(java.util.List.of("ticket_job_reset:1", "ticket_stat_reset:1"))) getConfig().set("coupons.밸패", null);   // 밸패 쿠폰 삭제 (v5.4.7)
         String[][] v340 = {{"player.hp-per-level", "200", "60"}, {"player.str-atk-per-2", "3", "6"}, {"player.adv-hp-per-point", "40", "100"},
                 {"player.dex-crit-per-point", "0.1", "0.15"}, {"economy.mob-money-mult", "0.1", "0.05"}, {"economy.boss-money-mult", "0.15", "0.1"},
                 {"economy.quest-money-mult", "0.4", "0.25"}, {"economy.wave-money-mult", "0.12", "0.08"}, {"economy.loot-sell-mult", "0.25", "0.15"},

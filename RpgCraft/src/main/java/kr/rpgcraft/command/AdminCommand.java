@@ -453,7 +453,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             java.io.File[] files = folder.listFiles((dir, n) -> n.endsWith(".yml"));
             Set<String> online = new HashSet<>();
             for (Player p : Bukkit.getOnlinePlayers()) online.add(p.getUniqueId() + ".yml");
-            if (files != null) for (java.io.File f : files) if (!online.contains(f.getName())) f.delete();
+            if (files != null) for (java.io.File f : files) if (!online.contains(f.getName())) {
+                try { kr.rpgcraft.data.ResetPending.mark(plugin, UUID.fromString(f.getName().replace(".yml", ""))); } catch (IllegalArgumentException ignored) { }   // 다음 접속 때 인벤토리도 초기화
+                f.delete();
+            }
             for (PlayerData d : new ArrayList<>(plugin.data().loaded())) resetPlayer(d);
             plugin.rounds().state().set("round", 1);
             plugin.rounds().state().set("shop-stock", null);
@@ -496,20 +499,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
         d.guildChat = false;
         d.starterGiven = true;
+        Arrays.fill(d.accessories, null);
         Player p = Bukkit.getPlayer(d.uuid);
-        if (p != null) {
-            p.getInventory().clear();
-            p.getEnderChest().clear();
-            for (String k : plugin.getConfig().getStringList("player.starter-kit")) {
-                String[] kv = k.split(":");
-                ItemStack it = plugin.items().create(kv[0], kv.length > 1 ? Text.parseInt(kv[1], 1) : 1);
-                if (it != null) p.getInventory().addItem(it);
-            }
-            plugin.stats().refresh(p);
-            d.hp = d.stats.maxHp;
-            p.teleport(p.getWorld().getSpawnLocation());
-            p.sendTitle(Text.c("&c&l초기화"), Text.c("&f처음부터 다시 시작합니다"), 10, 50, 10);
-        }
+        if (p != null) kr.rpgcraft.data.ResetPending.freshStart(plugin, p);
+        else kr.rpgcraft.data.ResetPending.mark(plugin, d.uuid);   // 접속하지 않은 사람: 다음 접속 때 인벤토리 · 위치까지 마저 초기화 (v5.4.7)
+        plugin.data().save(d);   // 접속하지 않은 사람도 바로 저장
     }
 
     private PlayerData target(CommandSender s, String[] a, int idx) {

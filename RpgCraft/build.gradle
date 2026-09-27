@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'kr.rpgcraft'
-version = '5.4.6'
+version = '5.4.7'
 
 base {
     archivesName = 'RpgCraft'

@@ -227,10 +227,10 @@ public class StructureManager implements Listener {
             case "arena" -> arena();
             case "shrine" -> shrine();
             case "watch_fort" -> watchFort();
-            case "arena_desert" -> arenaDesert();
-            case "arena_forest" -> arenaForest();
-            case "arena_abyss" -> arenaAbyss();
-            case "arena_spirit" -> arenaSpirit();
+            case "arena_desert" -> { arenaDesert(); gates(18, 6, Material.CUT_SANDSTONE, Material.CHISELED_SANDSTONE, Material.SMOOTH_SANDSTONE, Material.SANDSTONE, Material.LANTERN); }
+            case "arena_forest" -> { arenaForest(); gates(17, 5, Material.MOSSY_STONE_BRICKS, Material.PRISMARINE_BRICKS, Material.MOSS_BLOCK, Material.MOSSY_COBBLESTONE, Material.SEA_LANTERN); }
+            case "arena_abyss" -> { arenaAbyss(); gates(18, 6, Material.POLISHED_BLACKSTONE_BRICKS, Material.GILDED_BLACKSTONE, Material.RED_NETHER_BRICKS, Material.BLACKSTONE, Material.SOUL_LANTERN); }
+            case "arena_spirit" -> { arenaSpirit(); gates(17, 5, Material.DEEPSLATE_BRICKS, Material.CHISELED_DEEPSLATE, Material.SOUL_SOIL, Material.COBBLED_DEEPSLATE, Material.SOUL_LANTERN); }
             default -> { return null; }
         }
         return NAMES.get(type);
@@ -490,6 +490,64 @@ public class StructureManager implements Listener {
             set(c[0], 2, c[1], Material.SOUL_CAMPFIRE);
             for (int y = 6; y <= H + 4; y++) set(c[0], y, c[1], Material.IRON_BARS);
         }
+    }
+
+    /**
+     * 전장 입구 · 출구 (v5.4.9): 동서남북 네 곳에 성문(기둥 + 상인방 + 등불)을 내고,
+     * 성문에서 바깥 지형 높이까지 폭 5칸 길을 이어 줌 (지형이 높으면 계단처럼 올라가며 깎고, 낮으면 다리를 놓음).
+     * 모든 블록은 set() 으로 기록되므로 전장이 사라질 때 함께 원래대로 돌아간다.
+     */
+    private void gates(int R, int gateH, Material pillar, Material top, Material path, Material support, Material light) {
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int[] g : dirs) {
+            int dx = g[0], dz = g[1], px = g[1], pz = g[0];   // (dx,dz) 바깥 방향, (px,pz) 옆 방향
+            // 성벽을 뚫음
+            for (int k = R - 4; k <= R + 2; k++)
+                for (int t = -2; t <= 2; t++)
+                    for (int y = 0; y <= gateH; y++) set(dx * k + px * t, y, dz * k + pz * t, Material.AIR);
+            // 성문 장식: 양쪽 기둥 · 상인방 · 등불
+            for (int k = R - 1; k <= R + 1; k += 2)
+                for (int s = -3; s <= 3; s += 6) {
+                    for (int y = 0; y <= gateH; y++) set(dx * k + px * s, y, dz * k + pz * s, pillar);
+                    set(dx * k + px * s, gateH + 1, dz * k + pz * s, top);
+                }
+            for (int t = -3; t <= 3; t++) {
+                set(dx * R + px * t, gateH + 1, dz * R + pz * t, top);
+                set(dx * (R - 1) + px * t, gateH + 1, dz * (R - 1) + pz * t, top);
+                set(dx * (R + 1) + px * t, gateH + 1, dz * (R + 1) + pz * t, top);
+            }
+            set(dx * (R + 1) + px * -3, gateH + 2, dz * (R + 1) + pz * -3, light);
+            set(dx * (R + 1) + px * 3, gateH + 2, dz * (R + 1) + pz * 3, light);
+            for (int k = R - 3; k <= R + 2; k++)                                            // 성문 바닥
+                for (int t = -2; t <= 2; t++) set(dx * k + px * t, -1, dz * k + pz * t, path);
+            // 바깥 지형까지 길: 한 칸마다 최대 1칸씩 오르내림
+            int h = 0;
+            for (int j = 1; j <= 20; j++) {
+                int k = R + 2 + j;
+                int ground = groundRel(dx * k, dz * k);
+                int want = Math.max(h - 1, Math.min(h + 1, ground));
+                h = want;
+                for (int t = -2; t <= 2; t++) {
+                    int x = dx * k + px * t, z = dz * k + pz * t;
+                    set(x, h - 1, z, path);
+                    for (int y = h - 2; y >= h - 6 && y >= groundRel(x, z); y--) set(x, y, z, support);   // 아래가 비면 다리 받침
+                    for (int y = h; y <= h + 4; y++) set(x, y, z, Material.AIR);                          // 위는 뚫음
+                }
+                if (Math.abs(h - ground) == 0 && j >= 4) break;   // 바깥 땅에 닿음
+            }
+        }
+    }
+
+    /** 이 칸의 지면 높이 (기준 높이 0 = 전장 바닥 위). 잎 · 나무 · 풀은 땅으로 치지 않음 */
+    private int groundRel(int x, int z) {
+        for (int y = 24; y >= -16; y--) {
+            Block b = w.getBlockAt(ox + x, oy + y, oz + z);
+            Material m = b.getType();
+            String n = m.name();
+            if (!m.isSolid() || n.contains("LEAVES") || n.endsWith("_LOG") || n.endsWith("_WOOD")) continue;
+            return y + 1;
+        }
+        return -16;
     }
 
     /** 몬스터의 원혼: 저주받은 묘역 · 영혼의 모래 바닥 · 비석 · 말라 죽은 나무 · 영혼 화톳불 기둥 · 무너진 영묘 */

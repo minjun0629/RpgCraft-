@@ -15,16 +15,24 @@ BOSS_ORDER = ["witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper
               "megalodon", "kraken",
               "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon",
               "pet_slime", "pet_chick", "pet_bunny", "pet_fox", "pet_penguin", "pet_owl", "pet_golem", "pet_fairy", "pet_ghost",
-              "pet_phoenix", "pet_dragon", "pet_star"]
+              "pet_phoenix", "pet_dragon", "pet_star",
+              # v5.4.9 필드 보스 (뒤에 붙여 기존 CustomModelData 번호 유지)
+              "field_boar_king", "field_frost_bear", "field_bandit_lord", "field_ravager", "field_ancient_golem",
+              "field_swamp_witch", "field_flame_knight", "field_deep_warden", "field_frost_lich"]
 BOSS_IDS = {"witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper", "bungbung", "desert_nightmare", "siphonia", "kain",
-            "frost_queen", "volcano_giant", "void_apostle", "thunder_god", "primordial_dragon", "vengeful_spirit", "balrog", "kraken"}
+            "frost_queen", "volcano_giant", "void_apostle", "thunder_god", "primordial_dragon", "vengeful_spirit", "balrog", "kraken",
+            "field_boar_king", "field_frost_bear", "field_bandit_lord", "field_ravager", "field_ancient_golem",
+            "field_swamp_witch", "field_flame_knight", "field_deep_warden", "field_frost_lich"}
 THEME = {"witch": "9cff4a", "elf_queen": "5affa0", "dwarf_king": "3f7fff", "harpy_queen": "6bd8ff", "sea_gatekeeper": "7fe8ff", "bungbung": "ff7a1f",
          "desert_nightmare": "ffb030", "siphonia": "5affa0", "kain": "ff2a3a", "frost_queen": "7fe8ff", "volcano_giant": "ff7a1f", "void_apostle": "c060ff",
-         "thunder_god": "6bd8ff", "primordial_dragon": "c060ff", "vengeful_spirit": "7fe8ff", "balrog": "ff2a3a", "megalodon": "7fe8ff", "kraken": "c060ff"}
+         "thunder_god": "6bd8ff", "primordial_dragon": "c060ff", "vengeful_spirit": "7fe8ff", "balrog": "ff2a3a", "megalodon": "7fe8ff", "kraken": "c060ff",
+         "field_boar_king": "8fd04a", "field_frost_bear": "7fe8ff", "field_bandit_lord": "ffb030", "field_ravager": "ff5a2a", "field_ancient_golem": "5affa0",
+         "field_swamp_witch": "c8ff5a", "field_flame_knight": "ff7a1f", "field_deep_warden": "3fe8ff", "field_frost_lich": "9fd8ff"}
 
 
 CLAMP_AT_BUILD = [True]   # 보스는 장식을 크게 그린 뒤 줄여서 넣으므로 만들 때는 자르지 않음
 BOSS_SHRINK = 0.75        # 보스 모델: (8,8,8) 기준으로 줄여 -16~32 범위에 담고, 플러그인이 1/0.75 배로 키워 그림 (BossModelManager.MODEL_SHRINK)
+BOSS_DROP = 6.0           # 줄인 뒤 아래로 내리는 양 (위쪽 왕관·후광이 32 에서 잘리지 않게). 플러그인이 0.5*scale 블록 더 올려 그림
 
 
 class Palette:
@@ -716,25 +724,6 @@ def balrog(m):
         m.box(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5, FIRE)
 
 
-# ---------------------------------------------------------------- 웅장함 (모든 보스 공통): 바닥 룬 고리 2겹 · 떠도는 결정 6개 · 등 뒤 기운 가시
-def grandeur(m, col):
-    import math as _m
-    for (r, t) in [(12.5, 0.7), (9.5, 0.5)]:
-        m.box(8 - r, 0.02, 8 - r, 8 + r, 0.12, 8 - r + t, col)
-        m.box(8 - r, 0.02, 8 + r - t, 8 + r, 0.12, 8 + r, col)
-        m.box(8 - r, 0.02, 8 - r, 8 - r + t, 0.12, 8 + r, col)
-        m.box(8 + r - t, 0.02, 8 - r, 8 + r, 0.12, 8 + r, col)
-    m.box(8 - 11, 0.03, 7.7, 8 + 11, 0.13, 8.3, col, rot=("y", 45, (8, 0, 8)))
-    m.box(7.7, 0.03, 8 - 11, 8.3, 0.13, 8 + 11, col, rot=("y", 45, (8, 0, 8)))
-    for k in range(6):
-        a = k * _m.pi / 3 + 0.4
-        x, z, y = 8 + _m.cos(a) * 14.5, 8 + _m.sin(a) * 14.5, 6 + (k % 3) * 5
-        m.box(x - 0.8, y - 1.6, z - 0.8, x + 0.8, y + 1.6, z + 0.8, col, rot=("y", 45, (x, y, z)))
-        m.box(x - 0.35, y - 0.9, z - 0.35, x + 0.35, y + 0.9, z + 0.35, "ffffff", rot=("y", 45, (x, y, z)))
-    for k, (dx, h, a) in enumerate([(-5, 10, 22.5), (-2.5, 13, 0), (0, 15, 0), (2.5, 13, 0), (5, 10, -22.5)]):
-        m.box(8 + dx - 0.35, 16, 1.4, 8 + dx + 0.35, 16 + h, 2.0, col, rot=("z", a, (8 + dx, 16, 1.7)))
-
-
 # ---------------------------------------------------------------- 네발짐승 틀 (탈것)
 def quad(m, body, belly, dark, L=14.0, H=7.0, W=6.0, leg=6.0, neck=True):
     z0 = 8 - L / 2
@@ -846,24 +835,49 @@ def mount_dragon(m):
 
 
 def megalodon(m):
-    """메갈로돈 — 거대한 고대 상어: 유선형 몸통, 흰 배, 등지느러미, 가슴지느러미, 초승달 꼬리, 벌어진 입과 톱니 이빨"""
-    G, G2, B, T, E = "5a6a7a", "3a4a5a", "e8eef4", "ffffff", "1a1a1a"
-    m.box(4, 4, -6, 12, 11, 20, G)
-    m.box(4.6, 3.4, -4, 11.4, 5, 18, B)
-    m.box(5, 5, 20, 11, 10, 26, G)                                                     # 머리
-    m.box(5.4, 4.2, 22, 10.6, 5.6, 27, B)                                              # 아래턱
-    for x in (5.6, 6.8, 8.0, 9.2, 10.2):
-        m.box(x, 5.6, 26.4, x + 0.6, 6.6, 27.0, T)                                     # 이빨
-        m.box(x, 4.8, 26.2, x + 0.6, 5.6, 26.8, T)
-    m.box(4.6, 8, 24.4, 5.4, 9, 25.2, E)
-    m.box(10.6, 8, 24.4, 11.4, 9, 25.2, E)
-    m.box(7.2, 11, 6, 8.8, 17, 12, G2, rot=("x", 22.5, (8, 11, 9)))                     # 등지느러미
-    m.sym(0, 5, 12, 4, 6, 17, G2, rot=("z", -22.5, (4, 5.5, 14)))                       # 가슴지느러미
-    m.box(6, 5, -12, 10, 10, -6, G)                                                    # 꼬리 자루
-    m.box(7.2, 9, -15, 8.8, 17, -11, G2, rot=("x", -22.5, (8, 10, -12)))                # 꼬리
-    m.box(7.2, -2, -15, 8.8, 6, -11, G2, rot=("x", 22.5, (8, 5, -12)))
-    for z in (14, 16, 18):
-        m.box(4.2, 7, z, 4.4, 9, z + 0.6, G2)                                          # 아가미
+    """메갈로돈 — 흉터투성이 고대 상어: 앞뒤로 가늘어지는 몸, 짙은 등과 흰 배, 높은 등지느러미, 큰 가슴지느러미,
+    초승달 꼬리, 벌어진 입과 두 줄 톱니 이빨, 빛나는 눈, 몸에 박힌 작살"""
+    G, G2, G3, B, T, E, SCAR, IRON, MOUTH = "5a6a7a", "3a4a5a", "6f8090", "e8eef4", "ffffff", "7fe8ff", "a8b4c0", "5a4a3a", "3a1a22"
+    m.box(3.4, 3.6, 0, 12.6, 12.4, 16, G)                                              # 몸통 (가운데가 가장 굵음)
+    m.box(4.2, 4.2, -6, 11.8, 11.6, 0, G)
+    m.box(5.0, 5.0, -11, 11.0, 10.8, -6, G)
+    m.box(4.2, 4.2, 16, 11.8, 11.8, 22, G)
+    m.box(5.0, 5.0, 22, 11.0, 11.0, 28, G)                                             # 머리
+    m.box(5.8, 6.6, 28, 10.2, 10.6, 31, G)                                             # 주둥이
+    m.box(4.2, 11.8, 0, 11.8, 12.9, 16, G2)                                            # 짙은 등
+    m.box(4.8, 11.2, -6, 11.2, 12.1, 0, G2)
+    m.box(5.2, 11.4, 16, 10.8, 12.3, 22, G2)
+    m.box(5.6, 10.6, 22, 10.4, 11.5, 28.5, G2)
+    m.box(4.0, 3.1, -4, 12.0, 4.6, 20, B)                                              # 흰 배
+    m.box(5.4, 5.0, 23.5, 10.6, 6.8, 30.2, MOUTH)                                      # 벌린 입
+    m.box(5.4, 2.4, 22, 10.6, 5.0, 29.8, B)                                            # 내려간 아래턱
+    for x in (5.6, 6.7, 7.8, 8.9, 10.0):                                               # 두 줄 톱니 이빨
+        m.box(x, 5.6, 29.8, x + 0.6, 6.8, 30.4, T)
+        m.box(x, 5.0, 29.2, x + 0.6, 6.0, 29.8, T)
+    for z in (24.6, 26.2, 27.8):
+        m.sym(5.3, 5.6, z, 5.9, 6.6, z + 0.7, T)
+        m.sym(5.3, 5.0, z + 0.6, 5.9, 5.8, z + 1.2, T)
+    m.sym(4.85, 8.4, 25.8, 5.2, 9.6, 27.2, E)                                          # 빛나는 눈
+    m.sym(4.8, 8.6, 25.4, 5.25, 9.8, 25.8, G2)
+    for z in (18.6, 20.0, 21.4):                                                       # 아가미
+        m.sym(4.05, 6.4, z, 4.3, 10.2, z + 0.5, G2)
+    m.box(7.1, 12.4, 5, 8.9, 21, 12, G2, rot=("x", 22.5, (8, 12.4, 8.5)))              # 높은 등지느러미
+    m.box(7.3, 12.4, 10.8, 8.7, 18, 12.4, G3, rot=("x", 22.5, (8, 12.4, 8.5)))
+    m.box(7.4, 10.6, -9.5, 8.6, 13.6, -6.5, G2, rot=("x", 22.5, (8, 10.6, -8)))        # 작은 등지느러미
+    m.sym(-1.4, 4.2, 12, 3.6, 5.4, 19, G2, rot=("z", -22.5, (3.6, 4.8, 15.5)))          # 가슴지느러미
+    m.sym(2.4, 3.6, -3.5, 4.4, 4.6, 0, G2, rot=("z", -22.5, (4.4, 4.1, -1.8)))          # 배지느러미
+    m.box(6.0, 6.2, -16, 10.0, 9.8, -11, G)                                            # 꼬리 자루 + 용골
+    m.sym(5.6, 7.3, -16, 6.1, 8.7, -10.5, G3)
+    m.box(7.2, 9, -21, 8.8, 21, -16, G2, rot=("x", -22.5, (8, 9, -17)))                # 초승달 꼬리 (위가 더 큼)
+    m.box(7.2, -1.5, -20, 8.8, 7, -16, G2, rot=("x", 22.5, (8, 7, -17)))
+    m.box(12.5, 7.0, 3, 12.75, 7.6, 11, SCAR, rot=("x", 22.5, (12.6, 7.3, 7)))          # 흉터
+    m.box(12.5, 9.0, 5, 12.75, 9.5, 9, SCAR, rot=("x", -22.5, (12.6, 9.2, 7)))
+    m.box(3.25, 8.0, 8, 3.5, 8.5, 14, SCAR, rot=("x", 22.5, (3.4, 8.2, 11)))
+    m.box(5.6, 11.0, 19, 6.0, 11.6, 21.5, SCAR)
+    for (x, z, s) in ((10.0, 2.0, -1), (6.0, -3.0, 1)):                                  # 박힌 작살 (줄 달린 쇠 자루)
+        m.box(x - 0.3, 12.2, z - 0.3, x + 0.3, 19.0, z + 0.3, IRON, rot=("z", 22.5 * s, (x, 12.2, z)))
+        m.box(x - 0.6, 12.2, z - 0.6, x + 0.6, 13.2, z + 0.6, "c8ccd2", rot=("z", 22.5 * s, (x, 12.2, z)))
+        m.box(x - 0.15, 18.4, z - 0.15, x + 0.15, 18.8, z + 3.5, "d8c8a0", rot=("z", 22.5 * s, (x, 12.2, z)))
 
 
 def kraken(m):
@@ -891,6 +905,27 @@ def kraken(m):
             m.box(x - 0.4, y - 1.3, z - 0.4, x + 0.4, y - 1.1, z + 0.4, SU)             # 빨판
         m.box(8 + dx * 21 - 0.8, 4, 8 + dz * 21 - 0.8, 8 + dx * 21 + 0.8, 10, 8 + dz * 21 + 0.8, SK,
               rot=("y", 45, (8 + dx * 21, 7, 8 + dz * 21)))                             # 치켜든 끝
+    RUNE, BAR = "c060ff", "d8d0c0"
+    for k in range(9):                                                                 # 외투막 위 가시 볏
+        x = 3.6 + k * 1.1
+        h = 2.0 + (4 - abs(k - 4)) * 0.9
+        m.box(x, 32, 7.2, x + 0.8, 32 + h, 8.8, S2)
+        m.box(x + 0.15, 32 + h, 7.5, x + 0.65, 32 + h + 0.7, 8.5, RUNE)
+    for (y, x0, x1) in ((23.0, 4.0, 12.0), (26.6, 5.4, 10.6)):                            # 이마의 빛나는 룬
+        m.box(x0, y, 13.95, x1, y + 0.5, 14.3, RUNE)
+    m.box(7.6, 22.0, 13.95, 8.4, 28.0, 14.3, RUNE)
+    for (x, y, z) in ((2.0, 26, 5), (13.4, 22, 9), (2.0, 14, 11), (13.4, 28, 4), (6, 31, 2.2)):   # 따개비
+        m.box(x - 0.7, y - 0.7, z - 0.7, x + 0.7, y + 0.7, z + 0.7, BAR)
+    m.box(2.4, 21.4, 13.9, 6.8, 22.0, 14.7, S2)                                        # 성난 눈썹
+    m.box(9.2, 21.4, 13.9, 13.6, 22.0, 14.7, S2)
+    for (x, s) in ((0.5, 1), (15.5, -1)):                                              # 앞에서 치켜든 거대 촉수 두 개
+        for i in range(5):
+            y = 10 + i * 4.2
+            w = 1.9 - i * 0.25
+            xx = x - s * (i * 0.9 if i < 3 else 1.8 - (i - 3) * 1.4)
+            m.box(xx - w, y, 15 - w, xx + w, y + 4.4, 15 + w, S if i % 2 == 0 else SK)
+            m.box(xx - 0.5, y + 1.2, 15 + w - 0.1, xx + 0.5, y + 2.2, 15 + w + 0.2, SU)
+        m.box(x - s * -0.6 - 0.6, 31, 14.4, x - s * -0.6 + 0.6, 33.4, 15.6, SK, rot=("z", 22.5 * s, (x, 31, 15)))
 
 
 # ---------------------------------------------------------------- 펫 (어깨 옆을 따라다니는 작은 동물, 앞 = +z)
@@ -1083,6 +1118,281 @@ def pet_star(m):
         m.box(x - 0.5, 12.5 + (k % 2), z - 0.5, x + 0.5, 13.5 + (k % 2), z + 0.5, GLOW if k % 2 else "ffffff")
 
 
+# ---------------------------------------------------------------- 필드 보스 9종 (v5.4.9)
+def _beast(m, fur, fur2, hoof, L, H, W, leg, shift=4.0):
+    """육중한 네발 몸통 (앞 어깨 혹 · 배 · 다리 4개 + 발굽). 머리가 앞으로 나오므로 몸을 shift 만큼 뒤로 뺀다"""
+    z0 = 8 - L / 2 - shift
+    m.box(8 - W / 2, leg, z0, 8 + W / 2, leg + H, z0 + L, fur)
+    m.box(8 - W / 2 - 0.8, leg + 2.5, z0 + L - 8, 8 + W / 2 + 0.8, leg + H + 1.4, z0 + L, fur2)     # 어깨 혹
+    m.box(8 - W / 2 + 1, leg - 0.6, z0 + 2, 8 + W / 2 - 1, leg + 1, z0 + L - 2, fur2)              # 배
+    for zz in (z0 + 1.5, z0 + L - 5.0):
+        m.sym(8 - W / 2 + 0.3, 1.2, zz, 8 - W / 2 + 3.5, leg + 1.5, zz + 3.4, fur2)
+        m.sym(8 - W / 2, 0, zz - 0.3, 8 - W / 2 + 3.8, 1.4, zz + 3.7, hoof)
+    return z0
+
+
+def field_boar_king(m):
+    """대지의 멧돼지왕 고르반 — 거대한 몸, 등 갈기 가시, L자 엄니, 금 코뚜레와 작은 왕관, 이끼 낀 철 견갑"""
+    FUR, FUR2, MANE, TUSK, EYE, GOLD, MOSS, IRON = "6b4a32", "4e3524", "2e1d12", "f0e6c8", "ff5020", "ffd23f", "5a8a3a", "7a7f88"
+    leg, H, W, L = 5.5, 10.0, 11.0, 20.0
+    z0 = _beast(m, FUR, FUR2, "2a2420", L, H, W, leg)
+    zf = z0 + L
+    m.box(4.0, leg + 2, zf, 12.0, leg + 9, zf + 6, FUR)                                    # 머리
+    m.box(5.4, leg + 2, zf + 6, 10.6, leg + 5.4, zf + 8.2, "8a6048")                       # 주둥이
+    m.sym(6.0, leg + 3.6, zf + 8.15, 7.2, leg + 4.6, zf + 8.4, "2a1a10")                   # 콧구멍
+    m.box(6.8, leg + 1.3, zf + 7.3, 9.2, leg + 2.1, zf + 7.9, GOLD)                        # 금 코뚜레
+    m.sym(4.6, leg + 6.4, zf + 5.95, 5.9, leg + 7.4, zf + 6.25, EYE)                       # 눈
+    m.sym(4.0, leg + 7.3, zf + 5.9, 6.4, leg + 7.9, zf + 6.3, MANE)                        # 찌푸린 눈썹
+    m.sym(3.8, leg + 2.4, zf + 5.5, 4.9, leg + 3.6, zf + 9.6, TUSK)                        # 엄니 (앞으로 → 위로)
+    m.sym(3.8, leg + 3.6, zf + 8.6, 4.9, leg + 7.4, zf + 9.6, TUSK)
+    m.sym(3.9, leg + 7.4, zf + 8.8, 4.8, leg + 8.4, zf + 9.4, "ffffff")
+    m.sym(3.4, leg + 8.2, zf + 0.8, 5.0, leg + 11.0, zf + 2.4, FUR2, rot=("z", 22.5, (4.2, leg + 8.2, zf + 1.6)))   # 귀
+    m.box(5.4, leg + 9, zf + 1.0, 10.6, leg + 9.8, zf + 4.6, GOLD)                         # 작은 왕관
+    for x in (5.6, 7.5, 9.4):
+        m.box(x, leg + 9.8, zf + 2.2, x + 1.0, leg + 11.6, zf + 3.2, GOLD)
+    m.box(7.5, leg + 10.2, zf + 4.5, 8.5, leg + 11.0, zf + 4.8, "ff3a3a")
+    for i in range(8):                                                                      # 등 갈기 가시
+        z = z0 + 1.5 + i * 2.4
+        hh = 2.0 + (3.0 if 2 <= i <= 6 else 1.2)
+        m.box(7.1, leg + H + (1.2 if i >= 4 else 0), z, 8.9, leg + H + hh + (1.2 if i >= 4 else 0), z + 1.8, MANE, rot=("x", -22.5, (8, leg + H, z + 0.9)))
+    m.box(8 - W / 2 - 1.2, leg + H - 0.5, zf - 7.5, 8 + W / 2 + 1.2, leg + H + 2.2, zf - 3, IRON)   # 철 견갑
+    m.box(8 - W / 2 - 1.3, leg + H - 0.9, zf - 7.6, 8 + W / 2 + 1.3, leg + H - 0.3, zf - 2.9, GOLD)
+    m.sym(8 - W / 2 - 1.4, leg + H + 1.0, zf - 6.2, 8 - W / 2 - 0.4, leg + H + 3.8, zf - 5.0, "c8ccd2")
+    for (x0, y0, z) in ((8 - W / 2 - 0.15, leg + 3, z0 + 3), (8 + W / 2 - 0.2, leg + 5, z0 + 7), (8 - W / 2 - 0.15, leg + 6, z0 + 11)):
+        m.box(x0, y0, z, x0 + 0.35, y0 + 2.4, z + 3.2, MOSS)                               # 이끼
+    m.box(5, leg + H - 0.1, z0 + 2, 9, leg + H + 0.3, z0 + 6, MOSS)
+    m.box(7.4, leg + H - 3, z0 - 2.4, 8.6, leg + H - 1.2, z0, FUR2)                        # 꼬리
+
+
+def field_frost_bear(m):
+    """설원의 대곰 우르사 — 산만 한 흰 곰, 등에 솟은 얼음 결정 무리, 서리 발톱, 얼음 이빨, 푸른 눈"""
+    FUR, FUR2, PAW, ICE, ICE2, EYE = "e8f2fa", "c8d8e8", "5a7088", "7fe8ff", "d8fbff", "3fb8ff"
+    leg, H, W, L = 7.0, 11.0, 12.0, 19.0
+    z0 = _beast(m, FUR, FUR2, PAW, L, H, W, leg)
+    zf = z0 + L
+    m.box(3.6, leg + 3, zf - 1, 12.4, leg + 10.5, zf + 5.5, FUR)                           # 머리
+    m.box(5.2, leg + 3, zf + 5.5, 10.8, leg + 6.6, zf + 8.6, FUR2)                         # 주둥이
+    m.box(6.8, leg + 5.4, zf + 8.5, 9.2, leg + 6.8, zf + 9.0, "1a2a3a")                    # 코
+    m.box(5.4, leg + 2.6, zf + 5.6, 10.6, leg + 3.2, zf + 8.4, "3a4a5a")                   # 벌린 입
+    for x in (5.6, 7.2, 8.8, 9.8):
+        m.box(x, leg + 3.2, zf + 7.8, x + 0.6, leg + 4.2, zf + 8.4, ICE2)                  # 얼음 이빨
+    m.sym(4.4, leg + 7.4, zf + 5.45, 5.8, leg + 8.6, zf + 5.75, EYE)
+    m.sym(3.4, leg + 10.2, zf + 0.6, 5.4, leg + 12.2, zf + 2.4, FUR2)                      # 둥근 귀
+    for zz in (z0 + 1.5, z0 + L - 5.0):                                                     # 서리 발톱
+        for dx in (0.4, 1.6, 2.8):
+            m.sym(8 - W / 2 + dx, 0, zz + 3.5, 8 - W / 2 + dx + 0.6, 0.9, zz + 4.6, ICE2)
+    for (x, z, hh, a) in ((8, z0 + 4, 7, 0), (6, z0 + 7, 5, 22.5), (10, z0 + 7, 5, -22.5), (8, z0 + 10, 9, 0),
+                          (5.4, z0 + 12, 6, 22.5), (10.6, z0 + 12, 6, -22.5), (8, z0 + 15, 6, 0), (6.5, z0 + 2, 3.5, 22.5), (9.5, z0 + 2, 3.5, -22.5)):
+        m.box(x - 1.0, leg + H, z - 1.0, x + 1.0, leg + H + hh, z + 1.0, ICE, rot=("z", a, (x, leg + H, z)) if a else None)      # 얼음 결정
+        m.box(x - 0.45, leg + H + hh - 0.2, z - 0.45, x + 0.45, leg + H + hh + 1.6, z + 0.45, ICE2, rot=("z", a, (x, leg + H, z)) if a else None)
+    m.box(8 - W / 2 - 0.2, leg + H - 2, zf - 8, 8 + W / 2 + 0.2, leg + H - 1.4, zf - 1, ICE)   # 서리 띠
+
+
+def field_bandit_lord(m):
+    """도적왕 바르칸 — 가죽 갑옷과 두건, 붉은 복면, 모피 깃, 금화 허리띠, 양손의 굽은 단검, 등에 멘 전리품 자루"""
+    SKIN, LEATH, LEATH2, TRIM, RED, FUR, STEEL, GOLD = "c89868", "4a3a2a", "2a2420", "8a6a3a", "a8281e", "8a7a6a", "c8ccd2", "ffd23f"
+    hero(m, SKIN, LEATH, LEATH2, TRIM, GOLD, boots="1a1612", w=1.1)
+    m.box(4.6, 19.8, 4.8, 11.4, 26.4, 11.4, "3a2e24")                                      # 두건
+    m.box(5.0, 20.6, 11.3, 11.0, 25.6, 11.6, "1a1612")                                     # 두건 속 그늘
+    m.box(5.2, 20.4, 11.4, 10.8, 22.8, 11.9, RED)                                          # 붉은 복면
+    m.box(9.6, 19.0, 11.4, 11.0, 21.0, 11.9, RED, rot=("z", -22.5, (10.3, 21, 11.6)))       # 복면 매듭 자락
+    m.sym(5.8, 23.4, 11.5, 7.2, 24.2, 11.8, "ffd23f")                                      # 번뜩이는 눈
+    m.box(7.2, 26.4, 7.0, 8.8, 28.4, 9.0, "3a2e24", rot=("x", -22.5, (8, 26.4, 8)))        # 두건 끝
+    m.box(3.0, 18.6, 4.6, 13.0, 20.8, 11.2, FUR)                                           # 모피 깃
+    m.box(3.4, 20.4, 5.0, 12.6, 21.2, 10.8, "a8988a")
+    for x in (4.6, 6.8, 9.0, 11.2):                                                         # 금화 허리띠
+        m.box(x, 10.6, 10.2, x + 0.9, 11.4, 10.6, GOLD)
+    m.box(3.2, 7.8, 9.6, 5.4, 10.4, 11.2, "6a4a2a")                                        # 허리 주머니
+    m.box(10.6, 7.8, 9.6, 12.8, 10.4, 11.2, "6a4a2a")
+    for (x, s) in ((0.6, 1), (15.4, -1)):                                                   # 굽은 단검 두 자루
+        m.box(x - 0.5, 9.0, 8.8, x + 0.5, 11.0, 10.2, "3a2a1a")
+        m.box(x - 1.0, 10.8, 8.6, x + 1.0, 11.4, 10.4, GOLD)
+        m.box(x - 0.4, 11.4, 9.1, x + 0.4, 17.0, 9.9, STEEL, rot=("z", -22.5 * s, (x, 11.4, 9.5)))
+        m.box(x - 0.15, 11.4, 9.0, x + 0.15, 17.4, 10.0, "ffffff", rot=("z", -22.5 * s, (x, 11.4, 9.5)))
+    m.box(9.0, 12.0, 1.6, 14.0, 20.0, 5.8, "8a6a3a", rot=("z", -22.5, (11.5, 16, 3.7)))    # 전리품 자루
+    m.box(10.4, 19.6, 2.6, 12.6, 21.2, 4.8, "6a4a2a", rot=("z", -22.5, (11.5, 16, 3.7)))
+    m.box(9.6, 17.0, 1.4, 11.0, 18.4, 2.0, GOLD, rot=("z", -22.5, (11.5, 16, 3.7)))
+    m.box(3.4, 13.0, 10.6, 12.6, 14.0, 11.0, "3a2a1a", rot=("z", 22.5, (8, 13.5, 10.8)))    # 가슴 가죽끈
+
+
+def field_ravager(m):
+    """사막의 파괴수 카르둠 — 뿔 달린 거대 파괴수, 전쟁 안장과 깃발, 쇠사슬 갑주, 붉은 눈"""
+    SKIN, SKIN2, HORN, IRON, RED, EYE, SAND = "6a5e52", "4a4038", "d8cfb8", "6a6f78", "a8281e", "ff4020", "c9a46a"
+    leg, H, W, L = 8.0, 11.0, 11.0, 20.0
+    z0 = _beast(m, SKIN, SKIN2, "2a2420", L, H, W, leg)
+    zf = z0 + L
+    m.box(4.2, leg + 1, zf, 11.8, leg + 9, zf + 7, SKIN)                                   # 머리 (아래로 처진)
+    m.box(5.0, leg - 1.4, zf + 3, 11.0, leg + 1, zf + 7.4, SKIN2)                          # 아래턱
+    for x in (5.4, 7.0, 8.4, 10.0):
+        m.box(x, leg + 0.8, zf + 6.8, x + 0.6, leg + 2.2, zf + 7.3, HORN)                  # 이빨
+    m.sym(4.3, leg + 5.6, zf + 6.95, 6.0, leg + 6.8, zf + 7.25, EYE)
+    m.box(4.0, leg + 7.0, zf + 6.9, 12.0, leg + 7.8, zf + 7.3, SKIN2)                      # 이마 뼈
+    for s, x in ((1, 3.2), (-1, 12.8)):                                                    # 휘어진 큰 뿔 (옆 → 위 → 앞)
+        m.box(x - 1.0, leg + 6, zf + 1.5, x + 1.0, leg + 8, zf + 4, HORN)
+        m.box(x - 1.0 - s * 1.6, leg + 7, zf + 1.8, x + 1.0 - s * 1.6, leg + 12, zf + 3.8, HORN, rot=("z", 22.5 * s, (x, leg + 7, zf + 2.8)))
+        m.box(x - 0.7 - s * 3.2, leg + 11.2, zf + 2.2, x + 0.7 - s * 3.2, leg + 12.6, zf + 6.4, HORN)
+        m.box(x - 0.4 - s * 3.2, leg + 11.5, zf + 6.4, x + 0.4 - s * 3.2, leg + 12.3, zf + 7.4, "ffffff")
+    m.box(8 - W / 2 - 0.4, leg + H, z0 + 5, 8 + W / 2 + 0.4, leg + H + 1.4, z0 + 13, RED)    # 전쟁 안장
+    m.sym(8 - W / 2 - 0.5, leg + 4, z0 + 5.5, 8 - W / 2 - 0.1, leg + H + 1.4, z0 + 12.5, RED)
+    m.box(8 - W / 2 - 0.5, leg + H + 1.4, z0 + 5, 8 + W / 2 + 0.5, leg + H + 1.9, z0 + 6, SAND)
+    m.box(8 - W / 2 - 0.5, leg + H + 1.4, z0 + 12, 8 + W / 2 + 0.5, leg + H + 1.9, z0 + 13, SAND)
+    for x in (4.2, 11.8):                                                                   # 깃발 두 개
+        m.box(x - 0.3, leg + H + 1.4, z0 + 3.6, x + 0.3, leg + H + 14, z0 + 4.2, "5a3a1a")
+        m.box(x - 0.1, leg + H + 8.4, z0 + 4.2, x + 0.1, leg + H + 13.6, z0 + 8.2, RED)
+        m.box(x - 0.12, leg + H + 9.6, z0 + 5.2, x + 0.12, leg + H + 11.6, z0 + 7.0, SAND)
+        m.box(x - 0.5, leg + H + 14, z0 + 3.4, x + 0.5, leg + H + 15, z0 + 4.4, "ffd23f")
+    for i in range(4):                                                                      # 쇠사슬 갑주
+        m.box(8 - W / 2 - 0.3, leg + 1.5 + i * 2.2, zf - 7, 8 + W / 2 + 0.3, leg + 2.3 + i * 2.2, zf - 0.5, IRON)
+    for i in range(5):
+        z = z0 + 14 + i * 1.3
+        m.box(7.2, leg + H + 0.8, z, 8.8, leg + H + 3.0, z + 0.9, HORN, rot=("x", -22.5, (8, leg + H, z)))
+
+
+def field_ancient_golem(m):
+    """고대 골렘 테라곤 — 거대한 돌 몸, 이끼와 덩굴, 몸에 새겨진 빛나는 초록 룬, 바위 주먹, 머리의 수정"""
+    ST, ST2, ST3, MOSS, RUNE, VINE = "8a8680", "6a6660", "4a4640", "5a8a3a", "5affa0", "3a6a2a"
+    m.sym(3.2, 0, 5.6, 7.4, 1.6, 11.2, ST3)                                                # 발
+    m.sym(3.4, 1.6, 6.0, 7.2, 10.0, 10.6, ST2)                                             # 다리
+    m.sym(3.2, 5.0, 10.5, 7.4, 6.6, 10.9, RUNE)
+    m.box(2.0, 10.0, 4.4, 14.0, 22.0, 11.8, ST)                                            # 몸통
+    m.box(3.0, 12.0, 11.7, 13.0, 21.0, 12.3, ST2)                                          # 가슴 돌판
+    m.box(7.0, 14.0, 12.2, 9.0, 19.0, 12.6, RUNE)                                          # 가슴 룬 (십자)
+    m.box(5.5, 15.8, 12.2, 10.5, 17.2, 12.6, RUNE)
+    m.box(1.4, 20.0, 3.8, 14.6, 23.4, 12.4, ST2)                                           # 어깨 바위
+    m.sym(-3.6, 17.0, 4.6, 1.8, 24.2, 11.6, ST)                                            # 어깨 덩어리
+    m.sym(-3.0, 7.0, 5.4, 1.2, 17.0, 10.8, ST2)                                            # 긴 팔
+    m.sym(-4.2, 1.6, 4.4, 2.2, 7.4, 11.8, ST3)                                             # 바위 주먹
+    m.sym(-4.3, 3.6, 11.7, 2.3, 4.6, 12.0, RUNE)
+    m.box(5.0, 23.4, 5.4, 11.0, 28.4, 11.2, ST)                                            # 머리 (작게)
+    m.box(4.8, 26.6, 5.2, 11.2, 27.6, 11.4, ST3)                                           # 이마
+    m.sym(5.8, 24.8, 11.15, 7.2, 25.8, 11.45, RUNE)                                        # 눈
+    m.box(7.0, 28.4, 7.0, 9.0, 31.4, 9.0, RUNE, rot=("y", 45, (8, 28.4, 8)))               # 머리 수정
+    m.box(7.5, 31.4, 7.5, 8.5, 32.4, 8.5, "ffffff", rot=("y", 45, (8, 31.4, 8)))
+    for (x0, y0, z0, x1, y1, z1) in ((1.8, 21, 4.0, 6, 23.6, 12.5), (-3.8, 23, 4.4, 1.0, 24.4, 11.8), (10, 10, 11.6, 13, 12, 12.1), (2, 10, 4.2, 14, 11, 4.6)):
+        m.box(x0, y0, z0, x1, y1, z1, MOSS)                                                # 이끼
+    for x in (3.0, 12.4, -2.2):                                                             # 늘어진 덩굴
+        m.box(x, 12.0, 11.9, x + 0.5, 22.0, 12.3, VINE)
+    for (x, z) in ((2.6, 7.0), (13.4, 7.0)):
+        m.box(x - 0.6, 13, z, x + 0.6, 21, z + 0.4, RUNE)                                  # 옆구리 룬 줄
+
+
+def field_swamp_witch(m):
+    """늪의 대마녀 모르가나 — 구부정한 이끼 로브, 버섯 모자, 뼈 목걸이, 초롱 지팡이, 떠도는 도깨비불"""
+    SKIN, ROBE, ROBE2, MOSS, CAP, SPOT, BONE, GLOW, WOOD = "7a9a5a", "3a4a2a", "2a3620", "5a8a3a", "7a2a3a", "f0e0c0", "e8e0d0", "c8ff5a", "4a3a22"
+    hero(m, SKIN, ROBE, ROBE2, MOSS, GLOW, w=1.05, robe=ROBE)
+    eyes(m, 22.0, GLOW, z=11.05)
+    m.box(7.3, 20.2, 11.0, 8.7, 21.4, 13.0, "5a7a3a")                                      # 매부리코
+    m.box(4.6, 13.0, 4.8, 11.4, 25.0, 5.6, "4a5a3a")                                       # 헝클어진 머리
+    m.box(1.8, 25.0, 1.8, 14.2, 26.6, 14.2, CAP)                                           # 버섯 모자
+    m.box(3.4, 26.6, 3.4, 12.6, 29.0, 12.6, CAP)
+    m.box(5.4, 29.0, 5.4, 10.6, 30.4, 10.6, CAP)
+    for (x, y, z) in ((3.0, 26.2, 10.0), (11.0, 27.4, 11.8), (6.0, 29.4, 5.2), (12.4, 26.2, 4.0), (8.2, 30.2, 8.0)):
+        m.box(x, y, z, x + 1.4, y + 0.6, z + 1.4, SPOT)                                    # 버섯 점
+    m.box(4.6, 24.4, 4.6, 11.4, 25.0, 11.4, "e8d8b8")                                      # 주름
+    for x in (5.2, 6.8, 8.4, 10.0):                                                         # 뼈 목걸이
+        m.box(x, 18.4, 10.6, x + 0.8, 19.6, 11.1, BONE)
+    m.box(7.4, 17.0, 10.7, 8.6, 18.4, 11.2, BONE)
+    for (x, y, z, h) in ((3.6, 2, 11.0, 5), (10.8, 4, 11.0, 4), (4.2, 0, 3.0, 6), (11.2, 0, 3.4, 5)):
+        m.box(x, y, z, x + 1.6, y + h, z + 0.6, MOSS)                                      # 이끼 자락
+    m.box(15.6, 0, 7.6, 16.8, 28, 8.8, WOOD)                                                # 초롱 지팡이 (갈고리 끝에 초롱)
+    m.box(16.8, 26.8, 7.6, 20.0, 28.0, 8.8, WOOD)
+    m.box(18.8, 25.0, 7.9, 19.4, 26.8, 8.5, "2a2a22")
+    m.box(17.6, 21.2, 6.6, 20.6, 25.0, 9.8, "2a2a22")
+    m.box(17.9, 21.6, 6.5, 20.3, 24.6, 9.9, GLOW)
+    m.box(17.4, 25.0, 6.4, 20.8, 25.4, 10.0, "5a5a4a")
+    for (x, y, z) in ((-5, 14, 4), (-3, 24, 12), (20, 12, 2), (-6, 6, 12)):                 # 도깨비불
+        m.box(x - 0.8, y - 0.8, z - 0.8, x + 0.8, y + 0.8, z + 0.8, GLOW, rot=("y", 45, (x, y, z)))
+        m.box(x - 0.35, y + 0.8, z - 0.35, x + 0.35, y + 1.8, z + 0.35, "ffffff", rot=("y", 45, (x, y, z)))
+
+
+def field_flame_knight(m):
+    """화염 기사 이그니스 — 검게 탄 판금에 용암 이음새, 불꽃 투구 장식, 불타는 대검, 화염 방패"""
+    ARM, ARM2, LAVA, FIRE, CORE, GOLD = "2a2426", "3e3638", "ff6a1a", "ffb030", "fff0a0", "c08a2a"
+    hero(m, ARM2, ARM, ARM2, LAVA, CORE, boots=ARM, w=1.15, h=1.05)
+    m.box(4.8, 20.4, 5.2, 11.2, 27.2, 11.6, ARM)                                           # 투구
+    m.box(5.4, 23.4, 11.5, 10.6, 24.2, 11.8, LAVA)                                         # 눈 틈
+    m.box(7.6, 20.8, 11.5, 8.4, 23.4, 11.8, LAVA)
+    m.box(4.6, 26.6, 5.0, 11.4, 27.4, 11.8, GOLD)
+    m.sym(3.8, 24.0, 7.0, 4.8, 28.0, 9.0, ARM2, rot=("z", -22.5, (4.3, 24, 8)))            # 투구 뿔
+    for i, (h, c) in enumerate(((4.0, LAVA), (5.6, FIRE), (3.4, LAVA), (2.4, FIRE))):       # 불꽃 투구 장식 (뒤로 흩날림)
+        z = 9.6 - i * 1.4
+        m.box(7.0, 27.4, z - 0.7, 9.0, 27.4 + h, z + 0.7, c, rot=("x", -22.5, (8, 27.4, z)))
+    m.box(7.4, 28.0, 8.8, 8.6, 32.0, 9.8, CORE, rot=("x", -22.5, (8, 27.4, 9.3)))
+    for (y, x0, x1) in ((6.0, 4.6, 7.4), (6.0, 8.6, 11.4), (13.5, 3.6, 12.4), (17.0, 4.2, 11.8)):
+        m.box(x0, y, 10.15, x1, y + 0.5, 10.75, LAVA)                                      # 용암 이음새
+    m.sym(1.0, 18.0, 5.0, 3.6, 22.4, 11.0, ARM)                                            # 견갑
+    m.sym(0.8, 21.6, 7.4, 1.8, 24.4, 8.6, LAVA, rot=("z", 22.5, (1.3, 21.6, 8)))
+    m.box(16.4, 8.0, 7.2, 17.8, 11.4, 8.8, GOLD)                                           # 대검 손잡이 · 가드
+    m.box(14.4, 11.4, 6.8, 19.8, 12.6, 9.2, GOLD)
+    m.box(16.0, 12.6, 7.4, 18.2, 30.0, 8.6, LAVA)                                          # 불타는 칼날
+    m.box(16.6, 12.6, 7.3, 17.6, 30.6, 8.7, CORE)
+    for y in (15, 19, 23, 27):
+        m.box(18.2, y, 7.6, 19.4, y + 2.2, 8.4, FIRE, rot=("z", -22.5, (18.2, y, 8)))      # 날의 불꽃
+        m.box(14.8, y + 1, 7.6, 16.0, y + 3.0, 8.4, FIRE, rot=("z", 22.5, (16, y + 1, 8)))
+    m.box(-2.6, 6.0, 4.2, -0.6, 17.0, 11.8, ARM)                                           # 화염 방패
+    m.box(-2.8, 6.4, 4.6, -2.5, 16.6, 11.4, GOLD)
+    m.box(-3.0, 9.6, 6.8, -2.6, 13.4, 9.2, LAVA)
+    m.box(-3.1, 10.6, 7.6, -2.8, 12.4, 8.4, CORE)
+
+
+def field_deep_warden(m):
+    """심층의 감시자 — 워든을 닮은 거대한 청록 몸, 가슴에 박동하는 영혼 심장, 머리의 촉각 뿔, 긴 팔"""
+    SK, SK2, SK3, SOUL, SOUL2, BONE = "1a3a44", "0f262e", "2a5560", "3fe8ff", "b0ffff", "d8e4e0"
+    m.sym(3.4, 0, 5.4, 7.4, 1.4, 11.0, SK2)                                                # 발
+    m.sym(3.6, 1.4, 6.0, 7.2, 10.4, 10.4, SK)                                              # 다리
+    m.box(2.2, 10.4, 4.8, 13.8, 23.0, 11.2, SK)                                            # 몸통
+    m.box(3.2, 11.0, 11.1, 12.8, 22.0, 11.5, SK3)
+    m.box(5.8, 14.0, 11.4, 10.2, 20.0, 12.2, "0a1a20")                                     # 영혼 심장 (갈비뼈 속)
+    m.box(6.6, 15.0, 11.6, 9.4, 19.0, 12.5, SOUL)
+    m.box(7.3, 16.0, 11.8, 8.7, 18.0, 12.7, SOUL2)
+    for y in (14.2, 16.4, 18.6):                                                            # 갈비뼈
+        m.box(4.2, y, 11.9, 11.8, y + 0.6, 12.4, BONE)
+    m.sym(-2.4, 8.0, 5.6, 2.2, 22.0, 10.4, SK)                                             # 긴 팔
+    m.sym(-2.8, 4.4, 5.2, 2.6, 8.2, 10.8, SK2)                                             # 큰 손
+    m.sym(-2.9, 5.2, 10.7, 2.7, 5.8, 11.0, SOUL)
+    m.box(3.6, 23.0, 4.6, 12.4, 31.0, 11.6, SK)                                            # 머리 (얼굴 없음)
+    m.box(4.6, 24.0, 11.5, 11.4, 29.4, 11.9, SK2)
+    m.box(5.6, 25.4, 11.8, 10.4, 26.2, 12.1, SOUL)                                         # 빛나는 틈
+    m.sym(2.6, 29.0, 7.0, 4.8, 35.0, 9.0, SK3, rot=("z", 22.5, (3.7, 29, 8)))              # 촉각 뿔
+    m.sym(2.9, 35.0, 7.3, 4.5, 37.0, 8.7, SOUL, rot=("z", 22.5, (3.7, 29, 8)))
+    for (x, y, z) in ((3.0, 12, 11.0), (12.4, 19, 11.0), (6.0, 6, 10.2), (4.0, 20.5, 4.4), (11, 13, 4.4)):
+        m.box(x, y, z, x + 1.2, y + 1.2, z + 0.6, SOUL)                                    # 몸의 스컬크 빛점
+    for (x, y, z) in ((-6, 20, 4), (22, 16, 12), (-4, 30, 12)):                             # 떠도는 영혼
+        m.box(x - 0.9, y - 0.9, z - 0.9, x + 0.9, y + 0.9, z + 0.9, SOUL2, rot=("y", 45, (x, y, z)))
+
+
+def field_frost_lich(m):
+    """서리 리치 칼라스 — 해골 얼굴, 누더기 서리 로브, 얼음 왕관, 드러난 갈비뼈, 얼음 구슬 지팡이, 떠도는 룬석"""
+    BONE, BONE2, ROBE, ROBE2, ICE, ICE2, GOLD = "e8e4d8", "b8b4a8", "1e2a44", "2a3a5a", "7fe8ff", "d8fbff", "a0c0e0"
+    hero(m, BONE, ROBE, ROBE2, ICE, ICE2, w=0.95, h=1.1, robe=ROBE)
+    m.box(5.0, 21.0, 11.0, 11.0, 22.6, 11.3, BONE2)                                        # 해골 턱
+    for x in (5.6, 7.0, 8.4, 9.8):
+        m.box(x, 22.0, 11.1, x + 0.6, 22.8, 11.4, "ffffff")                                # 이빨
+    m.sym(5.4, 24.2, 11.0, 7.2, 26.0, 11.2, "0a0f1a")                                      # 눈구멍
+    m.sym(5.9, 24.6, 11.1, 6.7, 25.4, 11.35, ICE)                                          # 푸른 눈빛
+    m.box(7.6, 23.2, 11.05, 8.4, 24.0, 11.3, "0a0f1a")
+    m.box(4.2, 18.0, 4.0, 11.8, 28.4, 5.6, ROBE2)                                          # 두건
+    m.sym(4.0, 18.0, 5.0, 5.2, 28.4, 11.4, ROBE2)
+    m.box(4.0, 27.6, 5.0, 12.0, 28.6, 11.4, ROBE2)
+    m.box(4.6, 28.6, 5.6, 11.4, 29.4, 10.8, GOLD)                                          # 얼음 왕관
+    for (x, h) in ((4.8, 2.4), (6.4, 3.6), (7.6, 5.0), (8.8, 3.6), (10.4, 2.4)):
+        m.box(x, 29.4, 10.0, x + 0.9, 29.4 + h, 10.9, ICE)
+        m.box(x + 0.2, 29.4 + h, 10.2, x + 0.7, 29.4 + h + 0.8, 10.7, ICE2)
+    for y in (13.6, 15.2, 16.8, 18.4):                                                      # 드러난 갈비뼈
+        m.box(5.4, y, 10.2, 10.6, y + 0.6, 10.9, BONE)
+    m.box(7.7, 13.0, 10.3, 8.3, 19.6, 10.95, BONE2)
+    m.box(-1.2, 0, 7.4, 0.2, 30, 8.8, "3a4a6a")                                            # 지팡이
+    m.box(-2.4, 30, 6.2, 1.4, 33.8, 10.0, ICE, rot=("y", 45, (-0.5, 30, 8.1)))              # 얼음 구슬
+    m.box(-1.6, 30.8, 7.0, 0.6, 33.0, 9.2, ICE2, rot=("y", 45, (-0.5, 30, 8.1)))
+    for (a, h) in ((-22.5, 3.0), (22.5, 3.0)):
+        m.box(-1.0, 28.0, 7.7, 0.0, 28.0 + h, 8.5, ICE, rot=("z", a, (-0.5, 28, 8.1)))
+    for (x, y, z) in ((20, 22, 4), (-6, 14, 12), (19, 10, 12), (-4, 24, 2)):                 # 떠도는 룬석
+        m.box(x - 1.0, y - 1.4, z - 0.5, x + 1.0, y + 1.4, z + 0.5, "3a4a6a", rot=("y", 45, (x, y, z)))
+        m.box(x - 0.4, y - 0.6, z - 0.6, x + 0.4, y + 0.6, z + 0.6, ICE, rot=("y", 45, (x, y, z)))
+    for x in (3.8, 6.0, 9.2, 11.4):                                                         # 서리 자락
+        m.box(x, 0, 11.4, x + 1.0, 1.6, 11.8, ICE)
+
+
 BUILDERS = {"witch": witch, "elf_queen": elf_queen, "dwarf_king": dwarf_king, "harpy_queen": harpy_queen,
             "sea_gatekeeper": sea_gatekeeper, "bungbung": bungbung, "desert_nightmare": desert_nightmare,
             "siphonia": siphonia, "kain": kain, "frost_queen": frost_queen, "volcano_giant": volcano_giant,
@@ -1090,7 +1400,10 @@ BUILDERS = {"witch": witch, "elf_queen": elf_queen, "dwarf_king": dwarf_king, "h
             "megalodon": megalodon, "kraken": kraken, "mount_wolf": mount_wolf, "mount_lizard": mount_lizard, "mount_warhorse": mount_warhorse,
             "mount_icebear": mount_icebear, "mount_lion": mount_lion, "mount_panther": mount_panther, "mount_griffin": mount_griffin, "mount_dragon": mount_dragon,
             "pet_slime": pet_slime, "pet_chick": pet_chick, "pet_bunny": pet_bunny, "pet_fox": pet_fox, "pet_penguin": pet_penguin, "pet_owl": pet_owl,
-            "pet_golem": pet_golem, "pet_fairy": pet_fairy, "pet_ghost": pet_ghost, "pet_phoenix": pet_phoenix, "pet_dragon": pet_dragon, "pet_star": pet_star}
+            "pet_golem": pet_golem, "pet_fairy": pet_fairy, "pet_ghost": pet_ghost, "pet_phoenix": pet_phoenix, "pet_dragon": pet_dragon, "pet_star": pet_star,
+            "field_boar_king": field_boar_king, "field_frost_bear": field_frost_bear, "field_bandit_lord": field_bandit_lord, "field_ravager": field_ravager,
+            "field_ancient_golem": field_ancient_golem, "field_swamp_witch": field_swamp_witch, "field_flame_knight": field_flame_knight,
+            "field_deep_warden": field_deep_warden, "field_frost_lich": field_frost_lich}
 
 
 # ---------------------------------------------------------------- 위엄 (v5.1.1): 더 웅장한 보스
@@ -1098,8 +1411,11 @@ DIVINE = {"elf_queen", "siphonia", "frost_queen", "thunder_god", "harpy_queen", 
 DARK_CROWN = {"witch", "kain", "void_apostle", "balrog", "desert_nightmare", "dwarf_king", "sea_gatekeeper"}   # 가시 왕관
 WINGED = {"elf_queen": "light", "siphonia": "light", "frost_queen": "light", "thunder_god": "light", "vengeful_spirit": "light",
           "void_apostle": "dark", "kain": "dark"}
-CAPED = {"witch": "2a1640", "dwarf_king": "8a1a1a", "sea_gatekeeper": "0f4a5a", "desert_nightmare": "7a4a10"}
+CAPED = {"witch": "2a1640", "dwarf_king": "8a1a1a", "sea_gatekeeper": "0f4a5a", "desert_nightmare": "7a4a10",
+         "field_bandit_lord": "3a2a1e", "field_flame_knight": "7a1a10"}
 HUGE = {"bungbung", "volcano_giant", "primordial_dragon", "kraken"}
+AQUATIC = {"megalodon", "kraken"}   # 물속 보스: 받침대 · 화로 없음
+BEASTS = {"megalodon", "kraken", "field_boar_king", "field_frost_bear", "field_ravager"}   # 등 뒤 마법진 없음
 
 
 def _core(m):
@@ -1120,20 +1436,9 @@ def majesty(m, bid, col):
     for k in range(16):
         a = k * _m.pi / 8
         x, z = 8 + _m.cos(a) * R, 8 + _m.sin(a) * R
-        ang = [0, 22.5, 45, -22.5][k % 4]
-        m.box(x - 3.4, 0.02, z - 0.35, x + 3.4, 0.14, z + 0.35, col, rot=("y", ang, (x, 0.08, z)))                   # 바깥 고리 (16각형)
+        _hbar(m, x, z, 0.02, 0.14, 2 * R * _m.tan(_m.pi / 16) + 0.3, 0.7, k * 22.5 + 90, col)                  # 바깥 고리 (16각형)
         rx, rz = 8 + _m.cos(a) * (R - 2.2), 8 + _m.sin(a) * (R - 2.2)
         m.box(rx - 0.5, 0.03, rz - 0.5, rx + 0.5, 0.18 + (k % 2) * 0.2, rz + 0.5, white if k % 2 else col)       # 룬 눈금
-    for k in range(4):                                                                                        # 8각 별
-        m.box(8 - 15, 0.04, 7.6, 8 + 15, 0.16, 8.4, col if k % 2 else white, rot=("y", [0, 45, 22.5, -22.5][k], (8, 0.1, 8)))
-    # 2) 바깥 궤도의 큰 결정 4개 (대각선, 높이 엇갈림)
-    for k in range(4):
-        a = k * _m.pi / 2 + _m.pi / 4
-        x, z, y = 8 + _m.cos(a) * 19, 8 + _m.sin(a) * 19, 12 + (k % 2) * 6
-        m.box(x - 1.6, y - 3.4, z - 1.6, x + 1.6, y + 3.4, z + 1.6, col, rot=("y", 45, (x, y, z)))
-        m.box(x - 0.8, y - 2.2, z - 0.8, x + 0.8, y + 2.2, z + 0.8, white, rot=("y", 45, (x, y, z)))
-        m.box(x - 0.9, y + 3.4, z - 0.9, x + 0.9, y + 4.6, z + 0.9, col, rot=("y", 45, (x, y + 4, z)))
-        m.box(x - 0.9, y - 4.6, z - 0.9, x + 0.9, y - 3.4, z + 0.9, col, rot=("y", 45, (x, y - 4, z)))
     if bid in HUGE:   # 거대한 보스: 몸 둘레를 도는 큰 불꽃/기운 고리
         for k in range(12):
             a = k * _m.pi / 6
@@ -1188,16 +1493,96 @@ def majesty(m, bid, col):
         m.box(7.4, sh * 0.5 + 0.8, z0 - 1.1, 8.6, sh * 0.5 + 2.0, z0 - 0.9, white)
 
 
+# ---------------------------------------------------------------- v5.4.9 더 웅장하게: 계단 받침대 · 화로 · 등 뒤 마법진
+def _bar(m, cx, cy, z0, z1, L, t, theta, col):
+    """세로 평면(XY)에서 theta(도) 방향의 막대. 회전은 22.5° 단위만 되므로 45° 넘으면 세로 막대를 반대로 기울임"""
+    th = ((theta + 90) % 180) - 90
+    if abs(th) <= 45:
+        m.box(cx - L / 2, cy - t / 2, z0, cx + L / 2, cy + t / 2, z1, col, rot=("z", th, (cx, cy, (z0 + z1) / 2)) if th else None)
+    else:
+        ang = th - 90 if th > 0 else th + 90
+        m.box(cx - t / 2, cy - L / 2, z0, cx + t / 2, cy + L / 2, z1, col, rot=("z", ang, (cx, cy, (z0 + z1) / 2)) if ang else None)
+
+
+def _hbar(m, cx, cz, y0, y1, L, t, theta, col):
+    """바닥 평면(XZ)에서 theta(도) 방향의 막대 (_bar 의 수평판)"""
+    th = ((theta + 90) % 180) - 90
+    if abs(th) <= 45:
+        m.box(cx - L / 2, y0, cz - t / 2, cx + L / 2, y1, cz + t / 2, col, rot=("y", -th, (cx, y0, cz)) if th else None)
+    else:
+        ang = th - 90 if th > 0 else th + 90
+        m.box(cx - t / 2, y0, cz - L / 2, cx + t / 2, y1, cz + L / 2, col, rot=("y", -ang, (cx, y0, cz)) if ang else None)
+
+
+def sigil(m, cx, cy, z, R, col, white="ffffff"):
+    """등 뒤에 세워진 마법진: 16각 두 겹 고리 + 8 갈래 살 + 가운데 별"""
+    import math as _m
+    for (r, t, c) in ((R, 0.55, col), (R * 0.72, 0.4, white)):
+        seg = 2 * r * _m.tan(_m.pi / 16) + 0.25
+        for k in range(16):
+            a = k * 22.5
+            x, y = cx + _m.cos(_m.radians(a)) * r, cy + _m.sin(_m.radians(a)) * r
+            _bar(m, x, y, z - 0.3, z, seg, t, a + 90, c)
+    for k in range(8):
+        a = k * 22.5
+        _bar(m, cx, cy, z - 0.25, z - 0.05, R * 1.25, 0.3, a, col if k % 2 else white)
+    for k in range(8):
+        a = k * 45 + 22.5
+        x, y = cx + _m.cos(_m.radians(a)) * R * 0.86, cy + _m.sin(_m.radians(a)) * R * 0.86
+        m.box(x - 0.55, y - 0.55, z - 0.45, x + 0.55, y + 0.55, z + 0.1, white, rot=("z", 45, (x, y, z)))
+    m.box(cx - 1.2, cy - 1.2, z - 0.5, cx + 1.2, cy + 1.2, z + 0.1, col, rot=("z", 45, (cx, cy, z)))
+
+
+def epic(m, bid, col, core, lift=1.2):
+    """core = 장식을 붙이기 전의 _core(m) (왕관·날개가 머리 높이 추정을 흐리지 않게)"""
+    import math as _m
+    white, stone, stone2, gold = "ffffff", "2a2733", "3c3848", "ffd23f"
+    top, back = core
+    if bid in AQUATIC:
+        return
+    humanoid_like = bid not in HUGE and bid not in BEASTS
+    # 몸 전체를 받침대 위로 올림
+    for e in m.els:
+        e["from"][1] += lift
+        e["to"][1] += lift
+        if "rotation" in e:
+            e["rotation"]["origin"][1] += lift
+    # 계단식 팔각 받침대 (돌 + 금테 + 빛나는 룬 줄)
+    for i, (r, y0, y1) in enumerate(((12.0, 0, 0.45), (10.4, 0.45, 0.85), (8.8, 0.85, lift))):
+        for ang in (0, 45):
+            m.box(8 - r * 0.83, y0, 8 - r * 0.83, 8 + r * 0.83, y1, 8 + r * 0.83, stone if i % 2 == 0 else stone2, rot=("y", ang, (8, y0, 8)) if ang else None)
+        for ang in (0, 45):
+            m.box(8 - r * 0.84, y1 - 0.12, 8 - r * 0.84, 8 + r * 0.84, y1 + 0.02, 8 + r * 0.84, gold if i == 2 else col, rot=("y", ang, (8, y1, 8)) if ang else None)
+    for k in range(8):                                                                   # 받침대 옆면 룬 (빛)
+        a = k * _m.pi / 4 + _m.pi / 8
+        x, z = 8 + _m.cos(a) * 9.6, 8 + _m.sin(a) * 9.6
+        m.box(x - 0.5, 0.15, z - 0.5, x + 0.5, 0.7, z + 0.5, col, rot=("y", 45, (x, 0.4, z)))
+    # 네 귀퉁이 화로 (기둥 + 받침 + 불꽃)
+    for k in range(4):
+        a = k * _m.pi / 2 + _m.pi / 4
+        x, z = 8 + _m.cos(a) * 12.6, 8 + _m.sin(a) * 12.6
+        m.box(x - 0.9, 0, z - 0.9, x + 0.9, 0.6, z + 0.9, stone2)
+        m.box(x - 0.55, 0.6, z - 0.55, x + 0.55, 4.8, z + 0.55, stone)
+        m.box(x - 1.1, 4.8, z - 1.1, x + 1.1, 5.5, z + 1.1, gold)
+        m.box(x - 0.8, 5.5, z - 0.8, x + 0.8, 6.9, z + 0.8, col, rot=("y", 45, (x, 6, z)))
+        m.box(x - 0.4, 6.9, z - 0.4, x + 0.4, 8.2, z + 0.4, white, rot=("y", 45, (x, 7.5, z)))
+    if not humanoid_like:
+        return
+    # 등 뒤 마법진 (세워진 원형)
+    sy = top * 0.62 + lift
+    sigil(m, 8, sy, back - 4.2, min(10.5, top * 0.5), col)
+
+
 def _display(g):
     r = lambda v: round(v * g, 3)
     return {"gui": {"rotation": [20, -30, 0], "translation": [0, -3, 0], "scale": [r(0.42)] * 3},
             "fixed": {"scale": [r(0.5)] * 3}, "ground": {"scale": [r(0.3)] * 3}}
 
 
-def shrink(els, k):
-    """(8,8,8) 기준 k 배 (회전 원점 포함) + -16~32 범위로 자르기"""
+def shrink(els, k, drop=0.0):
+    """(8,8,8) 기준 k 배 (회전 원점 포함) 후 drop 만큼 내림 + -16~32 범위로 자르기"""
     def f(v):
-        return [round(8 + (c - 8) * k, 4) for c in v]
+        return [round(8 + (c - 8) * k - (drop if i == 1 else 0), 4) for i, c in enumerate(v)]
     for e in els:
         e["from"], e["to"] = f(e["from"]), f(e["to"])
         e["from"] = [max(-16, min(32, c)) for c in e["from"]]
@@ -1216,14 +1601,15 @@ def write(pack_dir, ns, write_json):
     for i, bid in enumerate(BOSS_ORDER):
         pal = Palette()
         m = Model(pal)
-        is_boss = i < BOSS_ORDER.index("mount_wolf")
+        is_boss = i < BOSS_ORDER.index("mount_wolf") or bid.startswith("field_")
         CLAMP_AT_BUILD[0] = not is_boss
         BUILDERS[bid](m)
         if bid in BOSS_IDS:
-            grandeur(m, THEME.get(bid, "ff5050"))   # 모든 보스: 룬 고리 · 떠도는 결정 · 기운 가시
-            majesty(m, bid, THEME.get(bid, "ff5050"))   # 더 웅장하게: 3겹 마법진 · 후광/왕관 · 날개/망토 · 큰 결정 궤도
+            core = _core(m)
+            majesty(m, bid, THEME.get(bid, "ff5050"))        # 후광/왕관 · 날개/망토 · 바닥 16각 고리 (몸 기준 좌표라 먼저)
+            epic(m, bid, THEME.get(bid, "ff5050"), core)     # v5.4.9: 계단 받침대 · 화로 · 등 뒤 마법진
         if is_boss:
-            shrink(m.els, BOSS_SHRINK)
+            shrink(m.els, BOSS_SHRINK, BOSS_DROP)
         CLAMP_AT_BUILD[0] = True
         pal.image().save(os.path.join(tex_dir, bid + ".png"))
         model = {"credit": "RpgCraft boss model", "texture_size": [16, 16],

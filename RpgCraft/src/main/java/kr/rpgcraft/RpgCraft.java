@@ -267,6 +267,9 @@ public final class RpgCraft extends JavaPlugin {
         if (Math.abs(getConfig().getDouble("spirit-summon.drop-chance", 0.0003) - 0.0008) < 1e-9) getConfig().set("spirit-summon.drop-chance", 0.0003);
         if (!getConfig().contains("spirit-summon.balrog-chance")) { getConfig().set("spirit-summon.balrog-chance", 0.00005); getConfig().set("spirit-summon.balrog-min-level", 120); }
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
+        if (Math.abs(getConfig().getDouble("boss.exp-even-share", 0.75) - 0.5) < 1e-9) getConfig().set("boss.exp-even-share", 0.75);   // 보스 경험치 더 고르게 (v5.4.0)
+        if (Math.abs(getConfig().getDouble("boss.exp-max-share", 0.4) - 0.5) < 1e-9) getConfig().set("boss.exp-max-share", 0.4);
+        if (Math.abs(getConfig().getDouble("player.max-defense", 90) - 85) < 1e-9) getConfig().set("player.max-defense", 90);   // 방어력 상한 85 → 90% (v5.3.8)
         if (Math.abs(getConfig().getDouble("guild-raid.cooldown-hours", 24) - 12) < 1e-9) getConfig().set("guild-raid.cooldown-hours", 24);   // 토벌전 쿨타임 12 → 24시간 (v5.3.3)
         String[][] v47 = {{"player.dex-crit-per-point", "0.2", "0.07"}, {"player.adv-hp-per-point", "140", "70"}, {"player.adv-def-per-point", "0.08", "0.05"},
                 {"player.dex-critdmg-per-point", "0.8", "0.6"}, {"player.str-atk-per-2", "6", "5"}, {"player.hp-per-level", "60", "25"},

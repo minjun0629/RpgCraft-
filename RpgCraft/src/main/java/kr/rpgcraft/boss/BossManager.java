@@ -98,8 +98,18 @@ public class BossManager {
         return e;
     }
 
+    /**
+     * 보스 처치 경험치 (1등 100% 기준).
+     * 필드 보스는 자주 나오므로 bosses.yml 의 exp 대신 "그 보스 레벨에서 레벨업에 필요한 경험치 × field-bosses.exp-levels(1.5)" (v5.3.5).
+     */
+    public double bossExp(BossDefinition d) {
+        if (!d.field) return d.exp;
+        double lv = plugin.getConfig().getDouble("field-bosses.exp-levels", 1.5);
+        return Math.min(d.exp, plugin.levels().need(d.level) * lv);
+    }
+
     public MobManager.MobState initState(LivingEntity e, BossDefinition d) {
-        MobManager.MobState s = plugin.mobs().initCustom(e, d.level, d.hp, d.damage * plugin.getConfig().getDouble("bosses.damage-mult", 1.15), d.defense, d.exp, d.money, d.name);
+        MobManager.MobState s = plugin.mobs().initCustom(e, d.level, d.hp, d.damage * plugin.getConfig().getDouble("bosses.damage-mult", 1.15), d.defense, (long) bossExp(d), d.money, d.name);
         s.bossId = d.id;
         plugin.mobs().updateName(e, s);
         if (!active.containsKey(e.getUniqueId())) {
@@ -926,6 +936,33 @@ public class BossManager {
         List<Map.Entry<UUID, Double>> ranking = new ArrayList<>(s.contrib.entrySet());
         ranking.sort((x, y) -> Double.compare(y.getValue(), x.getValue()));
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + d.name + "&f이(가) 토벌되었습니다!"));
+        // 경험치 분배 (v5.3.9): 한 명이 독식하지 않도록 절반은 참가자끼리 똑같이, 절반은 기여도대로 + 1인 상한
+        var cfg = plugin.getConfig();
+        double expMin = cfg.getDouble("boss.exp-min-contribution", 0.02), even = cfg.getDouble("boss.exp-even-share", 0.75), cap = cfg.getDouble("boss.exp-max-share", 0.4);
+        Map<UUID, Double> expShare = new HashMap<>();
+        double eligTotal = 0;
+        for (Map.Entry<UUID, Double> en : ranking)
+            if (total > 0 && en.getValue() / total >= expMin && Bukkit.getPlayer(en.getKey()) != null) { expShare.put(en.getKey(), en.getValue()); eligTotal += en.getValue(); }
+        int parts = expShare.size();
+        for (Map.Entry<UUID, Double> en : expShare.entrySet())
+            en.setValue(even / parts + (1 - even) * (eligTotal <= 0 ? 0 : en.getValue() / eligTotal));
+        if (parts >= 2) {   // 상한을 넘는 몫은 나머지 참가자에게 고루 (2명이면 상한 60%)
+            double lim = Math.max(cap, 1.2 / parts);
+            for (int it = 0; it < 5; it++) {
+                double excess = 0;
+                int under = 0;
+                for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
+                    if (en.getValue() > lim) { excess += en.getValue() - lim; en.setValue(lim); }
+                    else if (en.getValue() < lim) under++;
+                }
+                if (excess <= 1e-9 || under == 0) break;
+                for (Map.Entry<UUID, Double> en : expShare.entrySet()) if (en.getValue() < lim) en.setValue(en.getValue() + excess / under);
+            }
+        }
+        for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
+            Player p = Bukkit.getPlayer(en.getKey());
+            if (p != null) plugin.levels().addExp(p, bossExp(d) * en.getValue());
+        }
         int rank = 0;
         for (Map.Entry<UUID, Double> en : ranking) {
             Player p = Bukkit.getPlayer(en.getKey());
@@ -936,8 +973,7 @@ public class BossManager {
             }
             rank++;
             if (p == null || share < minShare) continue;
-            double mult = Math.max(0.1, share);
-            plugin.levels().addExp(p, d.exp * mult);
+            double mult = Math.max(0.1, share);   // 돈 · 재료는 기여도대로 (경험치는 위에서 따로 분배)
             plugin.economy().give(p, (long) (d.money * mult * plugin.getConfig().getDouble("economy.boss-money-mult", 0.35)));
             // 재료 등은 바로 지급, 장비는 「보스 수정」으로 (마크에이지식: 수정을 쓰면 확률로 장비)
             for (BossDefinition.Drop dr : d.drops) {

@@ -333,4 +333,32 @@ public class PlayerListener implements Listener {
             plugin.stats().refresh(e.getPlayer());
         });
     }
+
+    // ------------------------------------------------------------------ 내구도 (v5.3.7)
+    /** 방금 무언가를 때린 시각 (공격 직후 깎이는 내구도 = 공격으로 닳은 것) */
+    private final java.util.Map<java.util.UUID, Long> lastAttackTick = new java.util.HashMap<>();
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onAttackMark(org.bukkit.event.entity.EntityDamageByEntityEvent e) {
+        if (e.getDamager() instanceof Player p) lastAttackTick.put(p.getUniqueId(), System.currentTimeMillis());
+    }
+
+    /**
+     * 플러그인 아이템(채집도구 · 망치 등 포함)은 내구도가 닳지 않음 — 곡괭이 모양 채집도구로 몬스터를 때리면 닳던 문제.
+     * 일반(바닐라) 곡괭이 · 도끼 · 삽 · 괭이도 몬스터를 때릴 때는 닳지 않음 (블록을 캘 때만 원래대로).
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onItemDamage(PlayerItemDamageEvent e) {
+        ItemStack it = e.getItem();
+        if (kr.rpgcraft.item.ItemData.id(it) != null) { e.setCancelled(true); return; }
+        String t = it.getType().name();
+        boolean tool = t.endsWith("_PICKAXE") || t.endsWith("_AXE") || t.endsWith("_SHOVEL") || t.endsWith("_HOE");
+        Long at = lastAttackTick.get(e.getPlayer().getUniqueId());
+        if (tool && at != null && System.currentTimeMillis() - at < 40) e.setCancelled(true);   // 같은 틱(공격 직후)
+    }
+
+    @EventHandler
+    public void onQuitClearAttack(PlayerQuitEvent e) {
+        lastAttackTick.remove(e.getPlayer().getUniqueId());
+    }
 }

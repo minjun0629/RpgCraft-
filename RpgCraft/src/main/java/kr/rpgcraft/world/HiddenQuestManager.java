@@ -155,6 +155,7 @@ public class HiddenQuestManager implements Listener {
         List<String> owners = data.getStringList("owners." + q.id());
         int cap = plugin.getConfig().getInt("hidden-quests.max-owners", 3);
         boolean mine = owners.contains(p.getUniqueId().toString());
+        if (mine) return;   // 이미 깬 히든 NPC 는 말을 걸 수 없음 (v5.3.6)
         Gui g = new Gui(3, "&8" + q.name()) {
         };
         List<String> lore = new ArrayList<>();

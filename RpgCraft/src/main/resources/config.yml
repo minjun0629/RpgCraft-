@@ -18,7 +18,7 @@ player:
   dex-critdmg-per-point: 0.7 # 민첩 1 = 치명타 피해 +0.7%
   dex-speed-per-point: 0.05  # 민첩 1 = 이동속도 +0.05%
   dex-speed-max: 30
-  max-defense: 85            # 방어력(%) 상한
+  max-defense: 90            # 방어력(%) 상한
   max-level: 300
   exp:                       # [설계] 필요 경험치 = base * Lv^power + flat
     base: 100
@@ -108,7 +108,10 @@ mobs:
   clear-vanilla-drops: true
 
 boss:
-  min-contribution: 0.07     # 보스 보상을 받기 위한 최소 기여도(7%)
+  min-contribution: 0.07     # 보스 보상(돈 · 재료)을 받기 위한 최소 기여도(7%)
+  exp-min-contribution: 0.02 # 보스 경험치를 받기 위한 최소 기여도(2%)
+  exp-even-share: 0.75       # 경험치의 이 비율은 참가자끼리 똑같이, 나머지는 기여도대로
+  exp-max-share: 0.4         # 한 사람이 받는 경험치 상한 (3명 이상 40%, 2명이면 60%). 넘는 몫은 나머지에게
 
 enhance:
   max-normal: 30             # 모든 장비 최대 +30
@@ -403,6 +406,7 @@ field-bosses:              # 필드 보스 (bosses.yml 의 field: true) - 접속
   max-distance: 50
   level-range: 25          # 지역 레벨 ± 이 안의 보스만 (없으면 가장 가까운 레벨)
   despawn-minutes: 10      # 근처(80칸)에 아무도 없으면 이 시간 뒤 사라짐
+  exp-levels: 1.5          # 처치 경험치 = 보스 레벨에서 필요한 경험치 × 이 값 (1등 기준, 기여도에 비례)
   worlds: []               # 비우면 기본 월드 + 네더
 
 tpa:

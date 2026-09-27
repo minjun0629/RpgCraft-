@@ -180,6 +180,7 @@ public class HiddenJobManager implements Listener {
         Tier t = TIERS.stream().filter(x -> (x.line() + x.tier()).equals(id)).findFirst().orElse(null);
         if (t == null) return;
         Tier cur = of(d);
+        if (cur != null && cur.line().equals(t.line()) && cur.tier() >= t.tier()) return;   // 이미 깬 히든 NPC 는 말을 걸 수 없음 (v5.3.6)
         // 순서: 같은 줄기의 바로 앞 단계여야 함 (1단계는 아무 숨은 길도 걷지 않은 사람만)
         boolean ready = t.tier() == 1 ? cur == null : cur != null && cur.line().equals(t.line()) && cur.tier() == t.tier() - 1;
         Gui g = new Gui(3, "&8…") {

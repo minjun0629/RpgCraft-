@@ -1,0 +1,110 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "minecraft:item/netherite_boots_quartz_trim",
+      "predicate": {
+        "trim_type": 0.1
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_iron_trim",
+      "predicate": {
+        "trim_type": 0.2
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_netherite_darker_trim",
+      "predicate": {
+        "trim_type": 0.3
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_redstone_trim",
+      "predicate": {
+        "trim_type": 0.4
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_copper_trim",
+      "predicate": {
+        "trim_type": 0.5
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_gold_trim",
+      "predicate": {
+        "trim_type": 0.6
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_emerald_trim",
+      "predicate": {
+        "trim_type": 0.7
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_diamond_trim",
+      "predicate": {
+        "trim_type": 0.8
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_lapis_trim",
+      "predicate": {
+        "trim_type": 0.9
+      }
+    },
+    {
+      "model": "minecraft:item/netherite_boots_amethyst_trim",
+      "predicate": {
+        "trim_type": 1.0
+      }
+    },
+    {
+      "predicate": {
+        "custom_model_data": 553
+      },
+      "model": "rpgcraft:item/fiend_qiongqi"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 639
+      },
+      "model": "rpgcraft:item/bungbung_a3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1203
+      },
+      "model": "rpgcraft:item/trans_armor_1_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1207
+      },
+      "model": "rpgcraft:item/trans_armor_2_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1211
+      },
+      "model": "rpgcraft:item/trans_armor_3_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1215
+      },
+      "model": "rpgcraft:item/trans_armor_4_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1219
+      },
+      "model": "rpgcraft:item/trans_armor_5_3"
+    }
+  ],
+  "textures": {
+    "layer0": "minecraft:item/netherite_boots"
+  }
+}

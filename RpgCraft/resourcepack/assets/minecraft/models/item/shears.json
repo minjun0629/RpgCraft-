@@ -1,0 +1,632 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/shears"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 100
+      },
+      "model": "rpgcraft:item/dagger_10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 101
+      },
+      "model": "rpgcraft:item/dagger_20"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 102
+      },
+      "model": "rpgcraft:item/dagger_30"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 103
+      },
+      "model": "rpgcraft:item/dagger_40"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 150
+      },
+      "model": "rpgcraft:item/bs_dagger_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 151
+      },
+      "model": "rpgcraft:item/bs_dagger_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 152
+      },
+      "model": "rpgcraft:item/bs_dagger_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 153
+      },
+      "model": "rpgcraft:item/bs_dagger_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 154
+      },
+      "model": "rpgcraft:item/bs_dagger_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 201
+      },
+      "model": "rpgcraft:item/witch_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 211
+      },
+      "model": "rpgcraft:item/dwarf_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 221
+      },
+      "model": "rpgcraft:item/harpy_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 231
+      },
+      "model": "rpgcraft:item/sea_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 241
+      },
+      "model": "rpgcraft:item/bungbung_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 300
+      },
+      "model": "rpgcraft:item/spirit_zhuque"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 900
+      },
+      "model": "rpgcraft:item/relic_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 951
+      },
+      "model": "rpgcraft:item/pender_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1101
+      },
+      "model": "rpgcraft:item/trans_dagger_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1102
+      },
+      "model": "rpgcraft:item/trans_dagger_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1103
+      },
+      "model": "rpgcraft:item/trans_dagger_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1104
+      },
+      "model": "rpgcraft:item/trans_dagger_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1105
+      },
+      "model": "rpgcraft:item/trans_dagger_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1300
+      },
+      "model": "rpgcraft:item/armory_dagger_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1301
+      },
+      "model": "rpgcraft:item/armory_dagger_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1302
+      },
+      "model": "rpgcraft:item/armory_dagger_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1303
+      },
+      "model": "rpgcraft:item/armory_dagger_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1304
+      },
+      "model": "rpgcraft:item/armory_dagger_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1305
+      },
+      "model": "rpgcraft:item/armory_dagger_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1306
+      },
+      "model": "rpgcraft:item/armory_dagger_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1307
+      },
+      "model": "rpgcraft:item/armory_dagger_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1310
+      },
+      "model": "rpgcraft:item/armory2_dagger_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1311
+      },
+      "model": "rpgcraft:item/armory2_dagger_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1312
+      },
+      "model": "rpgcraft:item/armory2_dagger_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1313
+      },
+      "model": "rpgcraft:item/armory2_dagger_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1314
+      },
+      "model": "rpgcraft:item/armory2_dagger_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1315
+      },
+      "model": "rpgcraft:item/armory2_dagger_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1316
+      },
+      "model": "rpgcraft:item/armory2_dagger_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1317
+      },
+      "model": "rpgcraft:item/armory2_dagger_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3100
+      },
+      "model": "rpgcraft:item/dagger_10_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3101
+      },
+      "model": "rpgcraft:item/dagger_20_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3102
+      },
+      "model": "rpgcraft:item/dagger_30_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3103
+      },
+      "model": "rpgcraft:item/dagger_40_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3150
+      },
+      "model": "rpgcraft:item/bs_dagger_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3151
+      },
+      "model": "rpgcraft:item/bs_dagger_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3152
+      },
+      "model": "rpgcraft:item/bs_dagger_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3153
+      },
+      "model": "rpgcraft:item/bs_dagger_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3154
+      },
+      "model": "rpgcraft:item/bs_dagger_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3300
+      },
+      "model": "rpgcraft:item/spirit_zhuque_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3900
+      },
+      "model": "rpgcraft:item/relic_dagger_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3951
+      },
+      "model": "rpgcraft:item/pender_dagger_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4101
+      },
+      "model": "rpgcraft:item/trans_dagger_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4102
+      },
+      "model": "rpgcraft:item/trans_dagger_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4103
+      },
+      "model": "rpgcraft:item/trans_dagger_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4104
+      },
+      "model": "rpgcraft:item/trans_dagger_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4105
+      },
+      "model": "rpgcraft:item/trans_dagger_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4300
+      },
+      "model": "rpgcraft:item/armory_dagger_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4301
+      },
+      "model": "rpgcraft:item/armory_dagger_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4302
+      },
+      "model": "rpgcraft:item/armory_dagger_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4303
+      },
+      "model": "rpgcraft:item/armory_dagger_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4304
+      },
+      "model": "rpgcraft:item/armory_dagger_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4305
+      },
+      "model": "rpgcraft:item/armory_dagger_6_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4306
+      },
+      "model": "rpgcraft:item/armory_dagger_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4307
+      },
+      "model": "rpgcraft:item/armory_dagger_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4310
+      },
+      "model": "rpgcraft:item/armory2_dagger_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4311
+      },
+      "model": "rpgcraft:item/armory2_dagger_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4312
+      },
+      "model": "rpgcraft:item/armory2_dagger_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4313
+      },
+      "model": "rpgcraft:item/armory2_dagger_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4314
+      },
+      "model": "rpgcraft:item/armory2_dagger_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4315
+      },
+      "model": "rpgcraft:item/armory2_dagger_6_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4316
+      },
+      "model": "rpgcraft:item/armory2_dagger_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4317
+      },
+      "model": "rpgcraft:item/armory2_dagger_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5100
+      },
+      "model": "rpgcraft:item/dagger_10_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5101
+      },
+      "model": "rpgcraft:item/dagger_20_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5102
+      },
+      "model": "rpgcraft:item/dagger_30_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5103
+      },
+      "model": "rpgcraft:item/dagger_40_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5150
+      },
+      "model": "rpgcraft:item/bs_dagger_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5151
+      },
+      "model": "rpgcraft:item/bs_dagger_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5152
+      },
+      "model": "rpgcraft:item/bs_dagger_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5153
+      },
+      "model": "rpgcraft:item/bs_dagger_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5154
+      },
+      "model": "rpgcraft:item/bs_dagger_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5300
+      },
+      "model": "rpgcraft:item/spirit_zhuque_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5900
+      },
+      "model": "rpgcraft:item/relic_dagger_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5951
+      },
+      "model": "rpgcraft:item/pender_dagger_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6101
+      },
+      "model": "rpgcraft:item/trans_dagger_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6102
+      },
+      "model": "rpgcraft:item/trans_dagger_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6103
+      },
+      "model": "rpgcraft:item/trans_dagger_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6104
+      },
+      "model": "rpgcraft:item/trans_dagger_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6105
+      },
+      "model": "rpgcraft:item/trans_dagger_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6300
+      },
+      "model": "rpgcraft:item/armory_dagger_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6301
+      },
+      "model": "rpgcraft:item/armory_dagger_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6302
+      },
+      "model": "rpgcraft:item/armory_dagger_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6303
+      },
+      "model": "rpgcraft:item/armory_dagger_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6304
+      },
+      "model": "rpgcraft:item/armory_dagger_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6305
+      },
+      "model": "rpgcraft:item/armory_dagger_6_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6306
+      },
+      "model": "rpgcraft:item/armory_dagger_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6307
+      },
+      "model": "rpgcraft:item/armory_dagger_8_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6310
+      },
+      "model": "rpgcraft:item/armory2_dagger_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6311
+      },
+      "model": "rpgcraft:item/armory2_dagger_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6312
+      },
+      "model": "rpgcraft:item/armory2_dagger_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6313
+      },
+      "model": "rpgcraft:item/armory2_dagger_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6314
+      },
+      "model": "rpgcraft:item/armory2_dagger_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6315
+      },
+      "model": "rpgcraft:item/armory2_dagger_6_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6316
+      },
+      "model": "rpgcraft:item/armory2_dagger_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6317
+      },
+      "model": "rpgcraft:item/armory2_dagger_8_e10"
+    }
+  ]
+}

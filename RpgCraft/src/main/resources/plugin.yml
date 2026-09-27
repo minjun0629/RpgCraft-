@@ -1,0 +1,169 @@
+name: RpgCraft
+version: '5.0.9'
+main: kr.rpgcraft.RpgCraft
+api-version: '1.20'
+description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
+authors: [RpgCraft]
+
+commands:
+  stat:
+    description: 스탯 분배
+    aliases: [스탯]
+  info:
+    description: 능력치 정보
+    aliases: [정보]
+  money:
+    description: 소지금 확인
+    aliases: [돈]
+  pay:
+    description: 송금
+    aliases: [송금]
+  check:
+    description: 수표 발행
+    aliases: [수표]
+  potionbag:
+    description: 포션가방
+    aliases: [포션가방]
+  rune:
+    description: 룬 장착 / 변경
+    aliases: [룬]
+  skill:
+    description: 특수 스킬 / 패시브
+    aliases: [스킬, 패시브]
+  enhance:
+    description: 장비 강화
+    aliases: [강화]
+  job:
+    description: 전직
+    aliases: [직업]
+  craft:
+    description: 대장장이 제작
+    aliases: [제작]
+  rename:
+    description: 제작 장비 이름 변경
+    aliases: [명명]
+  look:
+    description: 제작 장비 외형 변경
+    aliases: [외형]
+  essence:
+    description: 기운 조합 (사신수 / 사흉수)
+    aliases: [기운]
+  gc:
+    description: 길드 채팅
+    aliases: [길드채팅]
+  shop:
+    description: 상점
+    aliases: [상점]
+  absorb:
+    description: 흡수 대상 지정
+    aliases: [흡수]
+  menu:
+    description: 메인 메뉴 (쉬프트 + F)
+    aliases: [메뉴, m]
+  party:
+    description: 파티
+    aliases: [파티, p]
+  legendary:
+    description: 레전더리 패시브 (종류별 1인 소유)
+    aliases: [레전더리]
+  accessory:
+    description: 장신구
+    aliases: [장신구]
+  coupon:
+    description: 쿠폰
+    aliases: [쿠폰]
+  quickkey:
+    description: 퀵 스킬 키 설정
+    aliases: [퀵키]
+  guide:
+    description: 길라잡이
+    aliases: [길라잡이, 튜토리얼, 위키]
+  rebirth:
+    description: 환생
+    aliases: [환생]
+  potential:
+    description: 잠재능력
+    aliases: [잠재능력, 잠재]
+  bounty:
+    description: 현상수배 위치
+    aliases: [현상수배]
+  dummy:
+    description: 허수아비 (데미지 테스트)
+    aliases: [허수아비]
+  runefuse:
+    description: 룬 합성
+    aliases: [룬합성]
+  auction:
+    description: 옥션
+    aliases: [옥션, 경매]
+  trash:
+    description: 쓰레기통
+    aliases: [쓰레기통]
+  guidebook:
+    description: 안내서 받기
+    aliases: [가이드]
+  tpa:
+    description: 순간이동 요청
+  tpaccept:
+    description: 순간이동 수락
+  tpdeny:
+    description: 순간이동 거절
+  ticket:
+    description: 문의
+    aliases: [티켓, 문의]
+  partychat:
+    description: 파티 채팅
+    aliases: [pc, 파티챗]
+  nick:
+    description: 이름 바꾸기
+    aliases: [이름변경, 닉네임]
+  enderchest:
+    description: 엔더 상자
+    aliases: [엔더상자]
+  notice:
+    description: 공지 (관리자)
+    aliases: [공지]
+    permission: rpgcraft.admin
+  lottery:
+    description: 추첨 (관리자)
+    aliases: [추첨]
+    permission: rpgcraft.admin
+  mount:
+    description: 탈것 뽑기
+    aliases: [탈것]
+  limitbreak:
+    description: 한계 돌파
+    aliases: [한계돌파]
+  call:
+    description: 관리자 호출
+    aliases: [호출]
+  casino:
+    description: 행운의 룰렛
+    aliases: [룰렛, 도박]
+  trade:
+    description: 플레이어 거래
+    aliases: [거래]
+  escape:
+    description: 동굴 탈출 (지상으로 이동)
+    aliases: [탈출]
+  guild:
+    description: 길드
+    aliases: [길드]
+  war:
+    description: 공성전
+    aliases: [전쟁]
+  rpgadmin:
+    description: RpgCraft 관리자 명령어
+    aliases: [rpg관리, 마크관리, rpga]
+    permission: rpgcraft.admin
+
+permissions:
+  rpgcraft.admin:
+    description: 관리자 명령어
+    default: op
+  rpgcraft.build:
+    description: 야생 방지 무시하고 건축 (/rpg관리 build + 크리에이티브)
+    default: op
+  rpgcraft.guild.create:
+    description: 무료 길드 생성 (allow-player-create 가 false 여도 생성 가능)
+    default: op

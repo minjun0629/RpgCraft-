@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1422,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/cube_master"
+        }
+      },
+      {
+        "threshold": 1464,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/loot_frost"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/light_blue_dye"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/golden_axe"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1304
+      },
+      "model": "rpgcraft:item/armory_axe_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1313
+      },
+      "model": "rpgcraft:item/armory2_axe_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4304
+      },
+      "model": "rpgcraft:item/armory_axe_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4313
+      },
+      "model": "rpgcraft:item/armory2_axe_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6304
+      },
+      "model": "rpgcraft:item/armory_axe_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6313
+      },
+      "model": "rpgcraft:item/armory2_axe_4_e10"
+    }
+  ]
+}

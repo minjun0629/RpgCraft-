@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/staff_1",
+  "textures": {
+    "0": "rpgcraft:item/staff_1_e10",
+    "particle": "rpgcraft:item/staff_1_e10"
+  }
+}

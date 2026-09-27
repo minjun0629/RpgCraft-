@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1400,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_ring_1"
+        }
+      },
+      {
+        "threshold": 1401,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_ring_2"
+        }
+      },
+      {
+        "threshold": 1402,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_ring_3"
+        }
+      },
+      {
+        "threshold": 1469,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/loot_crown"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/gold_nugget"
+    }
+  }
+}

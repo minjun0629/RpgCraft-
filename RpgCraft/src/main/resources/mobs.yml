@@ -1,0 +1,742 @@
+# ============================================================
+#  커스텀 몬스터. 자연 스폰 몬스터가 config custom-mobs.chance 확률로 지역 레벨/바이옴에 맞는 몬스터로 바뀝니다.
+#  level: 등장 레벨 범위 (월드 스폰에서 멀수록 레벨↑) / biomes: 바이옴 이름 일부 (비우면 어디서나)
+#  abilities.type: LEAP 도약 · CHARGE 돌진 · SLAM 내려찍기 · FROST 냉기 폭발 · VOLLEY 화살 난사 · FIREBALL 화염구
+#                  BLINK 순간이동 · HEAL 자가 치유 · SUMMON 소환(entity) · POISON_CLOUD 독구름
+#  on-hit: 공격 시 상태이상 (POISON, SLOW, WEAKNESS, BLINDNESS, HUNGER, WITHER, FIRE : 초)
+#  /rpg관리 mob spawn <id> [레벨] 로 직접 소환
+# ============================================================
+
+jelly_slime:
+  name: "젤리 슬라임"
+  type: SLIME
+  size: 2
+  level: {min: 1, max: 14}
+  biomes: [PLAINS, FOREST, MEADOW, BIRCH]
+  weight: 20
+  hp-mult: 0.8
+  abilities:
+    - {type: LEAP, interval: 6, radius: 2, power: 1.0}
+  drops:
+    - {item: loot_slime, chance: 0.6, min: 1, max: 2}
+
+goblin:
+  name: "고블린 좀도둑"
+  type: PIGLIN
+  baby: false
+  level: {min: 3, max: 22}
+  weight: 16
+  speed: 0.55
+  money-mult: 2.5
+  equipment: {helmet: GOLDEN_HELMET, hand: WOODEN_SWORD}
+  drops:
+    - {item: loot_bone, chance: 0.5}
+    - {item: loot_totem, chance: 0.08}
+
+rotten_farmer:
+  name: "썩은 농부"
+  type: ZOMBIE
+  level: {min: 4, max: 22}
+  biomes: [PLAINS, SUNFLOWER, SAVANNA]
+  weight: 14
+  equipment: {helmet: LEATHER_HELMET, hand: IRON_HOE}
+  on-hit: {HUNGER: 5}
+  drops:
+    - {item: loot_bone, chance: 0.6}
+
+forest_bandit:
+  name: "숲 도적"
+  type: PILLAGER
+  level: {min: 8, max: 30}
+  biomes: [FOREST, TAIGA, JUNGLE, GROVE]
+  weight: 12
+  abilities:
+    - {type: VOLLEY, interval: 7, amount: 2, power: 0.8}
+  drops:
+    - {item: loot_fang, chance: 0.3}
+    - {item: loot_ink, chance: 0.1}
+
+silverfish_swarm:
+  name: "은빛 벌레떼"
+  type: SILVERFISH
+  level: {min: 10, max: 40}
+  biomes: [CAVE, DRIPSTONE, STONY, PEAKS]
+  weight: 8
+  hp-mult: 0.6
+  abilities:
+    - {type: SUMMON, interval: 12, entity: SILVERFISH, amount: 2}
+  drops:
+    - {item: loot_dust, chance: 0.3}
+
+venom_spider:
+  name: "독니 거미"
+  type: CAVE_SPIDER
+  level: {min: 10, max: 38}
+  weight: 12
+  on-hit: {POISON: 4}
+  abilities:
+    - {type: POISON_CLOUD, interval: 12, radius: 2.5}
+  drops:
+    - {item: loot_venom, chance: 0.5}
+    - {item: loot_fang, chance: 0.2}
+
+skeleton_captain:
+  name: "해골 궁수 대장"
+  type: SKELETON
+  level: {min: 15, max: 42}
+  weight: 12
+  hp-mult: 1.3
+  equipment: {helmet: IRON_HELMET, hand: BOW}
+  abilities:
+    - {type: VOLLEY, interval: 6, amount: 3, power: 0.7}
+  drops:
+    - {item: loot_bone, chance: 0.8, min: 1, max: 3}
+    - {item: loot_fang, chance: 0.2}
+
+bomber:
+  name: "폭탄병"
+  type: CREEPER
+  level: {min: 18, max: 60}
+  weight: 8
+  speed: 1.3
+  drops:
+    - {item: loot_dust, chance: 0.5}
+
+swamp_hag:
+  name: "늪지 마녀"
+  type: WITCH
+  level: {min: 18, max: 48}
+  biomes: [SWAMP, MANGROVE]
+  weight: 14
+  abilities:
+    - {type: HEAL, interval: 10, power: 1.0}
+    - {type: POISON_CLOUD, interval: 9, radius: 3}
+  drops:
+    - {item: loot_venom, chance: 0.4}
+    - {item: loot_ink, chance: 0.3}
+
+mummy:
+  name: "사막 미라"
+  type: HUSK
+  level: {min: 22, max: 58}
+  biomes: [DESERT]
+  weight: 16
+  hp-mult: 1.3
+  on-hit: {WEAKNESS: 4}
+  abilities:
+    - {type: SUMMON, interval: 16, entity: HUSK, amount: 2}
+  drops:
+    - {item: loot_bandage, chance: 0.6}
+
+sand_scorpion:
+  name: "모래 전갈"
+  type: SPIDER
+  level: {min: 25, max: 60}
+  biomes: [DESERT, BADLANDS]
+  weight: 12
+  on-hit: {POISON: 5}
+  abilities:
+    - {type: LEAP, interval: 6, radius: 2.5, power: 1.2}
+  drops:
+    - {item: loot_venom, chance: 0.4}
+    - {item: loot_fang, chance: 0.4}
+
+drowned_pirate:
+  name: "수몰된 해적"
+  type: DROWNED
+  level: {min: 25, max: 62}
+  biomes: [OCEAN, RIVER, BEACH]
+  weight: 14
+  equipment: {hand: TRIDENT, helmet: LEATHER_HELMET}
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.3}
+  drops:
+    - {item: loot_scale, chance: 0.2}
+    - {item: loot_fang, chance: 0.3}
+
+frost_wraith:
+  name: "얼음 망령"
+  type: STRAY
+  level: {min: 28, max: 66}
+  biomes: [SNOW, FROZEN, ICE, GROVE, JAGGED]
+  weight: 16
+  on-hit: {SLOW: 3}
+  abilities:
+    - {type: FROST, interval: 8, radius: 3.5, power: 1.2}
+  drops:
+    - {item: loot_frost, chance: 0.5}
+
+orc_warrior:
+  name: "오크 전사"
+  type: VINDICATOR
+  level: {min: 30, max: 62}
+  weight: 12
+  hp-mult: 1.6
+  equipment: {hand: IRON_AXE}
+  abilities:
+    - {type: CHARGE, interval: 9, power: 1.4}
+    - {type: SLAM, interval: 11, radius: 3, power: 1.3}
+  drops:
+    - {item: loot_totem, chance: 0.3}
+    - {item: loot_fang, chance: 0.3}
+
+soul_wisp:
+  name: "영혼 도깨비불"
+  type: VEX
+  level: {min: 32, max: 72}
+  weight: 8
+  hp-mult: 0.7
+  on-hit: {WITHER: 3}
+  drops:
+    - {item: loot_dust, chance: 0.6}
+
+orc_shaman:
+  name: "오크 주술사"
+  type: EVOKER
+  level: {min: 40, max: 72}
+  weight: 8
+  hp-mult: 1.4
+  abilities:
+    - {type: SUMMON, interval: 14, entity: VEX, amount: 2}
+    - {type: HEAL, interval: 12, power: 1.2}
+  drops:
+    - {item: loot_totem, chance: 0.5}
+    - {item: loot_core, chance: 0.05}
+
+ember_spirit:
+  name: "불꽃 정령"
+  type: BLAZE
+  level: {min: 40, max: 78}
+  weight: 10
+  abilities:
+    - {type: FIREBALL, interval: 4, power: 1.2}
+  drops:
+    - {item: loot_ember, chance: 0.6}
+
+magma_brute:
+  name: "용암 괴수"
+  type: MAGMA_CUBE
+  size: 3
+  level: {min: 45, max: 82}
+  biomes: [BADLANDS, NETHER, BASALT, CRIMSON]
+  weight: 10
+  hp-mult: 1.5
+  on-hit: {FIRE: 3}
+  abilities:
+    - {type: LEAP, interval: 6, radius: 3, power: 1.4}
+  drops:
+    - {item: loot_ember, chance: 0.6}
+
+night_hunter:
+  name: "밤의 사냥꾼"
+  type: PHANTOM
+  level: {min: 48, max: 88}
+  weight: 8
+  on-hit: {BLINDNESS: 2}
+  drops:
+    - {item: loot_scale, chance: 0.5}
+
+plague_boar:
+  name: "역병 멧돼지"
+  type: ZOGLIN
+  level: {min: 50, max: 88}
+  weight: 8
+  hp-mult: 1.8
+  abilities:
+    - {type: CHARGE, interval: 7, power: 1.5}
+  drops:
+    - {item: loot_horn, chance: 0.4}
+    - {item: loot_hide, chance: 0.6}
+
+nether_hog:
+  name: "네더 멧돼지"
+  type: HOGLIN
+  level: {min: 40, max: 85}
+  biomes: [CRIMSON, NETHER]
+  weight: 10
+  hp-mult: 1.6
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.3}
+  drops:
+    - {item: loot_horn, chance: 0.3}
+    - {item: loot_hide, chance: 0.6}
+
+piglin_berserker:
+  name: "피글린 광전사"
+  type: PIGLIN_BRUTE
+  level: {min: 55, max: 98}
+  biomes: [NETHER, CRIMSON, BASALT, SOUL]
+  weight: 8
+  hp-mult: 1.7
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.5}
+    - {type: SLAM, interval: 12, radius: 3, power: 1.3}
+  drops:
+    - {item: loot_crown, chance: 0.05}
+    - {item: loot_totem, chance: 0.3}
+
+bone_knight:
+  name: "해골 기사"
+  type: WITHER_SKELETON
+  level: {min: 55, max: 92}
+  weight: 10
+  hp-mult: 1.7
+  equipment: {chest: IRON_CHESTPLATE, hand: STONE_SWORD}
+  on-hit: {WITHER: 3}
+  abilities:
+    - {type: CHARGE, interval: 9, power: 1.5}
+    - {type: SLAM, interval: 12, radius: 3.5, power: 1.4}
+  drops:
+    - {item: loot_bone, chance: 0.9, min: 2, max: 4}
+    - {item: loot_dust, chance: 0.4}
+
+shadow_stalker:
+  name: "그림자 추적자"
+  type: ENDERMAN
+  level: {min: 55, max: 95}
+  weight: 8
+  on-hit: {BLINDNESS: 3}
+  abilities:
+    - {type: BLINK, interval: 7}
+  drops:
+    - {item: loot_eye, chance: 0.3}
+    - {item: loot_ink, chance: 0.5}
+
+dune_colossus:
+  name: "사막 거인"
+  type: HUSK
+  level: {min: 60, max: 100}
+  biomes: [DESERT, BADLANDS]
+  weight: 4
+  hp-mult: 3.0
+  damage-mult: 1.4
+  speed: 0.8
+  equipment: {helmet: GOLDEN_HELMET, chest: GOLDEN_CHESTPLATE}
+  abilities:
+    - {type: SLAM, interval: 8, radius: 4, power: 1.5}
+    - {type: LEAP, interval: 10, radius: 3, power: 1.5}
+  drops:
+    - {item: loot_bandage, chance: 1.0, min: 2, max: 3}
+    - {item: loot_core, chance: 0.2}
+
+war_beast:
+  name: "전쟁 파괴수"
+  type: RAVAGER
+  level: {min: 65, max: 105}
+  weight: 5
+  hp-mult: 2.5
+  abilities:
+    - {type: CHARGE, interval: 7, power: 1.6}
+    - {type: SLAM, interval: 10, radius: 4, power: 1.5}
+  drops:
+    - {item: loot_horn, chance: 0.7}
+    - {item: loot_core, chance: 0.15}
+
+lich:
+  name: "리치"
+  type: SKELETON
+  level: {min: 70, max: 110}
+  weight: 5
+  hp-mult: 2.0
+  equipment: {helmet: GOLDEN_HELMET, hand: BLAZE_ROD}
+  abilities:
+    - {type: FIREBALL, interval: 4, power: 1.4}
+    - {type: SUMMON, interval: 15, entity: SKELETON, amount: 2}
+    - {type: BLINK, interval: 9}
+  drops:
+    - {item: loot_core, chance: 0.4}
+    - {item: loot_crown, chance: 0.08}
+
+corrupted_knight:
+  name: "타락한 기사"
+  type: ZOMBIE
+  level: {min: 75, max: 110}
+  weight: 6
+  hp-mult: 2.4
+  damage-mult: 1.3
+  equipment: {helmet: NETHERITE_HELMET, chest: NETHERITE_CHESTPLATE, legs: NETHERITE_LEGGINGS, hand: NETHERITE_SWORD}
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.6}
+    - {type: SLAM, interval: 11, radius: 3.5, power: 1.5}
+    - {type: HEAL, interval: 15, power: 1.0}
+  drops:
+    - {item: loot_crown, chance: 0.15}
+    - {item: loot_core, chance: 0.3}
+
+end_crawler:
+  name: "공허 벌레"
+  type: ENDERMITE
+  level: {min: 85, max: 110}
+  biomes: [END]
+  weight: 10
+  drops:
+    - {item: loot_eye, chance: 0.3}
+
+void_phantom:
+  name: "공허 유령"
+  type: PHANTOM
+  level: {min: 90, max: 110}
+  biomes: [END]
+  weight: 8
+  hp-mult: 1.8
+  on-hit: {WITHER: 3}
+  drops:
+    - {item: loot_scale, chance: 0.6}
+    - {item: loot_eye, chance: 0.3}
+
+# ===================== 고레벨 지역 (Lv.110 ~ 300) =====================
+void_knight:
+  name: "공허의 기사"
+  type: WITHER_SKELETON
+  level: {min: 110, max: 170}
+  weight: 12
+  hp-mult: 1.6
+  equipment: {helmet: NETHERITE_HELMET, chest: NETHERITE_CHESTPLATE, hand: NETHERITE_SWORD}
+  on-hit: {WITHER: 3}
+  abilities:
+    - {type: CHARGE, interval: 7, power: 1.5}
+    - {type: BLINK, interval: 10}
+  drops:
+    - {item: loot_eye, chance: 0.3}
+    - {item: loot_core, chance: 0.2}
+
+star_golem:
+  name: "별빛 골렘"
+  type: RAVAGER
+  level: {min: 120, max: 190}
+  weight: 6
+  hp-mult: 2.6
+  abilities:
+    - {type: SLAM, interval: 8, radius: 4.5, power: 1.6}
+    - {type: CHARGE, interval: 9, power: 1.5}
+  drops:
+    - {item: loot_core, chance: 0.4}
+    - {item: loot_horn, chance: 0.6}
+
+abyss_caster:
+  name: "심연의 주술사"
+  type: EVOKER
+  level: {min: 120, max: 200}
+  weight: 8
+  hp-mult: 1.8
+  abilities:
+    - {type: SUMMON, interval: 12, entity: VEX, amount: 3}
+    - {type: FIREBALL, interval: 5, power: 1.5}
+    - {type: HEAL, interval: 12, power: 1.3}
+  drops:
+    - {item: loot_ink, chance: 0.6}
+    - {item: loot_eye, chance: 0.2}
+
+frost_titan:
+  name: "서리 거인"
+  type: STRAY
+  level: {min: 140, max: 220}
+  biomes: [SNOW, FROZEN, ICE, GROVE, JAGGED, PEAKS]
+  weight: 10
+  hp-mult: 2.4
+  on-hit: {SLOW: 4}
+  abilities:
+    - {type: FROST, interval: 6, radius: 5, power: 1.5}
+    - {type: VOLLEY, interval: 7, amount: 4, power: 0.9}
+  drops:
+    - {item: loot_frost, chance: 0.8, min: 1, max: 3}
+    - {item: loot_core, chance: 0.2}
+
+inferno_lord:
+  name: "업화의 군주"
+  type: BLAZE
+  level: {min: 150, max: 230}
+  weight: 8
+  hp-mult: 2.0
+  on-hit: {FIRE: 4}
+  abilities:
+    - {type: FIREBALL, interval: 3, power: 1.5}
+    - {type: SLAM, interval: 10, radius: 4, power: 1.4}
+  drops:
+    - {item: loot_ember, chance: 0.8, min: 1, max: 3}
+    - {item: loot_crown, chance: 0.04}
+
+dread_rider:
+  name: "공포의 기수"
+  type: ZOMBIE
+  level: {min: 160, max: 240}
+  weight: 10
+  hp-mult: 2.2
+  damage-mult: 1.3
+  equipment: {helmet: NETHERITE_HELMET, chest: NETHERITE_CHESTPLATE, legs: NETHERITE_LEGGINGS, boots: NETHERITE_BOOTS, hand: NETHERITE_AXE}
+  abilities:
+    - {type: CHARGE, interval: 6, power: 1.7}
+    - {type: LEAP, interval: 9, radius: 3.5, power: 1.6}
+  drops:
+    - {item: loot_crown, chance: 0.06}
+    - {item: loot_core, chance: 0.3}
+
+nightmare_spider:
+  name: "악몽의 여왕거미"
+  type: SPIDER
+  level: {min: 170, max: 250}
+  weight: 8
+  hp-mult: 2.3
+  on-hit: {POISON: 6, BLINDNESS: 2}
+  abilities:
+    - {type: POISON_CLOUD, interval: 8, radius: 4}
+    - {type: SUMMON, interval: 14, entity: CAVE_SPIDER, amount: 3}
+    - {type: LEAP, interval: 7, radius: 3, power: 1.5}
+  drops:
+    - {item: loot_venom, chance: 1.0, min: 2, max: 4}
+    - {item: loot_eye, chance: 0.3}
+
+storm_herald:
+  name: "폭풍의 전령"
+  type: PHANTOM
+  level: {min: 180, max: 260}
+  weight: 6
+  hp-mult: 2.0
+  on-hit: {WEAKNESS: 4}
+  drops:
+    - {item: loot_scale, chance: 1.0, min: 2, max: 3}
+
+ancient_lich:
+  name: "태고의 리치"
+  type: SKELETON
+  level: {min: 200, max: 280}
+  weight: 6
+  hp-mult: 2.8
+  equipment: {helmet: DIAMOND_HELMET, hand: BLAZE_ROD}
+  abilities:
+    - {type: FIREBALL, interval: 3, power: 1.7}
+    - {type: FROST, interval: 8, radius: 5, power: 1.4}
+    - {type: SUMMON, interval: 12, entity: WITHER_SKELETON, amount: 2}
+    - {type: BLINK, interval: 7}
+  drops:
+    - {item: loot_crown, chance: 0.1}
+    - {item: loot_core, chance: 0.5}
+
+world_eater:
+  name: "세계를 삼키는 자"
+  type: RAVAGER
+  level: {min: 230, max: 300}
+  weight: 4
+  hp-mult: 3.5
+  damage-mult: 1.5
+  abilities:
+    - {type: CHARGE, interval: 6, power: 1.9}
+    - {type: SLAM, interval: 7, radius: 5, power: 1.8}
+    - {type: HEAL, interval: 15, power: 1.2}
+  drops:
+    - {item: loot_crown, chance: 0.2}
+    - {item: loot_core, chance: 0.8, min: 1, max: 2}
+
+fallen_seraph:
+  name: "타락한 대천사"
+  type: VEX
+  level: {min: 240, max: 300}
+  weight: 6
+  hp-mult: 2.5
+  on-hit: {WITHER: 4, BLINDNESS: 2}
+  drops:
+    - {item: loot_crown, chance: 0.12}
+    - {item: loot_eye, chance: 0.5}
+
+abyss_king:
+  name: "심연의 왕"
+  type: WITHER_SKELETON
+  level: {min: 260, max: 300}
+  weight: 4
+  hp-mult: 4.0
+  damage-mult: 1.6
+  equipment: {helmet: NETHERITE_HELMET, chest: NETHERITE_CHESTPLATE, legs: NETHERITE_LEGGINGS, hand: NETHERITE_SWORD}
+  on-hit: {WITHER: 5}
+  abilities:
+    - {type: CHARGE, interval: 5, power: 2.0}
+    - {type: SLAM, interval: 7, radius: 5, power: 2.0}
+    - {type: BLINK, interval: 8}
+    - {type: SUMMON, interval: 14, entity: WITHER_SKELETON, amount: 2}
+  drops:
+    - {item: loot_crown, chance: 0.3, min: 1, max: 2}
+    - {item: loot_core, chance: 1.0, min: 1, max: 3}
+
+# ===================== 낮 전용 인간형 몬스터 (natural: false, day: true) =====================
+day_bandit:
+  name: "산적"
+  type: PILLAGER
+  natural: false
+  day: true
+  level: {min: 1, max: 60}
+  hp-mult: 1.0
+  abilities:
+    - {type: VOLLEY, interval: 8, amount: 2, power: 0.5}
+  drops:
+    - {item: loot_bandage, chance: 0.3}
+
+day_raider:
+  name: "약탈단 도끼병"
+  type: VINDICATOR
+  natural: false
+  day: true
+  level: {min: 5, max: 120}
+  hp-mult: 1.3
+  equipment: {hand: IRON_AXE}
+  abilities:
+    - {type: CHARGE, interval: 7, power: 0.9}
+  drops:
+    - {item: loot_bandage, chance: 0.3}
+    - {item: loot_ink, chance: 0.05}
+
+day_mercenary:
+  name: "용병 검사"
+  type: VINDICATOR
+  natural: false
+  day: true
+  level: {min: 15, max: 180}
+  hp-mult: 1.5
+  equipment: {helmet: IRON_HELMET, chest: IRON_CHESTPLATE, hand: IRON_SWORD}
+  abilities:
+    - {type: CHARGE, interval: 6, power: 1.0}
+    - {type: LEAP, interval: 9, radius: 3, power: 1.0}
+  drops:
+    - {item: loot_totem, chance: 0.06}
+
+day_warlock:
+  name: "떠돌이 흑마법사"
+  type: EVOKER
+  natural: false
+  day: true
+  level: {min: 30, max: 220}
+  hp-mult: 1.3
+  abilities:
+    - {type: FIREBALL, interval: 5, power: 1.0}
+    - {type: SUMMON, interval: 16, entity: VEX, amount: 2}
+  drops:
+    - {item: loot_ink, chance: 0.4}
+
+day_knight:
+  name: "타락한 기사단원"
+  type: VINDICATOR
+  natural: false
+  day: true
+  level: {min: 70, max: 300}
+  hp-mult: 2.0
+  damage-mult: 1.2
+  equipment: {helmet: NETHERITE_HELMET, chest: NETHERITE_CHESTPLATE, legs: NETHERITE_LEGGINGS, hand: NETHERITE_SWORD}
+  abilities:
+    - {type: CHARGE, interval: 6, power: 1.3}
+    - {type: SLAM, interval: 9, radius: 3.5, power: 1.2}
+  drops:
+    - {item: loot_core, chance: 0.1}
+
+treasure_guardian:
+  name: "보물 수호자"
+  type: WITHER_SKELETON
+  natural: false
+  level: {min: 1, max: 300}
+  hp-mult: 1.6
+  equipment: {helmet: GOLDEN_HELMET, chest: GOLDEN_CHESTPLATE, hand: GOLDEN_SWORD}
+  abilities:
+    - {type: CHARGE, interval: 7, power: 0.9}
+  drops:
+    - {item: loot_totem, chance: 0.2}
+
+# ===================== 추가 몬스터 (야생 철 골렘 등) =====================
+wild_golem:
+  name: "야생 철 골렘"
+  type: IRON_GOLEM
+  level: {min: 15, max: 140}
+  weight: 4
+  hp-mult: 2.2
+  damage-mult: 1.3
+  abilities:
+    - {type: SLAM, interval: 9, radius: 4, power: 1.1}
+  drops:
+    - {item: loot_steel, chance: 0.6, min: 1, max: 3}
+
+moss_troll:
+  name: "이끼 트롤"
+  type: RAVAGER
+  level: {min: 25, max: 110}
+  weight: 3
+  hp-mult: 2.4
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.2}
+    - {type: SLAM, interval: 11, radius: 4, power: 1.0}
+  drops:
+    - {item: loot_hide, chance: 0.5}
+
+bog_witch:
+  name: "늪지 마녀"
+  type: WITCH
+  level: {min: 10, max: 90}
+  weight: 5
+  hp-mult: 1.1
+  abilities:
+    - {type: POISON_CLOUD, interval: 9, radius: 3, power: 0.8}
+    - {type: HEAL, interval: 18, power: 1.0}
+  drops:
+    - {item: loot_venom, chance: 0.4}
+
+crypt_knight:
+  name: "납골당 기사"
+  type: WITHER_SKELETON
+  level: {min: 40, max: 160}
+  weight: 4
+  hp-mult: 1.6
+  equipment: {helmet: CHAINMAIL_HELMET, chest: CHAINMAIL_CHESTPLATE, hand: STONE_SWORD}
+  abilities:
+    - {type: CHARGE, interval: 8, power: 1.1}
+  drops:
+    - {item: loot_bone, chance: 0.6}
+
+ember_imp:
+  name: "불씨 임프"
+  type: BLAZE
+  level: {min: 50, max: 180}
+  weight: 4
+  abilities:
+    - {type: FIREBALL, interval: 5, power: 0.9}
+  drops:
+    - {item: loot_ember, chance: 0.4}
+
+frost_wraith:
+  name: "서리 망령"
+  type: STRAY
+  level: {min: 60, max: 200}
+  weight: 4
+  hp-mult: 1.3
+  abilities:
+    - {type: FROST, interval: 9, radius: 3.5, power: 1.0}
+    - {type: BACKSTEP, interval: 7}
+  drops:
+    - {item: loot_frost, chance: 0.4}
+
+sand_stalker:
+  name: "모래 추적자"
+  type: HUSK
+  level: {min: 20, max: 120}
+  weight: 5
+  abilities:
+    - {type: LEAP, interval: 7, radius: 3, power: 1.0}
+  drops:
+    - {item: loot_bandage, chance: 0.4}
+
+void_hound:
+  name: "공허 사냥개"
+  type: WOLF
+  level: {min: 90, max: 260}
+  weight: 3
+  hp-mult: 1.2
+  damage-mult: 1.2
+  abilities:
+    - {type: BLINK, interval: 7, power: 1.1}
+    - {type: CHARGE, interval: 9, power: 1.0}
+  drops:
+    - {item: loot_eye, chance: 0.05}
+
+storm_harpy:
+  name: "폭풍 하피"
+  type: PHANTOM
+  level: {min: 70, max: 220}
+  weight: 3
+  abilities:
+    - {type: CHARGE, interval: 7, power: 1.1}
+  drops:
+    - {item: loot_feather, chance: 0.6, min: 1, max: 3}

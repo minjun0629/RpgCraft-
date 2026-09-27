@@ -1,0 +1,442 @@
+# ============================================================
+#  보스 정의. /rpg관리 boss spawn <id>
+#  skills.type: SLAM(주변 강타) METEOR(대상 위치 폭발) SUMMON(소환) FIREBALL PULL(끌어당김) BLINK(뒤로 순간이동)
+#  보스 이름/드롭 세트는 나무위키 4R 기준, 체력·스킬 수치는 자체 설계
+# ============================================================
+
+witch:
+  name: "오염된 마녀"
+  type: WITCH
+  level: 20
+  hp: 80000
+  damage: 350
+  defense: 10
+  exp: 30000
+  money: 500000
+  bossbar-color: PURPLE
+  skills:
+    - {type: FIREBALL, interval: 6, amount: 3, power: 1.0}
+    - {type: SUMMON, interval: 20, entity: ZOMBIE, amount: 3, level: 18, name: "마녀의 하수인"}
+    - {type: PULL, interval: 15, radius: 8, power: 0.8}
+  drops:
+    - {item: witch_w0, chance: 0.08}
+    - {item: witch_w1, chance: 0.08}
+    - {item: witch_w2, chance: 0.08}
+    - {item: witch_w3, chance: 0.08}
+    - {item: witch_a0, chance: 0.1}
+    - {item: witch_a1, chance: 0.1}
+    - {item: witch_a2, chance: 0.1}
+    - {item: witch_a3, chance: 0.1}
+    - {item: crystal_mid, min: 2, max: 5, chance: 1}
+    - {item: rune_low, chance: 0.3}
+  minion-drops:
+    - {item: mat_silver, chance: 0.1}
+
+elf_queen:
+  name: "엘프 여왕"
+  type: STRAY
+  level: 30
+  hp: 150000
+  damage: 500
+  defense: 12
+  exp: 60000
+  money: 800000
+  bossbar-color: GREEN
+  skills:
+    - {type: BLINK, interval: 10, power: 1.2}
+    - {type: SUMMON, interval: 25, entity: SKELETON, amount: 4, level: 28, name: "엘프 궁수"}
+  drops:
+    - {item: bow_elf, chance: 0.15}
+    - {item: crystal_mid, min: 3, max: 6, chance: 1}
+    - {item: rune_low, chance: 0.5}
+
+dwarf_king:
+  name: "드워프 왕"
+  type: VINDICATOR
+  level: 40
+  hp: 250000
+  damage: 900
+  defense: 20
+  exp: 120000
+  money: 1500000
+  bossbar-color: YELLOW
+  skills:
+    - {type: SLAM, interval: 8, radius: 5, power: 1.5}
+    - {type: SUMMON, interval: 25, entity: PILLAGER, amount: 3, level: 38, name: "드워프 광부"}
+  drops:
+    - {item: dwarf_w0, chance: 0.08}
+    - {item: dwarf_w1, chance: 0.08}
+    - {item: dwarf_w2, chance: 0.08}
+    - {item: dwarf_w3, chance: 0.08}
+    - {item: dwarf_a0, chance: 0.1}
+    - {item: dwarf_a1, chance: 0.1}
+    - {item: dwarf_a2, chance: 0.1}
+    - {item: dwarf_a3, chance: 0.1}
+    - {item: mat_gold, min: 3, max: 8, chance: 1}
+    - {item: rune_mid, chance: 0.15}
+  minion-drops:
+    - {item: mat_gold, chance: 0.1}
+
+harpy_queen:
+  name: "하피 여왕"
+  type: PHANTOM
+  level: 60
+  hp: 600000
+  damage: 1500
+  defense: 25
+  exp: 300000
+  money: 3000000
+  bossbar-color: WHITE
+  skills:
+    - {type: BLINK, interval: 7, power: 1.3}
+    - {type: PULL, interval: 12, radius: 10, power: 1.0}
+    - {type: SUMMON, interval: 30, entity: VEX, amount: 4, level: 55, name: "하피"}
+  drops:
+    - {item: harpy_w0, chance: 0.08}
+    - {item: harpy_w1, chance: 0.08}
+    - {item: harpy_w2, chance: 0.08}
+    - {item: harpy_w3, chance: 0.08}
+    - {item: harpy_a0, chance: 0.1}
+    - {item: harpy_a1, chance: 0.1}
+    - {item: harpy_a2, chance: 0.1}
+    - {item: harpy_a3, chance: 0.1}
+    - {item: crystal_high, min: 1, max: 3, chance: 1}
+    - {item: rune_mid, chance: 0.3}
+
+sea_gatekeeper:
+  name: "심해수문장"
+  type: ELDER_GUARDIAN
+  level: 80
+  hp: 1500000
+  damage: 2500
+  defense: 30
+  exp: 700000
+  money: 6000000
+  bossbar-color: BLUE
+  skills:
+    - {type: SLAM, interval: 8, radius: 7, power: 1.5}
+    - {type: METEOR, interval: 14, radius: 4, power: 2.0}
+    - {type: SUMMON, interval: 30, entity: GUARDIAN, amount: 3, level: 75, name: "심해 파수꾼"}
+  drops:
+    - {item: sea_w0, chance: 0.08}
+    - {item: sea_w1, chance: 0.08}
+    - {item: sea_w2, chance: 0.08}
+    - {item: sea_w3, chance: 0.08}
+    - {item: sea_a0, chance: 0.1}
+    - {item: sea_a1, chance: 0.1}
+    - {item: sea_a2, chance: 0.1}
+    - {item: sea_a3, chance: 0.1}
+    - {item: crystal_high, min: 2, max: 4, chance: 1}
+    - {item: ticket_protect, chance: 0.05}
+
+bungbung:
+  name: "타오르는 붕붕이"
+  type: BLAZE
+  level: 99
+  hp: 3000000
+  damage: 4000
+  defense: 35
+  exp: 1500000
+  money: 12000000
+  bossbar-color: RED
+  skills:
+    - {type: FIREBALL, interval: 5, amount: 5, power: 1.2}
+    - {type: METEOR, interval: 10, radius: 5, power: 2.5}
+    - {type: SLAM, interval: 12, radius: 6, power: 1.8}
+  drops:
+    - {item: bungbung_w0, chance: 0.08}
+    - {item: bungbung_w1, chance: 0.08}
+    - {item: bungbung_w2, chance: 0.08}
+    - {item: bungbung_w3, chance: 0.08}
+    - {item: bungbung_a0, chance: 0.1}
+    - {item: bungbung_a1, chance: 0.1}
+    - {item: bungbung_a2, chance: 0.1}
+    - {item: bungbung_a3, chance: 0.1}
+    - {item: crystal_top, min: 1, max: 3, chance: 1}
+    - {item: rune_high, chance: 0.1}
+    - {item: ticket_protect, chance: 0.1}
+
+# ---------------- 월드 보스 (사신수 기운 파편) ----------------
+desert_nightmare:
+  name: "사막의 악몽"
+  type: HUSK
+  level: 90
+  hp: 5000000
+  damage: 3500
+  defense: 35
+  exp: 2000000
+  money: 20000000
+  bossbar-color: YELLOW
+  skills:
+    - {type: METEOR, interval: 8, radius: 5, power: 2.0}
+    - {type: SLAM, interval: 10, radius: 7, power: 1.5}
+    - {type: SUMMON, interval: 25, entity: HUSK, amount: 5, level: 85, name: "모래 망령"}
+  drops:
+    - {item: shard_fire, min: 1, max: 3, chance: 1}
+    - {item: crystal_top, min: 2, max: 4, chance: 1}
+    - {item: rune_high, chance: 0.2}
+    - {item: relic_axe, chance: 0.005}          # 신화 유물 (0.5%)
+  minion-drops:
+    - {item: shard_fire, chance: 0.03}
+
+siphonia:
+  name: "시포니아"
+  type: EVOKER
+  level: 100
+  hp: 6000000
+  damage: 4000
+  defense: 40
+  exp: 3000000
+  money: 25000000
+  bossbar-color: GREEN
+  skills:
+    - {type: SUMMON, interval: 12, entity: VEX, amount: 5, level: 95, name: "떠다니는 검"}
+    - {type: BLINK, interval: 9, power: 1.5}
+    - {type: PULL, interval: 15, radius: 12, power: 1.0}
+  drops:
+    - {item: shard_wind, min: 1, max: 3, chance: 1}
+    - {item: crystal_top, min: 2, max: 4, chance: 1}
+    - {item: rune_high, chance: 0.25}
+    - {item: relic_dagger, chance: 0.005}       # 신화 유물 (0.5%)
+  minion-drops:
+    - {item: shard_wind, chance: 0.02}
+
+kain:
+  name: "카인"
+  type: WITHER_SKELETON
+  level: 110
+  hp: 10000000
+  damage: 6000
+  defense: 45
+  exp: 5000000
+  money: 40000000
+  awaken: true
+  awaken-multiplier: 1.5
+  bossbar-color: PURPLE
+  skills:
+    - {type: SLAM, interval: 8, radius: 6, power: 1.8}
+    - {type: BLINK, interval: 11, power: 2.0}
+    - {type: SUMMON, interval: 30, entity: SHULKER, amount: 3, level: 105, name: "어둠의 포탑", ai: true}
+    - {type: METEOR, interval: 15, radius: 6, power: 3.0}
+  drops:
+    - {item: shard_dark, min: 2, max: 4, chance: 1}
+    - {item: crystal_top, min: 3, max: 6, chance: 1}
+    - {item: ticket_protect, chance: 0.3}
+    - {item: relic_sword, chance: 0.005}        # 신화 유물 (0.5%)
+    - {item: relic_shield, chance: 0.005}       # 신화 유물 (0.5%)
+  minion-drops:
+    - {item: shard_dark, chance: 0.03}
+
+# ===================== 고레벨 보스 (Lv.130 ~ 300) =====================
+frost_queen:
+  name: "서리 여왕 엘사리아"
+  type: STRAY
+  level: 130
+  hp: 20000000
+  damage: 8000
+  defense: 50
+  exp: 8000000
+  money: 50000000
+  awaken: true
+  awaken-multiplier: 1.4
+  bossbar-color: BLUE
+  skills:
+    - {type: SLAM, interval: 8, radius: 7, power: 1.8}
+    - {type: METEOR, interval: 14, radius: 6, power: 2.6}
+    - {type: SUMMON, interval: 30, entity: STRAY, amount: 4, level: 125, name: "얼음 시녀", ai: true}
+  drops:
+    - {item: loot_frost, min: 5, max: 10, chance: 1}
+    - {item: crystal_top, min: 4, max: 7, chance: 1}
+    - {item: acc_neck_3, chance: 0.1}
+    - {item: trans_armor_2_1, chance: 0.03}
+
+volcano_giant:
+  name: "화산의 거인 이그니르"
+  type: RAVAGER
+  level: 170
+  hp: 35000000
+  damage: 10000
+  defense: 55
+  exp: 14000000
+  money: 70000000
+  awaken: true
+  awaken-multiplier: 1.5
+  bossbar-color: RED
+  skills:
+    - {type: SLAM, interval: 7, radius: 8, power: 2.0}
+    - {type: FIREBALL, interval: 6, power: 1.8}
+    - {type: METEOR, interval: 12, radius: 7, power: 3.0}
+  drops:
+    - {item: loot_ember, min: 6, max: 12, chance: 1}
+    - {item: loot_core, min: 2, max: 4, chance: 1}
+    - {item: acc_ring_3, chance: 0.1}
+    - {item: trans_axe_3, chance: 0.03}
+
+void_apostle:
+  name: "공허의 사도 네퓨라"
+  type: ENDERMAN
+  level: 210
+  hp: 55000000
+  damage: 13000
+  defense: 58
+  exp: 22000000
+  money: 90000000
+  awaken: true
+  awaken-multiplier: 1.5
+  bossbar-color: PURPLE
+  skills:
+    - {type: BLINK, interval: 7, power: 2.2}
+    - {type: PULL, interval: 12, radius: 12, power: 1.6}
+    - {type: METEOR, interval: 13, radius: 7, power: 3.2}
+    - {type: SUMMON, interval: 28, entity: ENDERMITE, amount: 5, level: 200, name: "공허 벌레", ai: true}
+  drops:
+    - {item: loot_eye, min: 3, max: 6, chance: 1}
+    - {item: loot_crown, min: 1, max: 2, chance: 0.6}
+    - {item: acc_ear_3, chance: 0.12}
+    - {item: legend_seal_storm_eye, chance: 0.01}
+
+thunder_god:
+  name: "뇌신 토르반"
+  type: WITHER_SKELETON
+  level: 250
+  hp: 80000000
+  damage: 16000
+  defense: 60
+  exp: 32000000
+  money: 120000000
+  awaken: true
+  awaken-multiplier: 1.6
+  bossbar-color: YELLOW
+  skills:
+    - {type: METEOR, interval: 9, radius: 8, power: 3.2}
+    - {type: SLAM, interval: 8, radius: 8, power: 2.2}
+    - {type: BLINK, interval: 10, power: 2.4}
+  drops:
+    - {item: loot_crown, min: 1, max: 3, chance: 1}
+    - {item: crystal_top, min: 8, max: 12, chance: 1}
+    - {item: trans_sword_4, chance: 0.04}
+    - {item: legend_seal_judge, chance: 0.01}
+
+primordial_dragon:
+  name: "태초의 용 아스트라"
+  type: RAVAGER
+  level: 300
+  hp: 150000000
+  damage: 22000
+  defense: 65
+  exp: 60000000
+  money: 200000000
+  awaken: true
+  awaken-multiplier: 1.7
+  bossbar-color: PURPLE
+  skills:
+    - {type: FIREBALL, interval: 4, power: 2.2}
+    - {type: METEOR, interval: 8, radius: 9, power: 3.6}
+    - {type: SLAM, interval: 7, radius: 9, power: 2.6}
+    - {type: PULL, interval: 14, radius: 14, power: 1.8}
+  drops:
+    - {item: loot_crown, min: 3, max: 5, chance: 1}
+    - {item: loot_core, min: 5, max: 10, chance: 1}
+    - {item: trans_sword_5, chance: 0.03}
+    - {item: trans_armor_5_1, chance: 0.03}
+    - {item: legend_seal_immortal, chance: 0.01}
+
+# ===================== 소환 보스 =====================
+vengeful_spirit:
+  name: "몬스터의 원혼"
+  type: WITHER_SKELETON
+  level: 130
+  hp: 14000000
+  damage: 5500
+  defense: 40
+  exp: 9000000
+  money: 20000000
+  awaken: true
+  awaken-multiplier: 1.3
+  bossbar-color: PURPLE
+  skills:
+    - {type: PULL, interval: 13, radius: 9, power: 1.1}
+    - {type: METEOR, interval: 12, radius: 5, power: 1.8}
+    - {type: BLINK, interval: 11, power: 1.4}
+    - {type: SUMMON, interval: 32, entity: VEX, amount: 3, level: 120, name: "떠도는 원한", ai: true}
+  drops:
+    - {item: cube_master, min: 1, max: 2, chance: 1}
+    - {item: loot_core, min: 3, max: 6, chance: 1}
+    - {item: crystal_top, min: 3, max: 6, chance: 1}
+    - {item: acc_ring_3, chance: 0.2}
+    - {item: acc_neck_3, chance: 0.2}
+    - {item: acc_ear_3, chance: 0.2}
+    - {item: legend_seal_midas, chance: 0.02}
+
+balrog:
+  name: "발록"
+  type: RAVAGER
+  level: 200
+  hp: 90000000
+  damage: 16000
+  defense: 60
+  exp: 30000000
+  money: 60000000
+  awaken: true
+  awaken-multiplier: 1.6
+  bossbar-color: RED
+  skills:
+    - {type: FIREBALL, interval: 4, power: 1.8}
+    - {type: METEOR, interval: 9, radius: 8, power: 3.0}
+    - {type: SLAM, interval: 7, radius: 7, power: 2.4}
+    - {type: PULL, interval: 13, radius: 12, power: 1.6}
+    - {type: SUMMON, interval: 22, entity: BLAZE, amount: 4, level: 190, name: "화염 마귀", ai: true}
+  drops:
+    - {item: cube_master, min: 2, max: 4, chance: 1}
+    - {item: loot_crown, min: 2, max: 4, chance: 1}
+    - {item: loot_ember, min: 8, max: 14, chance: 1}
+    - {item: crystal_top, min: 6, max: 10, chance: 1}
+    - {item: trans_axe_4, chance: 0.05}
+    - {item: legend_seal_tyrant, chance: 0.03}
+
+# ===================== 바다 =====================
+megalodon:
+  name: "메갈로돈"
+  type: GUARDIAN
+  level: 50
+  hp: 900000
+  damage: 1400
+  defense: 25
+  exp: 400000
+  money: 800000
+  awaken: true
+  awaken-multiplier: 1.3
+  bossbar-color: BLUE
+  skills:
+    - {type: BLINK, interval: 8, power: 1.6}
+    - {type: PULL, interval: 12, radius: 8, power: 1.2}
+    - {type: SUMMON, interval: 26, entity: DROWNED, amount: 3, level: 45, name: "상어 떼", ai: true}
+  drops:
+    - {item: loot_fang, min: 3, max: 6, chance: 1}
+    - {item: fish_gold, min: 1, max: 2, chance: 0.6}
+    - {item: cube_red, chance: 0.2}
+    - {item: acc_neck_2, chance: 0.1}
+
+kraken:
+  name: "거대한 크라켄"
+  type: GUARDIAN
+  level: 150
+  hp: 22000000
+  damage: 7500
+  defense: 45
+  exp: 12000000
+  money: 25000000
+  awaken: true
+  awaken-multiplier: 1.4
+  bossbar-color: PURPLE
+  skills:
+    - {type: SLAM, interval: 9, radius: 8, power: 1.8}
+    - {type: PULL, interval: 12, radius: 12, power: 1.4}
+    - {type: METEOR, interval: 11, radius: 6, power: 2.0}
+    - {type: FIREBALL, interval: 6, amount: 3, power: 1.2}
+    - {type: SUMMON, interval: 30, entity: GUARDIAN, amount: 3, level: 140, name: "심해의 파수꾼", ai: true}
+  drops:
+    - {item: cube_master, min: 1, max: 3, chance: 1}
+    - {item: fish_legend, chance: 0.5}
+    - {item: loot_core, min: 4, max: 8, chance: 1}
+    - {item: legend_seal_storm_eye, chance: 0.03}

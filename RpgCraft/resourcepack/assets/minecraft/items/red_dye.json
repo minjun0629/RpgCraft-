@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1421,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/cube_red"
+        }
+      },
+      {
+        "threshold": 1470,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/loot_wave"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/red_dye"
+    }
+  }
+}

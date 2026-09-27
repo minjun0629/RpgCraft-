@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1434,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_gold"
+        }
+      },
+      {
+        "threshold": 1436,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_legend"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/tropical_fish"
+    }
+  }
+}

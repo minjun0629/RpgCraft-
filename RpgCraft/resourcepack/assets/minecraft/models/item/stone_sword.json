@@ -1,0 +1,62 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/stone_sword"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 100
+      },
+      "model": "rpgcraft:item/sword_10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1301
+      },
+      "model": "rpgcraft:item/armory_sword_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1310
+      },
+      "model": "rpgcraft:item/armory2_sword_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3100
+      },
+      "model": "rpgcraft:item/sword_10_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4301
+      },
+      "model": "rpgcraft:item/armory_sword_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4310
+      },
+      "model": "rpgcraft:item/armory2_sword_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5100
+      },
+      "model": "rpgcraft:item/sword_10_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6301
+      },
+      "model": "rpgcraft:item/armory_sword_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6310
+      },
+      "model": "rpgcraft:item/armory2_sword_1_e10"
+    }
+  ]
+}

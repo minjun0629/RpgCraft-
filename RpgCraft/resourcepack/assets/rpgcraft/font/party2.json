@@ -1,0 +1,448 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "": -1,
+        "": 1,
+        "": -2,
+        "": 2,
+        "": -4,
+        "": 4,
+        "": -8,
+        "": 8,
+        "": -16,
+        "": 16,
+        "": -32,
+        "": 32,
+        "": -64,
+        "": 64,
+        "": -128,
+        "": 128,
+        "": -256,
+        "": 256,
+        " ": 4
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/ascii_tall.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+        "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+        " !\"#$%&'()*+,-./",
+        "0123456789:;<=>?",
+        "@ABCDEFGHIJKLMNO",
+        "PQRSTUVWXYZ[\\]^_",
+        "`abcdefghijklmno",
+        "pqrstuvwxyz{|}~\u0000",
+        "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+        "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000£\u0000\u0000ƒ",
+        "\u0000\u0000\u0000\u0000\u0000\u0000ªº\u0000\u0000¬\u0000\u0000\u0000«»",
+        "░▒▓│┤╡╢╖╕╣║╗╝╜╛┐",
+        "└┴┬├─┼╞╟╚╔╩╦╠═╬╧",
+        "╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀",
+        "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000∅∈\u0000",
+        "≡±≥≤⌠⌡÷≈°∙\u0000√ⁿ²■\u0000"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/member.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/leader.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_00.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_00.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_01.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_01.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_02.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_02.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_03.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_03.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_04.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_04.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_05.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_05.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_06.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_06.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_07.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_07.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_08.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_08.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_09.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_09.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_10.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_10.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_11.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_11.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_12.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_12.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_13.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_13.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_14.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_14.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_15.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_15.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_16.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_16.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_17.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_17.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_18.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_18.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_19.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_19.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/hp_20.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:hud/party/xp_20.png",
+      "ascent": 112,
+      "height": 176,
+      "chars": [
+        ""
+      ]
+    }
+  ]
+}

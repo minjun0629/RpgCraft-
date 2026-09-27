@@ -1,0 +1,349 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_1"
+        }
+      },
+      {
+        "threshold": 1301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_2"
+        }
+      },
+      {
+        "threshold": 1302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_3"
+        }
+      },
+      {
+        "threshold": 1303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_4"
+        }
+      },
+      {
+        "threshold": 1304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_5"
+        }
+      },
+      {
+        "threshold": 1305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_6"
+        }
+      },
+      {
+        "threshold": 1306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_7"
+        }
+      },
+      {
+        "threshold": 1307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_8"
+        }
+      },
+      {
+        "threshold": 1310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_1"
+        }
+      },
+      {
+        "threshold": 1311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_2"
+        }
+      },
+      {
+        "threshold": 1312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_3"
+        }
+      },
+      {
+        "threshold": 1313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_4"
+        }
+      },
+      {
+        "threshold": 1314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_5"
+        }
+      },
+      {
+        "threshold": 1315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_6"
+        }
+      },
+      {
+        "threshold": 1316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_7"
+        }
+      },
+      {
+        "threshold": 1317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_8"
+        }
+      },
+      {
+        "threshold": 4300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_1_e7"
+        }
+      },
+      {
+        "threshold": 4301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_2_e7"
+        }
+      },
+      {
+        "threshold": 4302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_3_e7"
+        }
+      },
+      {
+        "threshold": 4303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_4_e7"
+        }
+      },
+      {
+        "threshold": 4304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_5_e7"
+        }
+      },
+      {
+        "threshold": 4305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_6_e7"
+        }
+      },
+      {
+        "threshold": 4306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_7_e7"
+        }
+      },
+      {
+        "threshold": 4307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_8_e7"
+        }
+      },
+      {
+        "threshold": 4310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_1_e7"
+        }
+      },
+      {
+        "threshold": 4311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_2_e7"
+        }
+      },
+      {
+        "threshold": 4312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_3_e7"
+        }
+      },
+      {
+        "threshold": 4313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_4_e7"
+        }
+      },
+      {
+        "threshold": 4314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_5_e7"
+        }
+      },
+      {
+        "threshold": 4315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_6_e7"
+        }
+      },
+      {
+        "threshold": 4316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_7_e7"
+        }
+      },
+      {
+        "threshold": 4317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_8_e7"
+        }
+      },
+      {
+        "threshold": 6300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_1_e10"
+        }
+      },
+      {
+        "threshold": 6301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_2_e10"
+        }
+      },
+      {
+        "threshold": 6302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_3_e10"
+        }
+      },
+      {
+        "threshold": 6303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_4_e10"
+        }
+      },
+      {
+        "threshold": 6304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_5_e10"
+        }
+      },
+      {
+        "threshold": 6305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_6_e10"
+        }
+      },
+      {
+        "threshold": 6306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_7_e10"
+        }
+      },
+      {
+        "threshold": 6307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_bow_8_e10"
+        }
+      },
+      {
+        "threshold": 6310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_1_e10"
+        }
+      },
+      {
+        "threshold": 6311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_2_e10"
+        }
+      },
+      {
+        "threshold": 6312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_3_e10"
+        }
+      },
+      {
+        "threshold": 6313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_4_e10"
+        }
+      },
+      {
+        "threshold": 6314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_5_e10"
+        }
+      },
+      {
+        "threshold": 6315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_6_e10"
+        }
+      },
+      {
+        "threshold": 6316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_7_e10"
+        }
+      },
+      {
+        "threshold": 6317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_bow_8_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/bow"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+# ============================================================
+#  무기별 고유 스킬 덮어쓰기 (선택)
+#  아무것도 적지 않으면 무기마다 테마·종류에 맞춰 자동으로 서로 다른 스킬이 정해집니다.
+#  (아이템 설명의 "✦ 무기 스킬" 에서 확인 가능)
+#
+#  무기ID:
+#    strong / shift-left / shift-right:
+#      name: "스킬 이름"
+#      shape: CONE(부채꼴) WAVE(지면 파동) DASH(돌진) LINE(관통) CIRCLE(주변 폭발) LEAP(도약 강타)
+#             BLINK(그림자 습격) ORB(구체 발사) RAIN(폭우) CHAIN(연쇄) PULL(소용돌이) FAN(부채 사격, 활)
+#      effect: NONE FIRE(화염) FROST(빙결) POISON(맹독) LIGHTNING(뇌전) EARTH(대지) STUN(기절)
+#              BLEED(출혈) HOLY(성광 회복) DARK(심연 약화) WIND(질풍 밀쳐내기) GUARD(수호 무적)
+#      power: 2.4        # 공격력 배율
+#      range: 6          # 사거리/반경
+#      cooldown: 8       # 초
+#  수정 후 /rpg관리 reload
+# ============================================================
+
+# 예시 (주석을 풀면 적용)
+# sword_40:
+#   strong:
+#     name: "공포의 일섬"
+#     shape: LINE
+#     effect: BLEED
+#     power: 2.6
+#     range: 9
+#     cooldown: 7

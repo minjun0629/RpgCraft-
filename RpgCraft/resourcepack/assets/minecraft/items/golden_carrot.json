@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1490,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/herb_ginseng10"
+        }
+      },
+      {
+        "threshold": 1491,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/herb_ginseng100"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/golden_carrot"
+    }
+  }
+}

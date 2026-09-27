@@ -1,0 +1,62 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/golden_shovel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 102
+      },
+      "model": "rpgcraft:item/spear_30"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1304
+      },
+      "model": "rpgcraft:item/armory_spear_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1313
+      },
+      "model": "rpgcraft:item/armory2_spear_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3102
+      },
+      "model": "rpgcraft:item/spear_30_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4304
+      },
+      "model": "rpgcraft:item/armory_spear_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4313
+      },
+      "model": "rpgcraft:item/armory2_spear_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5102
+      },
+      "model": "rpgcraft:item/spear_30_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6304
+      },
+      "model": "rpgcraft:item/armory_spear_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6313
+      },
+      "model": "rpgcraft:item/armory2_spear_4_e10"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/armory2_dagger_5",
+  "textures": {
+    "0": "rpgcraft:item/armory2_dagger_5_e7",
+    "particle": "rpgcraft:item/armory2_dagger_5_e7"
+  }
+}

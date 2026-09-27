@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 520,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/essence_wind"
+        }
+      },
+      {
+        "threshold": 1403,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_neck_1"
+        }
+      },
+      {
+        "threshold": 1404,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_neck_2"
+        }
+      },
+      {
+        "threshold": 1405,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_neck_3"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/heart_of_the_sea"
+    }
+  }
+}

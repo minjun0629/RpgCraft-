@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 561,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/warrior_0_1"
+        }
+      },
+      {
+        "threshold": 565,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/warrior_1_1"
+        }
+      },
+      {
+        "threshold": 629,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/harpy_a1"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/chainmail_chestplate"
+    }
+  }
+}

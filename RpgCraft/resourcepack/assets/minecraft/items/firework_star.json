@@ -1,0 +1,44 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 600,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/rune_1"
+        }
+      },
+      {
+        "threshold": 601,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/rune_2"
+        }
+      },
+      {
+        "threshold": 602,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/rune_3"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/firework_star",
+      "tints": [
+        {
+          "type": "minecraft:constant",
+          "value": -1
+        },
+        {
+          "type": "minecraft:firework",
+          "default": -7697782
+        }
+      ]
+    }
+  }
+}

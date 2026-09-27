@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/blaze_rod"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 520
+      },
+      "model": "rpgcraft:item/essence_fire"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "pack": {
+    "pack_format": 15,
+    "supported_formats": {
+      "min_inclusive": 15,
+      "max_inclusive": 999
+    },
+    "description": "§6§lRpgCraft §r§7전용 리소스팩 §8· 3D 무기 · 메뉴 디자인"
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_5"
+        }
+      },
+      {
+        "threshold": 240,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bungbung_sword"
+        }
+      },
+      {
+        "threshold": 301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spirit_qinglong"
+        }
+      },
+      {
+        "threshold": 900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_sword"
+        }
+      },
+      {
+        "threshold": 950,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_sword"
+        }
+      },
+      {
+        "threshold": 1101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_1"
+        }
+      },
+      {
+        "threshold": 1102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_2"
+        }
+      },
+      {
+        "threshold": 1103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_3"
+        }
+      },
+      {
+        "threshold": 1104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_4"
+        }
+      },
+      {
+        "threshold": 1105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_5"
+        }
+      },
+      {
+        "threshold": 1307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_8"
+        }
+      },
+      {
+        "threshold": 1316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_7"
+        }
+      },
+      {
+        "threshold": 1317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_8"
+        }
+      },
+      {
+        "threshold": 3154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_5_e7"
+        }
+      },
+      {
+        "threshold": 3301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spirit_qinglong_e7"
+        }
+      },
+      {
+        "threshold": 3900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_sword_e7"
+        }
+      },
+      {
+        "threshold": 3950,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_sword_e7"
+        }
+      },
+      {
+        "threshold": 4101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_1_e7"
+        }
+      },
+      {
+        "threshold": 4102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_2_e7"
+        }
+      },
+      {
+        "threshold": 4103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_3_e7"
+        }
+      },
+      {
+        "threshold": 4104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_4_e7"
+        }
+      },
+      {
+        "threshold": 4105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_5_e7"
+        }
+      },
+      {
+        "threshold": 4307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_8_e7"
+        }
+      },
+      {
+        "threshold": 4316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_7_e7"
+        }
+      },
+      {
+        "threshold": 4317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_8_e7"
+        }
+      },
+      {
+        "threshold": 5154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_5_e10"
+        }
+      },
+      {
+        "threshold": 5301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spirit_qinglong_e10"
+        }
+      },
+      {
+        "threshold": 5900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_sword_e10"
+        }
+      },
+      {
+        "threshold": 5950,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_sword_e10"
+        }
+      },
+      {
+        "threshold": 6101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_1_e10"
+        }
+      },
+      {
+        "threshold": 6102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_2_e10"
+        }
+      },
+      {
+        "threshold": 6103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_3_e10"
+        }
+      },
+      {
+        "threshold": 6104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_4_e10"
+        }
+      },
+      {
+        "threshold": 6105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_sword_5_e10"
+        }
+      },
+      {
+        "threshold": 6307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_8_e10"
+        }
+      },
+      {
+        "threshold": 6316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_7_e10"
+        }
+      },
+      {
+        "threshold": 6317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_8_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/netherite_sword"
+    }
+  }
+}

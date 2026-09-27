@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/armory_shield_3",
+  "textures": {
+    "0": "rpgcraft:item/armory_shield_3_e10",
+    "particle": "rpgcraft:item/armory_shield_3_e10"
+  }
+}

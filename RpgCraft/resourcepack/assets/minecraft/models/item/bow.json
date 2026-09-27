@@ -1,0 +1,386 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "item/bow"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        -80,
+        260,
+        -40
+      ],
+      "translation": [
+        -1,
+        -2,
+        2.5
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -80,
+        -280,
+        40
+      ],
+      "translation": [
+        -1,
+        -2,
+        2.5
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        25
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -25
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "pulling": 1
+      },
+      "model": "item/bow_pulling_0"
+    },
+    {
+      "predicate": {
+        "pulling": 1,
+        "pull": 0.65
+      },
+      "model": "item/bow_pulling_1"
+    },
+    {
+      "predicate": {
+        "pulling": 1,
+        "pull": 0.9
+      },
+      "model": "item/bow_pulling_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1300
+      },
+      "model": "rpgcraft:item/armory_bow_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1301
+      },
+      "model": "rpgcraft:item/armory_bow_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1302
+      },
+      "model": "rpgcraft:item/armory_bow_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1303
+      },
+      "model": "rpgcraft:item/armory_bow_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1304
+      },
+      "model": "rpgcraft:item/armory_bow_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1305
+      },
+      "model": "rpgcraft:item/armory_bow_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1306
+      },
+      "model": "rpgcraft:item/armory_bow_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1307
+      },
+      "model": "rpgcraft:item/armory_bow_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1310
+      },
+      "model": "rpgcraft:item/armory2_bow_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1311
+      },
+      "model": "rpgcraft:item/armory2_bow_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1312
+      },
+      "model": "rpgcraft:item/armory2_bow_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1313
+      },
+      "model": "rpgcraft:item/armory2_bow_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1314
+      },
+      "model": "rpgcraft:item/armory2_bow_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1315
+      },
+      "model": "rpgcraft:item/armory2_bow_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1316
+      },
+      "model": "rpgcraft:item/armory2_bow_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1317
+      },
+      "model": "rpgcraft:item/armory2_bow_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4300
+      },
+      "model": "rpgcraft:item/armory_bow_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4301
+      },
+      "model": "rpgcraft:item/armory_bow_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4302
+      },
+      "model": "rpgcraft:item/armory_bow_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4303
+      },
+      "model": "rpgcraft:item/armory_bow_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4304
+      },
+      "model": "rpgcraft:item/armory_bow_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4305
+      },
+      "model": "rpgcraft:item/armory_bow_6_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4306
+      },
+      "model": "rpgcraft:item/armory_bow_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4307
+      },
+      "model": "rpgcraft:item/armory_bow_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4310
+      },
+      "model": "rpgcraft:item/armory2_bow_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4311
+      },
+      "model": "rpgcraft:item/armory2_bow_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4312
+      },
+      "model": "rpgcraft:item/armory2_bow_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4313
+      },
+      "model": "rpgcraft:item/armory2_bow_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4314
+      },
+      "model": "rpgcraft:item/armory2_bow_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4315
+      },
+      "model": "rpgcraft:item/armory2_bow_6_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4316
+      },
+      "model": "rpgcraft:item/armory2_bow_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4317
+      },
+      "model": "rpgcraft:item/armory2_bow_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6300
+      },
+      "model": "rpgcraft:item/armory_bow_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6301
+      },
+      "model": "rpgcraft:item/armory_bow_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6302
+      },
+      "model": "rpgcraft:item/armory_bow_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6303
+      },
+      "model": "rpgcraft:item/armory_bow_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6304
+      },
+      "model": "rpgcraft:item/armory_bow_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6305
+      },
+      "model": "rpgcraft:item/armory_bow_6_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6306
+      },
+      "model": "rpgcraft:item/armory_bow_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6307
+      },
+      "model": "rpgcraft:item/armory_bow_8_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6310
+      },
+      "model": "rpgcraft:item/armory2_bow_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6311
+      },
+      "model": "rpgcraft:item/armory2_bow_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6312
+      },
+      "model": "rpgcraft:item/armory2_bow_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6313
+      },
+      "model": "rpgcraft:item/armory2_bow_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6314
+      },
+      "model": "rpgcraft:item/armory2_bow_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6315
+      },
+      "model": "rpgcraft:item/armory2_bow_6_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6316
+      },
+      "model": "rpgcraft:item/armory2_bow_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6317
+      },
+      "model": "rpgcraft:item/armory2_bow_8_e10"
+    }
+  ]
+}

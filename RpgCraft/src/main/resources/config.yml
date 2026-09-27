@@ -1,0 +1,460 @@
+# ============================================================
+#  RpgCraft 플러그인 설정
+#  (나무위키 공개 수치 = [위키], 비공개라 자체 설계 = [설계])
+# ============================================================
+
+player:
+  start-hp: 20               # 1레벨 체력 (전체 체력·몬스터 피해·회복량이 이 비율로 환산됨)
+  base-hp: 1000              # [설계] 1레벨 기본 체력 (내부 단위)
+  hp-per-level: 25           # 레벨업당 체력 (체력은 모험으로)
+  stat-per-level: 5          # [위키] 레벨업당 스탯 +5
+  gambler-stat-per-level: 30 # [위키] ??? 패시브 '도박사'
+  base-attack: 5
+  str-atk-per-2: 5           # 힘 2 = 공격력 +5
+  dex-crit-per-point: 0.1    # 민첩 1 = 크리티컬 +0.1%
+  adv-hp-per-point: 90       # 모험 1 = 체력 +90 (체력은 모험으로 올리는 구조)
+  adv-def-per-point: 0.065   # 모험 1 = 방어력 +0.065%
+  str-magic-per-point: 2     # 힘 1 = 마력 +2 (무기 스킬 위력)
+  dex-critdmg-per-point: 0.7 # 민첩 1 = 치명타 피해 +0.7%
+  dex-speed-per-point: 0.05  # 민첩 1 = 이동속도 +0.05%
+  dex-speed-max: 30
+  max-defense: 85            # 방어력(%) 상한
+  max-level: 300
+  exp:                       # [설계] 필요 경험치 = base * Lv^power + flat
+    base: 100
+    power: 1.4
+    flat: 50
+  regen-percent: 2           # 비전투 시 초당 최대 체력의 %
+  regen-combat-percent: 0.2  # 전투 중 초당 회복 %
+  regen-delay-seconds: 8     # 마지막 전투 후 이 시간이 지나면 비전투
+  lock-food: true            # 배고픔 고정
+  starting-money: 0          # 처음엔 0원부터
+  exp-gain-mult: 0.8         # 모든 경험치 획득 배율
+  item-hp-mult: 0.4          # 장비·룬·장신구·패시브의 체력(고정·%) 효과 배율 (크게 너프)
+  rune-hp-mult: 1.5          # 룬의 체력 효과만 추가로 ×1.5
+  speed-mult: 0.7            # 이동속도 증가 효과 배율
+  starter-kit:
+    - weapon_club
+    - tool_gather_1
+    - potion_1:5
+
+combat:
+  pvp: true
+  newbie-protection-level: 10   # 이 레벨 미만은 PvP 보호
+  guild-friendly-fire: false
+  environment-scale: 0.6        # 낙하/화염 등 환경 대미지 배율 (바닐라 20하트 대비 최대 체력 비율)
+  damage-indicator: true
+
+death:
+  keep-inventory: true
+  money-loss-percent: 0
+
+mobs:
+  enabled-worlds: []         # 비워두면 모든 월드
+  level:
+    base: 1
+    blocks-per-level: 40     # 월드 스폰에서 40블록 멀어질 때마다 +1레벨
+    max: 110
+    random-spread: 2
+  world-overrides:           # 월드별 레벨 시작값 (예: 네더는 50부터)
+    world_nether:
+      base: 50
+      blocks-per-level: 20
+    world_the_end:
+      base: 90
+      blocks-per-level: 20
+  hp:                        # [설계] base * (1 + growth*Lv)^2 × (1 + (Lv-100)/high-level-step)
+    high-level-step: 60
+    base: 110
+    growth: 0.12
+  damage:                    # [설계] base * (1 + growth*Lv)^1.5 × (1 + (Lv-100)/high-level-step)
+    high-level-step: 100
+    base: 40
+    growth: 0.15
+  exp:
+    base: 8
+    growth: 0.2
+  defense-per-level: 0.2
+  money-per-level: 100
+  crystal-chance: 0.06
+  loot-chance: 0.35
+  money-random-min: 0.6      # 처치 돈 = 기본값 × (최소~최대 배율 사이 무작위)
+  money-random-max: 1.5
+  no-baby-zombies: true
+  sun-burn: false
+  creeper-reward-mult: 0.5   # 크리퍼가 자폭하면 경험치·돈·전리품 절반
+  weak-skills: true
+  potential-scroll-chance: 0.0007   # 모든 몬스터 잠재능력 부여 주문서 확률 (0.07%)
+  damage-mult: 1.2           # 모든 몬스터 피해 배율
+  damage-mult-lv15: 1.15     # Lv.15 이상 몬스터 추가 피해 배율
+  passive-until-hit: true    # 몬스터는 먼저 맞기 전엔 플레이어를 공격하지 않음 (웨이브·던전·보스 제외)
+  high-level-loot-mult: 0.6  # Lv.100 이상 몬스터 전리품·희귀 드롭 추가 배율          # 일반 몬스터도 약한 기술 사용 (돌진·연사·도약 등)
+  level-gap-resist-base: 0.95   # 몬스터가 나보다 높은 레벨 1마다 내 피해 ×0.95 (10레벨 ≈ 60%, 30레벨 ≈ 21%, 60레벨 ≈ 5%)
+  level-gap-floor: 0.02         # 최소 2%
+  level-gap-damage: 0.06        # 몬스터가 나보다 높은 레벨 1마다 받는 피해 +6%
+  level-gap-damage-cap: 8       # 최대 8배
+  overlevel-free: 20            # 나보다 20레벨 넘게 낮은 몬스터는 경험치 1레벨당 -3% (최소 10%)            # false: 낮에 좀비·스켈레톤 등이 햇빛에 타지 않음
+  creeper-hp-mult: 0.35      # 크리퍼 체력 배율 (자폭해도 마지막으로 때린 플레이어가 보상 획득)
+  creeper-exp-mult: 1.5
+  elite-chance: 0.07         # 정예 몬스터 확률 (밤 ×1.5, 핏빛 달 ×3)
+  miniboss-chance: 0.012     # 중간 보스 확률
+  miniboss-legend-seal-chance: 0.002
+  normal-rare-drop-mult: 0.4 # 일반 몬스터의 희귀 아이템(중급 이상 결정·마력 핵·룬·권·장신구·보물 지도 등) 드롭 확률 배율
+  elite-min-level: 5         # 이 레벨 미만 몬스터는 정예가 되지 않음
+  miniboss-min-level: 15     # 이 레벨 미만 몬스터는 중간 보스가 되지 않음
+  legend-seal-min-level: 70  # 중간 보스가 레전더리 각인석을 떨어뜨리는 최소 레벨
+  elite-scale: 1.25          # 정예 크기 (슬라임·팬텀은 크기 값, 1.20.5+ 서버는 모든 몹)
+  miniboss-scale: 1.6        # 중간 보스 크기          # 일반 몬스터 전리품 드롭 확률        # 하급/중급/상급/최상급 결정 드롭 확률
+  clear-vanilla-drops: true
+
+boss:
+  min-contribution: 0.07     # 보스 보상을 받기 위한 최소 기여도(7%)
+
+enhance:
+  max-normal: 30             # 모든 장비 최대 +30
+  max-legend: 30
+  # [설계] 현재 강화 단계(+0 ~ +14)별 성공 확률(%)
+  success: [95, 90, 85, 80, 75, 70, 65, 60, 50, 45, 40, 35, 30, 25, 20, 18, 16, 14, 12, 10, 9, 8, 7, 6, 5, 4, 3, 3, 2, 2]
+  # [위키] +8 강화 시도부터 파괴 확률 발생 / 수치는 [설계]
+  destroy: [0, 0, 0, 0, 0, 0, 0, 0, 10, 20, 30, 40, 50, 50, 50]
+  fail-down-from: 5          # 이 단계 이상에서 실패 시 하락 가능
+  fail-down-chance: 0.5
+  money-base: 2000           # 비용 = money-base * (단계+1)^2
+  weapon-atk-per-level: 0.08 # 무기 강화당 공격력 +8% (+5 고정)
+  shield-atk-per-level: 0.04
+  armor-def-per-level: 0.3
+  armor-hp-per-level: 50
+  blacksmith-bonus: 5        # 대장장이 강화 확률 보너스
+
+blacksmith:
+  required-level: 20
+  cost: 1000000
+
+potion:
+  swap-key: true             # F 키 = 포션가방 사용, 쉬프트+F = 메인 메뉴
+  cooldown-seconds: 2
+
+spirit:
+  shards-per-crystal: 5      # [위키] 기운 파편 5개 = 기운 뽑기 결정
+  crystal-chance: 0.3        # [위키] 결정 우클릭 시 30%
+  essence-per-weapon: 5      # [위키] 기운 5개 + 유니크 무기
+  essence-per-armor: 3       # [설계]
+
+gather:
+  cooldown-by-tier: [180, 150, 120]   # 채집 재사용 대기시간(초): 초급 · 중급 · 상급 도구
+  shard-chance: 0.02         # 채집 시 자연/땅 기운 파편 확률
+  nodes:
+    herb:
+      blocks: [DIRT, GRASS_BLOCK, COARSE_DIRT, PODZOL, ROOTED_DIRT, MYCELIUM, MUD, DIRT_PATH]   # 흙을 캐면 약초·버섯
+      drops:                 # 가중치. 상위 채집도구일수록 희귀 재료 가중치 증가
+        herb_weed: 60
+        herb_mushroom: 20
+        herb_bell: 10
+        herb_star: 6
+        herb_ginseng1: 3
+        herb_ginseng10: 0.8
+        herb_ginseng100: 0.2
+    wood:
+      blocks: [OAK_LOG, SPRUCE_LOG, BIRCH_LOG, JUNGLE_LOG, ACACIA_LOG, DARK_OAK_LOG, MANGROVE_LOG, CHERRY_LOG]
+      drops:
+        wood_log: 85
+        wood_glow: 14
+        wood_gold: 1
+    ore:
+      blocks: [STONE, DEEPSLATE, COAL_ORE, IRON_ORE, GOLD_ORE, DIAMOND_ORE, EMERALD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_GOLD_ORE, DEEPSLATE_DIAMOND_ORE]
+      drops:
+        mat_stone: 50
+        mat_iron: 30
+        mat_silver: 12
+        mat_gold: 5
+        mat_crystal: 2.5
+        ore_black: 0.1
+        ore_green: 0.1
+        ore_red: 0.1
+        ore_blue: 0.1
+        ore_gray: 0.1
+
+fishing:
+  money: 300
+
+guild:
+  allow-player-create: true  # false 면 rpgcraft.guild.create 권한자만 생성 (원작은 스트리머가 길드장 지정)
+  create-cost: 1000000
+  levelup-cost-base: 5000000 # 레벨업 비용 = base * 현재 레벨 (길드 금고에서 차감)
+  max-level: 5
+
+war:
+  prepare-seconds: 600
+  duration-seconds: 1200
+  walls-required: 3          # [위키] 성벽 3개 파괴 후 신호기 파괴 시 승리 (0 = 전부)
+  wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)
+  hit-interval-ms: 400
+  repair-seconds: 10         # [위키] 성벽 수리 망치 쉬프트 10초
+  declares-per-round: 1
+  loot-percent: 30           # 승리 시 패배 길드 금고 약탈 %
+  win-reward: 10000000       # 승리 길드 금고 보상
+  max-wall-blocks: 30000
+
+world-protection:           # 야생 방지
+  enabled: true
+  regen-seconds: 5          # 캔 블록이 다시 생기기까지 (초). 드롭은 없음
+  worlds: []                 # 비우면 모든 월드. 특정 월드만: [world]
+  exclude-worlds: []         # 야생을 허용할 월드 (예: 자원 월드)
+  max-restore-per-second: 400
+
+jobs:
+  base-level: 10             # 기초 직업 선택 레벨
+  advance-level: 40          # 2차 전직 레벨
+  advance-cost: 500000
+  third-level: 100          # 3차 전직 레벨
+  third-cost: 10000000       # 3차 전직 비용
+  third-cores: 10            # 3차 전직에 필요한 마력 핵
+
+weapon-skills:
+  enabled: true
+  quick-shot-ms: 1100        # 활 좌클릭 사격 간격
+  bow-damage-mult: 1.35      # 활 피해 배율 (사격·활 스킬 모두)
+  slash-damage: 0.85         # 좌클릭 참격 피해 (공격력 배율, 무기 공격 간격마다)
+  particle-melee: true       # 몬스터를 직접 때려도 바닐라 타격 대신 입자 참격으로 공격
+  cooldown: {sword: 6, dagger: 7, axe: 9, shield: 8, bow: 6, spear: 6, club: 6}
+  shift-left-cd: 8           # 희귀 이상: Shift+좌클릭 (돌진 베기 / 후퇴 사격)
+  shift-right-cd: 12         # 희귀 이상: Shift+우클릭 (충격파 / 화살비)
+  ultimate-cd: 60            # 레전드 이상: 쉬프트 두 번 = 궁극기
+
+field-wave:
+  enabled: true
+  chance-per-30s: 0.08       # 30초마다 플레이어별 깃발 등장 확률
+  stage-seconds: 150         # 웨이브 한 단계 제한 시간
+  revives: 1                 # 웨이브 중 부활 횟수 (초과해서 쓰러지면 탈락)
+  arena-radius: 18           # 원형 전장 반경 (밖으로 나가면 안쪽으로 밀림)
+  min-spawn-distance: 64     # 월드 스폰 근처에는 깃발이 생기지 않음
+  exp-ratio: 0.3             # 보상 경험치 = 다음 레벨 필요량 × 비율
+  money-per-level: 3000
+
+hidden-merchant:
+  enabled: true
+  interval-minutes: 30
+  stay-minutes: 5
+  radius: 400                # 첫 번째 월드 스폰 기준 등장 반경
+  reveal-direction: false    # true: 등장 알림에 방향·거리 표시 + 나침반 ✦ 표시 / false: 비공개 (근처에서 기척만)
+  sense-radius: 500          # 이 거리 안에 들어오면 "기척이 느껴진다" 알림
+
+structures:
+  natural-chance: 0.004      # 새 청크가 생성될 때 장식 구조물이 생길 확률
+  max-natural: 25            # 동시에 존재할 수 있는 자연 구조물 최대 수
+  min-distance: 300          # 자연 구조물 사이 최소 거리 (블록)
+  despawn-minutes: 10
+  random-minutes: 20
+  ruin-target: 6             # 유적(점프맵)이 이 수보다 적으면 자동 생성
+  ruin-minutes: 15           # 유적 자동 생성 검사 간격         # 이 시간마다 무작위 플레이어 근처(150~400칸)에 구조물 하나        # 보물 상자가 처음 열린 뒤 구조물이 사라지기까지 (분). 관리자가 지은 구조물은 영구
+  castle-wall-hp: 30000
+  ruin-steps: 48             # 점프맵 유적 발판 수 (쉼터·사다리 구간 포함)
+  adv-per-blocks: 25         # 스폰에서 25블록 멀어질 때마다 필요 모험 +1 (5 단위 반올림)
+  max-adv: 250
+  ruin-min-adv: 10           # 유적·보물 상자 최소 모험 제한
+
+trade:
+  max-distance: 16
+
+escape:
+  cooldown-seconds: 120
+
+custom-mobs:                # 커스텀 몬스터 (mobs.yml)
+  enabled: true
+  chance: 0.3                # 자연 스폰 몬스터가 커스텀 몬스터로 바뀔 확률
+
+wild-animals:               # 야생 동물 반격
+  enabled: true
+  anger-seconds: 30          # 화가 유지되는 시간
+  herd-radius: 6             # 이 반경의 같은 종류 동물도 함께 공격 (0 = 끔)
+  damage-mult: 0.6           # 같은 레벨 몬스터 공격력 대비 배율
+  attack-interval-ms: 1200
+  speed: 1.5                 # 추격 속도 (Paper 길찾기)
+  reward-mult: 0.4           # 처치 시 같은 레벨 몬스터 경험치/돈 대비 배율
+  exclude: []                # 반격하지 않을 동물 (예: [CHICKEN, RABBIT])
+
+death:
+  exp-loss: 0.10             # 죽으면 현재 레벨 필요 경험치의 10% 를 잃음 (레벨은 내려가지 않음)
+
+coupons:                    # /쿠폰 <코드> : 플레이어마다 한 번
+  정식출시: ["scroll_exp:3"]
+  밸패: ["ticket_job_reset:1", "ticket_stat_reset:1"]   # 밸런스 패치 보상
+
+party:
+  max-members: 5
+  hud: true                  # 화면 왼쪽 파티원 체력·경험치 (리소스팩 필요)
+  hud-x: 320                 # 화면 가운데에서 왼쪽으로 몇 칸 떨어져 그릴지 (화면이 좁으면 줄이기)
+  share-radius: 100          # 이 거리 안의 파티원과 기여도(입힌 피해) 비례로 경험치 분배
+  exp-bonus-per-member: 0.03 # 파티원 1명당 경험치 +3%
+
+dungeon:
+  respawn-minutes: 10        # 클리어한 던전이 사라진 뒤 다른 곳에 새 던전이 생기기까지
+  time-limit-minutes: 20
+  exp-ratio: 0.5             # 클리어 경험치 = 다음 레벨 필요량 × 비율 × 단계/2
+  money-per-tier: 60000      # × 단계 × economy.boss-money-mult
+
+legendary:
+  max-per-player: 1          # 한 사람이 가질 수 있는 레전더리 패시브 수
+  world-boss-drop-chance: 0.03
+
+pender:                     # 전설의 대장장이 렉스
+  interval-minutes: 180      # 3시간마다
+  stay-minutes: 10           # 10분 동안
+
+world-boss:                 # 월드보스 출현 (전용 거대 전장과 함께)
+  interval-minutes: 0        # 0 = 정기 출현 없음 (운영자 소환만)
+  stay-minutes: 30
+  spread: 1200               # 스폰에서 400 + 0~1200칸
+  bosses: [desert_nightmare, siphonia, kain]
+
+mounts:
+  draw-cost: 3000000         # 탈것 뽑기 1회 비용 (300만 원)
+  scale: 2.4                 # 탈것 모델 크기
+
+sea:
+  megalodon-chance: 0.004    # 바다에서 헤엄칠 때 20초마다 메갈로돈 확률
+  megalodon-cooldown-minutes: 20
+  kraken-chance: 0.0005      # 20초마다 크라켄 확률 (월드보스급)
+  kraken-cooldown-minutes: 120
+
+bosses:
+  signature-min-level: 80    # 이 레벨 이상 보스는 고유 대형 패턴(십자 광선 · 파멸의 고리 · 유성 폭격 · 칼날 폭풍) 사용
+  damage-mult: 1.15          # 모든 보스 피해 배율
+  chest-chance: 0.3          # 보스 처치 시 "보스 상자"(보스 드롭표로 뽑기) 확률
+  crowd-skill-speed: 0.25    # 보스 주변 1명 늘 때마다 기술 간격 -25% 가량
+  crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
+
+dummy:
+  minutes: 10                # 허수아비가 사라지기까지
+
+auction:
+  fee: 0.05                  # 판매 수수료 5%
+  hours: 48                  # 등록 기간
+  max-listings: 10           # 1인 최대 등록 수
+
+spirit-summon:
+  drop-chance: 0.0003        # 몬스터 처치 시 "원혼의 부적" 확률 (0.03%)
+  balrog-chance: 0.00005     # "발록의 봉인석" 확률 (0.005%, Lv.120 이상 몬스터)
+  balrog-min-level: 120
+
+bgm:                        # 전투 배경음 (게임 내장 음악 사용)
+  enabled: true
+  boss: "minecraft:music.dragon"
+  dungeon: "minecraft:music_disc.pigstep"
+  wave: "minecraft:music_disc.otherside"
+  loop-seconds: 170
+
+rebirth:                    # 환생 (Lv.300 → Lv.1)
+  max: 5
+  core-pct: 30               # 1회마다 힘·민첩·모험 +30%
+  exp-pct: 50                # 1회마다 경험치 획득 +50%
+  stat-points: 2             # 1회마다 레벨업 스탯 포인트 +2
+
+quest-npcs:
+  target: 60                 # 서버를 켤 때 맵 곳곳의 의뢰 NPC 가 이 수보다 적으면 자동 배치
+
+hidden-quests:
+  max-owners: 3              # 히든 퀘스트 보상마다 받을 수 있는 인원
+  min-distance: 1500
+  spread: 2500
+
+treasure:
+  chest-seconds: 180         # 보물 상자가 나타난 뒤 사라지기까지 (3분)
+  map-normal: 0.001          # 보물 지도: 일반 몬스터 (× 일반 몬스터 희귀 배율)
+  map-elite: 0.025           # 정예
+  map-miniboss: 0.12         # 중간 보스
+  map-bounty: 0.5            # 현상수배범
+  map-fishing: 0.4           # 낚시 보물 상자
+  map-chest-per-tier: 0.03   # 구조물 상자 (× 상자 등급)
+
+bounty:                     # 현상수배
+  prize-base: 800            # 현상금 = 800 × (1 + 레벨/10)
+  enabled: true
+  interval-minutes: 40
+  stay-minutes: 30
+
+casino:
+  max-bet: 100000
+  daily-limit: 500000        # 하루 베팅 한도
+
+fishing:
+  enabled: true
+
+day-night:
+  blood-moon-chance: 0.15
+  night-reward: 1.25
+  blood-moon-reward: 1.6
+  day-gather-cooldown: 1.0
+  day-humanoids: true        # 낮에 인간형 몬스터 (산적·약탈단·용병 등)
+  day-humanoid-cap: 4        # 플레이어 주변 최대 수
+
+world:
+  clean-plants: true         # 새 청크의 해바라기·큰 풀 정리
+  keep-grass: 0.0            # 풀·고사리를 남길 비율 (0 = 전부 제거)
+
+weapons:
+  spear-pen-mult-cut: 0.3    # 창 무기의 방어 관통 -30%
+
+shops:
+  show-stats: [weapon, weapon2, armor_warrior, armor_assassin, armor_adventurer, armor_set]   # 장비 능력치를 보여 주는 상점 (나머지는 스탯 제한만)
+
+pvp:                        # PvP 밸런스
+  damage-mult: 0.45          # PvP 피해 배율
+  crit-mult: 0.75            # PvP 치명타 추가 배율
+  max-hit-ratio: 0.25        # 한 번에 최대 체력의 25% 까지만
+
+economy:                    # 경제 밸런스 (배율)
+  mob-money-mult: 0.05        # 몬스터·동물 처치 돈 (Lv40 몬스터 ≈ 1,200원)
+  boss-money-mult: 0.1      # 보스 보상 돈
+  quest-money-mult: 0.25      # 일일 의뢰 돈 (4,000 × (1 + 레벨 × 0.12))
+  wave-money-mult: 0.08       # 필드 웨이브 돈
+  loot-sell-mult: 0.15        # 전리품 판매가
+  equipment-price-mult: 2.5  # 상점 무기·방어구 구매가 (나무위키 가격 × 배율)
+
+boss-models:                # 보스 3D 모델 (리소스팩)
+  enabled: true
+  yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로
+  scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}
+
+vfx:
+  enabled: true              # 스킬 이펙트를 리소스팩 모델로 한 번에 번쩍 (잔상 없음). false: 기존 입자
+
+visual:
+  item-glow: false           # 떨어진 장비 발광(벽 너머로도 보임). 끄면 빛기둥·입자만 표시
+
+compass:
+  enabled: true              # 화면 위 나침반 (개인 설정에서 끄기 가능)
+
+hud:
+  notice-ms: 2200            # HUD 위 알림 표시 시간
+  pack-hud: true             # 리소스팩 적용자: 하트/배고픔 자리에 커스텀 체력바·아이콘 HUD (액션바)
+  sidebar: true              # 서버 전체 사이드바 사용 여부 (개인은 메뉴 > 설정에서 끄기 가능)
+
+keys:
+  sneak-drop-quick-skill: true   # 쉬프트 + Q = 퀵 액티브 스킬 (퀵 스킬을 지정한 경우에만 아이템 버리기 대신 발동)
+
+warp:
+  channel-ticks: 60          # 워프 시전 시간 (20틱 = 1초)
+
+# ============================================================
+#  전용 리소스팩 (아이템 모델 · 메뉴 배경)
+#  tools/build_resourcepack.py 로 만든 팩이 플러그인에 내장되어 있습니다.
+#  직접 수정한 팩을 쓰려면 plugins/RpgCraft/resourcepack.zip 을 교체 후 /rpg관리 pack reload
+# ============================================================
+resourcepack:
+  enabled: true
+  required: false            # true 면 거절 시 접속 불가 (+ GUI 배경 자동 사용)
+  kick-on-decline: true
+  prompt: "&6RpgCraft &f전용 리소스팩을 적용합니다. &7(아이템 모델 · 메뉴 디자인)"
+  send-delay-ticks: 20
+  url: "https://github.com/minjun0629/RpgCraft-/blob/main/RpgCraft-ResourcePack.zip"   # 외부 호스팅 주소 (GitHub 파일 페이지 주소도 자동으로 직접 다운로드 주소로 변환). 비우면 내장 웹서버(8765) 사용
+  sha1: ""                   # 비워두면 서버가 시작할 때 외부 파일을 받아 자동 계산
+  self-host:
+    enabled: true
+    host: "auto"             # auto: 플레이어가 접속한 주소(IP/도메인)를 그대로 사용 → 어느 IP로 접속해도 적용됨
+    port: 8765               # 방화벽/포트포워딩에서 이 포트(TCP)를 열어야 함
+  assume-installed: false     # true: 플레이어가 리소스팩을 직접 설치한 경우 (서버에서 보내지 않아도 HUD·메뉴 배경 사용)
+  use-custom-file: false     # true: plugins/RpgCraft/resourcepack.zip 을 직접 수정해 쓸 때 (자동 최신화 끔)
+  welcome-title: true        # 리소스팩 적용 완료 시 로고 타이틀
+  gui-overlay: auto          # auto: 리소스팩을 적용한 플레이어에게만 메뉴 전용 배경 / true: 모두 / false: 끔
+  title-color: "&f"

@@ -1,0 +1,741 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_10"
+        }
+      },
+      {
+        "threshold": 101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_20"
+        }
+      },
+      {
+        "threshold": 102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_30"
+        }
+      },
+      {
+        "threshold": 103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_40"
+        }
+      },
+      {
+        "threshold": 150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_1"
+        }
+      },
+      {
+        "threshold": 151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_2"
+        }
+      },
+      {
+        "threshold": 152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_3"
+        }
+      },
+      {
+        "threshold": 153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_4"
+        }
+      },
+      {
+        "threshold": 154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_5"
+        }
+      },
+      {
+        "threshold": 201,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/witch_dagger"
+        }
+      },
+      {
+        "threshold": 211,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dwarf_dagger"
+        }
+      },
+      {
+        "threshold": 221,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/harpy_dagger"
+        }
+      },
+      {
+        "threshold": 231,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/sea_dagger"
+        }
+      },
+      {
+        "threshold": 241,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bungbung_dagger"
+        }
+      },
+      {
+        "threshold": 300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spirit_zhuque"
+        }
+      },
+      {
+        "threshold": 900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_dagger"
+        }
+      },
+      {
+        "threshold": 951,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_dagger"
+        }
+      },
+      {
+        "threshold": 1101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_1"
+        }
+      },
+      {
+        "threshold": 1102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_2"
+        }
+      },
+      {
+        "threshold": 1103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_3"
+        }
+      },
+      {
+        "threshold": 1104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_4"
+        }
+      },
+      {
+        "threshold": 1105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_5"
+        }
+      },
+      {
+        "threshold": 1300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_1"
+        }
+      },
+      {
+        "threshold": 1301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_2"
+        }
+      },
+      {
+        "threshold": 1302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_3"
+        }
+      },
+      {
+        "threshold": 1303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_4"
+        }
+      },
+      {
+        "threshold": 1304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_5"
+        }
+      },
+      {
+        "threshold": 1305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_6"
+        }
+      },
+      {
+        "threshold": 1306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_7"
+        }
+      },
+      {
+        "threshold": 1307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_8"
+        }
+      },
+      {
+        "threshold": 1310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_1"
+        }
+      },
+      {
+        "threshold": 1311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_2"
+        }
+      },
+      {
+        "threshold": 1312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_3"
+        }
+      },
+      {
+        "threshold": 1313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_4"
+        }
+      },
+      {
+        "threshold": 1314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_5"
+        }
+      },
+      {
+        "threshold": 1315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_6"
+        }
+      },
+      {
+        "threshold": 1316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_7"
+        }
+      },
+      {
+        "threshold": 1317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_8"
+        }
+      },
+      {
+        "threshold": 3100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_10_e7"
+        }
+      },
+      {
+        "threshold": 3101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_20_e7"
+        }
+      },
+      {
+        "threshold": 3102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_30_e7"
+        }
+      },
+      {
+        "threshold": 3103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_40_e7"
+        }
+      },
+      {
+        "threshold": 3150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_1_e7"
+        }
+      },
+      {
+        "threshold": 3151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_2_e7"
+        }
+      },
+      {
+        "threshold": 3152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_3_e7"
+        }
+      },
+      {
+        "threshold": 3153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_4_e7"
+        }
+      },
+      {
+        "threshold": 3154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_5_e7"
+        }
+      },
+      {
+        "threshold": 3300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spirit_zhuque_e7"
+        }
+      },
+      {
+        "threshold": 3900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_dagger_e7"
+        }
+      },
+      {
+        "threshold": 3951,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_dagger_e7"
+        }
+      },
+      {
+        "threshold": 4101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_1_e7"
+        }
+      },
+      {
+        "threshold": 4102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_2_e7"
+        }
+      },
+      {
+        "threshold": 4103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_3_e7"
+        }
+      },
+      {
+        "threshold": 4104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_4_e7"
+        }
+      },
+      {
+        "threshold": 4105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_5_e7"
+        }
+      },
+      {
+        "threshold": 4300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_1_e7"
+        }
+      },
+      {
+        "threshold": 4301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_2_e7"
+        }
+      },
+      {
+        "threshold": 4302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_3_e7"
+        }
+      },
+      {
+        "threshold": 4303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_4_e7"
+        }
+      },
+      {
+        "threshold": 4304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_5_e7"
+        }
+      },
+      {
+        "threshold": 4305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_6_e7"
+        }
+      },
+      {
+        "threshold": 4306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_7_e7"
+        }
+      },
+      {
+        "threshold": 4307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_8_e7"
+        }
+      },
+      {
+        "threshold": 4310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_1_e7"
+        }
+      },
+      {
+        "threshold": 4311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_2_e7"
+        }
+      },
+      {
+        "threshold": 4312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_3_e7"
+        }
+      },
+      {
+        "threshold": 4313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_4_e7"
+        }
+      },
+      {
+        "threshold": 4314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_5_e7"
+        }
+      },
+      {
+        "threshold": 4315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_6_e7"
+        }
+      },
+      {
+        "threshold": 4316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_7_e7"
+        }
+      },
+      {
+        "threshold": 4317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_8_e7"
+        }
+      },
+      {
+        "threshold": 5100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_10_e10"
+        }
+      },
+      {
+        "threshold": 5101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_20_e10"
+        }
+      },
+      {
+        "threshold": 5102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_30_e10"
+        }
+      },
+      {
+        "threshold": 5103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dagger_40_e10"
+        }
+      },
+      {
+        "threshold": 5150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_1_e10"
+        }
+      },
+      {
+        "threshold": 5151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_2_e10"
+        }
+      },
+      {
+        "threshold": 5152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_3_e10"
+        }
+      },
+      {
+        "threshold": 5153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_4_e10"
+        }
+      },
+      {
+        "threshold": 5154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_dagger_5_e10"
+        }
+      },
+      {
+        "threshold": 5300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spirit_zhuque_e10"
+        }
+      },
+      {
+        "threshold": 5900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_dagger_e10"
+        }
+      },
+      {
+        "threshold": 5951,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_dagger_e10"
+        }
+      },
+      {
+        "threshold": 6101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_1_e10"
+        }
+      },
+      {
+        "threshold": 6102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_2_e10"
+        }
+      },
+      {
+        "threshold": 6103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_3_e10"
+        }
+      },
+      {
+        "threshold": 6104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_4_e10"
+        }
+      },
+      {
+        "threshold": 6105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_dagger_5_e10"
+        }
+      },
+      {
+        "threshold": 6300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_1_e10"
+        }
+      },
+      {
+        "threshold": 6301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_2_e10"
+        }
+      },
+      {
+        "threshold": 6302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_3_e10"
+        }
+      },
+      {
+        "threshold": 6303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_4_e10"
+        }
+      },
+      {
+        "threshold": 6304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_5_e10"
+        }
+      },
+      {
+        "threshold": 6305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_6_e10"
+        }
+      },
+      {
+        "threshold": 6306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_7_e10"
+        }
+      },
+      {
+        "threshold": 6307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_dagger_8_e10"
+        }
+      },
+      {
+        "threshold": 6310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_1_e10"
+        }
+      },
+      {
+        "threshold": 6311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_2_e10"
+        }
+      },
+      {
+        "threshold": 6312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_3_e10"
+        }
+      },
+      {
+        "threshold": 6313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_4_e10"
+        }
+      },
+      {
+        "threshold": 6314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_5_e10"
+        }
+      },
+      {
+        "threshold": 6315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_6_e10"
+        }
+      },
+      {
+        "threshold": 6316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_7_e10"
+        }
+      },
+      {
+        "threshold": 6317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_dagger_8_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/shears"
+    }
+  }
+}

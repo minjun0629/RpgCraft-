@@ -1,0 +1,167 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/sword_40"
+        }
+      },
+      {
+        "threshold": 152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_3"
+        }
+      },
+      {
+        "threshold": 153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_4"
+        }
+      },
+      {
+        "threshold": 230,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/sea_sword"
+        }
+      },
+      {
+        "threshold": 1305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_6"
+        }
+      },
+      {
+        "threshold": 1306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_7"
+        }
+      },
+      {
+        "threshold": 1314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_5"
+        }
+      },
+      {
+        "threshold": 1315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_6"
+        }
+      },
+      {
+        "threshold": 3103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/sword_40_e7"
+        }
+      },
+      {
+        "threshold": 3152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_3_e7"
+        }
+      },
+      {
+        "threshold": 3153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_4_e7"
+        }
+      },
+      {
+        "threshold": 4305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_6_e7"
+        }
+      },
+      {
+        "threshold": 4306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_7_e7"
+        }
+      },
+      {
+        "threshold": 4314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_5_e7"
+        }
+      },
+      {
+        "threshold": 4315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_6_e7"
+        }
+      },
+      {
+        "threshold": 5103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/sword_40_e10"
+        }
+      },
+      {
+        "threshold": 5152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_3_e10"
+        }
+      },
+      {
+        "threshold": 5153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_sword_4_e10"
+        }
+      },
+      {
+        "threshold": 6305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_6_e10"
+        }
+      },
+      {
+        "threshold": 6306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_sword_7_e10"
+        }
+      },
+      {
+        "threshold": 6314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_5_e10"
+        }
+      },
+      {
+        "threshold": 6315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_sword_6_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/diamond_sword"
+    }
+  }
+}

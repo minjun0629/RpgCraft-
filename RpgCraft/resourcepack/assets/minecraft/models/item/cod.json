@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/cod"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1430
+      },
+      "model": "rpgcraft:item/fish_small"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1431
+      },
+      "model": "rpgcraft:item/fish_carp"
+    }
+  ]
+}

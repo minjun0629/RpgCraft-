@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1406,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_ear_1"
+        }
+      },
+      {
+        "threshold": 1407,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_ear_2"
+        }
+      },
+      {
+        "threshold": 1408,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/acc_ear_3"
+        }
+      },
+      {
+        "threshold": 1497,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/crystal_high"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/amethyst_shard"
+    }
+  }
+}

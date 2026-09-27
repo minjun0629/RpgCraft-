@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+}
+
+group = 'kr.rpgcraft'
+version = '5.0.9'
+
+base {
+    archivesName = 'RpgCraft'
+}
+
+// Java 21 로 빌드 (JDK 21 필요, 서버도 Java 21 로 실행)
+// Java 17 서버용이 필요하면:  gradle build -PjavaRelease=17
+def javaRelease = (project.findProperty('javaRelease') ?: '21') as int
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
+}
+
+// 툴체인을 강제하지 않는다 → 설치된 JDK(17, 21 등) 그대로 사용하고 --release 로 버전만 맞춘다
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = javaRelease
+}
+
+processResources {
+    filteringCharset = 'UTF-8'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // 버전과 상관없이 항상 같은 이름 → plugins 폴더에서 덮어쓰기만 하면 됨 (버전은 plugin.yml / 서버 로그에 표시)
+    archiveFileName = "RpgCraft-${project.version}.jar"   // 예: RpgCraft-3.6.0.jar
+}

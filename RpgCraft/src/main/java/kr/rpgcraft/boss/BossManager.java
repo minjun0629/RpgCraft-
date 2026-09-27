@@ -31,6 +31,7 @@ public class BossManager {
         int phase = 1;              // 1: 평상 · 2: 분노(60%) · 3: 광폭(30%)
         boolean seenAwake;
         double aura;                // 주변 기운 회전 각도
+        Location home;              // 등장 위치 — 여기서 너무 멀어지면 되돌아감 (v5.4.24)
     }
 
     private final RpgCraft plugin;
@@ -120,6 +121,9 @@ public class BossManager {
             Active a = new Active();
             a.entity = e;
             a.def = d;
+            a.home = e.getLocation().clone();
+            var fr = e.getAttribute(Attribute.GENERIC_FOLLOW_RANGE);   // 멀리 있는 사람까지 알아채지 않게
+            if (fr != null) fr.setBaseValue(plugin.getConfig().getDouble("bosses.chase-radius", 24));
             // WHITE 는 나침반 문구 전용 투명 바(리소스팩)라서 보스는 파란 바로
             a.bar = Bukkit.createBossBar(Text.c("&c" + d.name), d.color == org.bukkit.boss.BarColor.WHITE ? org.bukkit.boss.BarColor.BLUE : d.color, BarStyle.SEGMENTED_10);
             long now = System.currentTimeMillis();
@@ -181,8 +185,24 @@ public class BossManager {
                 Text.announce(Text.PREFIX + Text.c("&7" + a.def.name + "&7이(가) 사라졌습니다..."));
                 continue;
             }
-            Player target = nearest(a.entity, 30);
+            // 끝없이 쫓아가지 않게 (v5.4.24): 등장 위치에서 leash 칸 넘게 벗어나면 제자리로 돌아가고,
+            // chase 칸보다 멀어지거나 등장 위치에서 너무 먼 플레이어는 포기
+            double leash = plugin.getConfig().getDouble("bosses.leash-radius", 28), chase = plugin.getConfig().getDouble("bosses.chase-radius", 24);
+            boolean homeHere = a.home != null && leash > 0 && a.home.getWorld() == bl.getWorld();
+            if (homeHere && bl.distanceSquared(a.home) > leash * leash) {
+                if (a.entity instanceof Mob mob) mob.setTarget(null);
+                bl.getWorld().spawnParticle(Particle.SMOKE_LARGE, bl.clone().add(0, 1, 0), 30, 0.8, 1, 0.8, 0.03);
+                a.entity.teleport(a.home);
+                a.entity.getWorld().spawnParticle(Particle.PORTAL, a.home.clone().add(0, 1, 0), 60, 1, 1.5, 1, 0.3);
+                a.entity.getWorld().playSound(a.home, Sound.ENTITY_ENDERMAN_TELEPORT, 1.5f, 0.6f);
+                continue;
+            }
+            if (a.entity instanceof Mob mob && mob.getTarget() instanceof Player tp
+                    && (tp.getWorld() != bl.getWorld() || tp.getLocation().distanceSquared(bl) > chase * chase
+                        || homeHere && tp.getLocation().distanceSquared(a.home) > (leash + 6) * (leash + 6))) mob.setTarget(null);
+            Player target = nearest(a.entity, Math.min(30, chase + 6));
             if (target == null) continue;
+            if (homeHere && target.getLocation().distanceSquared(a.home) > (leash + 6) * (leash + 6)) continue;   // 등장 위치에서 너무 먼 사람은 노리지 않음
             if (a.entity instanceof Mob mob && (mob.getTarget() == null || !(mob.getTarget() instanceof Player))) mob.setTarget(target);
             if (now - a.born > plugin.getConfig().getLong("bosses.lifetime-minutes", 30) * 60_000) {   // 등장 30분 뒤 사라짐
                 a.bar.removeAll();

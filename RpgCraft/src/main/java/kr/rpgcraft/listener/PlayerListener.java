@@ -42,6 +42,8 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
         PlayerData nj = plugin.data().get(e.getPlayer());
+        if (kr.rpgcraft.data.ResetPending.consume(plugin, e.getPlayer().getUniqueId()))   // 나가 있는 동안 초기화된 사람
+            Bukkit.getScheduler().runTaskLater(plugin, () -> { if (e.getPlayer().isOnline()) kr.rpgcraft.data.ResetPending.freshStart(plugin, e.getPlayer()); }, 5L);
         if (nj.nick != null) { e.getPlayer().setDisplayName(nj.nick); e.getPlayer().setPlayerListName(nj.nick); }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {   // 가진 아이템의 설명을 현재 버전으로 새로 고침
             if (!e.getPlayer().isOnline()) return;

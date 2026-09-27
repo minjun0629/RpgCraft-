@@ -739,6 +739,7 @@ public class MenuManager implements Listener {
                 lore.add(Text.c("&f&l획득처"));
                 List<String> s = src.getOrDefault(t.id, List.of("&7특수 경로 (이벤트/운영자 지급)"));
                 for (String line : s.subList(0, Math.min(6, s.size()))) lore.add(Text.c(" " + line));
+                for (String line : weaponSkillDetail(t)) lore.add(Text.c(line));   // 얻은 무기: 스킬 상세 (v5.4.8)
                 if (admin) lore.add(Text.c("&8[관리자] 쉬프트 클릭: 지급"));
                 m.setLore(lore);
                 it.setItemMeta(m);
@@ -752,6 +753,67 @@ public class MenuManager implements Listener {
             set(45, Gui.button(Material.ARROW, "&f◀ 도감"), e -> new CodexGui(p).open(p));
             fill(45, 53);
         }
+    }
+
+    // =================================================================== 도감: 무기 스킬 상세 (v5.4.8)
+    private static String shapeDesc(kr.rpgcraft.feature.SkillBook.Shape s) {
+        return switch (s) {
+            case CONE -> "전방 부채꼴 참격";
+            case WAVE -> "전방 직선으로 땅을 가름";
+            case DASH -> "앞으로 돌진하며 부딪친 적 공격";
+            case LINE -> "직선 관통";
+            case CIRCLE -> "내 주변 원형 폭발";
+            case LEAP -> "뛰어올라 내려찍기";
+            case BLINK -> "적 뒤로 순간이동해 일격";
+            case ORB -> "날아가는 구체";
+            case RAIN -> "넓은 범위에 쏟아짐";
+            case CHAIN -> "적 사이를 튀는 연쇄";
+            case PULL -> "적을 끌어당기는 소용돌이";
+            case FAN -> "부채꼴로 화살 난사";
+            case FLURRY -> "제자리 연속 베기";
+            case THROW -> "단검 던지기";
+        };
+    }
+
+    private List<String> weaponSkillDetail(ItemTemplate t) {
+        List<String> out = new ArrayList<>();
+        if (t.category != Category.WEAPON && t.category != Category.BOW) return out;
+        var set = plugin.skillBook().of(t);
+        if (set == null) return out;
+        boolean bow = t.category == Category.BOW, staff = t.id.contains("staff");
+        String base = bow ? "(원거리 공격력 + 마력 30%)" : staff ? "(마력 + 공격력 30%)" : "(공격력 + 마력 40%)";
+        int g = t.grade == null ? 0 : t.grade.ordinal();
+        out.add("");
+        out.add("&f&l무기 스킬 상세");
+        String basic = bow ? "속사 — 좌클릭 즉시 발사, 3발째 부채 사격"
+                : staff ? "마력탄 — 조준 방향, 3발마다 마력 폭발 (반경 3칸 · 공격력 30% + 마력 140%)"
+                : t.weaponClass == null ? "강타 (공격력 50% + 마력 20%)"
+                : switch (t.weaponClass) {
+                    case SWORD -> "회전 베기 — 주변 3칸 (공격력 80% + 마력 30%)";
+                    case DAGGER -> "연속 찌르기 — 추가 2타 (각 공격력 35% + 마력 15%)";
+                    case AXE -> "내려찍기 — 범위 + 띄우기 (공격력 100% + 마력 30%)";
+                    case SHIELD -> "방패 강타 — 1초 기절 (공격력 60% + 마력 40%)";
+                    case SPEAR -> "관통 찌르기 — 직선 4.5칸 (공격력 80% + 마력 30%)";
+                    default -> "강타 (공격력 50% + 마력 20%)";
+                };
+        out.add(" &e좌클릭 &7(평타 " + (bow ? "" : "3타마다 ") + "스킬) &f" + basic);
+        if (t.skill != null) out.add(" &e우클릭 &f" + plugin.spirits().skillLabel(t.skill));
+        else addSkill(out, "우클릭", set.strong(), base);
+        if (g >= kr.rpgcraft.item.Grade.RARE.ordinal()) {
+            addSkill(out, "Shift+좌클릭", set.shiftLeft(), base);
+            if (t.weaponClass == kr.rpgcraft.item.WeaponClass.SHIELD && !bow) out.add(" &eShift+우클릭 &f막기 &7— 받는 피해 -30%");
+            else addSkill(out, "Shift+우클릭", set.shiftRight(), base);
+        } else out.add(" &8Shift 스킬: 레어 등급 이상 무기만");
+        if (g >= kr.rpgcraft.item.Grade.LEGEND.ordinal())
+            out.add(" &6쉬프트 두 번 &f궁극기 &7— 1초 기 모으기 후 주변 7칸 (공격력 500% + 마력 200%) · 60초");
+        else out.add(" &8궁극기: 레전드 등급 이상 무기만");
+        return out;
+    }
+
+    private static void addSkill(List<String> out, String key, kr.rpgcraft.feature.SkillBook.SkillDef d, String base) {
+        out.add(" &e" + key + " &f" + d.name());
+        out.add("   &7" + shapeDesc(d.shape()) + " · " + d.effect().label + ": " + d.effect().desc);
+        out.add("   &7피해 " + base + " × " + String.format("%.2f", d.power()) + " · 사거리 " + String.format("%.0f", d.range()) + "칸 · 쿨타임 " + String.format("%.0f", d.cd()) + "초");
     }
 
     private static String skillName(String type) {

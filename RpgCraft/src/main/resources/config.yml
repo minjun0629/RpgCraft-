@@ -279,7 +279,6 @@ death:
 
 coupons:                    # /쿠폰 <코드> : 플레이어마다 한 번
   정식출시: ["scroll_exp:3"]
-  밸패: ["ticket_job_reset:1", "ticket_stat_reset:1"]   # 밸런스 패치 보상
 
 party:
   max-members: 5
@@ -370,6 +369,7 @@ rebirth:                    # 환생 (Lv.300 → Lv.1)
   core-pct: 30               # 1회마다 힘·민첩·모험 +30%
   exp-pct: 50                # 1회마다 경험치 획득 +50%
   stat-points: 2             # 1회마다 레벨업 스탯 포인트 +2
+  shop-points: 10            # 1회마다 환생 포인트 (환생 상점: /환생 상점)
 
 quest-npcs:
   target: 60                 # 서버를 켤 때 맵 곳곳의 의뢰 NPC 가 이 수보다 적으면 자동 배치
@@ -393,6 +393,9 @@ loot-chest:                 # 구조물 · 보물 지도 보물 상자 (보물 �
 
 nick:
   overhead: true             # /닉네임 을 머리 위 이름표에도 표시 (바닐라 이름표를 숨기고 닉네임 글자를 띄움)
+
+summon:                    # 보스 소환 아이템 (발록의 봉인석 · 원혼 소환 부적)
+  spawn-safe-radius: 300   # 월드 스폰에서 이 거리(칸) 안에서는 소환 불가 (0 이면 제한 없음)
 
 guild-raid:                # 길드 토벌전 (/길드 토벌전)
   enabled: true

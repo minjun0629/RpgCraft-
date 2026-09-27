@@ -698,9 +698,9 @@ public class WeaponSkillManager implements Listener {
         long now = System.currentTimeMillis();
         JobManager.Third th = JobManager.third(d);
         if (plugin.jobs().is(p, JobManager.Sub.PALADIN) || th == JobManager.Third.CRUSADER) plugin.health().healPercent(p, th == JobManager.Third.CRUSADER ? 15 : 10);
-        if (th == JobManager.Third.CRUSADER && plugin.party() != null && plugin.party().of(p) != null)
-            for (Player m : plugin.party().of(p).online())
-                if (!m.equals(p) && m.getWorld().equals(p.getWorld()) && m.getLocation().distanceSquared(p.getLocation()) < 100) plugin.health().healPercent(m, 8);
+        if ((th == JobManager.Third.CRUSADER || plugin.jobs().is(p, JobManager.Sub.PALADIN)) && plugin.party() != null && plugin.party().of(p) != null)
+            for (Player m : plugin.party().of(p).online())   // 성기사 5% · 성전사 8% (v5.4.6)
+                if (!m.equals(p) && m.getWorld().equals(p.getWorld()) && m.getLocation().distanceSquared(p.getLocation()) < 100) plugin.health().healPercent(m, th == JobManager.Third.CRUSADER ? 8 : 5);
         if (plugin.jobs().is(p, JobManager.Sub.SHADOW) || th == JobManager.Third.NIGHT_SHADE) d.invulnUntil = Math.max(d.invulnUntil, now + (th == JobManager.Third.NIGHT_SHADE ? 2500 : 1500));
         if (plugin.jobs().is(p, JobManager.Sub.WARLORD) || th == JobManager.Third.CONQUEROR) d.counters.put("warlord_until", (double) (now + (th == JobManager.Third.CONQUEROR ? 6000 : 4000)));
     }

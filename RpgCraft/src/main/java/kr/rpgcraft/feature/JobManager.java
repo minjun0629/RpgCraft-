@@ -53,13 +53,13 @@ public class JobManager {
         WARLORD(Base.WARRIOR, 2, "전장의 군주", "강공격 후 4초간 받는 피해 30% 감소", StatMap.of(Stat.HP_PCT, 20, Stat.DEF, 6)),
         SNIPER(Base.ARCHER, 0, "저격수", "활 강공격 피해 +50%", StatMap.of(Stat.ARMOR_PEN, 15, Stat.CRIT_DMG, 30)),
         GALE(Base.ARCHER, 1, "질풍 궁수", "모든 무기 스킬 쿨타임 -30%", StatMap.of(Stat.SPEED, 10, Stat.DEX_PCT, 10)),
-        RANGER(Base.ARCHER, 2, "레인저", "강공격에 맞은 적이 3초간 둔화", StatMap.of(Stat.HP_PCT, 15, Stat.DODGE, 5)),
+        RANGER(Base.ARCHER, 2, "레인저", "강공격에 맞은 적 3초 둔화, 둔화된 적에게 주는 피해 +20%", StatMap.of(Stat.HP_PCT, 15, Stat.DODGE, 8, Stat.DEX_PCT, 5)),
         EXECUTIONER(Base.ROGUE, 0, "처형자", "체력 30% 이하의 적에게 피해 +50%", StatMap.of(Stat.ARMOR_PEN, 10, Stat.STR_PCT, 5)),
         SHADOW(Base.ROGUE, 1, "그림자", "강공격 후 1.5초간 무적", StatMap.of(Stat.DODGE, 10, Stat.CRIT, 10)),
-        PLUNDERER(Base.ROGUE, 2, "약탈자", "몬스터·동물 처치 시 돈 +30%", StatMap.of(Stat.EXP_PCT, 10, Stat.HP_PCT, 10)),
-        PALADIN(Base.GUARDIAN, 0, "성기사", "강공격 시 최대 체력 10% 회복", StatMap.of(Stat.HP_PCT, 10, Stat.MAGIC, 150)),
+        PLUNDERER(Base.ROGUE, 2, "약탈자", "처치 시 돈 +30%, 처치 후 5초간 주는 피해 +15%", StatMap.of(Stat.EXP_PCT, 10, Stat.HP_PCT, 10, Stat.CRIT, 5)),
+        PALADIN(Base.GUARDIAN, 0, "성기사", "강공격 시 최대 체력 10% 회복 + 근처 파티원 5% 회복", StatMap.of(Stat.HP_PCT, 15, Stat.DEF, 4)),
         SENTINEL(Base.GUARDIAN, 1, "파수꾼", "피격 시 20% 확률로 공격력 100% 반격", StatMap.of(Stat.DODGE, 8, Stat.CRIT, 5)),
-        FORTRESS(Base.GUARDIAN, 2, "철옹성", "받는 피해의 10%를 공격자에게 반사", StatMap.of(Stat.DEF, 12, Stat.HP_PCT, 25)),
+        FORTRESS(Base.GUARDIAN, 2, "철옹성", "받는 피해 -8%, 받은 피해의 20%를 공격자에게 반사", StatMap.of(Stat.DEF, 12, Stat.HP_PCT, 25)),
         BATTLEMAGE(Base.MAGE, 0, "전투 마법사", "주는 피해 +15%, 받는 피해 -10%", StatMap.of(Stat.STR_PCT, 10, Stat.MAGIC, 400, Stat.HP_PCT, 10)),
         ELEMENTALIST(Base.MAGE, 1, "원소술사", "모든 무기 스킬 쿨타임 -25%", StatMap.of(Stat.DEX_PCT, 10, Stat.MAGIC, 500, Stat.CRIT, 5)),
         ARCHMAGE(Base.MAGE, 2, "아크메이지", "체력 60% 이상일 때 주는 피해 +25%", StatMap.of(Stat.ADV_PCT, 10, Stat.MAGIC, 650));
@@ -98,7 +98,7 @@ public class JobManager {
         GRAND_THIEF(Sub.PLUNDERER, "대도", "처치 시 돈 +60%", StatMap.of(Stat.EXP_PCT, 20, Stat.HP_PCT, 15)),
         CRUSADER(Sub.PALADIN, "성전사", "강공격 시 최대 체력 15% 회복, 근처 파티원 8% 회복", StatMap.of(Stat.HP_PCT, 20, Stat.MAGIC, 400)),
         GUARDIAN_GOD(Sub.SENTINEL, "수호신", "피격 시 35% 확률로 공격력 150% 반격", StatMap.of(Stat.DODGE, 12, Stat.CRIT, 10)),
-        UNBREAKABLE(Sub.FORTRESS, "불괴", "받는 피해 -10%, 받은 피해의 20% 반사", StatMap.of(Stat.DEF, 18, Stat.HP_PCT, 40)),
+        UNBREAKABLE(Sub.FORTRESS, "불괴", "받는 피해 -15%, 받은 피해의 30% 반사", StatMap.of(Stat.DEF, 18, Stat.HP_PCT, 40)),
         SPELLBLADE(Sub.BATTLEMAGE, "마검사", "주는 피해 +25%, 받는 피해 -20%", StatMap.of(Stat.STR_PCT, 20, Stat.MAGIC, 1200, Stat.HP_PCT, 20, Stat.DEF, 6)),
         ELEMENT_LORD(Sub.ELEMENTALIST, "원소의 군주", "모든 무기 스킬 쿨타임 -40%, 주는 피해 +10%", StatMap.of(Stat.DEX_PCT, 20, Stat.MAGIC, 1500, Stat.CRIT, 10)),
         MAGIC_KING(Sub.ARCHMAGE, "마도왕", "체력 50% 이상일 때 주는 피해 +40%", StatMap.of(Stat.ADV_PCT, 20, Stat.MAGIC, 2000, Stat.HP_PCT, 15));
@@ -359,6 +359,9 @@ public class JobManager {
         if (th == Third.BLOOD_LORD && plugin.health().cur(p) / Math.max(1, plugin.health().max(p)) <= 0.5) m *= 1.4;
         if (th == Third.MARKSMAN && victim.getLocation().distanceSquared(p.getLocation()) >= 100) m *= 1.5;
         if (th == Third.CONQUEROR && d.counter("warlord_until") > System.currentTimeMillis()) m *= 1.2;
+        // 2차 리메이크 (v5.4.6): 레인저 — 둔화된 적 +20% / 약탈자 — 처치 후 5초 +15%
+        if (is(p, Sub.RANGER) && victim.hasPotionEffect(org.bukkit.potion.PotionEffectType.SLOW)) m *= 1.2;
+        if (is(p, Sub.PLUNDERER) && d.counter("plunder_until") > System.currentTimeMillis()) m *= 1.15;
         // 마법사 (v5.4.1)
         double myHp = plugin.health().cur(p) / Math.max(1, plugin.health().max(p));
         if (th == Third.SPELLBLADE) m *= 1.25;
@@ -377,12 +380,13 @@ public class JobManager {
         Third th = third(d);
         if ((s == Sub.WARLORD || th == Third.CONQUEROR) && d.counter("warlord_until") > System.currentTimeMillis()) amount *= th == Third.CONQUEROR ? 0.6 : 0.7;
         if (th == Third.BEAST_KING) amount *= 0.85;
-        if (th == Third.UNBREAKABLE) amount *= 0.9;
+        if (th == Third.UNBREAKABLE) amount *= 0.85;
+        else if (s == Sub.FORTRESS) amount *= 0.92;   // 철옹성 리메이크 (v5.4.6)
         if (th == Third.SPELLBLADE) amount *= 0.8;
         else if (s == Sub.BATTLEMAGE) amount *= 0.9;
         if (source instanceof LivingEntity le && !le.equals(vp)) {
             if (s == Sub.FORTRESS || th == Third.UNBREAKABLE) {
-                double r = amount * (th == Third.UNBREAKABLE ? 0.2 : 0.1);
+                double r = amount * (th == Third.UNBREAKABLE ? 0.3 : 0.2);
                 Bukkit.getScheduler().runTask(plugin, () -> plugin.combat().applyDamage(le, r, vp, vp, false));
             } else if ((s == Sub.SENTINEL || th == Third.GUARDIAN_GOD) && ThreadLocalRandom.current().nextDouble() < (th == Third.GUARDIAN_GOD ? 0.35 : 0.2)) {
                 double pw = th == Third.GUARDIAN_GOD ? 1.5 : 1.0;
@@ -391,6 +395,11 @@ public class JobManager {
             }
         }
         return amount;
+    }
+
+    /** 처치했을 때 (PartyManager.giveKillReward): 약탈자 버프 */
+    public void onKill(Player p) {
+        if (is(p, Sub.PLUNDERER)) plugin.data().get(p).counters.put("plunder_until", (double) (System.currentTimeMillis() + 5000));
     }
 
     public double moneyMult(Player p) {

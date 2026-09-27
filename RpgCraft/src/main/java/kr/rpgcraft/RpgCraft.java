@@ -91,6 +91,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.boss.FieldBossManager fieldBosses;
     private kr.rpgcraft.feature.DismantleManager dismantle;
     private kr.rpgcraft.guild.GuildRaidManager guildRaids;
+    private kr.rpgcraft.feature.RebirthShop rebirthShop;
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
@@ -176,6 +177,7 @@ public final class RpgCraft extends JavaPlugin {
         fieldBosses = new kr.rpgcraft.boss.FieldBossManager(this);
         dismantle = new kr.rpgcraft.feature.DismantleManager(this);
         guildRaids = new kr.rpgcraft.guild.GuildRaidManager(this);
+        rebirthShop = new kr.rpgcraft.feature.RebirthShop(this);
         command("pet", pets);
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
@@ -195,7 +197,7 @@ public final class RpgCraft extends JavaPlugin {
         playerCommands = pc;
         getServer().getPluginManager().registerEvents(pc, this);
         for (String c : new String[]{"stat", "info", "money", "pay", "check", "potionbag", "rune", "skill", "enhance", "job",
-                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle"}) command(c, pc);
+                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
         command("guild", new GuildCommand(this));
         command("war", new WarCommand(this));
         AdminCommand adminCmd = new AdminCommand(this);
@@ -308,7 +310,7 @@ public final class RpgCraft extends JavaPlugin {
         if (!getConfig().contains("gather.cooldown-by-tier")) getConfig().set("gather.cooldown-by-tier", java.util.List.of(180, 150, 120));
         if (!getConfig().contains("coupons")) getConfig().set("coupons.정식출시", java.util.List.of("scroll_exp:3"));
         if (Math.abs(getConfig().getDouble("boss.min-contribution", 0.07) - 0.03) < 1e-6) getConfig().set("boss.min-contribution", 0.07);
-        if (!getConfig().contains("coupons.밸패")) getConfig().set("coupons.밸패", java.util.List.of("ticket_job_reset:1", "ticket_stat_reset:1"));
+        if (getConfig().getStringList("coupons.밸패").equals(java.util.List.of("ticket_job_reset:1", "ticket_stat_reset:1"))) getConfig().set("coupons.밸패", null);   // 밸패 쿠폰 삭제 (v5.4.7)
         String[][] v340 = {{"player.hp-per-level", "200", "60"}, {"player.str-atk-per-2", "3", "6"}, {"player.adv-hp-per-point", "40", "100"},
                 {"player.dex-crit-per-point", "0.1", "0.15"}, {"economy.mob-money-mult", "0.1", "0.05"}, {"economy.boss-money-mult", "0.15", "0.1"},
                 {"economy.quest-money-mult", "0.4", "0.25"}, {"economy.wave-money-mult", "0.12", "0.08"}, {"economy.loot-sell-mult", "0.25", "0.15"},
@@ -417,6 +419,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.boss.FieldBossManager fieldBosses() { return fieldBosses; }
     public kr.rpgcraft.feature.DismantleManager dismantle() { return dismantle; }
     public kr.rpgcraft.guild.GuildRaidManager guildRaids() { return guildRaids; }
+    public kr.rpgcraft.feature.RebirthShop rebirthShop() { return rebirthShop; }
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }

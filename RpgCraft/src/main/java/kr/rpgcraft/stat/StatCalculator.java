@@ -173,6 +173,7 @@ public class StatCalculator {
             double cp = plugin.getConfig().getDouble("rebirth.core-pct", 30) * reb;
             t.add(STR_PCT, cp).add(DEX_PCT, cp).add(ADV_PCT, cp).add(EXP_PCT, plugin.getConfig().getDouble("rebirth.exp-pct", 25) * reb);
         }
+        t.addAll(kr.rpgcraft.feature.RebirthShop.bonus(d));   // 환생 상점 영구 강화
         if (plugin.legendary() != null) t.addAll(plugin.legendary().bonus(d.uuid));
         // 스탯 50포인트마다 특별 효과: 힘 → 공격력·방어 관통 / 민첩 → 치명타 피해·이동속도 / 모험 → 체력%·방어력
         int s50 = (int) (d.str / 50), d50 = (int) (d.dex / 50), a50 = (int) (d.adv / 50);

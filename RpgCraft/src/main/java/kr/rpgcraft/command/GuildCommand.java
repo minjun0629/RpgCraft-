@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class GuildCommand implements CommandExecutor, TabCompleter {
-    private static final List<String> SUBS = List.of("생성", "초대", "수락", "거절", "탈퇴", "추방", "정보", "목록", "입금", "출금",
+    private static final List<String> SUBS = List.of("토벌전", "생성", "초대", "수락", "거절", "탈퇴", "추방", "정보", "목록", "입금", "출금",
             "창고", "토템", "레벨업", "해산", "위임", "채팅");
     private final RpgCraft plugin;
 
@@ -33,6 +33,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/길드 정보 [길드] &7| &e/길드 목록 &7| &e/길드 채팅");
         Text.msg(s, "&e/길드 입금 <금액> &7| &e/길드 출금 <금액> &7| &e/길드 창고 &7| &e/길드 레벨업");
         Text.msg(s, "&e/길드 토템 &7[설치 | 해제 <번호>] - 손에 든 토템 설치");
+        Text.msg(s, "&e/길드 토벌전 &7[1~5 | 기록 <단계>] - 길드 토벌전 (길드장이 시작)");
     }
 
     @Override
@@ -160,6 +161,12 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 gm.save();
                 g.broadcast(Text.PREFIX + Text.c("&e길드장이 길드 금고에서 " + Text.money(amt) + "을 출금했습니다."));
             }
+            case "토벌전", "토벌", "raid" -> {   // 길드 토벌전
+                if (a.length >= 2 && (a[1].equals("기록") || a[1].equals("순위") || a[1].equals("rank"))) {
+                    plugin.guildRaids().ranking(p, a.length >= 3 ? (int) Text.parseLong(a[2], 1) : 1);
+                } else if (a.length >= 2) plugin.guildRaids().start(p, (int) Text.parseLong(a[1], -1));
+                else plugin.guildRaids().info(p);
+            }
             case "창고", "storage" -> {
                 if (g == null) { Text.msg(p, "&c길드가 없습니다."); return true; }
                 p.openInventory(g.storage());
@@ -239,6 +246,8 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         if (a.length == 2 && (a[0].equals("초대") || a[0].equals("추방") || a[0].equals("위임")))
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).filter(n -> n.toLowerCase().startsWith(a[1].toLowerCase())).toList();
         if (a.length == 2 && a[0].equals("토템")) return List.of("설치", "해제");
+        if (a.length == 2 && a[0].equals("토벌전")) return List.of("1", "2", "3", "4", "5", "기록");
+        if (a.length == 3 && a[0].equals("토벌전") && a[1].equals("기록")) return List.of("1", "2", "3", "4", "5");
         if (a.length == 2 && a[0].equals("정보")) return plugin.guilds().all().stream().map(g -> g.name).toList();
         return List.of();
     }

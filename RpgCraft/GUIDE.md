@@ -473,7 +473,7 @@
 | `questnpc scatter <수>` · `questnpc here <hunter/collector/herder/explorer>` | 의뢰 NPC 배치 |
 | `plants [반경]` | 주변 풀·꽃 정리 |
 | `title create <ID> <표시>` · `title give/take <플레이어> <ID>` · `title delete <ID>` · `title list` | 관리자 칭호 (색코드 & 가능) |
-| `pender` · `bounty` | 렉스 / 현상수배범 즉시 등장 |
+| `rex` · `bounty` | 렉스(전설의 대장장이) / 현상수배범 즉시 등장 (`pender` 도 됨) |
 | `reset all confirm` · `reset player <이름> confirm` | 게임 초기화 (플레이어 데이터·길드·성 소유·회차. 맵·구조물·설정은 유지) |
 | `money <플레이어> <set/add/take> <금액>` | 돈 |
 | `level <플레이어> <레벨>` · `exp <플레이어> <양>` · `stat <플레이어> <포인트>` | 성장 |

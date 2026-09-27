@@ -374,6 +374,7 @@ public class CombatService {
     public boolean isEnemy(Player p, Entity e) {
         if (!(e instanceof LivingEntity le) || e.equals(p) || e instanceof ArmorStand || e.isDead()) return false;
         if (isNpc(e)) return false;
+        if (plugin.guildRaids() != null && !plugin.guildRaids().canHit(p, e)) return false;   // 다른 길드의 토벌 보스
         if (e instanceof Player) return ((Player) e).getGameMode() != GameMode.SPECTATOR && canHitSilently(p, (Player) e);
         if (le instanceof Enemy || plugin.mobs().tracked(le)) return true;
         // 동물·중립 몹(늑대·골렘·벌·곰 등)도 스킬에 맞음. 단, 주민·상인과 누군가 길들인 동물은 제외

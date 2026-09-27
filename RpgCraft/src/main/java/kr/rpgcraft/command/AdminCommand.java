@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "pender", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -69,7 +69,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 npcs &7| &enpcbring &7- NPC 위치 목록 / 가까운 NPC 를 내 자리로");
         Text.msg(s, "&e/rpg관리 inv <플레이어> &7| &eenderchest <플레이어> &7- 인벤토리 · 엔더 상자 열기");
         Text.msg(s, "&e/rpg관리 time <day|night|bloodmoon> &7| &etickets [close <번호>] &7| &e/공지 <내용> &7| &e/추첨 <아이템 이름> [개수]");
-        Text.msg(s, "&e/rpg관리 pender &7| &ebounty &7- 렉스 / 현상수배범 즉시 등장");
+        Text.msg(s, "&e/rpg관리 rex &7| &ebounty &7- 렉스(전설의 대장장이) / 현상수배범 즉시 등장");
         Text.msg(s, "&e/rpg관리 title <create|delete|give|take|list> &7- 관리자 칭호");
         Text.msg(s, "&e/rpg관리 plants [반경] &7- 주변 해바라기·풀 정리");
         Text.msg(s, "&e/rpg관리 build &7- 건축 모드 켜기/끄기 (야생 방지 무시, 크리에이티브 + rpgcraft.build 권한)");
@@ -282,7 +282,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                         }
                     }
                 }
-                case "pender" -> Text.msg(s, plugin.pender().appear() ? "&a렉스 등장" : "&c렉스를 부르지 못했습니다.");
+                case "rex", "pender" -> Text.msg(s, plugin.pender().appear() ? "&a렉스 등장" : "&c렉스를 부르지 못했습니다.");
                 case "bounty" -> { plugin.content().spawnBounty(); Text.msg(s, "&a현상수배범 출현 시도"); }
                 case "reset" -> reset(s, a);
                 case "dungeon" -> {

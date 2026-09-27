@@ -938,15 +938,26 @@ public class BossManager {
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&c&l" + d.name + "&f이(가) 토벌되었습니다!"));
         // 경험치 분배 (v5.3.9): 한 명이 독식하지 않도록 절반은 참가자끼리 똑같이, 절반은 기여도대로 + 1인 상한
         var cfg = plugin.getConfig();
-        double expMin = cfg.getDouble("boss.exp-min-contribution", 0.02), even = cfg.getDouble("boss.exp-even-share", 0.5), cap = cfg.getDouble("boss.exp-max-share", 0.5);
+        double expMin = cfg.getDouble("boss.exp-min-contribution", 0.02), even = cfg.getDouble("boss.exp-even-share", 0.75), cap = cfg.getDouble("boss.exp-max-share", 0.4);
         Map<UUID, Double> expShare = new HashMap<>();
         double eligTotal = 0;
         for (Map.Entry<UUID, Double> en : ranking)
             if (total > 0 && en.getValue() / total >= expMin && Bukkit.getPlayer(en.getKey()) != null) { expShare.put(en.getKey(), en.getValue()); eligTotal += en.getValue(); }
         int parts = expShare.size();
-        for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
-            double w = even / parts + (1 - even) * (eligTotal <= 0 ? 0 : en.getValue() / eligTotal);
-            en.setValue(parts >= 2 ? Math.min(cap, w) : w);
+        for (Map.Entry<UUID, Double> en : expShare.entrySet())
+            en.setValue(even / parts + (1 - even) * (eligTotal <= 0 ? 0 : en.getValue() / eligTotal));
+        if (parts >= 2) {   // 상한을 넘는 몫은 나머지 참가자에게 고루 (2명이면 상한 60%)
+            double lim = Math.max(cap, 1.2 / parts);
+            for (int it = 0; it < 5; it++) {
+                double excess = 0;
+                int under = 0;
+                for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
+                    if (en.getValue() > lim) { excess += en.getValue() - lim; en.setValue(lim); }
+                    else if (en.getValue() < lim) under++;
+                }
+                if (excess <= 1e-9 || under == 0) break;
+                for (Map.Entry<UUID, Double> en : expShare.entrySet()) if (en.getValue() < lim) en.setValue(en.getValue() + excess / under);
+            }
         }
         for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
             Player p = Bukkit.getPlayer(en.getKey());

@@ -110,8 +110,8 @@ mobs:
 boss:
   min-contribution: 0.07     # 보스 보상(돈 · 재료)을 받기 위한 최소 기여도(7%)
   exp-min-contribution: 0.02 # 보스 경험치를 받기 위한 최소 기여도(2%)
-  exp-even-share: 0.5        # 경험치의 이 비율은 참가자끼리 똑같이, 나머지는 기여도대로
-  exp-max-share: 0.5         # 2명 이상일 때 한 사람이 받는 경험치 상한 (전체의 50%)
+  exp-even-share: 0.75       # 경험치의 이 비율은 참가자끼리 똑같이, 나머지는 기여도대로
+  exp-max-share: 0.4         # 한 사람이 받는 경험치 상한 (3명 이상 40%, 2명이면 60%). 넘는 몫은 나머지에게
 
 enhance:
   max-normal: 30             # 모든 장비 최대 +30

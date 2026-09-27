@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -50,6 +50,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
+        Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
         Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
@@ -172,6 +173,21 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     Text.msg(s, "회복 완료");
                 }
                 case "auction" -> auction(s, a);
+                case "enhance", "강화" -> {   // /rpg관리 enhance <수치> [플레이어] : 손에 든 장비의 강화 수치를 바로 정함 (v5.4.39)
+                    if (a.length < 2) { Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정 (0 ~ 최대 강화)"); return true; }
+                    Player t = a.length > 2 ? Text.player(a[2]) : s instanceof Player pp ? pp : null;
+                    if (t == null) { Text.msg(s, "&c접속 중인 플레이어를 입력하세요."); return true; }
+                    ItemStack it = t.getInventory().getItemInMainHand();
+                    if (it == null || it.getType().isAir() || !ItemData.enhanceable(it)) { Text.msg(s, "&c" + Text.name(t) + "님이 강화할 수 있는 장비를 손에 들고 있지 않습니다."); return true; }
+                    int want = Text.parseInt(a[1], -1), max = ItemData.maxEnhance(it);
+                    if (want < 0) { Text.msg(s, "&c강화 수치는 0 이상의 숫자로 입력하세요."); return true; }
+                    int lv = Math.min(want, max);
+                    ItemData.setInt(it, kr.rpgcraft.Keys.ENH, lv);
+                    ItemData.refresh(it);
+                    t.getInventory().setItemInMainHand(it);
+                    plugin.stats().refresh(t);
+                    Text.msg(s, "&a" + Text.name(t) + "님의 " + it.getItemMeta().getDisplayName() + " &a강화를 &e+" + lv + "&a로 설정했습니다." + (want > max ? " &7(최대 +" + max + ")" : ""));
+                }
                 case "starter" -> {
                     Player p = a.length > 1 ? Bukkit.getPlayerExact(a[1]) : s instanceof Player pp ? pp : null;
                     if (p == null) { Text.msg(s, "&c접속 중인 플레이어를 입력하세요."); return true; }
@@ -813,6 +829,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     out.add(bid);
                     out.add(Text.strip(Text.c(plugin.bosses().def(bid).name)).replace(' ', '_'));
                 }
+            }
+            case "enhance" -> {
+                if (a.length == 2) out.addAll(List.of("0", "5", "8", "10", "12", "15"));
+                if (a.length == 3) out.addAll(Text.onlineNames(a[2], s));
             }
             case "auction" -> {
                 if (a.length == 2) out.addAll(List.of("list", "remove", "return", "player", "clear"));

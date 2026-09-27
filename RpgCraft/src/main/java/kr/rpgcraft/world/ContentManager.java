@@ -189,6 +189,8 @@ public class ContentManager implements Listener {
         d.counters.put("title_kind", 4.0);
         d.counters.put("title_idx", 0.0);
         Text.msg(p, "&d✦ 칭호 획득! &5&l[" + label + "] &7(업적 · 칭호 메뉴에서 바꿀 수 있습니다)");
+        Text.announce(Text.PREFIX + Text.c("&5" + Text.name(p) + "&f님이 히든 직업 &5&l[" + label + "]&f을(를) 얻었습니다!"));
+        for (Player o : Bukkit.getOnlinePlayers()) if (o != p) o.playSound(o.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.35f, 1.6f);
     }
 
     /** 히든 패시브를 얻었을 때: 칭호를 주고 바로 장착 */

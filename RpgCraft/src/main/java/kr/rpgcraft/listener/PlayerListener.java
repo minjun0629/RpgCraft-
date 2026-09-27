@@ -42,7 +42,8 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
         PlayerData nj = plugin.data().get(e.getPlayer());
-        if (kr.rpgcraft.data.ResetPending.consume(plugin, e.getPlayer().getUniqueId()))   // 나가 있는 동안 초기화된 사람
+        boolean resetOnJoin = kr.rpgcraft.data.ResetPending.consume(plugin, e.getPlayer().getUniqueId());
+        if (resetOnJoin)   // 나가 있는 동안 초기화된 사람 (freshStart 가 기본 지급품도 줌)
             Bukkit.getScheduler().runTaskLater(plugin, () -> { if (e.getPlayer().isOnline()) kr.rpgcraft.data.ResetPending.freshStart(plugin, e.getPlayer()); }, 5L);
         if (nj.nick != null) { e.getPlayer().setDisplayName(nj.nick); e.getPlayer().setPlayerListName(nj.nick); }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {   // 가진 아이템의 설명을 현재 버전으로 새로 고침
@@ -60,15 +61,19 @@ public class PlayerListener implements Listener {
         Player p = e.getPlayer();
         PlayerData d = plugin.data().get(p);
         d.name = p.getName();
-        if (!d.starterGiven) {
+        // 기본 지급품: 처음 온 사람 + 맵(월드)을 새로 만들어 바닐라 인벤토리가 비어 버린 사람 (플러그인 기록은 남아 있어도)
+        boolean firstTime = !d.starterGiven;
+        if (!resetOnJoin && (firstTime || !p.hasPlayedBefore())) {
             d.starterGiven = true;
-            d.money += plugin.getConfig().getLong("player.starting-money", 0);
-            for (String s : plugin.getConfig().getStringList("player.starter-kit")) {
-                String[] kv = s.split(":");
-                ItemStack it = plugin.items().create(kv[0], kv.length > 1 ? Text.parseInt(kv[1], 1) : 1);
-                if (it != null) p.getInventory().addItem(it);
+            if (firstTime) {
+                d.money += plugin.getConfig().getLong("player.starting-money", 0);
+                kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));
             }
-            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));
+            // 다른 플러그인이 접속 직후 인벤토리를 정리해도 지워지지 않게 조금 뒤에 지급
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!p.isOnline()) return;
+                if (kr.rpgcraft.data.ResetPending.giveStarter(plugin, p) > 0) Text.msg(p, "&a기본 지급품을 받았습니다! &7(인벤토리를 확인하세요)");
+            }, 10L);
         }
         plugin.stats().refresh(p);
         plugin.hud().setup(p);

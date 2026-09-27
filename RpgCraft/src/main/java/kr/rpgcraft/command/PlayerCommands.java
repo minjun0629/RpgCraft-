@@ -114,7 +114,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             case "dummy" -> plugin.dummies().spawn(p);
             case "runefuse" -> plugin.runeFusion().open(p);
             case "tpa" -> {   // 순간이동 요청
-                if (a.length < 1) { Text.msg(p, "&e/tpa <플레이어> · /tpaccept · /tpdeny"); return true; }
+                if (a.length < 1) { Text.msg(p, "&e/tpa <플레이어> &7(이름 입력 중 Tab 키로 자동완성)"); return true; }
                 Player t = Bukkit.getPlayerExact(a[0]);
                 if (t == null || t.equals(p)) { Text.msg(p, "&c접속 중인 다른 플레이어를 입력하세요."); return true; }
                 if (d.onCooldown("tpa") && !p.hasPermission("rpgcraft.admin")) {
@@ -124,7 +124,9 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 }
                 tpaReq.put(t.getUniqueId(), new Object[]{p.getUniqueId(), System.currentTimeMillis()});
                 Text.msg(p, "&a" + t.getName() + "님에게 순간이동을 요청했습니다.");
-                Text.msg(t, "&e" + p.getName() + "&f님이 순간이동을 요청했습니다. &a/tpaccept &7· &c/tpdeny &7(60초)");
+                // 받은 사람은 채팅의 [수락] / [거절] 을 클릭 (명령어 /tpaccept · /tpdeny 도 그대로 됨)
+                kr.rpgcraft.feature.TradeManager.buttons(t, Text.c(Text.PREFIX + "&e" + p.getName() + "&f님이 순간이동을 요청했습니다 &7(60초) "), "/tpaccept", "/tpdeny");
+                t.playSound(t.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.4f);
             }
             case "tpaccept", "tpdeny" -> {
                 Object[] r = tpaReq.remove(p.getUniqueId());
@@ -478,6 +480,10 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (a.length == 1) { out.addAll(List.of("수락", "거절", "돈")); for (Player p : Bukkit.getOnlinePlayers()) out.add(p.getName()); }
             }
             case "pay", "info", "absorb" -> { if (a.length == 1) for (Player p : Bukkit.getOnlinePlayers()) out.add(p.getName()); }
+            case "tpa" -> {   // /tpa <Tab> → 접속 중인 다른 플레이어 (입력한 글자로 시작하는 이름만)
+                if (a.length == 1) for (Player p : Bukkit.getOnlinePlayers())
+                    if (!p.equals(s) && p.getName().toLowerCase(java.util.Locale.ROOT).startsWith(a[0].toLowerCase(java.util.Locale.ROOT))) out.add(p.getName());
+            }
             default -> { }
         }
         return out;

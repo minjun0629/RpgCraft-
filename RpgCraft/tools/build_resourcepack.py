@@ -257,7 +257,7 @@ def build_items():
     for i, mat in enumerate(["wooden_pickaxe", "iron_pickaxe", "diamond_pickaxe"]):
         add(mat, 700 + i, "tool_gather_%d" % (i + 1), True, lambda st=0, i=i: art.pickaxe(i))
     for i in range(4):
-        add("potion", 700 + i, "potion_%d" % (i + 1), False, lambda st=0, i=i: art.potion(i))
+        add("rabbit_foot", 700 + i, "potion_%d" % (i + 1), False, lambda st=0, i=i: art.potion(i))   # v5.4.22: 64개씩 쌓이게 토끼발에 씌움
     for mat, kind in [("netherite_scrap", "black"), ("emerald", "green"), ("redstone", "red"), ("lapis_lazuli", "blue"), ("clay_ball", "gray")]:
         add(mat, 800, "ore_" + kind, False, lambda st=0, k=kind: art.ore(k))
 
@@ -488,6 +488,10 @@ def main():
                {"parent": "minecraft:item/generated", "textures": {"layer0": NS + ":item/empty"}})
     for pane in ("gray_stained_glass_pane", "black_stained_glass_pane"):
         overrides.setdefault(pane, []).append((1, NS + ":item/empty"))
+
+    # 예전 병 포션(POTION 700~703)도 같은 모델로 보이게 (플러그인이 접속 때 새 포션으로 바꾸기 전까지)
+    for i in range(4):
+        overrides.setdefault("potion", []).append((700 + i, NS + ":item/potion_%d" % (i + 1)))
 
     for vanilla, lst in overrides.items():
         m = base_model(vanilla)

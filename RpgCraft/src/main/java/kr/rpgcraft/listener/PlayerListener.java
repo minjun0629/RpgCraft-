@@ -50,6 +50,10 @@ public class PlayerListener implements Listener {
             if (!e.getPlayer().isOnline()) return;
             for (ItemStack it : e.getPlayer().getInventory().getContents())
                 if (it != null && kr.rpgcraft.item.ItemData.template(it) != null) kr.rpgcraft.item.ItemData.refresh(it);
+            if (plugin.potions() != null) {   // 예전 병 포션 → 64개씩 쌓이는 포션 (v5.4.22)
+                int n = plugin.potions().convertLegacy(e.getPlayer().getInventory()) + plugin.potions().convertLegacy(e.getPlayer().getEnderChest());
+                if (n > 0) Text.msg(e.getPlayer(), "&a포션 " + n + "개를 64개씩 쌓이는 새 포션으로 바꿨습니다. &7(우클릭으로 마시기)");
+            }
         }, 20L);
         PlayerData bj = plugin.data().get(e.getPlayer());
         for (String k : new String[]{"buff_atk", "buff_def", "buff_speed", "buff_exp"}) {   // 나가 있던 동안 멈춰 있던 주문서 시간 복원

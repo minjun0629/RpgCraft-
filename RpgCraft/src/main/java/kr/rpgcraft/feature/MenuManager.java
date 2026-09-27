@@ -292,18 +292,36 @@ public class MenuManager implements Listener {
 
     // =================================================================== 상점 목록
     private class ShopListGui extends Gui {
-        ShopListGui(Player p) { this(p, 0); }
+        ShopListGui(Player p) { this(p, 0, false); }
 
-        /** 한 쪽에 28개 (상점이 많아져 페이지로 나눔 — 이전엔 14개까지만 보였음) */
-        ShopListGui(Player p, int page) {
-            super(6, "&8상점 목록" + (page > 0 ? " (" + (page + 1) + ")" : ""));
+        ShopListGui(Player p, int page) { this(p, page, false); }
+
+        /**
+         * 한 쪽에 28개 (상점이 많아져 페이지로 나눔 — 이전엔 14개까지만 보였음).
+         * 무기 상점 · 특수 무기 상점 · 무기고 I·II·III 는 "무기 상점" 한 칸으로 묶고, 누르면 그 안의 목록(weapons = true)을 연다.
+         */
+        ShopListGui(Player p, int page, boolean weapons) {
+            super(6, (weapons ? "&8무기 상점 · 무기고" : "&8상점 목록") + (page > 0 ? " (" + (page + 1) + ")" : ""));
             boolean admin = p.hasPermission("rpgcraft.admin");
             List<ShopManager.Shop> list = new ArrayList<>();
-            for (ShopManager.Shop s : plugin.shops().all()) if (!s.id.equals("hidden")) list.add(s);   // 히든 상인에게서만
+            int weaponShops = 0;
+            boolean hasWeapon = false;   // "weapon" 상점을 지운 서버면 묶지 않고 그대로 보여 줌
+            for (ShopManager.Shop s : plugin.shops().all()) { if (weaponGroup(s.id)) weaponShops++; if (s.id.equals("weapon")) hasWeapon = true; }
+            for (ShopManager.Shop s : plugin.shops().all()) {
+                if (s.id.equals("hidden")) continue;   // 히든 상인에게서만
+                if (weapons ? weaponGroup(s.id) : !weaponGroup(s.id) || s.id.equals("weapon") || !hasWeapon) list.add(s);
+            }
             int per = 28, pages = Math.max(1, (list.size() + per - 1) / per);
             int slot = 10;
             for (int i = page * per; i < list.size() && i < (page + 1) * per; i++) {
                 ShopManager.Shop s = list.get(i);
+                if (!weapons && s.id.equals("weapon")) {   // 묶음 칸
+                    set(slot, icon(Material.IRON_SWORD, "&a&l무기 상점 · 무기고", List.of("&7무기 상점 · 특수 무기 · 무기고 I·II·III",
+                            "&7상점 " + weaponShops + "곳", "&e▶ 클릭하여 목록 열기")), e -> new ShopListGui(p, 0, true).open(p));
+                    slot++;
+                    if (slot % 9 == 8) slot += 2;
+                    continue;
+                }
                 boolean ok = s.command || admin;
                 Material m = s.id.contains("weapon") || s.id.startsWith("armory") ? Material.IRON_SWORD : s.id.equals("fish") ? Material.COD : s.id.contains("armor") ? Material.IRON_CHESTPLATE
                         : s.id.contains("war") ? Material.TNT : s.id.contains("wander") ? Material.LEAD : s.id.contains("special") ? Material.AMETHYST_SHARD : Material.EMERALD;
@@ -315,11 +333,16 @@ public class MenuManager implements Listener {
                 slot++;
                 if (slot % 9 == 8) slot += 2;
             }
-            if (page > 0) set(45, icon(Material.ARROW, "&f이전 페이지", List.of()), e -> new ShopListGui(p, page - 1).open(p));
-            if (page + 1 < pages) set(53, icon(Material.ARROW, "&f다음 페이지", List.of()), e -> new ShopListGui(p, page + 1).open(p));
-            back(this, 49, p);
+            if (page > 0) set(45, icon(Material.ARROW, "&f이전 페이지", List.of()), e -> new ShopListGui(p, page - 1, weapons).open(p));
+            if (page + 1 < pages) set(53, icon(Material.ARROW, "&f다음 페이지", List.of()), e -> new ShopListGui(p, page + 1, weapons).open(p));
+            if (weapons) set(49, icon(Material.ARROW, "&f상점 목록으로", List.of()), e -> new ShopListGui(p).open(p));
+            else back(this, 49, p);
             fill(0, 53);
         }
+    }
+
+    private static boolean weaponGroup(String id) {
+        return id.equals("weapon") || id.equals("weapon2") || id.startsWith("armory");
     }
 
     // =================================================================== 워프

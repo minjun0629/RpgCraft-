@@ -9,6 +9,12 @@
         "custom_model_data": 1435
       },
       "model": "rpgcraft:item/fish_treasure"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1436
+      },
+      "model": "rpgcraft:item/boss_chest"
     }
   ]
 }

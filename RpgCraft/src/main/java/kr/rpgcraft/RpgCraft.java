@@ -169,10 +169,6 @@ public final class RpgCraft extends JavaPlugin {
         command("mount", mounts);
         pets = new kr.rpgcraft.feature.PetManager(this);
         command("pet", pets);
-        command("collection", (s, c, l, a) -> {   // /도감: 탈것 · 펫 도감
-            if (s instanceof Player pl) openCollections(pl);
-            return true;
-        });
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
         getServer().getPluginManager().registerEvents(hiddenJobs, this);
@@ -343,19 +339,6 @@ public final class RpgCraft extends JavaPlugin {
 
     private void listen(Listener... ls) {
         for (Listener l : ls) Bukkit.getPluginManager().registerEvents(l, this);
-    }
-
-    /** 도감 모음 창 */
-    public void openCollections(Player p) {
-        var d = data.get(p);
-        kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(3, "&8도감") {
-        };
-        g.set(11, kr.rpgcraft.gui.Gui.button(org.bukkit.Material.SADDLE, "&6&l탈것 도감", "&7모은 탈것 &f" + mounts.ownedCount(d) + " / " + kr.rpgcraft.feature.MountManager.Mount.values().length,
-                "", "&e▶ 클릭"), e -> mounts.openCollection(p));
-        g.set(15, kr.rpgcraft.gui.Gui.button(org.bukkit.Material.EGG, "&d&l펫 도감", "&7모은 펫 &f" + pets.ownedCount(d) + " / " + kr.rpgcraft.feature.PetManager.Pet.values().length,
-                "", "&e▶ 클릭"), e -> pets.open(p));
-        g.fill(0, 26);
-        g.open(p);
     }
 
     private void command(String name, CommandExecutor ex) {

@@ -10,6 +10,13 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/fish_treasure"
         }
+      },
+      {
+        "threshold": 1436,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/boss_chest"
+        }
       }
     ],
     "fallback": {

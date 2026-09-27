@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.1.1'
+version: '5.1.5'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -134,9 +134,6 @@ commands:
   pet:
     description: 펫 도감 · 뽑기
     aliases: [펫]
-  collection:
-    description: 탈것 · 펫 도감
-    aliases: [도감]
   limitbreak:
     description: 한계 돌파
     aliases: [한계돌파]

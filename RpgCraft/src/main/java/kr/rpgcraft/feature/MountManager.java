@@ -74,7 +74,7 @@ public class MountManager implements Listener, CommandExecutor {
     }
 
     private static final String[] GRADE = {"&f일반", "&9희귀", "&5영웅", "&6전설"};
-    private static final double[] ODDS = {0.62, 0.26, 0.10, 0.02};
+    private static final double[] ODDS = {0.63, 0.26, 0.10, 0.01};   // 전설 1% (config mounts.odds)
 
     private final RpgCraft plugin;
     private final NamespacedKey KEY, RIDE;
@@ -89,6 +89,11 @@ public class MountManager implements Listener, CommandExecutor {
         this.RIDE = new NamespacedKey(plugin, "mount_entity");
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
+    }
+
+    private double odds(int grade) {
+        List<Double> l = plugin.getConfig().getDoubleList("mounts.odds");
+        return grade < l.size() ? l.get(grade) : ODDS[grade];
     }
 
     public ItemStack token(Mount m) {
@@ -121,7 +126,7 @@ public class MountManager implements Listener, CommandExecutor {
         for (int i = 0; i < 4; i++) {
             StringBuilder names = new StringBuilder();
             for (Mount m : Mount.values()) if (m.grade == i) names.append(names.length() > 0 ? ", " : "").append(m.label);
-            lore.add(GRADE[i] + " &7" + String.format("%.0f", ODDS[i] * 100) + "% &8(" + names + ")");
+            lore.add(GRADE[i] + " &7" + String.format(odds(i) < 0.1 ? "%.1f" : "%.0f", odds(i) * 100) + "% &8(" + names + ")");
         }
         lore.add("");
         lore.add("&e▶ 클릭하여 뽑기");
@@ -136,7 +141,7 @@ public class MountManager implements Listener, CommandExecutor {
         if (!plugin.economy().take(p, cost)) { Text.actionBar(p, "&c돈이 부족합니다 (" + Text.money(cost) + ")"); return; }
         double r = ThreadLocalRandom.current().nextDouble(), acc = 0;
         int grade = 0;
-        for (int i = 0; i < 4; i++) { acc += ODDS[i]; if (r < acc) { grade = i; break; } }
+        for (int i = 0; i < 4; i++) { acc += odds(i); if (r < acc) { grade = i; break; } }
         List<Mount> pool = new ArrayList<>();
         for (Mount m : Mount.values()) if (m.grade == grade) pool.add(m);
         Mount got = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
@@ -163,7 +168,7 @@ public class MountManager implements Listener, CommandExecutor {
         var d = plugin.data().get(p);
         if (owns(d, m)) return;
         d.counters.put("mount_own_" + m.name(), 1.0);
-        Text.actionBar(p, "&e탈것 도감에 &f" + m.label + "&e이(가) 등록되었습니다! &7(/도감)");
+        Text.actionBar(p, "&e탈것 도감에 &f" + m.label + "&e이(가) 등록되었습니다! &7(메뉴 → 도감)");
     }
 
     /** 가진 탈것 아이템을 도감에 등록 (도감이 생기기 전에 뽑은 탈것 포함) */
@@ -219,7 +224,7 @@ public class MountManager implements Listener, CommandExecutor {
         g.set(4, Gui.button(Material.BOOK, "&e&l탈것 도감 &f" + n + " / " + Mount.values().length, "&7모은 탈것: " + (n * 100 / Mount.values().length) + "%",
                 "&7얻지 못한 탈것의 능력치는 가려집니다"));
         g.set(27, Gui.button(Material.SADDLE, "&6탈것 뽑기", "&e▶ 클릭"), e -> openShop(p));
-        if (plugin.pets() != null) g.set(35, Gui.button(Material.EGG, "&d펫 도감 보기", "&e▶ 클릭"), e -> plugin.pets().open(p));
+        g.set(31, Gui.button(Material.ARROW, "&f◀ 도감"), e -> plugin.menu().openCodex(p));
         g.fill(0, 35);
         g.open(p);
     }

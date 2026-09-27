@@ -1,0 +1,86 @@
+{
+  "textures": {
+    "glow": "rpgcraft:item/vfx/spark_glow",
+    "core": "rpgcraft:item/vfx/spark_core",
+    "particle": "rpgcraft:item/vfx/spark_core"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        8.0,
+        0
+      ],
+      "to": [
+        16,
+        8.01,
+        16
+      ],
+      "shade": false,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        8.03,
+        0
+      ],
+      "to": [
+        16,
+        8.04,
+        16
+      ],
+      "shade": false,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#core"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#core"
+        }
+      }
+    }
+  ],
+  "display": {
+    "fixed": {
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    }
+  }
+}

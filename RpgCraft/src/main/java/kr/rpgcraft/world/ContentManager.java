@@ -418,6 +418,33 @@ public class ContentManager implements Listener {
         openChestRoulette(p, pool, result);
     }
 
+    /** 보스 수정 우클릭: 확률에 따라 그 보스의 장비 (쉬프트: 한 번에 모두) */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBossCrystal(PlayerInteractEvent e) {
+        if (e.getHand() != EquipmentSlot.HAND || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)) return;
+        ItemStack it = e.getItem();
+        if (!"boss_crystal".equals(ItemData.id(it))) return;
+        e.setCancelled(true);
+        Player p = e.getPlayer();
+        var d = plugin.data().get(p);
+        if (d.onCooldown("boss_crystal")) return;
+        d.cooldown("boss_crystal", 400);
+        String bid = plugin.bosses().crystalBoss(it);
+        if (bid == null || plugin.bosses().gearDrops(bid).isEmpty()) { Text.msg(p, "&7힘을 잃은 수정입니다."); it.setAmount(it.getAmount() - 1); return; }
+        int n = p.isSneaking() ? it.getAmount() : 1;
+        it.setAmount(it.getAmount() - n);
+        int got = 0;
+        for (int i = 0; i < n; i++) got += plugin.bosses().openCrystal(p, bid).size();
+        p.getWorld().spawnParticle(Particle.END_ROD, p.getLocation().add(0, 1.2, 0), 20, 0.4, 0.4, 0.4, 0.08);
+        if (got > 0) {
+            p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
+            Text.msg(p, "&d수정 " + n + "개에서 장비 &f" + got + "개&d를 얻었습니다!");
+        } else {
+            p.playSound(p.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1f, 0.8f);
+            Text.msg(p, "&7수정 " + n + "개가 빛을 잃고 부서졌습니다... &8(장비 없음)");
+        }
+    }
+
     /** 가운데 칸에서 아이템이 돌다가 점점 느려지며 결과에서 멈춤, 위쪽 줄엔 뽑힐 수 있는 아이템과 확률 */
     private void openChestRoulette(Player p, java.util.List<ItemStack> pool, ItemStack result) {
         kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(4, "&6&l보스 상자") {

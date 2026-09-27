@@ -242,8 +242,7 @@ public class PetManager implements Listener, CommandExecutor {
         for (Pet pet : Pet.values()) if (owns(d, pet)) owned++;
         g.set(4, Gui.button(Material.BOOK, "&e&l펫 도감 &f" + owned + " / " + Pet.values().length,
                 "&7모은 펫: " + (owned * 100 / Pet.values().length) + "%", "&7얻지 못한 펫의 능력치는 가려집니다"));
-        if (plugin.mounts() != null)
-            g.set(53, Gui.button(Material.SADDLE, "&6탈것 도감 보기", "&e▶ 클릭"), e -> plugin.mounts().openCollection(p));
+        g.set(53, Gui.button(Material.ARROW, "&f◀ 도감"), e -> plugin.menu().openCodex(p));
         g.fill(0, 53);
         g.open(p);
     }

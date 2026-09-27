@@ -602,6 +602,8 @@ public class ItemRegistry {
         reg(new ItemTemplate("boat", "나무 보트", Material.OAK_BOAT, Category.MATERIAL).price(50, -1));
         reg(new ItemTemplate("boots_flipper", "물갈퀴 신발", Material.LEATHER_BOOTS, Category.MATERIAL).price(500, -1)
                 .desc("신으면 물속에서 빠르게 움직입니다"));
+        reg(new ItemTemplate("boss_crystal", "보스 수정", Material.ECHO_SHARD, Category.TICKET).grade(Grade.LEGEND).glow().model(1446)
+                .desc("보스를 토벌하면 기여자에게 주어지는 수정", "우클릭: 확률에 따라 그 보스의 장비 획득"));
         reg(new ItemTemplate("boss_chest", "보스 상자", Material.CHEST_MINECART, Category.TICKET).grade(Grade.UNIQUE).glow().model(1436)
                 .desc("우클릭: 보스 드롭 중 하나를 뽑습니다"));
         reg(new ItemTemplate("balrog_seal", "발록의 봉인석", Material.FIRE_CHARGE, Category.TICKET).grade(Grade.MYTHIC).glow().model(1424)

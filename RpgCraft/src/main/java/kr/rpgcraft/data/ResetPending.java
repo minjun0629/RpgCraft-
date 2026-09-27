@@ -60,7 +60,9 @@ public final class ResetPending {
         p.getInventory().clear();
         p.getEnderChest().clear();
         giveStarter(pl, p);
+        d.starterGiven = true;   // 지급 기록 (v5.4.23: 초기화 후 접속한 사람은 기록이 안 남아 다음 접속 때 또 받았음)
         d.starterWorld = org.bukkit.Bukkit.getWorlds().get(0).getUID().toString();
+        pl.data().save(d);
         pl.stats().refresh(p);
         d.hp = d.stats.maxHp;
         p.teleport(p.getWorld().getSpawnLocation());

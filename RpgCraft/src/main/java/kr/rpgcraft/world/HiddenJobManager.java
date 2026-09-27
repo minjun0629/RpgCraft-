@@ -212,6 +212,7 @@ public class HiddenJobManager implements Listener {
             plugin.stats().refresh(p);
             p.closeInventory();
             p.sendTitle(Text.c("&5&l" + t.label()), "", 10, 70, 20);
+            if (plugin.content() != null) plugin.content().onHiddenJob(p, t.label());   // 히든 직업 칭호
             p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.6f, 1.4f);
             p.getWorld().strikeLightningEffect(p.getLocation());
         });

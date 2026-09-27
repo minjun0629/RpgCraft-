@@ -179,6 +179,29 @@ public class ContentManager implements Listener {
 
     // ------------------------------------------------------------------ 칭호: 업적(1) · 레전더리 전용(2) · 관리자 제작(3)
     private static final String[] LEGEND_TITLE = {"폭군", "불사자", "폭풍의 주인", "황금의 손", "심판관"};
+    /** 히든 패시브(서버에 3명까지) 칭호 (v5.2.8) — kind 5, idx = 이 배열 순서 */
+    private static final kr.rpgcraft.passive.Passive[] HIDDEN_PASSIVES = {kr.rpgcraft.passive.Passive.SWORD_SAINT, kr.rpgcraft.passive.Passive.SAGE_WISDOM, kr.rpgcraft.passive.Passive.KINGS_MAJESTY};
+    private static final String[] HIDDEN_PASSIVE_TITLE = {"검성", "대현자", "왕좌의 계승자"};
+
+    /** 히든 직업을 얻거나 승급했을 때: 칭호를 주고 바로 장착 (kind 4 = 지금 단계의 직업 이름) */
+    public void onHiddenJob(Player p, String label) {
+        PlayerData d = plugin.data().get(p);
+        d.counters.put("title_kind", 4.0);
+        d.counters.put("title_idx", 0.0);
+        Text.msg(p, "&d✦ 칭호 획득! &5&l[" + label + "] &7(업적 · 칭호 메뉴에서 바꿀 수 있습니다)");
+    }
+
+    /** 히든 패시브를 얻었을 때: 칭호를 주고 바로 장착 */
+    public void onHiddenPassive(Player p, kr.rpgcraft.passive.Passive ps) {
+        for (int i = 0; i < HIDDEN_PASSIVES.length; i++) {
+            if (HIDDEN_PASSIVES[i] != ps) continue;
+            PlayerData d = plugin.data().get(p);
+            d.counters.put("title_kind", 5.0);
+            d.counters.put("title_idx", (double) i);
+            Text.msg(p, "&d✦ 칭호 획득! &b&l[" + HIDDEN_PASSIVE_TITLE[i] + "] &7(업적 · 칭호 메뉴에서 바꿀 수 있습니다)");
+            Text.announce(Text.PREFIX + Text.c("&b" + Text.name(p) + "&f님이 히든 칭호 &b&l[" + HIDDEN_PASSIVE_TITLE[i] + "]&f을(를) 얻었습니다!"));
+        }
+    }
     private final java.io.File titleFile = new java.io.File(RpgCraft.get().getDataFolder(), "titles.yml");
     private final LinkedHashMap<String, String> customTitles = new LinkedHashMap<>();
 
@@ -224,6 +247,13 @@ public class ContentManager implements Listener {
             case 3 -> {
                 List<String> keys = new ArrayList<>(customTitles.keySet());
                 if (idx < keys.size() && hasCustom(d, keys.get(idx))) return Text.c(customTitles.get(keys.get(idx)) + "&d");
+            }
+            case 4 -> {   // 히든 직업: 지금 단계의 직업 이름
+                var t = kr.rpgcraft.world.HiddenJobManager.of(d);
+                if (t != null) return Text.c("&5" + t.label() + "&d");
+            }
+            case 5 -> {   // 히든 패시브 (가지고 있는 동안만)
+                if (idx < HIDDEN_PASSIVES.length && d.passives.contains(HIDDEN_PASSIVES[idx].name())) return Text.c("&b" + HIDDEN_PASSIVE_TITLE[idx] + "&d");
             }
             default -> { }
         }
@@ -276,6 +306,24 @@ public class ContentManager implements Listener {
                         has ? "&6&l" + LEGEND_TITLE[i] : "&8레전더리 칭호", has ? "&7「" + ls[i].label + "」 주인 전용 칭호" : "&8???",
                         has ? (equipped ? "&b현재 칭호 (클릭해서 해제)" : "&e▶ 클릭해서 장착") : ""), e -> {
                     if (has) { equip(d, 2, idx); new AchGui(p).open(p); }
+                });
+            }
+            // 히든 직업 · 히든 패시브 칭호 (가지고 있는 동안만)
+            var hj = kr.rpgcraft.world.HiddenJobManager.of(d);
+            boolean hjEq = kind == 4;
+            set(46, button(hj != null ? (hjEq ? Material.NAME_TAG : Material.WITHER_SKELETON_SKULL) : Material.BLACK_DYE,
+                    hj != null ? "&5&l" + hj.label() : "&8히든 직업 칭호", hj != null ? "&7히든 직업 전용 칭호 (승급하면 이름도 바뀜)" : "&8???",
+                    hj != null ? (hjEq ? "&b현재 칭호 (클릭해서 해제)" : "&e▶ 클릭해서 장착") : ""), e -> {
+                if (hj != null) { equip(d, 4, 0); new AchGui(p).open(p); }
+            });
+            for (int i = 0; i < HIDDEN_PASSIVES.length; i++) {
+                boolean has = d.passives.contains(HIDDEN_PASSIVES[i].name());
+                boolean equipped = kind == 5 && sel == i;
+                int idx = i;
+                set(48 + i, button(has ? (equipped ? Material.NAME_TAG : Material.HEART_OF_THE_SEA) : Material.BLACK_DYE,
+                        has ? "&b&l" + HIDDEN_PASSIVE_TITLE[i] : "&8히든 칭호", has ? "&7「" + HIDDEN_PASSIVES[i].label + "」 주인 전용 칭호 &8(서버에 3명)" : "&8???",
+                        has ? (equipped ? "&b현재 칭호 (클릭해서 해제)" : "&e▶ 클릭해서 장착") : ""), e -> {
+                    if (has) { equip(d, 5, idx); new AchGui(p).open(p); }
                 });
             }
             // 관리자 제작 칭호 (받은 것만 표시)

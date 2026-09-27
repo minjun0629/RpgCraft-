@@ -453,6 +453,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         if (a.length >= 3 && a[1].equals("all") && a[2].equals("confirm")) {
             plugin.bosses().killAll();
             plugin.customMobs().killAll();
+            if (plugin.auction() != null) plugin.auction().clearAll();   // 옥션 물건 · 대금 모두 삭제 (v5.4.18)
             for (var g : new ArrayList<>(plugin.guilds().all())) plugin.guilds().disband(g);
             for (var c : plugin.wars().castles()) c.owner = null;
             plugin.wars().save();
@@ -473,11 +474,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             Text.announce(Text.PREFIX + Text.c("&c&l게임이 초기화되었습니다! &f모든 플레이어가 처음부터 시작합니다."));
             return;
         }
-        Text.msg(s, "&e/rpg관리 reset all confirm &7- 모든 플레이어 데이터·길드·성 소유·회차 초기화 (맵·구조물·설정은 유지)");
+        Text.msg(s, "&e/rpg관리 reset all confirm &7- 모든 플레이어 데이터·길드·성 소유·옥션·회차 초기화 (맵·구조물·설정은 유지)");
         Text.msg(s, "&e/rpg관리 reset player <이름> confirm &7- 한 명만 초기화");
     }
 
     private void resetPlayer(PlayerData d) {
+        if (plugin.auction() != null) plugin.auction().clearPlayer(d.uuid);   // 옥션에 올린 물건도 삭제 (v5.4.18)
         d.level = 0;   // 새로 온 사람과 같이 Lv.0 부터 → Lv.1 이 될 때 스탯 포인트를 받음 (예전엔 Lv.1 로 되돌려 첫 스탯을 못 받았음)
         d.exp = 0;
         d.statPoints = 0;

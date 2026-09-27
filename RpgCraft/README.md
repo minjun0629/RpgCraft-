@@ -7,6 +7,11 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.4.18
+- **초기화하면 옥션 물건도 삭제**
+  - `/rpg관리 reset all confirm`: 옥션에 올라온 모든 물건, 받지 않은 판매 대금, 돌려받을 물건을 모두 지웁니다.
+  - `/rpg관리 reset player <이름> confirm`: 그 사람이 올린 물건과 받지 않은 대금 · 물건만 지웁니다.
+
 ## v5.4.17
 - **일반 몬스터 마녀의 독 지속 시간 최대 7초**: 마녀가 던지는 독 물약은 바닐라에서 최대 45초였음 → 최대 **7초** (가장자리에 맞으면 더 짧음). 보스 제외. `config.yml` 의 `mobs.witch-poison-seconds` 로 바꿀 수 있습니다.
 

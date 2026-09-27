@@ -91,6 +91,26 @@ public class AuctionManager implements CommandExecutor {
         }
     }
 
+    /** 게임 전체 초기화: 올라온 물건 · 받지 않은 판매 대금 · 돌려받을 물건 모두 삭제 */
+    public int clearAll() {
+        int n = list.size();
+        list.clear();
+        pendingMoney.clear();
+        pendingItems.clear();
+        save();
+        return n;
+    }
+
+    /** 한 사람 초기화: 그 사람이 올린 물건과 받지 않은 대금 · 물건 삭제 */
+    public int clearPlayer(UUID id) {
+        int before = list.size();
+        list.values().removeIf(l -> l.seller.equals(id));
+        pendingMoney.remove(id);
+        pendingItems.remove(id);
+        save();
+        return before - list.size();
+    }
+
     private void expire() {
         long now = System.currentTimeMillis();
         boolean ch = false;

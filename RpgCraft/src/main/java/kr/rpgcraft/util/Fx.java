@@ -97,6 +97,11 @@ public final class Fx {
                     dust(base.clone().add(Math.cos(ang) * r, y, Math.sin(ang) * r), a, 1.3f);
                     dust(base.clone().add(Math.cos(ang + Math.PI) * r, y, Math.sin(ang + Math.PI) * r), b, 1.3f);
                 }
+                if (t % 3 == 0) {   // 나선 끝의 반짝임 · 바닥 광휘 (연출만)
+                    double prog = t / (double) ticks, ang = prog * Math.PI * 6;
+                    base.getWorld().spawnParticle(Particle.END_ROD, base.clone().add(Math.cos(ang) * r, prog * height, Math.sin(ang) * r), 1, 0, 0, 0, 0.01);
+                    dust(base.clone().add(Math.cos(-ang) * r * 0.6, 0.1, Math.sin(-ang) * r * 0.6), light(a), 1.0f);
+                }
                 t++;
             }
         }.runTaskTimer(plugin, 0L, 1L);

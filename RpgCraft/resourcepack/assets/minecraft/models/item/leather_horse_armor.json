@@ -27,6 +27,24 @@
         "custom_model_data": 9503
       },
       "model": "rpgcraft:item/vfx_burst"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9504
+      },
+      "model": "rpgcraft:item/vfx_spark"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9505
+      },
+      "model": "rpgcraft:item/vfx_wave"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9506
+      },
+      "model": "rpgcraft:item/vfx_trail"
     }
   ]
 }

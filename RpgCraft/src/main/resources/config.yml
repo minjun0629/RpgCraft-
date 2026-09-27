@@ -435,6 +435,7 @@ boss-models:                # 보스 3D 모델 (리소스팩)
 
 vfx:
   enabled: true              # 스킬 이펙트를 리소스팩 모델로 한 번에 번쩍 (잔상 없음). false: 기존 입자
+  layers: true               # 겹 이펙트 (흰 칼심 · 잔상 · 반짝임 · 파동 원판 · 입자). 서버가 버거우면 false
 
 visual:
   item-glow: false           # 떨어진 장비 발광(벽 너머로도 보임). 끄면 빛기둥·입자만 표시

@@ -85,6 +85,7 @@ public class WorldBossManager implements Listener {
         ev.boss = b.getUniqueId();
         ev.at = l.clone();
         ev.until = System.currentTimeMillis() + plugin.getConfig().getLong("world-boss.stay-minutes", 30) * 60_000;
+        plugin.structures().linkBoss(ev.arena, ev.boss, ev.until);   // 재시작해도 전장이 남지 않게
         events.add(ev);
         w.strikeLightningEffect(l);
         String name = plugin.bosses().def(id).name;
@@ -103,6 +104,7 @@ public class WorldBossManager implements Listener {
             n++;
         }
         events.clear();
+        plugin.structures().despawnArenas(1000);   // 기록이 끊긴 전장까지 모두
         return n;
     }
 

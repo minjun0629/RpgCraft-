@@ -189,6 +189,9 @@ public final class RpgCraft extends JavaPlugin {
         new kr.rpgcraft.world.BgmManager(this);
         command("guide", guide);
         command("ruins", ruins);   // /유적 : 유적 위치 안내 (v5.4.29)
+        duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
+        Bukkit.getPluginManager().registerEvents(duels, this);
+        command("duel", duels);
         casino = new kr.rpgcraft.world.CasinoManager(this);
         command("party", party);
         if (getCommand("party") != null) getCommand("party").setTabCompleter(party);
@@ -240,6 +243,7 @@ public final class RpgCraft extends JavaPlugin {
         if (trades != null) trades.shutdown();
         if (protection != null) protection.restoreAll();
         if (wars != null) wars.shutdown();
+        if (duels != null) duels.shutdown();   // 야차 중이던 사람 원래 자리로
         if (bosses != null) bosses.shutdown();
         if (hud != null) hud.shutdown();
         if (data != null) data.saveAll();
@@ -396,6 +400,8 @@ public final class RpgCraft extends JavaPlugin {
     public RuneManager runes() { return runes; }
     public SpiritManager spirits() { return spirits; }
     public RuinManager ruins() { return ruins; }
+    private kr.rpgcraft.feature.DuelManager duels;
+    public kr.rpgcraft.feature.DuelManager duels() { return duels; }
     private kr.rpgcraft.world.SeaMonsterManager seaMonsters;
     public kr.rpgcraft.world.SeaMonsterManager seaMonsters() { return seaMonsters; }
     public GuildManager guilds() { return guilds; }

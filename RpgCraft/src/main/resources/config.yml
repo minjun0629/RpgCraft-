@@ -334,6 +334,11 @@ pets:
   duplicate-refund: 0.2      # 이미 가진 펫이 나오면 비용의 20% 환급
   scale: 0.6                 # 펫 모델 크기
 
+duel:                        # 야차 (1대1 결투, /야차 <닉네임>)
+  time-limit-seconds: 180    # 제한 시간 (끝나면 무승부)
+  arena-y: 250               # 하늘 결투장 높이
+  arena-offset-x: 20000      # 월드 스폰에서 동쪽으로 떨어진 거리 (결투장 8개가 64칸 간격)
+
 sea:
   megalodon-chance: 0.004    # 바다에서 헤엄칠 때 20초마다 메갈로돈 확률
   megalodon-cooldown-minutes: 20

@@ -358,6 +358,11 @@ public class CombatService {
         if (isNpc(victim)) return false;
         if (!(victim instanceof Player vp)) return true;
         if (vp.equals(attacker)) return false;
+        if (plugin.duels() != null && (plugin.duels().inDuel(attacker) || plugin.duels().inDuel(vp))) {   // 야차: 서로만, 시작 후에만 (PvP 설정 · 길드 · 초보 보호 무시)
+            if (plugin.duels().fighting(attacker, vp)) return true;
+            Text.actionBar(attacker, plugin.duels().pair(attacker, vp) ? "&e야차 시작 전입니다." : "&c야차 중인 사람과는 싸울 수 없습니다.");
+            return false;
+        }
         Guild ga = plugin.guilds().of(attacker.getUniqueId());
         Guild gv = plugin.guilds().of(vp.getUniqueId());
         if (ga != null && ga == gv && !plugin.getConfig().getBoolean("combat.guild-friendly-fire", false)) return false;
@@ -407,6 +412,7 @@ public class CombatService {
     }
 
     private boolean canHitSilently(Player a, Player v) {
+        if (plugin.duels() != null && (plugin.duels().inDuel(a) || plugin.duels().inDuel(v))) return plugin.duels().fighting(a, v);
         if (plugin.party() != null && plugin.party().same(a, v)) return false; // 파티원끼리 공격 불가
         Guild ga = plugin.guilds().of(a.getUniqueId());
         Guild gv = plugin.guilds().of(v.getUniqueId());

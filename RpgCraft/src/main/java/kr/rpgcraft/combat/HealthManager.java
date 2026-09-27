@@ -89,6 +89,7 @@ public class HealthManager {
             if (source != null) s.contrib.merge(source.getUniqueId(), Math.min(amount, before), Double::sum);
             if (after <= 0 && s.bossId != null && plugin.bosses().tryAwaken(e, s)) return false;
         }
+        if (after <= 0 && e instanceof Player dp && plugin.duels() != null && plugin.duels().onLethal(dp)) return false;   // 야차: 진짜로 죽지 않고 패배 처리 (경험치 · 돈 손실 없음)
         if (after <= 0 && e instanceof Player p && plugin.legendary() != null && plugin.legendary().tryImmortal(p)) {
             set(e, max(e) * 0.3);
             return false;

@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -50,6 +50,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
+        Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
         Text.msg(s, "&e/rpg관리 npc <상점ID> &7- 현재 위치에 상점 NPC (제거: 쉬프트+방벽 우클릭)");
         Text.msg(s, "&e/rpg관리 castle <create|pos1|pos2|wall|beacon|spawn|owner|delete|list|restore> ...");
@@ -169,6 +170,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     plugin.health().set(p, plugin.health().max(p));
                     Text.msg(s, "회복 완료");
                 }
+                case "auction" -> auction(s, a);
                 case "starter" -> {
                     Player p = a.length > 1 ? Bukkit.getPlayerExact(a[1]) : s instanceof Player pp ? pp : null;
                     if (p == null) { Text.msg(s, "&c접속 중인 플레이어를 입력하세요."); return true; }
@@ -438,6 +440,36 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             plugin.getLogger().warning("관리자 명령 오류: " + ex);
         }
         return true;
+    }
+
+    /** 옥션 관리: 창 / 목록 / 삭제 / 돌려보내기 / 한 사람 / 전체 */
+    private void auction(CommandSender s, String[] a) {
+        var au = plugin.auction();
+        if (au == null) { Text.msg(s, "&c옥션이 꺼져 있습니다."); return; }
+        String sub = a.length > 1 ? a[1].toLowerCase(Locale.ROOT) : "";
+        switch (sub) {
+            case "list" -> au.adminList(s, a.length > 2 ? Text.parseInt(a[2], 1) - 1 : 0);
+            case "remove", "delete", "삭제", "return", "돌려보내기" -> {
+                if (a.length < 3) { Text.msg(s, "&c/rpg관리 auction " + sub + " <번호> &7(번호는 /rpg관리 auction list)"); return; }
+                boolean back = sub.equals("return") || sub.equals("돌려보내기");
+                Text.msg(s, au.adminRemove(a[2], back) ? (back ? "&e판매자에게 돌려보냈습니다." : "&c삭제했습니다.") : "&c그 번호의 물건이 없습니다.");
+            }
+            case "player" -> {
+                PlayerData d = target(s, a, 2);
+                if (d == null) return;
+                boolean back = a.length > 3 && (a[3].equals("return") || a[3].equals("돌려보내기"));
+                int n = au.adminRemoveSeller(d.uuid, back);
+                Text.msg(s, "&a" + d.name + " 님의 옥션 물건 " + n + "개를 " + (back ? "돌려보냈습니다." : "삭제했습니다."));
+            }
+            case "clear" -> {
+                if (a.length < 3 || !a[2].equals("confirm")) { Text.msg(s, "&c정말 옥션 물건을 모두 지우려면: /rpg관리 auction clear confirm"); return; }
+                Text.msg(s, "&c옥션 물건 " + au.clearAll() + "개를 모두 삭제했습니다. &7(받지 않은 대금 · 물건 포함)");
+            }
+            default -> {
+                if (s instanceof Player p) au.openAdmin(p, 0);
+                else au.adminList(s, 0);
+            }
+        }
     }
 
     /** 게임 초기화 */
@@ -742,6 +774,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     out.add(bid);
                     out.add(Text.strip(Text.c(plugin.bosses().def(bid).name)).replace(' ', '_'));
                 }
+            }
+            case "auction" -> {
+                if (a.length == 2) out.addAll(List.of("list", "remove", "return", "player", "clear"));
+                if (a.length == 3 && (a[1].equals("remove") || a[1].equals("return")) && plugin.auction() != null) out.addAll(plugin.auction().ids());
+                if (a.length == 3 && a[1].equals("player")) Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
+                if (a.length == 4 && a[1].equals("player")) out.addAll(List.of("delete", "return"));
             }
             case "npc" -> plugin.shops().all().forEach(sh -> out.add(sh.id));
             case "castle" -> {

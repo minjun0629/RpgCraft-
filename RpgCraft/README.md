@@ -7,6 +7,15 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.4.19
+- **관리자 옥션 관리 명령어 `/rpg관리 auction`**
+  - `/rpg관리 auction` : 옥션 관리 창. 물건을 **좌클릭하면 삭제**(물건이 사라짐), **우클릭하면 판매자 보관함으로 돌려보냄**.
+  - `/rpg관리 auction list [페이지]` : 채팅으로 번호 · 물건 · 가격 · 판매자 목록
+  - `/rpg관리 auction remove <번호>` : 삭제 · `/rpg관리 auction return <번호>` : 판매자에게 돌려보냄 (번호는 Tab 자동완성)
+  - `/rpg관리 auction player <이름> [return]` : 그 사람이 올린 물건 전부 삭제 (return 이면 돌려보냄)
+  - `/rpg관리 auction clear confirm` : 옥션 물건 · 받지 않은 대금 · 물건 전부 삭제
+  - 판매자가 접속 중이면 삭제 · 반환 사실을 알려 줍니다.
+
 ## v5.4.18
 - **초기화하면 옥션 물건도 삭제**
   - `/rpg관리 reset all confirm`: 옥션에 올라온 모든 물건, 받지 않은 판매 대금, 돌려받을 물건을 모두 지웁니다.

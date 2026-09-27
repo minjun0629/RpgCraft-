@@ -18,7 +18,7 @@ player:
   dex-critdmg-per-point: 0.7 # 민첩 1 = 치명타 피해 +0.7%
   dex-speed-per-point: 0.05  # 민첩 1 = 이동속도 +0.05%
   dex-speed-max: 30
-  max-defense: 85            # 방어력(%) 상한
+  max-defense: 90            # 방어력(%) 상한
   max-level: 300
   exp:                       # [설계] 필요 경험치 = base * Lv^power + flat
     base: 100

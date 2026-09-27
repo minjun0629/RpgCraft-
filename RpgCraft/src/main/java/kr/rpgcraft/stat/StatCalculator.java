@@ -204,7 +204,7 @@ public class StatCalculator {
         s.magic = Math.max(0, s.str * c.getDouble("player.str-magic-per-point", 2.0) + t.get(MAGIC));
         s.crit = clamp(s.dex * c.getDouble("player.dex-crit-per-point", 0.12) + t.get(CRIT), 0, 100);
         s.critDmg = t.get(CRIT_DMG) + s.dex * c.getDouble("player.dex-critdmg-per-point", 0.5);
-        s.def = clamp(t.get(DEF) + s.adv * c.getDouble("player.adv-def-per-point", 0.05), 0, c.getDouble("player.max-defense", 85));
+        s.def = clamp(t.get(DEF) + s.adv * c.getDouble("player.adv-def-per-point", 0.05), 0, c.getDouble("player.max-defense", 90));
         double hp = c.getDouble("player.base-hp", 1000) + d.level * c.getDouble("player.hp-per-level", 200)
                 + s.adv * c.getDouble("player.adv-hp-per-point", 40) + t.get(HP) * c.getDouble("player.item-hp-mult", 0.4);
         double hpPct = t.get(HP_PCT) * c.getDouble("player.item-hp-mult", 0.4) + (d.doldolUntil > System.currentTimeMillis() ? 50 : 0);   // 체력% 효과 너프

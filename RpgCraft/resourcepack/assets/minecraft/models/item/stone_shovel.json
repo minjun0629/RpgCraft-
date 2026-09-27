@@ -24,6 +24,12 @@
     },
     {
       "predicate": {
+        "custom_model_data": 1330
+      },
+      "model": "rpgcraft:item/armory3_spear_1"
+    },
+    {
+      "predicate": {
         "custom_model_data": 3100
       },
       "model": "rpgcraft:item/spear_10_e7"
@@ -42,6 +48,12 @@
     },
     {
       "predicate": {
+        "custom_model_data": 4330
+      },
+      "model": "rpgcraft:item/armory3_spear_1_e7"
+    },
+    {
+      "predicate": {
         "custom_model_data": 5100
       },
       "model": "rpgcraft:item/spear_10_e10"
@@ -57,6 +69,12 @@
         "custom_model_data": 6310
       },
       "model": "rpgcraft:item/armory2_spear_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6330
+      },
+      "model": "rpgcraft:item/armory3_spear_1_e10"
     }
   ]
 }

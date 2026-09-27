@@ -99,6 +99,13 @@ public class ShopManager implements Listener {
             for (ItemTemplate t : plugin.items().all())
                 if (t.id.startsWith("loot_") && t.sell > 0 && !have.contains(t.id)) lootShop.entries.add(new Entry(t.id, -1, t.sell));
         }
+        Shop fishShop = shops.get("fish");   // 새 어종은 기존 서버의 shops.yml 에도 자동으로 매입 목록에 추가
+        if (fishShop != null) {
+            Set<String> have = new HashSet<>();
+            for (Entry en : fishShop.entries) have.add(en.id());
+            for (ItemTemplate t : plugin.items().all())
+                if (t.id.startsWith("fish_") && t.sell > 0 && !have.contains(t.id)) fishShop.entries.add(new Entry(t.id, -1, t.sell));
+        }
         // 전당포: 판매가가 있는 모든 전리품·재료·물고기·파편 등을 사들임 (어디서도 못 팔던 물건 해결)
         Shop pawn = new Shop();
         pawn.id = "pawn";

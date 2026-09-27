@@ -40,6 +40,20 @@
         }
       },
       {
+        "threshold": 1331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_spear_2"
+        }
+      },
+      {
+        "threshold": 1332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_spear_3"
+        }
+      },
+      {
         "threshold": 3101,
         "model": {
           "type": "minecraft:model",
@@ -75,6 +89,20 @@
         }
       },
       {
+        "threshold": 4331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_spear_2_e7"
+        }
+      },
+      {
+        "threshold": 4332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_spear_3_e7"
+        }
+      },
+      {
         "threshold": 5101,
         "model": {
           "type": "minecraft:model",
@@ -107,6 +135,20 @@
         "model": {
           "type": "minecraft:model",
           "model": "rpgcraft:item/armory2_spear_3_e10"
+        }
+      },
+      {
+        "threshold": 6331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_spear_2_e10"
+        }
+      },
+      {
+        "threshold": 6332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_spear_3_e10"
         }
       }
     ],

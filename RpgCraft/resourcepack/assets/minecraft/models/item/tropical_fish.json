@@ -15,6 +15,24 @@
         "custom_model_data": 1436
       },
       "model": "rpgcraft:item/fish_legend"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1630
+      },
+      "model": "rpgcraft:item/fish_arowana"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1638
+      },
+      "model": "rpgcraft:item/fish_phoenixkoi"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1641
+      },
+      "model": "rpgcraft:item/fish_jadekoi"
     }
   ]
 }

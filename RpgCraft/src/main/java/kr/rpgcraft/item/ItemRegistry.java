@@ -408,7 +408,14 @@ public class ItemRegistry {
 
     private void registerArmory2() {
         registerArmorySet("armory2_", ARMORY2_NAMES, ARMORY2_LV, 1309);
+        registerArmorySet("armory3_", ARMORY3_NAMES, ARMORY3_LV, 1329);
     }
+
+    /** 무기고 III (v5.2.0): 지팡이 · 창 10종씩 (Lv.12~130) — 모델 1330+ */
+    public static final String[][] ARMORY3_NAMES = {
+            {"staff", "초승달 지팡이", "불씨 지팡이", "세계수 가지", "별똥별 지팡이", "봉인구 지팡이", "수정 군락 지팡이", "폭풍의 마도봉", "혹한의 마도봉", "성운의 마도봉", "태고의 마도봉"},
+            {"spear", "미늘창", "언월도", "해신의 삼지창", "천마의 날개창", "사행 물결창", "방천화극", "폭염 미늘창", "한빙 언월도", "뇌신의 삼지창", "천룡 방천극"}};
+    public static final int[] ARMORY3_LV = {12, 22, 35, 48, 58, 70, 85, 100, 115, 130};
 
     private void registerArmory() {
         registerArmorySet("armory_", ARMORY_NAMES, ARMORY_LV, 1299);
@@ -586,6 +593,12 @@ public class ItemRegistry {
         for (Object[] f : F)
             reg(new ItemTemplate((String) f[0], (String) f[1], (Material) f[2], Category.MATERIAL).grade((Grade) f[4]).price(-1, (Long) f[3]).model(1430 + fi++)
                     .desc("낚시로 얻은 물고기", "어부에게 판매 (/상점 fish)"));
+        int ni = 0;   // v5.2.0 어종 (모델 1600 + 순번)
+        for (kr.rpgcraft.world.FishSpecies.Species f : kr.rpgcraft.world.FishSpecies.NEW) {
+            String when = f.cond().contains("NIGHT") ? " &8(밤)" : f.cond().contains("RAIN") ? " &8(비 올 때)" : "";
+            reg(new ItemTemplate(f.id(), f.name(), f.material(), Category.MATERIAL).grade(f.grade()).price(-1, f.price()).model(1600 + ni++)
+                    .desc("낚시로 얻은 물고기", "&7서식지: &f" + kr.rpgcraft.world.FishSpecies.habitatKo(f) + when, "어부에게 판매 (/상점 fish)"));
+        }
         // 장신구 (반지·목걸이·귀걸이 × 하급·중급·상급)
         Material[] am = {Material.GOLD_NUGGET, Material.HEART_OF_THE_SEA, Material.AMETHYST_SHARD};
         String[] tn = {"하급", "중급", "상급"};

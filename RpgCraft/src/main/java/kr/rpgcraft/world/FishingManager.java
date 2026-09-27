@@ -21,8 +21,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * RPG 낚시 미니게임.
  * 입질이 오면 액션바에 장력 게이지가 나타나고 표시(◆)가 좌우로 움직인다.
- * 제한 시간 없이, 원할 때 표시가 초록 구간에 오면 우클릭(릴 감기) — 3번 성공하면 낚는다. 놓치면 한 칸 물러날 뿐 실패하지 않는다.
- * 성공할수록 초록 구간이 좁아진다. 결과: 물고기(일반~전설), 보물 상자, 제작 재료. (바닐라 낚시 보상은 나오지 않음)
+ * 제한 시간 없이, 원할 때 표시가 초록 구간에 오면 우클릭(릴 감기) — 3번(fishing.hits) 성공하면 낚는다. 놓치면 한 칸 물러날 뿐 실패하지 않는다.
+ * 성공할수록 초록 구간이 좁아진다. 입질 순간 무엇이 걸렸는지 정해지고, 희귀할수록 표시가 빠르다.
+ * 결과: 바이옴 · 밤 · 비에 따라 50종의 어종 (FishSpecies), 보물 상자, 제작 재료. (바닐라 낚시 보상은 나오지 않음)
  */
 public class FishingManager implements Listener {
     private static class Session {
@@ -30,6 +31,7 @@ public class FishingManager implements Listener {
         int tick;
         double pos, speed, zoneStart, zoneWidth;
         int hit, miss;
+        String catchId;
         long until;
         BukkitTask task;
     }
@@ -69,7 +71,11 @@ public class FishingManager implements Listener {
         ThreadLocalRandom r = ThreadLocalRandom.current();
         s.hook = hook;
         s.pos = r.nextDouble();
-        s.speed = 0.025 + r.nextDouble() * 0.015;
+        s.catchId = roll(p, hook);
+        var t = plugin.items().get(s.catchId);
+        double hard = t == null ? 1 : switch (t.grade) { case RARE -> 1.1; case UNIQUE -> 1.22; case LEGEND -> 1.38; default -> 1.0; };
+        s.speed = (0.025 + r.nextDouble() * 0.015) * hard;
+        if (hard >= 1.22) Text.msg(p, hard >= 1.38 ? "&6&l⚡ 낚싯대가 부러질 듯 휘어집니다...! &e(엄청난 대물)" : "&e⚡ 묵직한 손맛! &7(대물이 걸렸습니다)");
         s.zoneWidth = 0.42;
         s.zoneStart = r.nextDouble() * (1 - s.zoneWidth);
         s.until = Long.MAX_VALUE;
@@ -98,7 +104,7 @@ public class FishingManager implements Listener {
             else bar.append(((i + s.tick / 3) % 6 == 0) ? "&3▌" : "&8▌");
         }
         bar.append(" ");
-        for (int i = 0; i < 2; i++) bar.append(i < s.hit ? "&b&l🐟" : "&8🐟");
+        for (int i = 0; i < hits(); i++) bar.append(i < s.hit ? "&b&l🐟" : "&8🐟");
         Text.actionBar(p, bar.toString());
         // 찌 주변 물보라 · 찌가 흔들림
         var hl = s.hook.getLocation();
@@ -111,10 +117,10 @@ public class FishingManager implements Listener {
         if (ok) {
             s.hit++;
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f + s.hit * 0.25f);
-            s.zoneWidth = Math.max(0.3, s.zoneWidth - 0.05);
+            s.zoneWidth = Math.max(0.26, s.zoneWidth - 0.05);
             s.zoneStart = ThreadLocalRandom.current().nextDouble() * (1 - s.zoneWidth);
             s.speed *= 1.05;
-            if (s.hit >= 2) { end(p, true); return; }
+            if (s.hit >= hits()) { end(p, true); return; }
             var hl = s.hook.getLocation();
             hl.getWorld().spawnParticle(org.bukkit.Particle.WATER_WAKE, hl, 20, 0.3, 0.1, 0.3, 0.1);
             p.playSound(hl, Sound.ENTITY_FISHING_BOBBER_RETRIEVE, 0.8f, 1.2f + s.hit * 0.15f);
@@ -135,30 +141,63 @@ public class FishingManager implements Listener {
             Text.actionBar(p, "&7물고기가 도망갔습니다...");
             return;
         }
-        String id = roll(p);
+        String id = s.catchId;
         ItemStack it = plugin.items().create(id, 1);
         if (it == null) return;
         for (ItemStack l : p.getInventory().addItem(it).values()) p.getWorld().dropItemNaturally(p.getLocation(), l);
         var t = plugin.items().get(id);
-        Text.actionBar(p, "&b낚시 성공! &f" + t.name);
+        FishSpecies.Species sp = species(id);
+        String size = "";
+        if (sp != null) {   // 크기 (연출용)
+            double base = switch (sp.grade()) { case RARE -> 50; case UNIQUE -> 90; case LEGEND -> 180; default -> 28; };
+            size = String.format(" &7(%.1fcm)", base * sp.size() * (0.75 + ThreadLocalRandom.current().nextDouble() * 0.6));
+        }
+        Text.actionBar(p, "&b낚시 성공! " + t.grade.color + t.name + size);
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6f, 1.6f);
+        var data = plugin.data().get(p);
+        if (sp != null && data.counters.merge("fishdex_" + id, 1.0, Double::sum) == 1.0) {
+            int found = 0;
+            for (FishSpecies.Species o : FishSpecies.all()) if (data.counters.containsKey("fishdex_" + o.id())) found++;
+            Text.msg(p, "&d✦ 새로운 어종 발견! " + t.grade.color + t.name + " &7(" + found + "/" + FishSpecies.all().size() + ")");
+        }
+        if (t.grade == kr.rpgcraft.item.Grade.LEGEND)
+            Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(p) + "&e님이 전설의 어종 &6&l" + t.name + "&e" + size + "&e을(를) 낚았습니다!"));
         plugin.levels().addExp(p, plugin.levels().need(plugin.data().get(p).level) * 0.01);
         plugin.data().get(p).counters.merge("fish_caught", 1.0, Double::sum);
         if (plugin.questNpcs() != null) plugin.questNpcs().onFish(p);
     }
 
-    /** 보상 추첨: 밤·비 오는 날엔 희귀 확률 ↑ */
-    private String roll(Player p) {
-        double luck = (p.getWorld().hasStorm() ? 1.3 : 1.0) * (plugin.cycle() != null && plugin.cycle().phase() != CycleManager.Phase.DAY ? 1.2 : 1.0);
-        double r = ThreadLocalRandom.current().nextDouble() / luck;
-        if (r < 0.004) return "fish_legend";
-        if (r < 0.004 + plugin.getConfig().getDouble("fishing.treasure-chance", 0.008)) return "fish_treasure";   // 가라앉은 보물 상자 1.6% → 0.8%
-        if (r < 0.06) return "fish_gold";
-        if (r < 0.14) return "fish_deep";
-        if (r < 0.26) return "loot_scale";
-        if (r < 0.46) return "fish_salmon";
-        if (r < 0.70) return "fish_carp";
-        return "fish_small";
+    private int hits() {
+        return Math.max(1, plugin.getConfig().getInt("fishing.hits", 3));
+    }
+
+    private static FishSpecies.Species species(String id) {
+        for (FishSpecies.Species s : FishSpecies.all()) if (s.id().equals(id)) return s;
+        return null;
+    }
+
+    /** 보상 추첨: 등급을 먼저 뽑고, 그 등급에서 찌가 있는 바이옴 · 밤 · 비에 맞는 어종을 고른다. 밤·비 오는 날엔 희귀 확률 ↑ */
+    private String roll(Player p, FishHook hook) {
+        boolean rain = p.getWorld().hasStorm(), night = plugin.cycle() != null && plugin.cycle().phase() != CycleManager.Phase.DAY;
+        double luck = (rain ? 1.3 : 1.0) * (night ? 1.2 : 1.0);
+        ThreadLocalRandom rnd = ThreadLocalRandom.current();
+        double r = rnd.nextDouble() / luck;
+        kr.rpgcraft.item.Grade g;
+        if (r < 0.005) g = kr.rpgcraft.item.Grade.LEGEND;
+        else if (r < 0.005 + plugin.getConfig().getDouble("fishing.treasure-chance", 0.008)) return "fish_treasure";
+        else if (r < 0.065) g = kr.rpgcraft.item.Grade.UNIQUE;
+        else if (r < 0.19) g = kr.rpgcraft.item.Grade.RARE;
+        else if (r < 0.28) return "loot_scale";
+        else g = kr.rpgcraft.item.Grade.NORMAL;
+        String biome = (hook != null ? hook.getLocation() : p.getLocation()).getBlock().getBiome().name();
+        List<FishSpecies.Species> pool = new ArrayList<>();
+        double total = 0;
+        for (FishSpecies.Species s : FishSpecies.all())
+            if (s.grade() == g && s.fits(biome, night, rain) && plugin.items().get(s.id()) != null) { pool.add(s); total += s.anywhere() ? 1 : 3; }
+        if (pool.isEmpty()) return switch (g) { case LEGEND -> "fish_legend"; case UNIQUE -> "fish_gold"; case RARE -> "fish_deep"; default -> "fish_small"; };
+        double pick = rnd.nextDouble() * total;
+        for (FishSpecies.Species s : pool) if ((pick -= s.anywhere() ? 1 : 3) < 0) return s.id();
+        return pool.get(pool.size() - 1).id();
     }
 
     @EventHandler

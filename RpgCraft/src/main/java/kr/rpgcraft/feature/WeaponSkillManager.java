@@ -521,6 +521,11 @@ public class WeaponSkillManager implements Listener {
     }
 
     // ------------------------------------------------------------------ 평타 스킬
+    /** 평타 스킬 이름 알림 (기본 꺼짐: 매 타마다 화면을 가리지 않도록) */
+    private void basicNotice(Player p, String msg) {
+        if (plugin.getConfig().getBoolean("weapon-skills.basic-notice", false)) Text.actionBar(p, msg);
+    }
+
     private void hit(Player p, LivingEntity t, double amount) {
         inSkill.add(p.getUniqueId());
         try {
@@ -549,14 +554,14 @@ public class WeaponSkillManager implements Listener {
                 for (LivingEntity le : enemiesNear(p, at, 3.2)) hit(p, le, power(p, 0.3, 1.4));
                 w.playSound(at, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 0.8f, 1.2f);
                 WeaponFx.eruption(at, 3.2, SkillBook.Effect.HOLY);   // (연출)
-                Text.actionBar(p, "&b마력 폭발");
+                basicNotice(p, "&b마력 폭발");
             }
             case SWORD -> { // 회전 베기
                 for (LivingEntity le : enemiesNear(p, p.getLocation(), 2.8)) hit(p, le, power(p, 0.8, 0.3));
                 w.spawnParticle(Particle.SWEEP_ATTACK, p.getLocation().add(0, 1, 0), 6, 1.2, 0.2, 1.2);
                 w.playSound(p.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1.2f);
                 spinFx(p, slashColor(p), 2.8);   // (연출) 한 바퀴 도는 참격
-                Text.actionBar(p, "&e평타 스킬 · 회전 베기");
+                basicNotice(p, "&e평타 스킬 · 회전 베기");
             }
             case DAGGER -> { // 연속 찌르기
                 for (int i = 1; i <= 2; i++) {
@@ -570,7 +575,7 @@ public class WeaponSkillManager implements Listener {
                         }
                     }, i * 3L);
                 }
-                Text.actionBar(p, "&e평타 스킬 · 연속 찌르기");
+                basicNotice(p, "&e평타 스킬 · 연속 찌르기");
             }
             case AXE -> { // 내려찍기
                 Location c = target.getLocation();
@@ -582,7 +587,7 @@ public class WeaponSkillManager implements Listener {
                 Vfx.ring(c, 2.2, slashColor(p));   // (연출) 내려찍은 자리 충격파 · 균열
                 WeaponFx.crater(c, 2.2, SkillBook.Effect.EARTH);
                 w.playSound(c, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 1.2f);
-                Text.actionBar(p, "&e평타 스킬 · 내려찍기");
+                basicNotice(p, "&e평타 스킬 · 내려찍기");
             }
             case SHIELD -> { // 방패 강타
                 hit(p, target, power(p, 0.6, 0.4));
@@ -590,20 +595,20 @@ public class WeaponSkillManager implements Listener {
                 w.playSound(target.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1f, 0.7f);
                 Vfx.burst(target.getLocation().add(0, 1, 0), 2.2, Color.WHITE);   // (연출) 기절 별빛
                 WeaponFx.element(target.getLocation().add(0, target.getHeight() + 0.3, 0), SkillBook.Effect.STUN, 0.6);
-                Text.actionBar(p, "&e평타 스킬 · 방패 강타 (기절)");
+                basicNotice(p, "&e평타 스킬 · 방패 강타 (기절)");
             }
             case SPEAR -> { // 관통 찌르기
                 for (LivingEntity le : line(p, 4.5, 1.2)) hit(p, le, power(p, 0.8, 0.3));
                 Fx.line(p.getEyeLocation(), p.getEyeLocation().add(p.getLocation().getDirection().multiply(4.5)), 0.3, Color.fromRGB(0xA0FFCF), 1f);
                 WeaponFx.lineSpiral(p.getEyeLocation(), p.getLocation().getDirection(), 4.5, SkillBook.Effect.WIND);   // (연출)
-                Text.actionBar(p, "&e평타 스킬 · 관통 찌르기");
+                basicNotice(p, "&e평타 스킬 · 관통 찌르기");
             }
             default -> { // 몽둥이 강타
                 hit(p, target, power(p, 0.5, 0.2));
                 plugin.combat().knockback(target, p.getLocation(), 4);
                 Vfx.burst(target.getLocation().add(0, 1, 0), 2.0, slashColor(p));   // (연출)
                 WeaponFx.element(target.getLocation().add(0, 1, 0), SkillBook.Effect.STUN, 0.6);
-                Text.actionBar(p, "&e평타 스킬 · 강타");
+                basicNotice(p, "&e평타 스킬 · 강타");
             }
         }
     }
@@ -644,7 +649,7 @@ public class WeaponSkillManager implements Listener {
         if (n >= 3) { // 3발째: 부채꼴 3연사
             combo.put(p.getUniqueId(), 0);
             for (int i = -1; i <= 1; i++) arrow(p, rotate(dir, i * 0.12).multiply(3.0), atk * 0.8, 0);
-            Text.actionBar(p, "&e평타 스킬 · 부채 사격");
+            basicNotice(p, "&e평타 스킬 · 부채 사격");
         } else arrow(p, dir.clone().multiply(3.0), atk * 0.7, 0);
         p.getWorld().playSound(p.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.8f, 1.4f);
     }

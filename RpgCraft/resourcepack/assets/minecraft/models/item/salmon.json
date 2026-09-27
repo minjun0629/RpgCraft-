@@ -9,6 +9,30 @@
         "custom_model_data": 1432
       },
       "model": "rpgcraft:item/fish_salmon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1608
+      },
+      "model": "rpgcraft:item/fish_trout"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1625
+      },
+      "model": "rpgcraft:item/fish_char"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1633
+      },
+      "model": "rpgcraft:item/fish_frostsalmon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1636
+      },
+      "model": "rpgcraft:item/fish_rainbow"
     }
   ]
 }

@@ -314,3 +314,15 @@ potential:
   npc-name: "&d큐브 상인"
   command: true
   items: [potential_scroll, cube_red]
+
+armory3_staff:
+  title: "&8무기고 III · 지팡이"
+  npc-name: "&6무기고 III (지팡이)"
+  command: true
+  items: [armory3_staff_1, armory3_staff_2, armory3_staff_3, armory3_staff_4, armory3_staff_5, armory3_staff_6, armory3_staff_7, armory3_staff_8, armory3_staff_9, armory3_staff_10]
+
+armory3_spear:
+  title: "&8무기고 III · 창"
+  npc-name: "&6무기고 III (창)"
+  command: true
+  items: [armory3_spear_1, armory3_spear_2, armory3_spear_3, armory3_spear_4, armory3_spear_5, armory3_spear_6, armory3_spear_7, armory3_spear_8, armory3_spear_9, armory3_spear_10]

@@ -36,6 +36,18 @@
     },
     {
       "predicate": {
+        "custom_model_data": 1331
+      },
+      "model": "rpgcraft:item/armory3_spear_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1332
+      },
+      "model": "rpgcraft:item/armory3_spear_3"
+    },
+    {
+      "predicate": {
         "custom_model_data": 3101
       },
       "model": "rpgcraft:item/spear_20_e7"
@@ -66,6 +78,18 @@
     },
     {
       "predicate": {
+        "custom_model_data": 4331
+      },
+      "model": "rpgcraft:item/armory3_spear_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4332
+      },
+      "model": "rpgcraft:item/armory3_spear_3_e7"
+    },
+    {
+      "predicate": {
         "custom_model_data": 5101
       },
       "model": "rpgcraft:item/spear_20_e10"
@@ -93,6 +117,18 @@
         "custom_model_data": 6312
       },
       "model": "rpgcraft:item/armory2_spear_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6331
+      },
+      "model": "rpgcraft:item/armory3_spear_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6332
+      },
+      "model": "rpgcraft:item/armory3_spear_3_e10"
     }
   ]
 }

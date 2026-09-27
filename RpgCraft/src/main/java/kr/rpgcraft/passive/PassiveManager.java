@@ -101,10 +101,10 @@ public class PassiveManager implements Listener {
         if (!d.passives.add(ps.name())) return;
         plugin.stats().refresh(p);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-        String tl = ps.isActive() ? ps.type.label.replace("패시브", "액티브 스킬") : ps.type.label;
+        String tl = ps.kindLabel();
         p.sendTitle(Text.c("&d&l" + tl), Text.c("&f" + ps.label), 10, 50, 10);
         Text.msg(p, "&d[" + tl + "] &f" + ps.label + " &7- " + ps.desc);
-        if (announce) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&d" + Text.name(p) + "&f님이 " + ps.type.label + " &d" + ps.label + "&f을(를) 획득했습니다!"));
+        if (announce) kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&d" + Text.name(p) + "&f님이 " + ps.kindLabel() + " &d" + ps.label + "&f을(를) 획득했습니다!"));
     }
 
     public void revoke(PlayerData d, Passive ps) {
@@ -305,7 +305,7 @@ public class PassiveManager implements Listener {
                     case SECRET -> Material.ECHO_SHARD;
                 };
                 List<String> lore = new ArrayList<>();
-                lore.add("&7" + (ps.isActive() ? ps.type.label.replace("패시브", "액티브 스킬") : ps.type.label));
+                lore.add("&7" + ps.kindLabel());
                 lore.add("&f" + ps.desc);
                 if (ps.isActive()) {
                     lore.add("");

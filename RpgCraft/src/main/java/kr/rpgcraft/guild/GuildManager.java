@@ -62,7 +62,12 @@ public class GuildManager implements Listener {
 
     // ------------------------------------------------------------------ 조회
     public Guild of(UUID id) {
-        return byMember.get(id);
+        Guild g = byMember.get(id);
+        if (g != null && (guilds.get(g.name) != g || !g.members.contains(id))) {   // 해산됐거나 이미 빠진 길드 기록은 정리 (초기화 등으로 어긋난 경우)
+            byMember.remove(id);
+            return null;
+        }
+        return g;
     }
 
     public Guild get(String name) {
@@ -103,6 +108,7 @@ public class GuildManager implements Listener {
 
     public void disband(Guild g) {
         for (UUID id : g.members) byMember.remove(id);
+        byMember.values().removeIf(x -> x == g);   // 목록에서 먼저 빠진 사람의 기록까지
         guilds.remove(g.name);
         for (Player p : g.online()) if (p.getOpenInventory().getTopInventory().getHolder() == g) p.closeInventory();
         plugin.wars().onGuildDisband(g.name);

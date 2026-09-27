@@ -485,13 +485,16 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         plugin.legendary().releaseAll(d.uuid);
         var gd = plugin.guilds().of(d.uuid);   // 길드에서도 나가기 (길드장이면 위임, 혼자면 해산)
         if (gd != null) {
-            gd.members.remove(d.uuid);
-            if (gd.members.isEmpty()) plugin.guilds().disband(gd);
-            else {
+            plugin.guilds().removeMember(gd, d.uuid);   // 길드 목록과 "누가 어느 길드" 기록을 함께 지움
+            if (gd.members.isEmpty()) {
+                plugin.guilds().disband(gd);
+                Text.announce(Text.PREFIX + Text.c("&7길드 [" + gd.name + "]이(가) 해산되었습니다."));
+            } else {
                 if (d.uuid.equals(gd.leader)) gd.leader = gd.members.iterator().next();
                 plugin.guilds().save();
             }
         }
+        d.guildChat = false;
         d.starterGiven = true;
         Player p = Bukkit.getPlayer(d.uuid);
         if (p != null) {

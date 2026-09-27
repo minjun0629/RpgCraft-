@@ -89,6 +89,10 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             case "escape" -> escape(p);
             case "casino" -> plugin.casino().open(p);
             case "call" -> callAdmin(p, String.join(" ", a));
+            case "pack" -> {   // 리소스팩 다시 받기 (적용 실패 시)
+                Text.msg(p, "&e리소스팩을 다시 보냅니다...");
+                plugin.pack().resend(p);
+            }
             case "coupon" -> {
                 if (a.length == 0) { Text.msg(p, "&e/쿠폰 <코드>" + (p.hasPermission("rpgcraft.admin") ? " &7· 관리자: /쿠폰 list" : "")); return true; }
                 if (a.length == 1 && (a[0].equalsIgnoreCase("list") || a[0].equals("목록")) && p.hasPermission("rpgcraft.admin")) {

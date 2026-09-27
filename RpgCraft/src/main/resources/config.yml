@@ -452,6 +452,8 @@ economy:                    # 경제 밸런스 (배율)
 boss-models:                # 보스 3D 모델 (리소스팩)
   enabled: true
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로
+  hitbox: true               # 모델 크기에 맞는 판정 상자 (큰 보스를 모델 어디를 때려도 맞음)
+  hitbox-mult: 1.0           # 판정 상자 크기 배율
   scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}
 
 vfx:
@@ -490,6 +492,8 @@ resourcepack:
   send-delay-ticks: 20
   url: "https://github.com/minjun0629/RpgCraft-/blob/main/RpgCraft-ResourcePack.zip"   # 외부 호스팅 주소 (GitHub 파일 페이지 주소도 자동으로 직접 다운로드 주소로 변환). 비우면 내장 웹서버(8765) 사용
   sha1: ""                   # 비워두면 서버가 시작할 때 외부 파일을 받아 자동 계산
+  url-version: true          # 외부 주소 뒤에 ?v=해시 를 붙여 예전 파일(캐시)을 받지 않게 함 (문제가 생기는 호스팅이면 false)
+  refresh-minutes: 10        # 외부 팩 해시를 이 간격마다 다시 확인 (GitHub 의 zip 을 바꿔도 재시작 없이 반영)
   self-host:
     enabled: true
     host: "auto"             # auto: 플레이어가 접속한 주소(IP/도메인)를 그대로 사용 → 어느 IP로 접속해도 적용됨

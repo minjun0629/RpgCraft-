@@ -46,6 +46,8 @@ public class PackManager implements Listener {
         this.plugin = plugin;
         this.packFile = new File(plugin.getDataFolder(), "resourcepack.zip");
         load();
+        long every = Math.max(1, plugin.getConfig().getLong("resourcepack.refresh-minutes", 10)) * 60 * 20;
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> { if (enabled() && !externalUrl().isEmpty()) fetchExternalHash(); }, every, every);
     }
 
     // ------------------------------------------------------------------ 설정
@@ -123,12 +125,29 @@ public class PackManager implements Listener {
 
     /** 외부 팩을 내려받아 SHA-1 을 직접 계산 (config 의 sha1 을 따로 적지 않아도 됨) */
     private void fetchExternalHash() {
+        fetchExternalHash(null);
+    }
+
+    private volatile long externalFetchedAt;
+    private volatile boolean fetching;
+
+    /**
+     * 외부 팩의 SHA-1 을 다시 계산한다 (끝나면 done 을 메인 스레드에서 실행).
+     * GitHub 의 zip 을 새 버전으로 바꿔도 서버가 예전 해시를 보내면 클라이언트가 "다운로드 실패" 로 거절하므로,
+     * 주기적으로 · 접속할 때 · 실패했을 때 다시 확인한다. 캐시(CDN)를 피하려고 주소 뒤에 시각을 붙인다.
+     */
+    private void fetchExternalHash(Runnable done) {
         String u = externalUrl();
-        externalHash = null;
-        externalHashHex = "";
+        if (fetching) {   // 이미 확인 중이면 끝난 뒤 실행
+            if (done != null) Bukkit.getScheduler().runTaskLater(plugin, done, 60L);
+            return;
+        }
+        fetching = true;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(u).openConnection();
+                String bust = u + (u.contains("?") ? "&" : "?") + "t=" + System.currentTimeMillis();
+                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(bust).openConnection();
+                c.setUseCaches(false);
                 c.setInstanceFollowRedirects(true);
                 c.setConnectTimeout(8000);
                 c.setReadTimeout(20000);
@@ -144,8 +163,11 @@ public class PackManager implements Listener {
                 byte[] h = MessageDigest.getInstance("SHA-1").digest(data);
                 StringBuilder sb = new StringBuilder();
                 for (byte b : h) sb.append(String.format("%02x", b));
+                if (externalHash != null && !java.util.Arrays.equals(externalHash, h))
+                    plugin.getLogger().info("외부 리소스팩이 바뀐 것을 감지해 새 해시로 갱신했습니다. (" + externalHashHex + " → " + sb + ")");
                 externalHash = h;
                 externalHashHex = sb.toString();
+                externalFetchedAt = System.currentTimeMillis();
                 String cfg = plugin.getConfig().getString("resourcepack.sha1", "").trim();
                 plugin.getLogger().info("외부 리소스팩 확인: " + u + " (" + data.length / 1024 + " KB, SHA-1 " + externalHashHex + ")");
                 if (cfg.length() == 40 && !cfg.equalsIgnoreCase(externalHashHex))
@@ -154,6 +176,9 @@ public class PackManager implements Listener {
                     plugin.getLogger().info("참고: 외부 팩이 플러그인에 내장된 팩과 다릅니다. (플러그인을 업데이트했다면 GitHub 의 zip 도 새 파일로 교체하세요: dist/RpgCraft-ResourcePack.zip)");
             } catch (Exception e) {
                 plugin.getLogger().warning("외부 리소스팩을 내려받지 못했습니다: " + u + " (" + e.getMessage() + ")");
+            } finally {
+                fetching = false;
+                if (done != null) Bukkit.getScheduler().runTask(plugin, done);
             }
         });
     }
@@ -168,7 +193,10 @@ public class PackManager implements Listener {
      */
     public String url(Player p) {
         String ext = externalUrl();
-        if (!ext.isEmpty()) return ext;
+        if (!ext.isEmpty()) {   // 해시마다 다른 주소 → CDN · 클라이언트가 예전 파일을 주지 않도록
+            String hx = externalHashHex;
+            return hx.length() >= 8 && plugin.getConfig().getBoolean("resourcepack.url-version", true) ? ext + (ext.contains("?") ? "&" : "?") + "v=" + hx.substring(0, 8) : ext;
+        }
         String host = plugin.getConfig().getString("resourcepack.self-host.host", "auto");
         if (p != null && (host.equalsIgnoreCase("auto") || host.startsWith("127.") || host.equalsIgnoreCase("localhost"))) {
             String vh = virtualHost(p);
@@ -339,14 +367,30 @@ public class PackManager implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         if (!enabled()) return;
         Player p = e.getPlayer();
+        retried.remove(p.getUniqueId());
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (p.isOnline()) send(p);
+            if (!p.isOnline()) return;
+            // 외부 팩: 마지막 확인이 오래됐으면 해시를 새로 확인한 뒤 보냄 (GitHub 파일 교체 대응)
+            if (!externalUrl().isEmpty() && System.currentTimeMillis() - externalFetchedAt > 120_000)
+                fetchExternalHash(() -> { if (p.isOnline()) send(p); });
+            else send(p);
         }, plugin.getConfig().getLong("resourcepack.send-delay-ticks", 20));
     }
+
+    /** /리소스팩: 해시를 새로 확인한 뒤 다시 보냄 */
+    public void resend(Player p) {
+        retried.remove(p.getUniqueId());
+        if (!externalUrl().isEmpty()) fetchExternalHash(() -> { if (p.isOnline()) send(p); });
+        else send(p);
+    }
+
+    /** 이번 접속에서 자동 재시도를 한 플레이어 (무한 반복 방지) */
+    private final Set<UUID> retried = ConcurrentHashMap.newKeySet();
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         loaded.remove(e.getPlayer().getUniqueId());
+        retried.remove(e.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -368,6 +412,12 @@ public class PackManager implements Listener {
             }
             case "FAILED_DOWNLOAD", "INVALID_URL" -> {
                 loaded.remove(p.getUniqueId());
+                if (retried.add(p.getUniqueId())) {   // 한 번은 자동으로: 해시를 새로 확인하고 다시 보냄 (팩 파일이 바뀌었거나 일시적 오류)
+                    Text.msg(p, "&e리소스팩 적용에 실패해 다시 시도합니다...");
+                    if (!externalUrl().isEmpty()) fetchExternalHash(() -> { if (p.isOnline()) send(p); });
+                    else Bukkit.getScheduler().runTaskLater(plugin, () -> { if (p.isOnline()) send(p); }, 60L);
+                    return;
+                }
                 String u = sentUrl.getOrDefault(p.getUniqueId(), url(p));
                 Text.msg(p, "&c리소스팩을 내려받지 못했습니다. 서버 관리자에게 알려주세요. &7(" + u + ")");
                 plugin.getLogger().warning("리소스팩 다운로드 실패: " + p.getName() + " 이(가) " + u + " 에 접속하지 못했습니다.");
@@ -377,7 +427,12 @@ public class PackManager implements Listener {
                 plugin.getLogger().warning(" → /rpg관리 pack test 로 서버에서 직접 접속 테스트를 할 수 있습니다.");
             }            case "FAILED_RELOAD", "DISCARDED" -> {
                 loaded.remove(p.getUniqueId());
-                Text.msg(p, "&c리소스팩 적용에 실패해 기본 화면으로 표시합니다.");
+                if (retried.add(p.getUniqueId())) {
+                    Text.msg(p, "&e리소스팩 적용에 실패해 다시 시도합니다...");
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> { if (p.isOnline()) send(p); }, 60L);
+                    return;
+                }
+                Text.msg(p, "&c리소스팩 적용에 실패해 기본 화면으로 표시합니다. &7(설정 > 리소스팩에서 서버 팩을 지운 뒤 다시 접속해 보세요)");
             }
             default -> { }
         }

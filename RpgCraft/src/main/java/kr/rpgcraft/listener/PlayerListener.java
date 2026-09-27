@@ -66,23 +66,21 @@ public class PlayerListener implements Listener {
         PlayerData d = plugin.data().get(p);
         boolean known = d.name != null;   // 저장된 기록이 있는 사람 (처음 온 사람은 이름 기록이 없음)
         d.name = p.getName();
-        // v5.4.23: 초기화 뒤 접속해 이미 받았는데 기록이 안 남았던 사람 → 받은 것으로 기록만
-        if (!d.starterGiven && known && !resetOnJoin) { d.starterGiven = true; d.starterWorld = Bukkit.getWorlds().get(0).getUID().toString(); }
-        // 기본 지급품: 처음 온 사람 + 맵(기본 월드)을 새로 만든 뒤 처음 온 사람 (플러그인 기록은 남아 있어도).
-        // 받은 월드 UID 를 기록해 두므로 나갔다 들어와도 다시 주지 않음 (v5.4.14: hasPlayedBefore 는 서버에 따라 믿을 수 없어 복제됐음)
-        String worldId = Bukkit.getWorlds().get(0).getUID().toString();
-        boolean firstTime = !d.starterGiven;
-        if (!firstTime && d.starterWorld == null) d.starterWorld = worldId;   // 예전 기록: 이미 받은 것으로 보고 현재 월드로 표시만
-        boolean newWorld = !worldId.equals(d.starterWorld);
-        if (resetOnJoin) { d.starterGiven = true; d.starterWorld = worldId; }   // freshStart 가 지급하므로 기록만
-        else if (firstTime || newWorld) {
+        // 기본 지급품: 정말 처음 온 사람에게 딱 한 번 (v5.4.28)
+        //  - 플레이어 데이터에 "받음" 기록이 있거나, 저장된 기록(이름)이 있거나, 별도 장부(starter.yml: UUID · 이름)에 있으면 주지 않음
+        //  - 예전의 "맵(월드 UID)이 바뀌면 다시 지급" 규칙은 서버에 따라 월드 UID 가 바뀌어 접속할 때마다 복제돼서 없앰
+        //  - 초기화(/rpg관리 reset)된 사람은 freshStart 가 따로 지급
+        boolean ledger = kr.rpgcraft.data.ResetPending.hasStarter(plugin, p);
+        boolean firstTime = !resetOnJoin && !d.starterGiven && !known && !ledger;
+        if (!firstTime) {
+            if (!d.starterGiven || !ledger) { d.starterGiven = true; kr.rpgcraft.data.ResetPending.markStarter(plugin, p); }
+        } else {
             d.starterGiven = true;
-            d.starterWorld = worldId;
+            kr.rpgcraft.data.ResetPending.markStarter(plugin, p);
             plugin.data().save(d);   // 지급 기록을 바로 저장 (서버가 갑자기 꺼져도 다시 받지 않게)
-            if (firstTime) {
-                d.money += plugin.getConfig().getLong("player.starting-money", 0);
-                kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));
-            }
+            plugin.getLogger().info("기본 지급품 지급 (처음 접속): " + p.getName() + " " + p.getUniqueId());
+            d.money += plugin.getConfig().getLong("player.starting-money", 0);
+            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));
             // 다른 플러그인이 접속 직후 인벤토리를 정리해도 지워지지 않게 조금 뒤에 지급
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (!p.isOnline()) return;

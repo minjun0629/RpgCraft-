@@ -92,6 +92,12 @@ public class PetManager implements Listener, CommandExecutor {
     }
 
     // ------------------------------------------------------------------ 보유 · 장착
+    public int ownedCount(PlayerData d) {
+        int n = 0;
+        for (Pet p : Pet.values()) if (owns(d, p)) n++;
+        return n;
+    }
+
     public boolean owns(PlayerData d, Pet p) {
         return d.counter("pet_own_" + p.name()) > 0;
     }
@@ -198,7 +204,8 @@ public class PetManager implements Listener, CommandExecutor {
             List<String> lore = new ArrayList<>();
             lore.add(GRADE[pet.grade] + " &7펫");
             lore.add("");
-            lore.addAll(statLines(pet));
+            if (own) lore.addAll(statLines(pet));
+            else lore.add("&8능력치: ???");   // 아직 얻지 못한 펫은 능력치를 가림
             lore.add("");
             if (!own) lore.add("&8미보유 — 뽑기로 얻을 수 있습니다");
             else if (pet == act) lore.add("&a● 함께하는 중 &7(클릭: 넣기)");
@@ -209,7 +216,7 @@ public class PetManager implements Listener, CommandExecutor {
                 ItemMeta m = icon.getItemMeta();
                 m.setCustomModelData(pet.cmd());
                 icon.setItemMeta(m);
-            } else icon = Gui.button(Material.GRAY_DYE, "&8??? &7(" + pet.label + ")", lore.toArray(new String[0]));
+            } else icon = Gui.button(Material.GRAY_DYE, "&8??? " + GRADE[pet.grade].substring(0, 2) + "(" + pet.label + ")", lore.toArray(new String[0]));
             g.set(slot, icon, e -> {
                 if (!own) return;
                 if (pet == active(plugin.data().get(p))) { setActive(p, null); Text.actionBar(p, "&7펫을 넣었습니다"); }
@@ -231,6 +238,12 @@ public class PetManager implements Listener, CommandExecutor {
         lore.add("&e▶ 클릭하여 뽑기");
         g.set(49, Gui.button(Material.EGG, "&6&l펫 뽑기", lore.toArray(new String[0])), e -> draw(p));
         g.set(45, Gui.button(Material.BARRIER, "&c펫 넣기"), e -> { setActive(p, null); open(p); });
+        int owned = 0;
+        for (Pet pet : Pet.values()) if (owns(d, pet)) owned++;
+        g.set(4, Gui.button(Material.BOOK, "&e&l펫 도감 &f" + owned + " / " + Pet.values().length,
+                "&7모은 펫: " + (owned * 100 / Pet.values().length) + "%", "&7얻지 못한 펫의 능력치는 가려집니다"));
+        if (plugin.mounts() != null)
+            g.set(53, Gui.button(Material.SADDLE, "&6탈것 도감 보기", "&e▶ 클릭"), e -> plugin.mounts().openCollection(p));
         g.fill(0, 53);
         g.open(p);
     }

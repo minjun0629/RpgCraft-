@@ -80,6 +80,8 @@ public class WeaponSkillManager implements Listener {
 
     private double cdMult(Player p) {
         double j = plugin.jobs().isThird(p, JobManager.Third.STORM_ARCHER) ? 0.6 : plugin.jobs().is(p, JobManager.Sub.GALE) ? 0.7 : 1;
+        if (plugin.jobs().isThird(p, JobManager.Third.ELEMENT_LORD)) j = Math.min(j, 0.6);   // 원소의 군주 -40%
+        else if (plugin.jobs().is(p, JobManager.Sub.ELEMENTALIST)) j = Math.min(j, 0.75);   // 원소술사 -25%
         return j * (plugin.legendary() == null ? 1 : plugin.legendary().cooldownMult(p));
     }
 

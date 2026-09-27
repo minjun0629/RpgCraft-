@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 직업.
- * 1차(기초 직업): Lv.10 에 직접 선택 — 전사 / 궁수 / 도적 / 수호자
+ * 1차(기초 직업): Lv.10 에 직접 선택 — 전사 / 궁수 / 도적 / 수호자 / 마법사
  * 2차(세부 직업): Lv.40 에 전직 — 그 순간 가장 많이 투자한 스탯(힘·민첩·모험)에 따라 결정 → 나만의 직업
  * 직업은 능력치 보너스와 함께 무기 스킬·전투에 특수 효과(perk)를 준다.
  * (대장장이는 제작 전문 직업으로 별도)
@@ -31,7 +31,8 @@ public class JobManager {
         WARRIOR("전사", Material.IRON_SWORD, "근접 전투의 달인. 힘과 체력이 오른다.", StatMap.of(Stat.STR_PCT, 10, Stat.HP_PCT, 5)),
         ARCHER("궁수", Material.BOW, "원거리 사격. 민첩과 치명타가 오른다.", StatMap.of(Stat.DEX_PCT, 10, Stat.CRIT, 5)),
         ROGUE("도적", Material.SHEARS, "빠르고 교활한 암살자. 회피와 치명타 피해가 오른다.", StatMap.of(Stat.DODGE, 5, Stat.CRIT_DMG, 20, Stat.SPEED, 5)),
-        GUARDIAN("수호자", Material.SHIELD, "굳건한 방패. 모험과 방어력이 오른다.", StatMap.of(Stat.ADV_PCT, 10, Stat.DEF, 5));
+        GUARDIAN("수호자", Material.SHIELD, "굳건한 방패. 모험과 방어력이 오른다.", StatMap.of(Stat.ADV_PCT, 10, Stat.DEF, 5)),
+        MAGE("마법사", Material.BLAZE_ROD, "마력으로 싸우는 술사. 마력이 크게 오른다. (지팡이 추천)", StatMap.of(Stat.MAGIC, 250, Stat.HP_PCT, 5));
 
         public final String label, desc;
         public final Material icon;
@@ -58,7 +59,10 @@ public class JobManager {
         PLUNDERER(Base.ROGUE, 2, "약탈자", "몬스터·동물 처치 시 돈 +30%", StatMap.of(Stat.EXP_PCT, 10, Stat.HP_PCT, 10)),
         PALADIN(Base.GUARDIAN, 0, "성기사", "강공격 시 최대 체력 10% 회복", StatMap.of(Stat.HP_PCT, 10, Stat.MAGIC, 150)),
         SENTINEL(Base.GUARDIAN, 1, "파수꾼", "피격 시 20% 확률로 공격력 100% 반격", StatMap.of(Stat.DODGE, 8, Stat.CRIT, 5)),
-        FORTRESS(Base.GUARDIAN, 2, "철옹성", "받는 피해의 10%를 공격자에게 반사", StatMap.of(Stat.DEF, 12, Stat.HP_PCT, 25));
+        FORTRESS(Base.GUARDIAN, 2, "철옹성", "받는 피해의 10%를 공격자에게 반사", StatMap.of(Stat.DEF, 12, Stat.HP_PCT, 25)),
+        BATTLEMAGE(Base.MAGE, 0, "전투 마법사", "주는 피해 +15%, 받는 피해 -10%", StatMap.of(Stat.STR_PCT, 10, Stat.MAGIC, 400, Stat.HP_PCT, 10)),
+        ELEMENTALIST(Base.MAGE, 1, "원소술사", "모든 무기 스킬 쿨타임 -25%", StatMap.of(Stat.DEX_PCT, 10, Stat.MAGIC, 500, Stat.CRIT, 5)),
+        ARCHMAGE(Base.MAGE, 2, "아크메이지", "체력 60% 이상일 때 주는 피해 +25%", StatMap.of(Stat.ADV_PCT, 10, Stat.MAGIC, 650));
 
         public final Base base;
         public final int stat;
@@ -94,7 +98,10 @@ public class JobManager {
         GRAND_THIEF(Sub.PLUNDERER, "대도", "처치 시 돈 +60%", StatMap.of(Stat.EXP_PCT, 20, Stat.HP_PCT, 15)),
         CRUSADER(Sub.PALADIN, "성전사", "강공격 시 최대 체력 15% 회복, 근처 파티원 8% 회복", StatMap.of(Stat.HP_PCT, 20, Stat.MAGIC, 400)),
         GUARDIAN_GOD(Sub.SENTINEL, "수호신", "피격 시 35% 확률로 공격력 150% 반격", StatMap.of(Stat.DODGE, 12, Stat.CRIT, 10)),
-        UNBREAKABLE(Sub.FORTRESS, "불괴", "받는 피해 -10%, 받은 피해의 20% 반사", StatMap.of(Stat.DEF, 18, Stat.HP_PCT, 40));
+        UNBREAKABLE(Sub.FORTRESS, "불괴", "받는 피해 -10%, 받은 피해의 20% 반사", StatMap.of(Stat.DEF, 18, Stat.HP_PCT, 40)),
+        SPELLBLADE(Sub.BATTLEMAGE, "마검사", "주는 피해 +25%, 받는 피해 -20%", StatMap.of(Stat.STR_PCT, 20, Stat.MAGIC, 1200, Stat.HP_PCT, 20, Stat.DEF, 6)),
+        ELEMENT_LORD(Sub.ELEMENTALIST, "원소의 군주", "모든 무기 스킬 쿨타임 -40%, 주는 피해 +10%", StatMap.of(Stat.DEX_PCT, 20, Stat.MAGIC, 1500, Stat.CRIT, 10)),
+        MAGIC_KING(Sub.ARCHMAGE, "마도왕", "체력 50% 이상일 때 주는 피해 +40%", StatMap.of(Stat.ADV_PCT, 20, Stat.MAGIC, 2000, Stat.HP_PCT, 15));
 
         public final Sub sub;
         public final String label, perk;
@@ -149,6 +156,9 @@ public class JobManager {
             case PALADIN -> new JobSkill("성스러운 심판", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.HOLY, 2.4, 7, 13);
             case SENTINEL -> new JobSkill("파수꾼의 방벽", kr.rpgcraft.feature.SkillBook.Shape.WAVE, kr.rpgcraft.feature.SkillBook.Effect.GUARD, 2.2, 9, 12);
             case FORTRESS -> new JobSkill("대지 분쇄", kr.rpgcraft.feature.SkillBook.Shape.LEAP, kr.rpgcraft.feature.SkillBook.Effect.EARTH, 2.6, 7, 13);
+            case BATTLEMAGE -> new JobSkill("마력 폭풍 베기", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.FIRE, 2.6, 7, 12);
+            case ELEMENTALIST -> new JobSkill("원소 폭발", kr.rpgcraft.feature.SkillBook.Shape.CHAIN, kr.rpgcraft.feature.SkillBook.Effect.LIGHTNING, 2.6, 12, 10);
+            case ARCHMAGE -> new JobSkill("메테오", kr.rpgcraft.feature.SkillBook.Shape.RAIN, kr.rpgcraft.feature.SkillBook.Effect.FIRE, 2.8, 16, 13);
         };
         if (b == null) return null;
         return switch (b) {
@@ -156,6 +166,7 @@ public class JobManager {
             case ARCHER -> new JobSkill("속사", kr.rpgcraft.feature.SkillBook.Shape.FAN, kr.rpgcraft.feature.SkillBook.Effect.NONE, 1.6, 14, 12);
             case ROGUE -> new JobSkill("급습", kr.rpgcraft.feature.SkillBook.Shape.BLINK, kr.rpgcraft.feature.SkillBook.Effect.BLEED, 1.8, 10, 12);
             case GUARDIAN -> new JobSkill("방패 충격파", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.STUN, 1.6, 6, 12);
+            case MAGE -> new JobSkill("마력탄", kr.rpgcraft.feature.SkillBook.Shape.ORB, kr.rpgcraft.feature.SkillBook.Effect.FROST, 1.8, 12, 11);
         };
     }
 
@@ -317,7 +328,7 @@ public class JobManager {
         int lv = plugin.getConfig().getInt("jobs.advance-level", 40);
         long cost = plugin.getConfig().getLong("jobs.advance-cost", 500_000);
         if (hidden(d)) { Text.msg(p, "&5히든 직업은 다른 직업으로 전직할 수 없습니다."); return; }
-        if (b == null) { Text.msg(p, "&c먼저 기초 직업을 선택하세요. (/직업 선택 <전사|궁수|도적|수호자>)"); return; }
+        if (b == null) { Text.msg(p, "&c먼저 기초 직업을 선택하세요. (/직업 선택 <전사|궁수|도적|수호자|마법사>)"); return; }
         if (d.subJob != null) { Text.msg(p, "&c이미 " + title(d) + " 로 전직했습니다."); return; }
         if (d.level < lv) { Text.msg(p, "&c레벨 " + lv + " 부터 전직할 수 있습니다."); return; }
         if (!plugin.economy().take(p, cost)) { Text.msg(p, "&c전직 비용 " + Text.money(cost) + "이 부족합니다."); return; }
@@ -348,6 +359,13 @@ public class JobManager {
         if (th == Third.BLOOD_LORD && plugin.health().cur(p) / Math.max(1, plugin.health().max(p)) <= 0.5) m *= 1.4;
         if (th == Third.MARKSMAN && victim.getLocation().distanceSquared(p.getLocation()) >= 100) m *= 1.5;
         if (th == Third.CONQUEROR && d.counter("warlord_until") > System.currentTimeMillis()) m *= 1.2;
+        // 마법사 (v5.4.1)
+        double myHp = plugin.health().cur(p) / Math.max(1, plugin.health().max(p));
+        if (th == Third.SPELLBLADE) m *= 1.25;
+        else if (is(p, Sub.BATTLEMAGE)) m *= 1.15;
+        if (th == Third.ELEMENT_LORD) m *= 1.1;
+        if (th == Third.MAGIC_KING && myHp >= 0.5) m *= 1.4;
+        else if (th == null && is(p, Sub.ARCHMAGE) && myHp >= 0.6) m *= 1.25;
         return m;
     }
 
@@ -360,6 +378,8 @@ public class JobManager {
         if ((s == Sub.WARLORD || th == Third.CONQUEROR) && d.counter("warlord_until") > System.currentTimeMillis()) amount *= th == Third.CONQUEROR ? 0.6 : 0.7;
         if (th == Third.BEAST_KING) amount *= 0.85;
         if (th == Third.UNBREAKABLE) amount *= 0.9;
+        if (th == Third.SPELLBLADE) amount *= 0.8;
+        else if (s == Sub.BATTLEMAGE) amount *= 0.9;
         if (source instanceof LivingEntity le && !le.equals(vp)) {
             if (s == Sub.FORTRESS || th == Third.UNBREAKABLE) {
                 double r = amount * (th == Third.UNBREAKABLE ? 0.2 : 0.1);
@@ -388,7 +408,7 @@ public class JobManager {
             super(3, "&8직업");
             PlayerData d = plugin.data().get(p);
             Base b = base(d);
-            int slot = 10;
+            int slot = Base.values().length >= 5 ? 9 : 10;   // 기초 직업 5개면 한 칸 앞에서 시작
             for (Base x : Base.values()) {
                 List<String> lore = new ArrayList<>(List.of("&7" + x.desc, ""));
                 for (Sub s : Sub.values()) {

@@ -211,7 +211,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (a.length == 0) { plugin.jobs().open(p); return true; }
                 if (a[0].equals("선택") && a.length > 1) {
                     for (JobManager.Base b : JobManager.Base.values()) if (b.label.equals(a[1]) || b.name().equalsIgnoreCase(a[1])) { plugin.jobs().choose(p, b); return true; }
-                    Text.msg(p, "&c전사 / 궁수 / 도적 / 수호자 중에서 고르세요.");
+                    Text.msg(p, "&c전사 / 궁수 / 도적 / 수호자 / 마법사 중에서 고르세요.");
                 } else if (a[0].equals("전직")) plugin.jobs().advance(p);
                 else if (a[0].equals("대장장이") || a[0].equalsIgnoreCase("blacksmith")) plugin.blacksmith().changeJob(p);
                 else Text.msg(p, "&e/직업 대장장이 &7- 레벨 " + plugin.getConfig().getInt("blacksmith.required-level", 20)
@@ -492,7 +492,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             case "rune" -> { if (a.length == 1) out.add("변경"); }
             case "job" -> {
                 if (a.length == 1) out.addAll(List.of("선택", "전직", "대장장이"));
-                if (a.length == 2 && a[0].equals("선택")) out.addAll(List.of("전사", "궁수", "도적", "수호자"));
+                if (a.length == 2 && a[0].equals("선택")) out.addAll(List.of("전사", "궁수", "도적", "수호자", "마법사"));
             }
             case "trade" -> {
                 if (a.length == 1) { out.addAll(List.of("수락", "거절", "돈")); out.addAll(Text.onlineNames(a[0], s)); }

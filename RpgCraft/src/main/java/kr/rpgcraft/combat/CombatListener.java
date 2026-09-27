@@ -215,7 +215,7 @@ public class CombatListener implements Listener {
         EntityRegainHealthEvent.RegainReason r = e.getRegainReason();
         if (r == EntityRegainHealthEvent.RegainReason.SATIATED || r == EntityRegainHealthEvent.RegainReason.REGEN) return;
         double amount = e.getAmount() / 20.0 * plugin.health().max(le) * 0.5;
-        if (le instanceof org.bukkit.entity.Witch) amount *= 0.5;   // 마녀 회복 절반
+        if (le instanceof org.bukkit.entity.Witch) amount *= 0.5 * 2 / 3.0;   // 마녀 회복: 절반 → 그 2/3 (v5.4.31)
         plugin.health().heal(le, amount);
     }
 

@@ -577,7 +577,7 @@ public class CustomMobManager implements Listener {
             case "HEAL" -> {
                 MobManager.MobState s = plugin.mobs().peek(le);
                 if (s == null || s.hp > s.maxHp * 0.5) return false;
-                double hr = le instanceof org.bukkit.entity.Witch || (alive.get(le.getUniqueId()) != null && alive.get(le.getUniqueId()).name.contains("마녀")) ? 0.1 : 0.2;   // 마녀 회복 절반
+                double hr = le instanceof org.bukkit.entity.Witch || (alive.get(le.getUniqueId()) != null && alive.get(le.getUniqueId()).name.contains("마녀")) ? 0.1 * 2 / 3.0 : 0.2;   // 마녀 회복: 10% → 약 6.7% (v5.4.31)
                 plugin.health().heal(le, s.maxHp * hr * a.power);
                 w.spawnParticle(Particle.HEART, le.getLocation().add(0, le.getHeight() + 0.3, 0), 6, 0.4, 0.3, 0.4);
                 MobFx.heal(le);   // (연출)

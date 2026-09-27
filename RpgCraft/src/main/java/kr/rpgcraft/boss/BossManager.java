@@ -85,6 +85,8 @@ public class BossManager {
         }
         e.getPersistentDataContainer().set(Keys.BOSS, PersistentDataType.STRING, id);
         e.setRemoveWhenFarAway(false);
+        if (e instanceof org.bukkit.entity.Hoglin h) h.setImmuneToZombification(true);   // 오버월드에서 15초 뒤 조글린으로 변해 사라지던 문제
+        if (e instanceof org.bukkit.entity.PiglinAbstract pa) pa.setImmuneToZombification(true);
         e.setPersistent(true);
         var kb = e.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
         if (kb != null) kb.setBaseValue(1.0);

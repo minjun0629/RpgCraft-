@@ -1,0 +1,55 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1440,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/legend_seal_tyrant"
+        }
+      },
+      {
+        "threshold": 1441,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/legend_seal_immortal"
+        }
+      },
+      {
+        "threshold": 1442,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/legend_seal_storm_eye"
+        }
+      },
+      {
+        "threshold": 1443,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/legend_seal_midas"
+        }
+      },
+      {
+        "threshold": 1444,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/legend_seal_judge"
+        }
+      },
+      {
+        "threshold": 1498,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/crystal_top"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/echo_shard"
+    }
+  }
+}

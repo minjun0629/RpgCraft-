@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/relic_sword",
+  "textures": {
+    "0": "rpgcraft:item/relic_sword_e7",
+    "particle": "rpgcraft:item/relic_sword_e7"
+  }
+}

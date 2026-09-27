@@ -1,0 +1,202 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/axe_20"
+        }
+      },
+      {
+        "threshold": 102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/axe_30"
+        }
+      },
+      {
+        "threshold": 150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_axe_1"
+        }
+      },
+      {
+        "threshold": 151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_axe_2"
+        }
+      },
+      {
+        "threshold": 202,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/witch_axe"
+        }
+      },
+      {
+        "threshold": 212,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dwarf_axe"
+        }
+      },
+      {
+        "threshold": 222,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/harpy_axe"
+        }
+      },
+      {
+        "threshold": 1302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_3"
+        }
+      },
+      {
+        "threshold": 1303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_4"
+        }
+      },
+      {
+        "threshold": 1311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_2"
+        }
+      },
+      {
+        "threshold": 1312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_3"
+        }
+      },
+      {
+        "threshold": 3101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/axe_20_e7"
+        }
+      },
+      {
+        "threshold": 3102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/axe_30_e7"
+        }
+      },
+      {
+        "threshold": 3150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_axe_1_e7"
+        }
+      },
+      {
+        "threshold": 3151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_axe_2_e7"
+        }
+      },
+      {
+        "threshold": 4302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_3_e7"
+        }
+      },
+      {
+        "threshold": 4303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_4_e7"
+        }
+      },
+      {
+        "threshold": 4311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_2_e7"
+        }
+      },
+      {
+        "threshold": 4312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_3_e7"
+        }
+      },
+      {
+        "threshold": 5101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/axe_20_e10"
+        }
+      },
+      {
+        "threshold": 5102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/axe_30_e10"
+        }
+      },
+      {
+        "threshold": 5150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_axe_1_e10"
+        }
+      },
+      {
+        "threshold": 5151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_axe_2_e10"
+        }
+      },
+      {
+        "threshold": 6302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_3_e10"
+        }
+      },
+      {
+        "threshold": 6303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_4_e10"
+        }
+      },
+      {
+        "threshold": 6311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_2_e10"
+        }
+      },
+      {
+        "threshold": 6312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_3_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/iron_axe"
+    }
+  }
+}

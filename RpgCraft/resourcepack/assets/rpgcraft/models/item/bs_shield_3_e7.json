@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/bs_shield_3",
+  "textures": {
+    "0": "rpgcraft:item/bs_shield_3_e7",
+    "particle": "rpgcraft:item/bs_shield_3_e7"
+  }
+}

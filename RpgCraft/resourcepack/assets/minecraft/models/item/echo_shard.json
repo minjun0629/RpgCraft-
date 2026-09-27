@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/echo_shard"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1440
+      },
+      "model": "rpgcraft:item/legend_seal_tyrant"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1441
+      },
+      "model": "rpgcraft:item/legend_seal_immortal"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1442
+      },
+      "model": "rpgcraft:item/legend_seal_storm_eye"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1443
+      },
+      "model": "rpgcraft:item/legend_seal_midas"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1444
+      },
+      "model": "rpgcraft:item/legend_seal_judge"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1498
+      },
+      "model": "rpgcraft:item/crystal_top"
+    }
+  ]
+}

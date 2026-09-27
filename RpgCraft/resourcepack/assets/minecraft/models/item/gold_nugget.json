@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/gold_nugget"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1400
+      },
+      "model": "rpgcraft:item/acc_ring_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1401
+      },
+      "model": "rpgcraft:item/acc_ring_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1402
+      },
+      "model": "rpgcraft:item/acc_ring_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1469
+      },
+      "model": "rpgcraft:item/loot_crown"
+    }
+  ]
+}

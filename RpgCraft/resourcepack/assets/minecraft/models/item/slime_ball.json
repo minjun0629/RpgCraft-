@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/slime_ball"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 500
+      },
+      "model": "rpgcraft:item/shard_nature"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1457
+      },
+      "model": "rpgcraft:item/loot_slime"
+    }
+  ]
+}

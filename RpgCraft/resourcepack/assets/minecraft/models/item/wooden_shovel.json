@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/wooden_shovel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1300
+      },
+      "model": "rpgcraft:item/armory_spear_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4300
+      },
+      "model": "rpgcraft:item/armory_spear_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6300
+      },
+      "model": "rpgcraft:item/armory_spear_1_e10"
+    }
+  ]
+}

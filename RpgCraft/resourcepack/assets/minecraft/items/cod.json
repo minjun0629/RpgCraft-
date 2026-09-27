@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1430,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_small"
+        }
+      },
+      {
+        "threshold": 1431,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_carp"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/cod"
+    }
+  }
+}

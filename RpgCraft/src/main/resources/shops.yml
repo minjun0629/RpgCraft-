@@ -1,0 +1,316 @@
+# ============================================================
+#  상점. items: "아이템ID" 또는 "아이템ID:구매가:판매가" (-1 = 불가)
+#  command: true 면 /상점 <id> 로 열 수 있음. false 면 NPC(/rpg관리 npc <id>) 전용
+#  limited: 회차당 서버 전체 한정 재고 (/rpg관리 round next 로 초기화)
+# ============================================================
+
+general:
+  title: "&8잡화 상점"
+  npc-name: "&e잡화 상인"
+  command: true
+  items:
+    - mat_stone
+    - mat_iron
+    - mat_silver
+    - mat_gold
+    - mat_crystal
+    - herb_weed
+    - herb_mushroom
+    - herb_bell
+    - herb_star
+    - herb_ginseng1
+    - herb_ginseng10
+    - herb_ginseng100
+    - wood_log
+    - wood_glow
+    - wood_gold
+    - crystal_low
+    - crystal_mid
+    - crystal_high
+    - crystal_top
+    - potion_1
+    - potion_2
+    - potion_3
+    - potion_4
+    - tool_gather_1
+    - tool_gather_2
+    - tool_gather_3
+    - van_wool
+    - van_arrow
+    - ticket_rune
+
+weapon:
+  title: "&8무기 상점"
+  npc-name: "&c무기 상인"
+  command: true
+  items:
+    - sword_10
+    - sword_20
+    - sword_30
+    - sword_40
+    - dagger_10
+    - dagger_20
+    - dagger_30
+    - dagger_40
+    - axe_10
+    - axe_20
+    - axe_30
+    - axe_40
+    - shield_10
+    - shield_20
+    - shield_30
+    - shield_40
+    - bow_hunt
+    - bow_elf_war
+
+armor_warrior:
+  title: "&8방어구 상점 - 전사(힘)"
+  npc-name: "&7전사 방어구 상인"
+  command: true
+  items: [warrior_0_0, warrior_0_1, warrior_0_2, warrior_0_3, warrior_1_0, warrior_1_1, warrior_1_2, warrior_1_3,
+          warrior_2_0, warrior_2_1, warrior_2_2, warrior_2_3, warrior_3_0, warrior_3_1, warrior_3_2, warrior_3_3,
+          warrior_4_0, warrior_4_1, warrior_4_2, warrior_4_3]
+
+armor_assassin:
+  title: "&8방어구 상점 - 암살자(민첩)"
+  npc-name: "&7암살자 방어구 상인"
+  command: true
+  items: [assassin_0_0, assassin_0_1, assassin_0_2, assassin_0_3, assassin_1_0, assassin_1_1, assassin_1_2, assassin_1_3,
+          assassin_2_0, assassin_2_1, assassin_2_2, assassin_2_3, assassin_3_0, assassin_3_1, assassin_3_2, assassin_3_3,
+          assassin_4_0, assassin_4_1, assassin_4_2, assassin_4_3]
+
+armor_adventurer:
+  title: "&8방어구 상점 - 모험가(모험)"
+  npc-name: "&7모험가 방어구 상인"
+  command: true
+  items: [adventurer_0_0, adventurer_0_1, adventurer_0_2, adventurer_0_3, adventurer_1_0, adventurer_1_1, adventurer_1_2, adventurer_1_3,
+          adventurer_2_0, adventurer_2_1, adventurer_2_2, adventurer_2_3, adventurer_3_0, adventurer_3_1, adventurer_3_2, adventurer_3_3,
+          adventurer_4_0, adventurer_4_1, adventurer_4_2, adventurer_4_3]
+
+special:
+  title: "&8특수 상점"
+  npc-name: "&d특수 상인"
+  command: false
+  items:
+    - ticket_stat_reset
+    - ticket_totem
+    - "rune_low:50000:-1"
+    - "rune_mid:500000:-1"
+    - "rune_high:5000000:-1"
+    - ticket_rune
+
+wandering:
+  title: "&8떠돌이 상인"
+  npc-name: "&6떠돌이 상인"
+  command: false
+  multiplier: 1.25
+  items:
+    - ticket_protect
+    - ticket_rate10
+    - ore_black
+    - ore_green
+    - ore_red
+    - ore_blue
+    - ore_gray
+    - herb_ginseng100
+    - wood_gold
+  limited:
+    ticket_protect: 3
+    ticket_rate10: 5
+    ore_black: 2
+    ore_green: 2
+    ore_red: 2
+    ore_blue: 2
+    ore_gray: 2
+
+war:
+  title: "&8전쟁 상점"
+  npc-name: "&4전쟁 상인"
+  command: false
+  items:
+    - ticket_war
+    - hammer_100
+    - hammer_1000
+    - hammer_10000
+    - hammer_100000
+
+loot:
+  title: "&8전리품 상인"
+  npc-name: "&6전리품 상인"
+  command: true
+  items:
+    - "loot_hide:-1"
+    - "loot_meat:-1"
+    - "loot_feather:-1"
+    - "loot_wool:-1"
+    - "loot_horn:-1"
+    - "loot_pelt:-1"
+    - "loot_bone:-1"
+    - "loot_slime:-1"
+    - "loot_fang:-1"
+    - "loot_venom:-1"
+    - "loot_dust:-1"
+    - "loot_ink:-1"
+    - "loot_totem:-1"
+    - "loot_bandage:-1"
+    - "loot_frost:-1"
+    - "loot_ember:-1"
+    - "loot_scale:-1"
+    - "loot_eye:-1"
+    - "loot_core:-1"
+    - "loot_crown:-1"
+    - "loot_wave:-1"
+
+hidden:
+  title: "&8✦ 히든 상인 ✦"
+  npc-name: "&d&l✦ 히든 상인 ✦"
+  command: false
+  items:
+    - "ticket_protect:2000000:-1"
+    - "ticket_rate10:1500000:-1"
+    - "rune_high:4000000:-1"
+    - "crystal_top:800000:-1"
+    - "shard_fire:3000000:-1"
+    - "shard_wind:3000000:-1"
+    - "shard_dark:5000000:-1"
+    - "ticket_stat_reset:300000:-1"
+    - "ticket_job_reset:500000:-1"
+    - "ticket_totem:2000000:-1"
+  limited:
+    ticket_protect: 2
+    ticket_rate10: 3
+    rune_high: 1
+    shard_dark: 1
+
+weapon2:
+  title: "&8특수 무기 상점 (창 · 지팡이)"
+  npc-name: "&c특수 무기 상인"
+  command: true
+  items: [spear_10, spear_20, spear_30, spear_40, staff_1, staff_2, staff_3]
+
+armor_set:
+  title: "&8세트 방어구 상점"
+  npc-name: "&7세트 방어구 상인"
+  command: true
+  items: [set_beast_0, set_beast_1, set_beast_2, set_beast_3, set_arcane_0, set_arcane_1, set_arcane_2, set_arcane_3,
+          set_knight_0, set_knight_1, set_knight_2, set_knight_3]
+
+scroll:
+  title: "&8주문서 상점"
+  npc-name: "&b주문서 상인"
+  command: true
+  items: [scroll_atk, scroll_def, scroll_speed, scroll_exp, scroll_return]
+
+fish:
+  title: "&8어부"
+  npc-name: "&b어부"
+  command: true
+  items: ["rod_basic", "fish_small:-1", "fish_carp:-1", "fish_salmon:-1", "fish_deep:-1", "fish_gold:-1", "fish_treasure:-1", "fish_legend:-1"]
+
+transcend:
+  title: "&8초월 장비 상점 (Lv.120~300)"
+  npc-name: "&d초월 장비 상인"
+  command: true
+  items: [trans_sword_1, trans_dagger_1, trans_axe_1, trans_shield_1, trans_armor_1_0, trans_armor_1_1, trans_armor_1_2, trans_armor_1_3,
+          trans_sword_2, trans_dagger_2, trans_axe_2, trans_shield_2, trans_armor_2_0, trans_armor_2_1, trans_armor_2_2, trans_armor_2_3,
+          trans_sword_3, trans_dagger_3, trans_axe_3, trans_shield_3, trans_armor_3_0, trans_armor_3_1, trans_armor_3_2, trans_armor_3_3,
+          trans_sword_4, trans_dagger_4, trans_axe_4, trans_shield_4, trans_armor_4_0, trans_armor_4_1, trans_armor_4_2, trans_armor_4_3,
+          trans_sword_5, trans_dagger_5, trans_axe_5, trans_shield_5, trans_armor_5_0, trans_armor_5_1, trans_armor_5_2, trans_armor_5_3]
+
+armory_sword:
+  title: "&8무기고 · 검"
+  npc-name: "&6무기고 (검)"
+  command: true
+  items: [armory_sword_1, armory_sword_2, armory_sword_3, armory_sword_4, armory_sword_5, armory_sword_6, armory_sword_7, armory_sword_8]
+
+armory_dagger:
+  title: "&8무기고 · 단검"
+  npc-name: "&6무기고 (단검)"
+  command: true
+  items: [armory_dagger_1, armory_dagger_2, armory_dagger_3, armory_dagger_4, armory_dagger_5, armory_dagger_6, armory_dagger_7, armory_dagger_8]
+
+armory_axe:
+  title: "&8무기고 · 도끼"
+  npc-name: "&6무기고 (도끼)"
+  command: true
+  items: [armory_axe_1, armory_axe_2, armory_axe_3, armory_axe_4, armory_axe_5, armory_axe_6, armory_axe_7, armory_axe_8]
+
+armory_shield:
+  title: "&8무기고 · 방패"
+  npc-name: "&6무기고 (방패)"
+  command: true
+  items: [armory_shield_1, armory_shield_2, armory_shield_3, armory_shield_4, armory_shield_5, armory_shield_6, armory_shield_7, armory_shield_8]
+
+armory_bow:
+  title: "&8무기고 · 활"
+  npc-name: "&6무기고 (활)"
+  command: true
+  items: [armory_bow_1, armory_bow_2, armory_bow_3, armory_bow_4, armory_bow_5, armory_bow_6, armory_bow_7, armory_bow_8]
+
+armory_staff:
+  title: "&8무기고 · 지팡이"
+  npc-name: "&6무기고 (지팡이)"
+  command: true
+  items: [armory_staff_1, armory_staff_2, armory_staff_3, armory_staff_4, armory_staff_5, armory_staff_6, armory_staff_7, armory_staff_8]
+
+armory_spear:
+  title: "&8무기고 · 창"
+  npc-name: "&6무기고 (창)"
+  command: true
+  items: [armory_spear_1, armory_spear_2, armory_spear_3, armory_spear_4, armory_spear_5, armory_spear_6, armory_spear_7, armory_spear_8]
+
+accessory:
+  title: "&8장신구 상점"
+  npc-name: "&6장신구 상인"
+  command: true
+  items: [acc_ring_1, acc_neck_1, acc_ear_1, acc_ring_2, acc_neck_2, acc_ear_2]
+
+
+armory2_sword:
+  title: "&8무기고 II · 검"
+  npc-name: "&6무기고 II (검)"
+  command: true
+  items: [armory2_sword_1, armory2_sword_2, armory2_sword_3, armory2_sword_4, armory2_sword_5, armory2_sword_6, armory2_sword_7, armory2_sword_8]
+
+armory2_dagger:
+  title: "&8무기고 II · 단검"
+  npc-name: "&6무기고 II (단검)"
+  command: true
+  items: [armory2_dagger_1, armory2_dagger_2, armory2_dagger_3, armory2_dagger_4, armory2_dagger_5, armory2_dagger_6, armory2_dagger_7, armory2_dagger_8]
+
+armory2_axe:
+  title: "&8무기고 II · 도끼"
+  npc-name: "&6무기고 II (도끼)"
+  command: true
+  items: [armory2_axe_1, armory2_axe_2, armory2_axe_3, armory2_axe_4, armory2_axe_5, armory2_axe_6, armory2_axe_7, armory2_axe_8]
+
+armory2_shield:
+  title: "&8무기고 II · 방패"
+  npc-name: "&6무기고 II (방패)"
+  command: true
+  items: [armory2_shield_1, armory2_shield_2, armory2_shield_3, armory2_shield_4, armory2_shield_5, armory2_shield_6, armory2_shield_7, armory2_shield_8]
+
+armory2_bow:
+  title: "&8무기고 II · 활"
+  npc-name: "&6무기고 II (활)"
+  command: true
+  items: [armory2_bow_1, armory2_bow_2, armory2_bow_3, armory2_bow_4, armory2_bow_5, armory2_bow_6, armory2_bow_7, armory2_bow_8]
+
+armory2_staff:
+  title: "&8무기고 II · 지팡이"
+  npc-name: "&6무기고 II (지팡이)"
+  command: true
+  items: [armory2_staff_1, armory2_staff_2, armory2_staff_3, armory2_staff_4, armory2_staff_5, armory2_staff_6, armory2_staff_7, armory2_staff_8]
+
+armory2_spear:
+  title: "&8무기고 II · 창"
+  npc-name: "&6무기고 II (창)"
+  command: true
+  items: [armory2_spear_1, armory2_spear_2, armory2_spear_3, armory2_spear_4, armory2_spear_5, armory2_spear_6, armory2_spear_7, armory2_spear_8]
+
+
+potential:
+  title: "&8잠재능력 상점"
+  npc-name: "&d큐브 상인"
+  command: true
+  items: [potential_scroll, cube_red]

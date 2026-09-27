@@ -1,0 +1,177 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "minecraft:item/leather_helmet_quartz_trim",
+      "predicate": {
+        "trim_type": 0.1
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_iron_trim",
+      "predicate": {
+        "trim_type": 0.2
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_netherite_trim",
+      "predicate": {
+        "trim_type": 0.3
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_redstone_trim",
+      "predicate": {
+        "trim_type": 0.4
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_copper_trim",
+      "predicate": {
+        "trim_type": 0.5
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_gold_trim",
+      "predicate": {
+        "trim_type": 0.6
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_emerald_trim",
+      "predicate": {
+        "trim_type": 0.7
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_diamond_trim",
+      "predicate": {
+        "trim_type": 0.8
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_lapis_trim",
+      "predicate": {
+        "trim_type": 0.9
+      }
+    },
+    {
+      "model": "minecraft:item/leather_helmet_amethyst_trim",
+      "predicate": {
+        "trim_type": 1.0
+      }
+    },
+    {
+      "predicate": {
+        "custom_model_data": 530
+      },
+      "model": "rpgcraft:item/spirit_qinglong_a0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 534
+      },
+      "model": "rpgcraft:item/spirit_baihu_a0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 538
+      },
+      "model": "rpgcraft:item/spirit_zhuque_a0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 542
+      },
+      "model": "rpgcraft:item/spirit_xuanwu_a0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 580
+      },
+      "model": "rpgcraft:item/assassin_0_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 584
+      },
+      "model": "rpgcraft:item/assassin_1_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 588
+      },
+      "model": "rpgcraft:item/assassin_2_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 592
+      },
+      "model": "rpgcraft:item/assassin_3_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 596
+      },
+      "model": "rpgcraft:item/assassin_4_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 600
+      },
+      "model": "rpgcraft:item/adventurer_0_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 604
+      },
+      "model": "rpgcraft:item/adventurer_1_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 608
+      },
+      "model": "rpgcraft:item/adventurer_2_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 612
+      },
+      "model": "rpgcraft:item/adventurer_3_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 616
+      },
+      "model": "rpgcraft:item/adventurer_4_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 620
+      },
+      "model": "rpgcraft:item/witch_a0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 632
+      },
+      "model": "rpgcraft:item/sea_a0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 640
+      },
+      "model": "rpgcraft:item/set_beast_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 644
+      },
+      "model": "rpgcraft:item/set_arcane_0"
+    }
+  ],
+  "textures": {
+    "layer0": "minecraft:item/leather_helmet",
+    "layer1": "minecraft:item/leather_helmet_overlay"
+  }
+}

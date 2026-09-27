@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/pender_axe",
+  "textures": {
+    "0": "rpgcraft:item/pender_axe_e7",
+    "particle": "rpgcraft:item/pender_axe_e7"
+  }
+}

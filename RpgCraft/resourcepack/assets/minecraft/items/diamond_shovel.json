@@ -1,0 +1,118 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spear_40"
+        }
+      },
+      {
+        "threshold": 1305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_6"
+        }
+      },
+      {
+        "threshold": 1306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_7"
+        }
+      },
+      {
+        "threshold": 1314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_spear_5"
+        }
+      },
+      {
+        "threshold": 1315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_spear_6"
+        }
+      },
+      {
+        "threshold": 3103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spear_40_e7"
+        }
+      },
+      {
+        "threshold": 4305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_6_e7"
+        }
+      },
+      {
+        "threshold": 4306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_7_e7"
+        }
+      },
+      {
+        "threshold": 4314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_spear_5_e7"
+        }
+      },
+      {
+        "threshold": 4315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_spear_6_e7"
+        }
+      },
+      {
+        "threshold": 5103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/spear_40_e10"
+        }
+      },
+      {
+        "threshold": 6305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_6_e10"
+        }
+      },
+      {
+        "threshold": 6306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_7_e10"
+        }
+      },
+      {
+        "threshold": 6314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_spear_5_e10"
+        }
+      },
+      {
+        "threshold": 6315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_spear_6_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/diamond_shovel"
+    }
+  }
+}

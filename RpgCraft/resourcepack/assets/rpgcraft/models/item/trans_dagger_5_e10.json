@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/trans_dagger_5",
+  "textures": {
+    "0": "rpgcraft:item/trans_dagger_5_e10",
+    "particle": "rpgcraft:item/trans_dagger_5_e10"
+  }
+}

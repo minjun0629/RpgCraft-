@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/ghast_tear"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1423
+      },
+      "model": "rpgcraft:item/spirit_summon"
+    }
+  ]
+}

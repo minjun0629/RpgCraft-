@@ -1,0 +1,742 @@
+{
+  "parent": "builtin/entity",
+  "gui_light": "front",
+  "textures": {
+    "particle": "block/dark_oak_planks"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        10,
+        6,
+        -4
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        10,
+        6,
+        12
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        180,
+        5
+      ],
+      "translation": [
+        -10,
+        2,
+        -10
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        180,
+        5
+      ],
+      "translation": [
+        10,
+        0,
+        -10
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    "gui": {
+      "rotation": [
+        15,
+        -25,
+        -5
+      ],
+      "translation": [
+        2,
+        3,
+        0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        -4.5,
+        4.5,
+        -5
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        2,
+        4,
+        2
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "blocking": 1
+      },
+      "model": "item/shield_blocking"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 100
+      },
+      "model": "rpgcraft:item/shield_10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 101
+      },
+      "model": "rpgcraft:item/shield_20"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 102
+      },
+      "model": "rpgcraft:item/shield_30"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 103
+      },
+      "model": "rpgcraft:item/shield_40"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 150
+      },
+      "model": "rpgcraft:item/bs_shield_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 151
+      },
+      "model": "rpgcraft:item/bs_shield_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 152
+      },
+      "model": "rpgcraft:item/bs_shield_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 153
+      },
+      "model": "rpgcraft:item/bs_shield_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 154
+      },
+      "model": "rpgcraft:item/bs_shield_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 203
+      },
+      "model": "rpgcraft:item/witch_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 213
+      },
+      "model": "rpgcraft:item/dwarf_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 223
+      },
+      "model": "rpgcraft:item/harpy_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 233
+      },
+      "model": "rpgcraft:item/sea_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 243
+      },
+      "model": "rpgcraft:item/bungbung_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 900
+      },
+      "model": "rpgcraft:item/relic_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 953
+      },
+      "model": "rpgcraft:item/pender_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1101
+      },
+      "model": "rpgcraft:item/trans_shield_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1102
+      },
+      "model": "rpgcraft:item/trans_shield_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1103
+      },
+      "model": "rpgcraft:item/trans_shield_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1104
+      },
+      "model": "rpgcraft:item/trans_shield_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1105
+      },
+      "model": "rpgcraft:item/trans_shield_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1300
+      },
+      "model": "rpgcraft:item/armory_shield_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1301
+      },
+      "model": "rpgcraft:item/armory_shield_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1302
+      },
+      "model": "rpgcraft:item/armory_shield_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1303
+      },
+      "model": "rpgcraft:item/armory_shield_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1304
+      },
+      "model": "rpgcraft:item/armory_shield_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1305
+      },
+      "model": "rpgcraft:item/armory_shield_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1306
+      },
+      "model": "rpgcraft:item/armory_shield_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1307
+      },
+      "model": "rpgcraft:item/armory_shield_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1310
+      },
+      "model": "rpgcraft:item/armory2_shield_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1311
+      },
+      "model": "rpgcraft:item/armory2_shield_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1312
+      },
+      "model": "rpgcraft:item/armory2_shield_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1313
+      },
+      "model": "rpgcraft:item/armory2_shield_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1314
+      },
+      "model": "rpgcraft:item/armory2_shield_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1315
+      },
+      "model": "rpgcraft:item/armory2_shield_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1316
+      },
+      "model": "rpgcraft:item/armory2_shield_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1317
+      },
+      "model": "rpgcraft:item/armory2_shield_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3100
+      },
+      "model": "rpgcraft:item/shield_10_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3101
+      },
+      "model": "rpgcraft:item/shield_20_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3102
+      },
+      "model": "rpgcraft:item/shield_30_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3103
+      },
+      "model": "rpgcraft:item/shield_40_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3150
+      },
+      "model": "rpgcraft:item/bs_shield_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3151
+      },
+      "model": "rpgcraft:item/bs_shield_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3152
+      },
+      "model": "rpgcraft:item/bs_shield_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3153
+      },
+      "model": "rpgcraft:item/bs_shield_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3154
+      },
+      "model": "rpgcraft:item/bs_shield_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3900
+      },
+      "model": "rpgcraft:item/relic_shield_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3953
+      },
+      "model": "rpgcraft:item/pender_shield_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4101
+      },
+      "model": "rpgcraft:item/trans_shield_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4102
+      },
+      "model": "rpgcraft:item/trans_shield_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4103
+      },
+      "model": "rpgcraft:item/trans_shield_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4104
+      },
+      "model": "rpgcraft:item/trans_shield_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4105
+      },
+      "model": "rpgcraft:item/trans_shield_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4300
+      },
+      "model": "rpgcraft:item/armory_shield_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4301
+      },
+      "model": "rpgcraft:item/armory_shield_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4302
+      },
+      "model": "rpgcraft:item/armory_shield_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4303
+      },
+      "model": "rpgcraft:item/armory_shield_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4304
+      },
+      "model": "rpgcraft:item/armory_shield_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4305
+      },
+      "model": "rpgcraft:item/armory_shield_6_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4306
+      },
+      "model": "rpgcraft:item/armory_shield_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4307
+      },
+      "model": "rpgcraft:item/armory_shield_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4310
+      },
+      "model": "rpgcraft:item/armory2_shield_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4311
+      },
+      "model": "rpgcraft:item/armory2_shield_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4312
+      },
+      "model": "rpgcraft:item/armory2_shield_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4313
+      },
+      "model": "rpgcraft:item/armory2_shield_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4314
+      },
+      "model": "rpgcraft:item/armory2_shield_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4315
+      },
+      "model": "rpgcraft:item/armory2_shield_6_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4316
+      },
+      "model": "rpgcraft:item/armory2_shield_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4317
+      },
+      "model": "rpgcraft:item/armory2_shield_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5100
+      },
+      "model": "rpgcraft:item/shield_10_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5101
+      },
+      "model": "rpgcraft:item/shield_20_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5102
+      },
+      "model": "rpgcraft:item/shield_30_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5103
+      },
+      "model": "rpgcraft:item/shield_40_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5150
+      },
+      "model": "rpgcraft:item/bs_shield_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5151
+      },
+      "model": "rpgcraft:item/bs_shield_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5152
+      },
+      "model": "rpgcraft:item/bs_shield_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5153
+      },
+      "model": "rpgcraft:item/bs_shield_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5154
+      },
+      "model": "rpgcraft:item/bs_shield_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5900
+      },
+      "model": "rpgcraft:item/relic_shield_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5953
+      },
+      "model": "rpgcraft:item/pender_shield_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6101
+      },
+      "model": "rpgcraft:item/trans_shield_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6102
+      },
+      "model": "rpgcraft:item/trans_shield_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6103
+      },
+      "model": "rpgcraft:item/trans_shield_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6104
+      },
+      "model": "rpgcraft:item/trans_shield_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6105
+      },
+      "model": "rpgcraft:item/trans_shield_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6300
+      },
+      "model": "rpgcraft:item/armory_shield_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6301
+      },
+      "model": "rpgcraft:item/armory_shield_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6302
+      },
+      "model": "rpgcraft:item/armory_shield_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6303
+      },
+      "model": "rpgcraft:item/armory_shield_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6304
+      },
+      "model": "rpgcraft:item/armory_shield_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6305
+      },
+      "model": "rpgcraft:item/armory_shield_6_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6306
+      },
+      "model": "rpgcraft:item/armory_shield_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6307
+      },
+      "model": "rpgcraft:item/armory_shield_8_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6310
+      },
+      "model": "rpgcraft:item/armory2_shield_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6311
+      },
+      "model": "rpgcraft:item/armory2_shield_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6312
+      },
+      "model": "rpgcraft:item/armory2_shield_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6313
+      },
+      "model": "rpgcraft:item/armory2_shield_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6314
+      },
+      "model": "rpgcraft:item/armory2_shield_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6315
+      },
+      "model": "rpgcraft:item/armory2_shield_6_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6316
+      },
+      "model": "rpgcraft:item/armory2_shield_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6317
+      },
+      "model": "rpgcraft:item/armory2_shield_8_e10"
+    }
+  ]
+}

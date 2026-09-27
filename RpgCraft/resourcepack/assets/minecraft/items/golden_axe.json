@@ -1,0 +1,55 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_5"
+        }
+      },
+      {
+        "threshold": 1313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_4"
+        }
+      },
+      {
+        "threshold": 4304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_5_e7"
+        }
+      },
+      {
+        "threshold": 4313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_4_e7"
+        }
+      },
+      {
+        "threshold": 6304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_axe_5_e10"
+        }
+      },
+      {
+        "threshold": 6313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_axe_4_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/golden_axe"
+    }
+  }
+}

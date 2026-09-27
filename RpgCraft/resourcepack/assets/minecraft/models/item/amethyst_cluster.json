@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:block/amethyst_cluster"
+  },
+  "display": {
+    "head": {
+      "translation": [
+        0,
+        14,
+        -5
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 510
+      },
+      "model": "rpgcraft:item/crystal_fire"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 511
+      },
+      "model": "rpgcraft:item/crystal_wind"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 512
+      },
+      "model": "rpgcraft:item/crystal_dark"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 513
+      },
+      "model": "rpgcraft:item/crystal_nature"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 514
+      },
+      "model": "rpgcraft:item/crystal_earth"
+    }
+  ]
+}

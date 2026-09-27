@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 569,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/warrior_2_1"
+        }
+      },
+      {
+        "threshold": 573,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/warrior_3_1"
+        }
+      },
+      {
+        "threshold": 649,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/set_knight_1"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/iron_chestplate"
+    }
+  }
+}

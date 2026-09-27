@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_1"
+        }
+      },
+      {
+        "threshold": 4300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_1_e7"
+        }
+      },
+      {
+        "threshold": 6300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_spear_1_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/wooden_shovel"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "rpgcraft:item/trans_axe_1",
+  "textures": {
+    "0": "rpgcraft:item/trans_axe_1_e10",
+    "particle": "rpgcraft:item/trans_axe_1_e10"
+  }
+}

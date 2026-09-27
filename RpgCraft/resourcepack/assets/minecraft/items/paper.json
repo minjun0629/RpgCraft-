@@ -1,0 +1,377 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/check"
+        }
+      },
+      {
+        "threshold": 10,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ticket_protect"
+        }
+      },
+      {
+        "threshold": 11,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ticket_rate10"
+        }
+      },
+      {
+        "threshold": 12,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ticket_war"
+        }
+      },
+      {
+        "threshold": 13,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ticket_rune"
+        }
+      },
+      {
+        "threshold": 14,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ticket_totem"
+        }
+      },
+      {
+        "threshold": 15,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ticket_stat_reset"
+        }
+      },
+      {
+        "threshold": 20,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/scroll_atk"
+        }
+      },
+      {
+        "threshold": 21,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/scroll_def"
+        }
+      },
+      {
+        "threshold": 22,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/scroll_speed"
+        }
+      },
+      {
+        "threshold": 23,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/scroll_exp"
+        }
+      },
+      {
+        "threshold": 24,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/scroll_return"
+        }
+      },
+      {
+        "threshold": 1420,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/potential_scroll"
+        }
+      },
+      {
+        "threshold": 1463,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/loot_bandage"
+        }
+      },
+      {
+        "threshold": 9000,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/witch"
+        }
+      },
+      {
+        "threshold": 9001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/elf_queen"
+        }
+      },
+      {
+        "threshold": 9002,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/dwarf_king"
+        }
+      },
+      {
+        "threshold": 9003,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/harpy_queen"
+        }
+      },
+      {
+        "threshold": 9004,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/sea_gatekeeper"
+        }
+      },
+      {
+        "threshold": 9005,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/bungbung"
+        }
+      },
+      {
+        "threshold": 9006,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/desert_nightmare"
+        }
+      },
+      {
+        "threshold": 9007,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/siphonia"
+        }
+      },
+      {
+        "threshold": 9008,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/kain"
+        }
+      },
+      {
+        "threshold": 9009,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/frost_queen"
+        }
+      },
+      {
+        "threshold": 9010,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/volcano_giant"
+        }
+      },
+      {
+        "threshold": 9011,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/void_apostle"
+        }
+      },
+      {
+        "threshold": 9012,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/thunder_god"
+        }
+      },
+      {
+        "threshold": 9013,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/primordial_dragon"
+        }
+      },
+      {
+        "threshold": 9014,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/vengeful_spirit"
+        }
+      },
+      {
+        "threshold": 9015,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/balrog"
+        }
+      },
+      {
+        "threshold": 9016,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/megalodon"
+        }
+      },
+      {
+        "threshold": 9017,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/kraken"
+        }
+      },
+      {
+        "threshold": 9018,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_wolf"
+        }
+      },
+      {
+        "threshold": 9019,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_lizard"
+        }
+      },
+      {
+        "threshold": 9020,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_warhorse"
+        }
+      },
+      {
+        "threshold": 9021,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_icebear"
+        }
+      },
+      {
+        "threshold": 9022,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_lion"
+        }
+      },
+      {
+        "threshold": 9023,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_panther"
+        }
+      },
+      {
+        "threshold": 9024,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_griffin"
+        }
+      },
+      {
+        "threshold": 9025,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/mount_dragon"
+        }
+      },
+      {
+        "threshold": 9026,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_slime"
+        }
+      },
+      {
+        "threshold": 9027,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_chick"
+        }
+      },
+      {
+        "threshold": 9028,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_bunny"
+        }
+      },
+      {
+        "threshold": 9029,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_fox"
+        }
+      },
+      {
+        "threshold": 9030,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_penguin"
+        }
+      },
+      {
+        "threshold": 9031,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_owl"
+        }
+      },
+      {
+        "threshold": 9032,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_golem"
+        }
+      },
+      {
+        "threshold": 9033,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_fairy"
+        }
+      },
+      {
+        "threshold": 9034,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_ghost"
+        }
+      },
+      {
+        "threshold": 9035,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_phoenix"
+        }
+      },
+      {
+        "threshold": 9036,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_dragon"
+        }
+      },
+      {
+        "threshold": 9037,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:boss/pet_star"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/paper"
+    }
+  }
+}

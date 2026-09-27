@@ -1,0 +1,320 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/paper"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "rpgcraft:item/check"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10
+      },
+      "model": "rpgcraft:item/ticket_protect"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 11
+      },
+      "model": "rpgcraft:item/ticket_rate10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12
+      },
+      "model": "rpgcraft:item/ticket_war"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13
+      },
+      "model": "rpgcraft:item/ticket_rune"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 14
+      },
+      "model": "rpgcraft:item/ticket_totem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 15
+      },
+      "model": "rpgcraft:item/ticket_stat_reset"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 20
+      },
+      "model": "rpgcraft:item/scroll_atk"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 21
+      },
+      "model": "rpgcraft:item/scroll_def"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 22
+      },
+      "model": "rpgcraft:item/scroll_speed"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 23
+      },
+      "model": "rpgcraft:item/scroll_exp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 24
+      },
+      "model": "rpgcraft:item/scroll_return"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1420
+      },
+      "model": "rpgcraft:item/potential_scroll"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1463
+      },
+      "model": "rpgcraft:item/loot_bandage"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9000
+      },
+      "model": "rpgcraft:boss/witch"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9001
+      },
+      "model": "rpgcraft:boss/elf_queen"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9002
+      },
+      "model": "rpgcraft:boss/dwarf_king"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9003
+      },
+      "model": "rpgcraft:boss/harpy_queen"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9004
+      },
+      "model": "rpgcraft:boss/sea_gatekeeper"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9005
+      },
+      "model": "rpgcraft:boss/bungbung"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9006
+      },
+      "model": "rpgcraft:boss/desert_nightmare"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9007
+      },
+      "model": "rpgcraft:boss/siphonia"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9008
+      },
+      "model": "rpgcraft:boss/kain"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9009
+      },
+      "model": "rpgcraft:boss/frost_queen"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9010
+      },
+      "model": "rpgcraft:boss/volcano_giant"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9011
+      },
+      "model": "rpgcraft:boss/void_apostle"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9012
+      },
+      "model": "rpgcraft:boss/thunder_god"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9013
+      },
+      "model": "rpgcraft:boss/primordial_dragon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9014
+      },
+      "model": "rpgcraft:boss/vengeful_spirit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9015
+      },
+      "model": "rpgcraft:boss/balrog"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9016
+      },
+      "model": "rpgcraft:boss/megalodon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9017
+      },
+      "model": "rpgcraft:boss/kraken"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9018
+      },
+      "model": "rpgcraft:boss/mount_wolf"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9019
+      },
+      "model": "rpgcraft:boss/mount_lizard"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9020
+      },
+      "model": "rpgcraft:boss/mount_warhorse"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9021
+      },
+      "model": "rpgcraft:boss/mount_icebear"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9022
+      },
+      "model": "rpgcraft:boss/mount_lion"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9023
+      },
+      "model": "rpgcraft:boss/mount_panther"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9024
+      },
+      "model": "rpgcraft:boss/mount_griffin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9025
+      },
+      "model": "rpgcraft:boss/mount_dragon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9026
+      },
+      "model": "rpgcraft:boss/pet_slime"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9027
+      },
+      "model": "rpgcraft:boss/pet_chick"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9028
+      },
+      "model": "rpgcraft:boss/pet_bunny"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9029
+      },
+      "model": "rpgcraft:boss/pet_fox"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9030
+      },
+      "model": "rpgcraft:boss/pet_penguin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9031
+      },
+      "model": "rpgcraft:boss/pet_owl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9032
+      },
+      "model": "rpgcraft:boss/pet_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9033
+      },
+      "model": "rpgcraft:boss/pet_fairy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9034
+      },
+      "model": "rpgcraft:boss/pet_ghost"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9035
+      },
+      "model": "rpgcraft:boss/pet_phoenix"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9036
+      },
+      "model": "rpgcraft:boss/pet_dragon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9037
+      },
+      "model": "rpgcraft:boss/pet_star"
+    }
+  ]
+}

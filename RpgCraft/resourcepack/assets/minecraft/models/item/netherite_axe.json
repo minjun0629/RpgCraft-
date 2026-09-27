@@ -1,0 +1,230 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/netherite_axe"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 154
+      },
+      "model": "rpgcraft:item/bs_axe_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 242
+      },
+      "model": "rpgcraft:item/bungbung_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 302
+      },
+      "model": "rpgcraft:item/spirit_baihu"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 900
+      },
+      "model": "rpgcraft:item/relic_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 952
+      },
+      "model": "rpgcraft:item/pender_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1101
+      },
+      "model": "rpgcraft:item/trans_axe_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1102
+      },
+      "model": "rpgcraft:item/trans_axe_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1103
+      },
+      "model": "rpgcraft:item/trans_axe_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1104
+      },
+      "model": "rpgcraft:item/trans_axe_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1105
+      },
+      "model": "rpgcraft:item/trans_axe_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1307
+      },
+      "model": "rpgcraft:item/armory_axe_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1316
+      },
+      "model": "rpgcraft:item/armory2_axe_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1317
+      },
+      "model": "rpgcraft:item/armory2_axe_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3154
+      },
+      "model": "rpgcraft:item/bs_axe_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3302
+      },
+      "model": "rpgcraft:item/spirit_baihu_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3900
+      },
+      "model": "rpgcraft:item/relic_axe_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3952
+      },
+      "model": "rpgcraft:item/pender_axe_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4101
+      },
+      "model": "rpgcraft:item/trans_axe_1_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4102
+      },
+      "model": "rpgcraft:item/trans_axe_2_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4103
+      },
+      "model": "rpgcraft:item/trans_axe_3_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4104
+      },
+      "model": "rpgcraft:item/trans_axe_4_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4105
+      },
+      "model": "rpgcraft:item/trans_axe_5_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4307
+      },
+      "model": "rpgcraft:item/armory_axe_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4316
+      },
+      "model": "rpgcraft:item/armory2_axe_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4317
+      },
+      "model": "rpgcraft:item/armory2_axe_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5154
+      },
+      "model": "rpgcraft:item/bs_axe_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5302
+      },
+      "model": "rpgcraft:item/spirit_baihu_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5900
+      },
+      "model": "rpgcraft:item/relic_axe_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5952
+      },
+      "model": "rpgcraft:item/pender_axe_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6101
+      },
+      "model": "rpgcraft:item/trans_axe_1_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6102
+      },
+      "model": "rpgcraft:item/trans_axe_2_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6103
+      },
+      "model": "rpgcraft:item/trans_axe_3_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6104
+      },
+      "model": "rpgcraft:item/trans_axe_4_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6105
+      },
+      "model": "rpgcraft:item/trans_axe_5_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6307
+      },
+      "model": "rpgcraft:item/armory_axe_8_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6316
+      },
+      "model": "rpgcraft:item/armory2_axe_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6317
+      },
+      "model": "rpgcraft:item/armory2_axe_8_e10"
+    }
+  ]
+}

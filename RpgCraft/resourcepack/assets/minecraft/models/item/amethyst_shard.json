@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/amethyst_shard"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1406
+      },
+      "model": "rpgcraft:item/acc_ear_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1407
+      },
+      "model": "rpgcraft:item/acc_ear_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1408
+      },
+      "model": "rpgcraft:item/acc_ear_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1497
+      },
+      "model": "rpgcraft:item/crystal_high"
+    }
+  ]
+}

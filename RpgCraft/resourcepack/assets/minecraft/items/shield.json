@@ -1,0 +1,734 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_10"
+        }
+      },
+      {
+        "threshold": 101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_20"
+        }
+      },
+      {
+        "threshold": 102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_30"
+        }
+      },
+      {
+        "threshold": 103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_40"
+        }
+      },
+      {
+        "threshold": 150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_1"
+        }
+      },
+      {
+        "threshold": 151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_2"
+        }
+      },
+      {
+        "threshold": 152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_3"
+        }
+      },
+      {
+        "threshold": 153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_4"
+        }
+      },
+      {
+        "threshold": 154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_5"
+        }
+      },
+      {
+        "threshold": 203,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/witch_shield"
+        }
+      },
+      {
+        "threshold": 213,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/dwarf_shield"
+        }
+      },
+      {
+        "threshold": 223,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/harpy_shield"
+        }
+      },
+      {
+        "threshold": 233,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/sea_shield"
+        }
+      },
+      {
+        "threshold": 243,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bungbung_shield"
+        }
+      },
+      {
+        "threshold": 900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_shield"
+        }
+      },
+      {
+        "threshold": 953,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_shield"
+        }
+      },
+      {
+        "threshold": 1101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_1"
+        }
+      },
+      {
+        "threshold": 1102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_2"
+        }
+      },
+      {
+        "threshold": 1103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_3"
+        }
+      },
+      {
+        "threshold": 1104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_4"
+        }
+      },
+      {
+        "threshold": 1105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_5"
+        }
+      },
+      {
+        "threshold": 1300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_1"
+        }
+      },
+      {
+        "threshold": 1301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_2"
+        }
+      },
+      {
+        "threshold": 1302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_3"
+        }
+      },
+      {
+        "threshold": 1303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_4"
+        }
+      },
+      {
+        "threshold": 1304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_5"
+        }
+      },
+      {
+        "threshold": 1305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_6"
+        }
+      },
+      {
+        "threshold": 1306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_7"
+        }
+      },
+      {
+        "threshold": 1307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_8"
+        }
+      },
+      {
+        "threshold": 1310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_1"
+        }
+      },
+      {
+        "threshold": 1311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_2"
+        }
+      },
+      {
+        "threshold": 1312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_3"
+        }
+      },
+      {
+        "threshold": 1313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_4"
+        }
+      },
+      {
+        "threshold": 1314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_5"
+        }
+      },
+      {
+        "threshold": 1315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_6"
+        }
+      },
+      {
+        "threshold": 1316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_7"
+        }
+      },
+      {
+        "threshold": 1317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_8"
+        }
+      },
+      {
+        "threshold": 3100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_10_e7"
+        }
+      },
+      {
+        "threshold": 3101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_20_e7"
+        }
+      },
+      {
+        "threshold": 3102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_30_e7"
+        }
+      },
+      {
+        "threshold": 3103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_40_e7"
+        }
+      },
+      {
+        "threshold": 3150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_1_e7"
+        }
+      },
+      {
+        "threshold": 3151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_2_e7"
+        }
+      },
+      {
+        "threshold": 3152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_3_e7"
+        }
+      },
+      {
+        "threshold": 3153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_4_e7"
+        }
+      },
+      {
+        "threshold": 3154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_5_e7"
+        }
+      },
+      {
+        "threshold": 3900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_shield_e7"
+        }
+      },
+      {
+        "threshold": 3953,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_shield_e7"
+        }
+      },
+      {
+        "threshold": 4101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_1_e7"
+        }
+      },
+      {
+        "threshold": 4102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_2_e7"
+        }
+      },
+      {
+        "threshold": 4103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_3_e7"
+        }
+      },
+      {
+        "threshold": 4104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_4_e7"
+        }
+      },
+      {
+        "threshold": 4105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_5_e7"
+        }
+      },
+      {
+        "threshold": 4300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_1_e7"
+        }
+      },
+      {
+        "threshold": 4301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_2_e7"
+        }
+      },
+      {
+        "threshold": 4302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_3_e7"
+        }
+      },
+      {
+        "threshold": 4303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_4_e7"
+        }
+      },
+      {
+        "threshold": 4304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_5_e7"
+        }
+      },
+      {
+        "threshold": 4305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_6_e7"
+        }
+      },
+      {
+        "threshold": 4306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_7_e7"
+        }
+      },
+      {
+        "threshold": 4307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_8_e7"
+        }
+      },
+      {
+        "threshold": 4310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_1_e7"
+        }
+      },
+      {
+        "threshold": 4311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_2_e7"
+        }
+      },
+      {
+        "threshold": 4312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_3_e7"
+        }
+      },
+      {
+        "threshold": 4313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_4_e7"
+        }
+      },
+      {
+        "threshold": 4314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_5_e7"
+        }
+      },
+      {
+        "threshold": 4315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_6_e7"
+        }
+      },
+      {
+        "threshold": 4316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_7_e7"
+        }
+      },
+      {
+        "threshold": 4317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_8_e7"
+        }
+      },
+      {
+        "threshold": 5100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_10_e10"
+        }
+      },
+      {
+        "threshold": 5101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_20_e10"
+        }
+      },
+      {
+        "threshold": 5102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_30_e10"
+        }
+      },
+      {
+        "threshold": 5103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shield_40_e10"
+        }
+      },
+      {
+        "threshold": 5150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_1_e10"
+        }
+      },
+      {
+        "threshold": 5151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_2_e10"
+        }
+      },
+      {
+        "threshold": 5152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_3_e10"
+        }
+      },
+      {
+        "threshold": 5153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_4_e10"
+        }
+      },
+      {
+        "threshold": 5154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/bs_shield_5_e10"
+        }
+      },
+      {
+        "threshold": 5900,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/relic_shield_e10"
+        }
+      },
+      {
+        "threshold": 5953,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/pender_shield_e10"
+        }
+      },
+      {
+        "threshold": 6101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_1_e10"
+        }
+      },
+      {
+        "threshold": 6102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_2_e10"
+        }
+      },
+      {
+        "threshold": 6103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_3_e10"
+        }
+      },
+      {
+        "threshold": 6104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_4_e10"
+        }
+      },
+      {
+        "threshold": 6105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/trans_shield_5_e10"
+        }
+      },
+      {
+        "threshold": 6300,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_1_e10"
+        }
+      },
+      {
+        "threshold": 6301,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_2_e10"
+        }
+      },
+      {
+        "threshold": 6302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_3_e10"
+        }
+      },
+      {
+        "threshold": 6303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_4_e10"
+        }
+      },
+      {
+        "threshold": 6304,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_5_e10"
+        }
+      },
+      {
+        "threshold": 6305,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_6_e10"
+        }
+      },
+      {
+        "threshold": 6306,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_7_e10"
+        }
+      },
+      {
+        "threshold": 6307,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory_shield_8_e10"
+        }
+      },
+      {
+        "threshold": 6310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_1_e10"
+        }
+      },
+      {
+        "threshold": 6311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_2_e10"
+        }
+      },
+      {
+        "threshold": 6312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_3_e10"
+        }
+      },
+      {
+        "threshold": 6313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_4_e10"
+        }
+      },
+      {
+        "threshold": 6314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_5_e10"
+        }
+      },
+      {
+        "threshold": 6315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_6_e10"
+        }
+      },
+      {
+        "threshold": 6316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_7_e10"
+        }
+      },
+      {
+        "threshold": 6317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory2_shield_8_e10"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:condition",
+      "property": "minecraft:using_item",
+      "on_true": {
+        "type": "minecraft:special",
+        "base": "minecraft:item/shield_blocking",
+        "model": {
+          "type": "minecraft:shield"
+        }
+      },
+      "on_false": {
+        "type": "minecraft:special",
+        "base": "minecraft:item/shield",
+        "model": {
+          "type": "minecraft:shield"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 500,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/shard_nature"
+        }
+      },
+      {
+        "threshold": 1457,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/loot_slime"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/slime_ball"
+    }
+  }
+}

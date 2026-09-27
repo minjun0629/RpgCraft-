@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/firework_star",
+    "layer1": "minecraft:item/firework_star_overlay"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 600
+      },
+      "model": "rpgcraft:item/rune_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 601
+      },
+      "model": "rpgcraft:item/rune_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 602
+      },
+      "model": "rpgcraft:item/rune_3"
+    }
+  ]
+}

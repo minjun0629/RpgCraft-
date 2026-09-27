@@ -1,0 +1,98 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/netherite_shovel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 303
+      },
+      "model": "rpgcraft:item/spirit_xuanwu"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 954
+      },
+      "model": "rpgcraft:item/pender_spear"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1307
+      },
+      "model": "rpgcraft:item/armory_spear_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1316
+      },
+      "model": "rpgcraft:item/armory2_spear_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1317
+      },
+      "model": "rpgcraft:item/armory2_spear_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3303
+      },
+      "model": "rpgcraft:item/spirit_xuanwu_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3954
+      },
+      "model": "rpgcraft:item/pender_spear_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4307
+      },
+      "model": "rpgcraft:item/armory_spear_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4316
+      },
+      "model": "rpgcraft:item/armory2_spear_7_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4317
+      },
+      "model": "rpgcraft:item/armory2_spear_8_e7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5303
+      },
+      "model": "rpgcraft:item/spirit_xuanwu_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5954
+      },
+      "model": "rpgcraft:item/pender_spear_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6307
+      },
+      "model": "rpgcraft:item/armory_spear_8_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6316
+      },
+      "model": "rpgcraft:item/armory2_spear_7_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6317
+      },
+      "model": "rpgcraft:item/armory2_spear_8_e10"
+    }
+  ]
+}

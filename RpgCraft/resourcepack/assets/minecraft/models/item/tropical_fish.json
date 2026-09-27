@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/tropical_fish"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1434
+      },
+      "model": "rpgcraft:item/fish_gold"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1436
+      },
+      "model": "rpgcraft:item/fish_legend"
+    }
+  ]
+}

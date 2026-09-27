@@ -220,7 +220,7 @@ weapon-skills:
   quick-shot-ms: 1100        # 활 좌클릭 사격 간격
   bow-damage-mult: 1.35      # 활 피해 배율 (사격·활 스킬 모두)
   bolt-range: 14             # 지팡이 평타(마법탄)가 날아가는 거리 (칸, 예전 약 23칸 → 18칸 → 14칸)
-  bolt-cooldown-ms: 900      # 지팡이 평타(마법탄) 간격 (밀리초, 예전 700)
+  bolt-cooldown-ms: 1100     # 지팡이 평타(마법탄) 간격 (밀리초, 예전 700 → 900 → 1100)
   slash-damage: 0.85         # 좌클릭 참격 피해 (공격력 배율, 무기 공격 간격마다)
   particle-melee: true       # 몬스터를 직접 때려도 바닐라 타격 대신 입자 참격으로 공격
   cooldown: {sword: 6, dagger: 7, axe: 9, shield: 8, bow: 6, spear: 6, club: 6}

@@ -312,9 +312,9 @@ public class WeaponSkillManager implements Listener {
         Bukkit.getScheduler().runTask(plugin, () -> basic(p, k, victim));
     }
 
-    /** 지팡이 평타(마법탄) 간격 — v5.4.36: 0.7초 → 0.9초 */
+    /** 지팡이 평타(마법탄) 간격 — v5.4.36: 0.7초 → 0.9초, v5.4.38: 1.1초 */
     private long boltCooldown() {
-        return plugin.getConfig().getLong("weapon-skills.bolt-cooldown-ms", 900);
+        return plugin.getConfig().getLong("weapon-skills.bolt-cooldown-ms", 1100);
     }
 
     // ------------------------------------------------------------------ 참격 (좌클릭)

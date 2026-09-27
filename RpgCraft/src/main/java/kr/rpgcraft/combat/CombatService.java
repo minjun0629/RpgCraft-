@@ -322,7 +322,7 @@ public class CombatService {
         } finally {
             BYPASS.set(false);
         }
-        if (!victim.isDead() && plugin.health().cur(victim) <= 0) victim.setHealth(0);
+        if (!victim.isDead() && plugin.health().cur(victim) <= 0 && !plugin.health().deathGuard(victim)) victim.setHealth(0);
     }
 
     /** 스킬 대미지 (플레이어 → 대상). 크리티컬 판정 포함. */

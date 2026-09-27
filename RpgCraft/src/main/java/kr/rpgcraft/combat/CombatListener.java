@@ -197,7 +197,7 @@ public class CombatListener implements Listener {
             e.setDamage(victim.getHealth() + 100000);
             // 방패 막기 등으로 바닐라 대미지가 무효화된 경우를 대비
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (!victim.isDead() && victim.isValid() && plugin.health().cur(victim) <= 0) plugin.combat().kill(victim, source);
+                if (!victim.isDead() && victim.isValid() && plugin.health().cur(victim) <= 0 && !plugin.health().deathGuard(victim)) plugin.combat().kill(victim, source);
             });
         } else {
             e.setDamage(0);

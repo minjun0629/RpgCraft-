@@ -14,9 +14,29 @@ import org.bukkit.entity.Player;
  */
 public class HealthManager {
     private final RpgCraft plugin;
+    /** 플레이어별 마지막 사망 / 부활 시각 — 부활 직후 한 번 더 죽는 것 방지 (v5.4.20) */
+    private final java.util.Map<java.util.UUID, Long> lastDeath = new java.util.HashMap<>(), lastRespawn = new java.util.HashMap<>();
 
     public HealthManager(RpgCraft plugin) {
         this.plugin = plugin;
+    }
+
+    public void markDeath(Player p) {
+        lastDeath.put(p.getUniqueId(), System.currentTimeMillis());
+    }
+
+    /** 부활: 가상 체력을 바로 가득 채우고 1초간 피해 무시 */
+    public void markRespawn(Player p) {
+        lastRespawn.put(p.getUniqueId(), System.currentTimeMillis());
+        PlayerData d = plugin.data().get(p);
+        d.hp = d.stats.maxHp;
+    }
+
+    /** 방금(1.5초 안) 죽었거나 부활한 플레이어 — 추가 사망 처리를 하지 않음 */
+    public boolean deathGuard(LivingEntity e) {
+        if (!(e instanceof Player p)) return false;
+        long now = System.currentTimeMillis();
+        return now - lastDeath.getOrDefault(p.getUniqueId(), 0L) < 1500 || now - lastRespawn.getOrDefault(p.getUniqueId(), 0L) < 1000;
     }
 
     public double max(LivingEntity e) {
@@ -60,7 +80,9 @@ public class HealthManager {
             plugin.dummies().record(e, amount);
             return false;
         }
+        if (deathGuard(e)) return false;   // 방금 죽었거나 부활한 사람: 두 번 죽지 않게
         double before = cur(e);
+        if (before <= 0 && e instanceof Player && !e.isDead()) before = max(e);   // 살아 있는데 체력 0 으로 남은 기록 → 가득으로
         double after = before - amount;
         if (!(e instanceof Player)) {
             MobManager.MobState s = plugin.mobs().state(e);

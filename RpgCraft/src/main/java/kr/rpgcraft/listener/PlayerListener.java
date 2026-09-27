@@ -166,6 +166,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
+        plugin.health().markDeath(p);
         PlayerData d = plugin.data().get(p);
         if (plugin.getConfig().getBoolean("death.keep-inventory", true)) {
             e.setKeepInventory(true);
@@ -190,6 +191,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player p = e.getPlayer();
+        plugin.health().markRespawn(p);   // 체력을 바로 채움 (예전엔 2틱 뒤 → 그 사이 피해로 한 번 더 죽었음)
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!p.isOnline()) return;
             PlayerData d = plugin.data().get(p);

@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.2.1'
+version: '5.2.2'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -72,6 +72,9 @@ commands:
   coupon:
     description: 쿠폰
     aliases: [쿠폰]
+  pack:
+    description: 리소스팩 다시 받기
+    aliases: [리소스팩]
   quickkey:
     description: 퀵 스킬 키 설정
     aliases: [퀵키]

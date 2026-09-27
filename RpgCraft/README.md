@@ -7,6 +7,12 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.2.2
+- **리소스팩 적용 실패 수정**: 서버가 외부(GitHub) 리소스팩의 SHA-1 을 켤 때 한 번만 계산해서, GitHub 의 zip 이 새 버전으로 바뀌면 해시가 맞지 않아 팩이 없던 사람은 다시 접속해도 계속 실패하던 문제.
+  - 10분마다(`resourcepack.refresh-minutes`) · 접속할 때(2분 이상 지났으면) 해시를 새로 확인, 주소에 `?v=해시` 를 붙여 예전 파일(캐시)을 받지 않게 함 (`resourcepack.url-version`).
+  - 다운로드/적용 실패 시 해시를 다시 확인하고 1번 자동 재시도.
+  - `/리소스팩` : 플레이어가 직접 팩을 다시 받기.
+
 ## v5.2.1
 - **큰 보스 판정 크기 = 모델 크기**: 3D 모델 보스(월드보스 · 메갈로돈 · 크라켄 등)는 원래 몹 크기의 작은 판정만 있어서 모델을 때려도 안 맞던 문제 수정. 모델 크기에 맞는 판정 상자(Interaction)를 붙여, 모델 어디를 때려도 보스가 맞습니다 (공격 쿨다운 · 치명타 · 평타 스킬 그대로). 지팡이 마력탄 · 투척 스킬도 같은 크기로 맞음. 설정 `boss-models.hitbox`, `boss-models.hitbox-mult`.
 

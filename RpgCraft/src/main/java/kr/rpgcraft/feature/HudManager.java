@@ -226,7 +226,7 @@ public class HudManager implements Listener {
         lines.add("&f레벨 &eLv." + d.level + " &7(" + String.format("%.1f", d.exp / need * 100) + "%)");
         lines.add("&f소지금 &e" + Text.money(d.money));
         lines.add("&f스탯 포인트 &a" + d.statPoints);
-        lines.add("&c✚ 흡혈 " + String.format("%.1f", s.lifesteal) + "%  &a» 이속 " + String.format("%+.1f", s.speed) + "%");
+        lines.add("  ");
         lines.add("&f힘 &6" + (int) s.str + " &f민첩 &a" + (int) s.dex + " &f모험 &b" + (int) s.adv);
         lines.add("&f전투력 &e&l" + Text.num(Power.of(s)));
         lines.add("&f일일 의뢰 &a" + plugin.quests().completedCount(d) + "/3");

@@ -206,7 +206,7 @@ public class PassiveManager implements Listener {
             Text.msg(p, "&a고블린의 가호! 스탯 포인트 +3");
         }
         if (d.has(Passive.GAMBLER)) {
-            d.level = 1;
+            d.level = 0;   // Lv.0 부터 다시 (Lv.1 이 될 때 스탯 포인트를 받도록)
             d.exp = 0;
             d.str = d.dex = d.adv = 0;
             d.statPoints = 0;

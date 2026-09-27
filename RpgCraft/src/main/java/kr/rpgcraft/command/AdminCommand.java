@@ -478,7 +478,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     }
 
     private void resetPlayer(PlayerData d) {
-        d.level = 1;
+        d.level = 0;   // 새로 온 사람과 같이 Lv.0 부터 → Lv.1 이 될 때 스탯 포인트를 받음 (예전엔 Lv.1 로 되돌려 첫 스탯을 못 받았음)
         d.exp = 0;
         d.statPoints = 0;
         d.str = d.dex = d.adv = 0;

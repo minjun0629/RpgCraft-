@@ -9,6 +9,18 @@
         "custom_model_data": 1433
       },
       "model": "rpgcraft:item/fish_deep"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1619
+      },
+      "model": "rpgcraft:item/fish_blowfish"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1631
+      },
+      "model": "rpgcraft:item/fish_moonfish"
     }
   ]
 }

@@ -10,6 +10,20 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/fish_deep"
         }
+      },
+      {
+        "threshold": 1619,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_blowfish"
+        }
+      },
+      {
+        "threshold": 1631,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_moonfish"
+        }
       }
     ],
     "fallback": {

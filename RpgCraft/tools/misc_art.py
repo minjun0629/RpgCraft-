@@ -569,3 +569,125 @@ def boss_crystal():
     _sparkle(d, 176, 44, 18, _c("ffe0e8"))
     _sparkle(d, 70, 60, 10)
     return _done(img)
+
+
+# ---------------------------------------------------------------- v5.2.0 어종 (fish_data.FISH_SPECIES)
+def _fishbody(d, cx, cy, L, H, body, belly, tail=True, fin=True):
+    if tail:
+        d.polygon([(cx + L * 0.45, cy), (cx + L * 0.75, cy - H * 0.6), (cx + L * 0.68, cy), (cx + L * 0.75, cy + H * 0.6)], fill=body)
+    _grad_ellipse(d, (cx - L / 2, cy - H / 2, cx + L / 2, cy + H / 2), belly, body, 18)
+    if fin:
+        d.polygon([(cx - 10, cy - H / 2 + 4), (cx + 20, cy - H * 0.95), (cx + 40, cy - H / 2 + 6)], fill=body)
+    for k in range(5):
+        x = cx - L * 0.1 + k * L * 0.1
+        d.arc((x - 12, cy - 18, x + 12, cy + 6), 200, 340, fill=_mix(body, (0, 0, 0, 255), 0.25), width=3)
+
+
+def _eye(d, x, y, r=7):
+    d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255, 255))
+    d.ellipse((x - r * 0.45, y - r * 0.45, x + r * 0.45, y + r * 0.45), fill=(20, 20, 30, 255))
+
+
+def sea(spec):
+    fid, _n, _m, _p, grade, _h, _cond, shape, bodyh, bellyh, sc = spec
+    body, belly = _c(bodyh), _c(bellyh)
+    dark = _mix(body, (0, 0, 0, 255), 0.35)
+    img = _new()
+    d = ImageDraw.Draw(img)
+    cx, cy = 118, 128
+    L, H = 150 * sc, 70 * sc
+    if shape in ("fish", "catfish", "piranha", "rainbow", "sword"):
+        _fishbody(d, cx, cy, L, H, body, belly)
+        if shape == "rainbow":
+            for k, col in enumerate(["ff5050", "ffb040", "ffe060", "60e070", "50a0ff", "b070ff"]):
+                d.line((cx - L * 0.35, cy - 12 + k * 4, cx + L * 0.4, cy - 12 + k * 4), fill=_c(col, 200), width=3)
+        if shape == "catfish":
+            for dy in (4, 12):
+                d.line((cx - L / 2 + 4, cy + dy - 6, cx - L / 2 - 34, cy + dy * 2), fill=dark, width=4)
+        if shape == "piranha":
+            d.polygon([(cx - L / 2 + 2, cy + 2), (cx - L / 2 + 26, cy + 2), (cx - L / 2 + 14, cy + 16)], fill=belly)
+            for k in range(4):
+                x = cx - L / 2 + 6 + k * 6
+                d.polygon([(x, cy + 2), (x + 3, cy + 9), (x + 6, cy + 2)], fill=(255, 255, 255, 255))
+        if shape == "sword":
+            d.polygon([(cx - L / 2 + 4, cy - 5), (cx - L / 2 - 60, cy), (cx - L / 2 + 4, cy + 4)], fill=dark)
+        _eye(d, cx - L * 0.3, cy - 6)
+    elif shape == "eel":
+        pts = []
+        for k in range(40):
+            t = k / 39
+            pts.append((30 + t * 196, 128 + math.sin(t * math.pi * 2.2) * 34 * sc))
+        for w, col in ((30 * sc, dark), (22 * sc, body)):
+            d.line(pts, fill=col, width=int(w), joint="curve")
+        d.line([(x, y + 6) for x, y in pts[4:34]], fill=belly, width=int(7 * sc))
+        _eye(d, pts[2][0] + 6, pts[2][1] - 4, 6)
+    elif shape == "ray":
+        d.polygon([(40, 128), (128, 60), (216, 128), (128, 176)], fill=body)
+        d.polygon([(70, 128), (128, 84), (186, 128), (128, 160)], fill=_mix(body, belly, 0.45))
+        d.line((128, 170, 150, 240), fill=dark, width=6)
+        for k in range(6):
+            d.ellipse((96 + (k % 3) * 22, 110 + (k // 3) * 18, 104 + (k % 3) * 22, 118 + (k // 3) * 18), fill=_mix(body, (255, 255, 255, 255), 0.3))
+        _eye(d, 116, 100, 5); _eye(d, 140, 100, 5)
+    elif shape == "puffer":
+        r = 70 * sc
+        _grad_ellipse(d, (cx - r, cy - r, cx + r, cy + r), belly, body, 18)
+        for k in range(18):
+            a = k * math.pi * 2 / 18
+            x0, y0 = cx + math.cos(a) * r * 0.95, cy + math.sin(a) * r * 0.95
+            d.polygon([(x0 - 5, y0), (cx + math.cos(a) * (r + 16), cy + math.sin(a) * (r + 16)), (x0 + 5, y0)], fill=dark)
+        d.polygon([(cx + r * 0.9, cy), (cx + r + 30, cy - 24), (cx + r + 30, cy + 24)], fill=body)
+        _eye(d, cx - r * 0.4, cy - r * 0.25, 9)
+    elif shape in ("shark", "whale"):
+        _fishbody(d, cx, cy, L * 1.1, H * 0.85, body, belly, fin=False)
+        d.polygon([(cx - 8, cy - H * 0.4), (cx + 14, cy - H * 1.15), (cx + 30, cy - H * 0.4)], fill=body)
+        if shape == "shark":
+            for k in range(3):
+                x = cx - L * 0.2 + k * 8
+                d.line((x, cy - 6, x - 4, cy + 10), fill=dark, width=3)
+            d.line((cx - L * 0.5 + 10, cy + 12, cx - L * 0.3, cy + 14), fill=(255, 255, 255, 255), width=3)
+        else:
+            for (x, y) in [(90, 70), (150, 60), (180, 150), (70, 170), (200, 90)]:
+                _sparkle(d, x, y, 9, _c("fff3b0"))
+        _eye(d, cx - L * 0.36, cy - 8, 6)
+    elif shape in ("squid", "octopus"):
+        for k in range(8 if shape == "octopus" else 6):
+            x = 70 + k * (116 / (7 if shape == "octopus" else 5))
+            pts = [(x + math.sin(t * 3 + k) * 10, 140 + t * 90) for t in [i / 8 for i in range(9)]]
+            d.line(pts, fill=dark, width=12)
+            d.line(pts, fill=body, width=8)
+        top = (58, 40, 198, 160) if shape == "octopus" else (84, 20, 172, 160)
+        _grad_ellipse(d, top, belly, body, 18)
+        if shape == "squid":
+            d.polygon([(84, 50), (128, 0), (172, 50)], fill=body)
+        _eye(d, 106, 118, 8); _eye(d, 150, 118, 8)
+    elif shape == "crab":
+        for s_ in (-1, 1):
+            for k in range(3):
+                d.line((128 + s_ * 40, 140 + k * 12, 128 + s_ * 90, 168 + k * 18), fill=dark, width=8)
+            d.line((128 + s_ * 50, 110, 128 + s_ * 80, 70), fill=dark, width=10)
+            d.pieslice((128 + s_ * 80 - 26, 40, 128 + s_ * 80 + 26, 92), 200 if s_ < 0 else -20, 340 if s_ < 0 else 160, fill=body)
+        _grad_ellipse(d, (58, 96, 198, 176), belly, body, 18)
+        d.line((112, 100, 108, 76), fill=dark, width=4); d.line((144, 100, 148, 76), fill=dark, width=4)
+        _eye(d, 108, 74, 6); _eye(d, 148, 74, 6)
+    elif shape == "shrimp":
+        for k in range(6):
+            a = math.pi * (0.15 + k * 0.14)
+            x, y = 128 + math.cos(a) * 70 * sc, 110 + math.sin(a) * 60 * sc
+            r = (26 - k * 2.5) * sc
+            d.ellipse((x - r, y - r, x + r, y + r), fill=_mix(body, belly, k / 8), outline=dark, width=3)
+        d.polygon([(40, 150), (20, 130), (20, 175)], fill=body)
+        for k in range(4):
+            d.line((200 - k * 12, 100, 150 - k * 30, 30), fill=dark, width=3)
+        if fid in ("fish_lobster", "fish_ghostcray"):
+            d.ellipse((190, 40, 240, 80), fill=body); d.ellipse((160, 20, 205, 58), fill=body)
+        _eye(d, 196, 96, 6)
+    elif shape == "jelly":
+        d.pieslice((60, 40, 196, 176), 180, 360, fill=_c(bodyh, 210))
+        d.pieslice((80, 60, 176, 150), 180, 360, fill=_c(bellyh, 170))
+        for k in range(6):
+            x = 76 + k * 21
+            pts = [(x + math.sin(t * 4 + k) * 8, 108 + t * 120) for t in [i / 8 for i in range(9)]]
+            d.line(pts, fill=_c(bodyh, 200), width=5)
+    if grade in ("UNIQUE", "LEGEND"):
+        _sparkle(d, 200, 60, 14 if grade == "LEGEND" else 10, _c("fff3b0") if grade == "LEGEND" else (255, 255, 255, 255))
+    return _done(img)

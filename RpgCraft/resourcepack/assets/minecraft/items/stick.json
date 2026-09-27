@@ -138,6 +138,76 @@
         }
       },
       {
+        "threshold": 1330,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_1"
+        }
+      },
+      {
+        "threshold": 1331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_2"
+        }
+      },
+      {
+        "threshold": 1332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_3"
+        }
+      },
+      {
+        "threshold": 1333,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_4"
+        }
+      },
+      {
+        "threshold": 1334,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_5"
+        }
+      },
+      {
+        "threshold": 1335,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_6"
+        }
+      },
+      {
+        "threshold": 1336,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_7"
+        }
+      },
+      {
+        "threshold": 1337,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_8"
+        }
+      },
+      {
+        "threshold": 1338,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_9"
+        }
+      },
+      {
+        "threshold": 1339,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_10"
+        }
+      },
+      {
         "threshold": 1492,
         "model": {
           "type": "minecraft:model",
@@ -299,6 +369,76 @@
         }
       },
       {
+        "threshold": 4330,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_1_e7"
+        }
+      },
+      {
+        "threshold": 4331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_2_e7"
+        }
+      },
+      {
+        "threshold": 4332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_3_e7"
+        }
+      },
+      {
+        "threshold": 4333,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_4_e7"
+        }
+      },
+      {
+        "threshold": 4334,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_5_e7"
+        }
+      },
+      {
+        "threshold": 4335,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_6_e7"
+        }
+      },
+      {
+        "threshold": 4336,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_7_e7"
+        }
+      },
+      {
+        "threshold": 4337,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_8_e7"
+        }
+      },
+      {
+        "threshold": 4338,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_9_e7"
+        }
+      },
+      {
+        "threshold": 4339,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_10_e7"
+        }
+      },
+      {
         "threshold": 5100,
         "model": {
           "type": "minecraft:model",
@@ -429,6 +569,76 @@
         "model": {
           "type": "minecraft:model",
           "model": "rpgcraft:item/armory2_staff_8_e10"
+        }
+      },
+      {
+        "threshold": 6330,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_1_e10"
+        }
+      },
+      {
+        "threshold": 6331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_2_e10"
+        }
+      },
+      {
+        "threshold": 6332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_3_e10"
+        }
+      },
+      {
+        "threshold": 6333,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_4_e10"
+        }
+      },
+      {
+        "threshold": 6334,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_5_e10"
+        }
+      },
+      {
+        "threshold": 6335,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_6_e10"
+        }
+      },
+      {
+        "threshold": 6336,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_7_e10"
+        }
+      },
+      {
+        "threshold": 6337,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_8_e10"
+        }
+      },
+      {
+        "threshold": 6338,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_9_e10"
+        }
+      },
+      {
+        "threshold": 6339,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/armory3_staff_10_e10"
         }
       }
     ],

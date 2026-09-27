@@ -209,6 +209,7 @@ jobs:
 
 weapon-skills:
   enabled: true
+  basic-notice: false        # 평타 스킬 발동 때 액션바에 기술 이름 표시 (끄면 화면을 가리지 않음)
   quick-shot-ms: 1100        # 활 좌클릭 사격 간격
   bow-damage-mult: 1.35      # 활 피해 배율 (사격·활 스킬 모두)
   slash-damage: 0.85         # 좌클릭 참격 피해 (공격력 배율, 무기 공격 간격마다)
@@ -414,6 +415,7 @@ casino:
 fishing:
   enabled: true
   money: 300
+  hits: 3                    # 미니게임에서 이 횟수만큼 성공해야 낚임
   treasure-chance: 0.008     # 낚시 「가라앉은 보물 상자」 확률 (보물 지도는 나오지 않음)
 
 day-night:

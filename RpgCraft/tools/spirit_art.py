@@ -251,7 +251,10 @@ SPEAR_PAL = [palette("9aa0a8", guard="6b6b6b", grip="8a6a3a"), palette("d8dee6",
 
 def spear(tier, stage=0, pal=None):
     cv = Canvas(pal or SPEAR_PAL[min(tier, len(SPEAR_PAL) - 1)], stage)
-    tier = min(tier, 3) if pal is None else tier % 4
+    tier = min(tier, 3) if pal is None else tier % 10
+    if tier >= 4:   # v5.2.0 창 머리 6종 (무기고 III)
+        _spear_head(cv, tier)
+        return finish(cv)
     shaft(cv, 0.5, 25.0, 0.85, wrap_to=6 + tier * 2)
     if tier == 0:
         blade(cv, 25.4, 34.5, lambda u: 1.4 * (1 - u) + 0.3, tip=0.2, runes=(0.1, 0.8))
@@ -279,7 +282,10 @@ STAFF_PAL = [palette("8a5a2b", guard="c9a13b", grip="6b4a2b", accent="7fd0ff", g
 
 def staff(tier, stage=0, pal=None):
     cv = Canvas(pal or STAFF_PAL[min(tier, len(STAFF_PAL) - 1)], stage)
-    tier = tier % 3
+    tier = tier % 9
+    if tier >= 3:   # v5.2.0 지팡이 머리 6종 (무기고 III)
+        _staff_head(cv, tier)
+        return finish(cv)
     shaft(cv, 0.5, 27.5, 0.8, wrap_to=5)
     for k in range(3):
         cv.fill_st(lambda s, t, k=k: abs(s - (8 + k * 6)) < 0.6 and abs(t) < 1.2, "g")
@@ -297,6 +303,84 @@ def staff(tier, stage=0, pal=None):
             disc_st(cv, 30.5 + math.cos(r) * 4.4, math.sin(r) * 4.4, 0.6, "C")
     img = finish(cv)
     return img
+
+
+def _spear_head(cv, tier):
+    """4 미늘창 · 5 언월도 · 6 삼지창 · 7 날개 창 · 8 물결 창 · 9 방천화극"""
+    if tier == 4:
+        shaft(cv, 0.5, 27.0, 0.85, wrap_to=8)
+        blade(cv, 26.5, 35.0, lambda u: 1.1 * (1 - u) + 0.3, tip=0.2, runes=(0.1, 0.8))
+        poly_st(cv, [(21.5, 0.6), (20.0, 5.4), (23.0, 6.2), (26.2, 5.0), (25.8, 0.6)], "b")    # 도끼날
+        cv.fill_st(lambda s_, t: 20.3 <= s_ <= 25.9 and 4.6 <= t <= 6.0, "h")
+        poly_st(cv, [(23.0, -0.6), (22.4, -3.6), (24.6, -0.6)], "g")                          # 갈고리
+        gem_st(cv, 23.4, 2.4, 0.9)
+    elif tier == 5:
+        shaft(cv, 0.5, 24.0, 0.85, wrap_to=7)
+        blade(cv, 23.6, 35.4, lambda u: 0.6 + 0.3 * u, lambda u: 2.4 * math.sin(min(1.0, u * 1.1) * math.pi * 0.9) + 0.4,
+              c=lambda u: -0.9 * u * u, tip=0.35, runes=(0.1, 0.7))
+        disc_st(cv, 23.4, 0, 1.4, "g"); gem_st(cv, 23.4, 0, 0.8)
+    elif tier == 6:
+        shaft(cv, 0.5, 25.0, 0.85, wrap_to=8)
+        line_st(cv, 25.0, -3.4, 25.0, 3.4, 0.7, "g")                                          # 가로대
+        for t0 in (-3.0, 0.0, 3.0):
+            line_st(cv, 25.0, t0, 33.8 - abs(t0) * 0.6, t0 * 1.1, 0.6, "b")
+            poly_st(cv, [(33.4 - abs(t0) * 0.6, t0 * 1.1 - 0.9), (35.4 - abs(t0) * 0.6, t0 * 1.1), (33.4 - abs(t0) * 0.6, t0 * 1.1 + 0.9)], "h")
+        gem_st(cv, 25.0, 0, 1.0, "c")
+    elif tier == 7:
+        shaft(cv, 0.5, 26.0, 0.85, wrap_to=9)
+        blade(cv, 25.8, 35.6, lambda u: 1.6 * (1 - u) + 0.3, tip=0.2, runes=(0.1, 0.85))
+        for sg in (-1, 1):                                                                    # 펼친 날개
+            poly_st(cv, [(25.6, sg * 0.8), (21.0, sg * 5.6), (22.6, sg * 3.6), (19.6, sg * 4.2), (23.8, sg * 1.2)], "g" if sg < 0 else "G")
+        gem_st(cv, 25.0, 0, 1.2, "c")
+    elif tier == 8:
+        shaft(cv, 0.5, 24.6, 0.85, wrap_to=7)
+        blade(cv, 24.4, 35.6, lambda u: 1.2 * (1 - u * 0.6) + 0.25, c=lambda u: 0.8 * math.sin(u * math.pi * 3), tip=0.25, runes=(0.1, 0.8))
+        disc_st(cv, 24.2, 0, 1.5, "g"); gem_st(cv, 24.2, 0, 0.9, "e")
+    else:
+        shaft(cv, 0.5, 26.0, 0.85, wrap_to=10)
+        blade(cv, 25.4, 36.0, lambda u: 1.3 * (1 - u) + 0.3, tip=0.2, runes=(0.05, 0.85))
+        for sg in (-1, 1):                                                                    # 양쪽 초승달 날
+            cv.fill_st(lambda s_, t, sg=sg: sg * t > 0.6 and 2.6 ** 2 <= (s_ - 25.0) ** 2 + (t - sg * 1.2) ** 2 <= 3.8 ** 2 and s_ > 23.0, "b")
+        cv.fill_st(lambda s_, t: s_ > 23.0 and 3.5 ** 2 <= (s_ - 25.0) ** 2 + (abs(t) - 1.2) ** 2 <= 3.8 ** 2 and abs(t) > 0.6, "h")
+        gem_st(cv, 25.0, 0, 1.1, "c")
+
+
+def _staff_head(cv, tier):
+    """3 초승달 · 4 불꽃 · 5 세계수 가지 · 6 별 · 7 새장 속 구슬 · 8 결정 다발"""
+    shaft(cv, 0.5, 26.5, 0.8, wrap_to=5)
+    for k in range(3):
+        cv.fill_st(lambda s, t, k=k: abs(s - (8 + k * 6)) < 0.6 and abs(t) < 1.2, "g")
+    if tier == 3:
+        cv.fill_st(lambda s, t: (s - 30.0) ** 2 + t * t <= 3.6 ** 2 and (s - 31.4) ** 2 + (t - 0.8) ** 2 > 2.8 ** 2, lambda s, t: "g" if t < 0 else "G")
+        gem_st(cv, 31.2, 0.6, 1.0, "c")
+    elif tier == 4:
+        for (s0, t0, h, k) in ((27.0, 0, 7.5, "e"), (27.0, -1.6, 5.0, "E"), (27.0, 1.6, 5.4, "e"), (27.6, 0, 4.2, "c")):
+            poly_st(cv, [(s0, t0 - 1.6), (s0 + h, t0 + 0.4), (s0 + h * 0.55, t0 + 0.2), (s0, t0 + 1.6)], k)
+        disc_st(cv, 27.0, 0, 1.4, "g")
+    elif tier == 5:
+        for (a, L) in ((-35, 6.0), (0, 7.5), (35, 6.0), (-65, 4.0), (65, 4.0)):
+            r = math.radians(a)
+            line_st(cv, 26.0, 0, 26.0 + math.cos(r) * L, math.sin(r) * L, 0.55, "w")
+            disc_st(cv, 26.0 + math.cos(r) * L, math.sin(r) * L, 1.1, "c")
+        gem_st(cv, 26.2, 0, 1.2, "e")
+    elif tier == 6:
+        pts = []
+        for k in range(10):
+            r = (4.2 if k % 2 == 0 else 1.8)
+            a = math.radians(k * 36)
+            pts.append((30.0 + math.cos(a) * r, math.sin(a) * r))
+        poly_st(cv, pts, "g")
+        gem_st(cv, 30.0, 0, 1.2, "c")
+    elif tier == 7:
+        for sg in (-1, 1):
+            cv.fill_st(lambda s, t, sg=sg: sg * t > 0 and 3.0 ** 2 <= (s - 30.0) ** 2 + t * t <= 3.8 ** 2, "g" if sg < 0 else "G")
+        line_st(cv, 26.4, 0, 33.8, 0, 0.35, "g")
+        gem_st(cv, 30.0, 0, 2.0, "e")
+    else:
+        for (s0, t0, r) in ((31.0, 0, 1.6), (28.8, -2.4, 1.2), (28.8, 2.4, 1.2), (33.4, -1.4, 0.9), (33.0, 1.8, 0.9)):
+            poly_st(cv, [(s0 - r * 1.6, t0), (s0, t0 - r), (s0 + r * 1.8, t0), (s0, t0 + r)], "e")
+            cv.fill_st(lambda s, t, s0=s0, t0=t0, r=r: abs(t - t0) < r * 0.3 and s0 - r < s < s0 + r, "E")
+        disc_st(cv, 27.0, 0, 1.3, "g")
 
 
 SCROLL_COL = {"atk": "d9352e", "def": "3f7fff", "speed": "2fbf71", "exp": "e0a020", "return": "9b59ff"}

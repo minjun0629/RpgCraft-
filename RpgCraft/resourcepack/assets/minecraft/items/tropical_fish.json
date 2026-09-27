@@ -17,6 +17,27 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/fish_legend"
         }
+      },
+      {
+        "threshold": 1630,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_arowana"
+        }
+      },
+      {
+        "threshold": 1638,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_phoenixkoi"
+        }
+      },
+      {
+        "threshold": 1641,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_jadekoi"
+        }
       }
     ],
     "fallback": {

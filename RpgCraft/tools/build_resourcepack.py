@@ -147,6 +147,9 @@ def build_items():
     for i, (fid, mat) in enumerate([("fish_small", "cod"), ("fish_carp", "cod"), ("fish_salmon", "salmon"), ("fish_deep", "pufferfish"),
                                     ("fish_gold", "tropical_fish"), ("fish_treasure", "chest_minecart"), ("fish_legend", "tropical_fish")]):
         add(mat, 1430 + i, fid, False, (lambda st=0: MA.chest()) if fid == "fish_treasure" else (lambda st=0, fid=fid: MA.fish(fid)))
+    import fish_data                                                                   # v5.2.0 어종 (1600 + 순번)
+    for i, spec in enumerate(fish_data.FISH_SPECIES):
+        add(spec[2].lower(), 1600 + i, spec[0], False, lambda st=0, spec=spec: MA.sea(spec))
     add("chest_minecart", 1436, "boss_chest", False, lambda st=0: MA.chest())          # 보스 상자 (이전엔 모델이 빠져 있었음)
     add("echo_shard", 1446, "boss_crystal", False, lambda st=0: MA.boss_crystal())     # 보스 수정
     for i, kind in enumerate(["tyrant", "immortal", "storm_eye", "midas", "judge"]):
@@ -183,6 +186,19 @@ def build_items():
         add("bow", 1309 + n, "armory2_bow_%d" % n, True, lambda st=0, i=i: spirit_art.bow(art.P(cols2[i][0], guard=cols2[i][1], grip=cols2[i][2], accent=cols2[i][3], glow=cols2[i][3], extra="f0e8d8"), (i + 2) % 4, st), True)
         add("stick", 1309 + n, "armory2_staff_%d" % n, True, lambda st=0, i=i: spirit_art.staff((i + 1) % 3, st, art.P(cols2[i][2], guard=cols2[i][1], grip=cols2[i][2], accent=cols2[i][3], glow=cols2[i][3])), True)
         add(tier_mat(L) + "_shovel", 1309 + n, "armory2_spear_%d" % n, True, lambda st=0, i=i: spirit_art.spear((i + 2) % 4, st, Q(i)), True)
+    # 무기고 III: 지팡이 · 창 10종씩 (v5.2.0, 새 머리 모양)
+    arm3_lv = [12, 22, 35, 48, 58, 70, 85, 100, 115, 130]
+    cols3 = [("e0d8b0", "c9a13b", "3a2a1a", "fff3b0"), ("ff9a3a", "c02020", "2a0a0a", "ffe066"), ("7fc86a", "5a3a1a", "3a2a10", "c0ffb0"),
+             ("fff0a0", "3f5fbf", "1a1a3a", "ffffff"), ("c0a0ff", "5a3a8a", "1a1024", "e0c0ff"), ("7fe8f0", "3fa9ff", "1a2a4a", "c8ffff"),
+             ("ffe066", "6a4ad0", "1a1a3a", "ffffff"), ("bff4ff", "7fc8ff", "2a4a6a", "ffffff"), ("ff7ae0", "3a2a8a", "0a0a2a", "ffd0ff"),
+             ("ffd23f", "c02020", "1a0a0a", "fff3d0")]
+    R3 = lambda i: art.P(cols3[i][0], guard=cols3[i][1], grip=cols3[i][2], accent=cols3[i][3], glow=cols3[i][3])
+    staff3 = [3, 4, 5, 6, 7, 8, 3, 4, 6, 8]
+    spear3 = [4, 5, 6, 7, 8, 9, 4, 5, 6, 9]
+    for i in range(10):
+        L, n = arm3_lv[i], i + 1
+        add("stick", 1329 + n, "armory3_staff_%d" % n, True, lambda st=0, i=i: spirit_art.staff(staff3[i], st, art.P(cols3[i][2], guard=cols3[i][1], grip=cols3[i][2], accent=cols3[i][3], glow=cols3[i][3])), True)
+        add(tier_mat(L) + "_shovel", 1329 + n, "armory3_spear_%d" % n, True, lambda st=0, i=i: spirit_art.spear(spear3[i], st, R3(i)), True)
     # 초월 장비 5단계 · 뺀더의 명작 (기존 디자인 틀 + 새 색 조합)
     P = art.P
     tpal = [P("ffe9c8", guard="ffd23f", grip="5a3a22", accent="ff9a3a", glow="fff3d0"),

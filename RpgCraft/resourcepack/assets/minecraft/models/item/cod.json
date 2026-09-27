@@ -15,6 +15,210 @@
         "custom_model_data": 1431
       },
       "model": "rpgcraft:item/fish_carp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1600
+      },
+      "model": "rpgcraft:item/fish_mackerel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1601
+      },
+      "model": "rpgcraft:item/fish_anchovy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1602
+      },
+      "model": "rpgcraft:item/fish_herring"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1603
+      },
+      "model": "rpgcraft:item/fish_sardine"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1604
+      },
+      "model": "rpgcraft:item/fish_catfish"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1605
+      },
+      "model": "rpgcraft:item/fish_loach"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1606
+      },
+      "model": "rpgcraft:item/fish_perch"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1607
+      },
+      "model": "rpgcraft:item/fish_bluegill"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1609
+      },
+      "model": "rpgcraft:item/fish_squid"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1610
+      },
+      "model": "rpgcraft:item/fish_shrimp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1611
+      },
+      "model": "rpgcraft:item/fish_crab"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1612
+      },
+      "model": "rpgcraft:item/fish_flounder"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1613
+      },
+      "model": "rpgcraft:item/fish_goby"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1614
+      },
+      "model": "rpgcraft:item/fish_eel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1615
+      },
+      "model": "rpgcraft:item/fish_bass"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1616
+      },
+      "model": "rpgcraft:item/fish_redsnapper"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1617
+      },
+      "model": "rpgcraft:item/fish_yellowtail"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1618
+      },
+      "model": "rpgcraft:item/fish_octopus"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1620
+      },
+      "model": "rpgcraft:item/fish_icefish"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1621
+      },
+      "model": "rpgcraft:item/fish_piranha"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1622
+      },
+      "model": "rpgcraft:item/fish_lobster"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1623
+      },
+      "model": "rpgcraft:item/fish_jelly"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1624
+      },
+      "model": "rpgcraft:item/fish_ray"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1626
+      },
+      "model": "rpgcraft:item/fish_gar"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1627
+      },
+      "model": "rpgcraft:item/fish_tuna"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1628
+      },
+      "model": "rpgcraft:item/fish_swordfish"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1629
+      },
+      "model": "rpgcraft:item/fish_shark"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1632
+      },
+      "model": "rpgcraft:item/fish_ghostcray"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1634
+      },
+      "model": "rpgcraft:item/fish_stormeel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1635
+      },
+      "model": "rpgcraft:item/fish_coelacanth"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1637
+      },
+      "model": "rpgcraft:item/fish_leviathan"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1639
+      },
+      "model": "rpgcraft:item/fish_kraken"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1640
+      },
+      "model": "rpgcraft:item/fish_starwhale"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1642
+      },
+      "model": "rpgcraft:item/fish_megalodon"
     }
   ]
 }

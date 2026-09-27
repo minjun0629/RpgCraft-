@@ -17,6 +17,244 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/fish_carp"
         }
+      },
+      {
+        "threshold": 1600,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_mackerel"
+        }
+      },
+      {
+        "threshold": 1601,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_anchovy"
+        }
+      },
+      {
+        "threshold": 1602,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_herring"
+        }
+      },
+      {
+        "threshold": 1603,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_sardine"
+        }
+      },
+      {
+        "threshold": 1604,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_catfish"
+        }
+      },
+      {
+        "threshold": 1605,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_loach"
+        }
+      },
+      {
+        "threshold": 1606,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_perch"
+        }
+      },
+      {
+        "threshold": 1607,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_bluegill"
+        }
+      },
+      {
+        "threshold": 1609,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_squid"
+        }
+      },
+      {
+        "threshold": 1610,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_shrimp"
+        }
+      },
+      {
+        "threshold": 1611,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_crab"
+        }
+      },
+      {
+        "threshold": 1612,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_flounder"
+        }
+      },
+      {
+        "threshold": 1613,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_goby"
+        }
+      },
+      {
+        "threshold": 1614,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_eel"
+        }
+      },
+      {
+        "threshold": 1615,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_bass"
+        }
+      },
+      {
+        "threshold": 1616,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_redsnapper"
+        }
+      },
+      {
+        "threshold": 1617,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_yellowtail"
+        }
+      },
+      {
+        "threshold": 1618,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_octopus"
+        }
+      },
+      {
+        "threshold": 1620,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_icefish"
+        }
+      },
+      {
+        "threshold": 1621,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_piranha"
+        }
+      },
+      {
+        "threshold": 1622,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_lobster"
+        }
+      },
+      {
+        "threshold": 1623,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_jelly"
+        }
+      },
+      {
+        "threshold": 1624,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_ray"
+        }
+      },
+      {
+        "threshold": 1626,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_gar"
+        }
+      },
+      {
+        "threshold": 1627,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_tuna"
+        }
+      },
+      {
+        "threshold": 1628,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_swordfish"
+        }
+      },
+      {
+        "threshold": 1629,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_shark"
+        }
+      },
+      {
+        "threshold": 1632,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_ghostcray"
+        }
+      },
+      {
+        "threshold": 1634,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_stormeel"
+        }
+      },
+      {
+        "threshold": 1635,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_coelacanth"
+        }
+      },
+      {
+        "threshold": 1637,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_leviathan"
+        }
+      },
+      {
+        "threshold": 1639,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_kraken"
+        }
+      },
+      {
+        "threshold": 1640,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_starwhale"
+        }
+      },
+      {
+        "threshold": 1642,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_megalodon"
+        }
       }
     ],
     "fallback": {

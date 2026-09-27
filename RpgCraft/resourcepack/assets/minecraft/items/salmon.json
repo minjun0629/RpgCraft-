@@ -10,6 +10,34 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/fish_salmon"
         }
+      },
+      {
+        "threshold": 1608,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_trout"
+        }
+      },
+      {
+        "threshold": 1625,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_char"
+        }
+      },
+      {
+        "threshold": 1633,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_frostsalmon"
+        }
+      },
+      {
+        "threshold": 1636,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/fish_rainbow"
+        }
       }
     ],
     "fallback": {

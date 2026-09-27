@@ -531,6 +531,14 @@ public class ContentManager implements Listener {
         if (bossId == null) return;
         e.setCancelled(true);
         Player p = e.getPlayer();
+        double safe = plugin.getConfig().getDouble("summon.spawn-safe-radius", 300);   // 스폰 근처에서는 보스 소환 금지 (v5.4.5)
+        Location sp = p.getWorld().getSpawnLocation();
+        double dist = Math.hypot(p.getLocation().getX() - sp.getX(), p.getLocation().getZ() - sp.getZ());
+        if (safe > 0 && dist < safe) {
+            Text.msg(p, "&c스폰 " + (int) safe + "칸 안에서는 소환할 수 없습니다. &7(지금 스폰에서 " + (int) dist + "칸)");
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.7f);
+            return;
+        }
         Location at = p.getLocation().add(p.getLocation().getDirection().setY(0).normalize().multiply("spirit_summon".equals(sid) ? 12 : 5));
         at.setY(p.getWorld().getHighestBlockYAt(at, org.bukkit.HeightMap.MOTION_BLOCKING_NO_LEAVES) + 1);
         boolean ok;

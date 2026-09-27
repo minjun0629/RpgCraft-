@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.4.5
+- **스폰 근처 보스 소환 금지**: 발록의 봉인석 · 원혼 소환 부적은 월드 스폰에서 300칸 안에서 쓸 수 없습니다 (아이템은 소모되지 않음). 설정 `summon.spawn-safe-radius` (0 이면 제한 없음).
+
 ## v5.4.4
 - **환생 상점** (`/환생 상점` 또는 `/환생상점`)
   - 환생 1회마다 **환생 포인트 10** (`rebirth.shop-points`). 이미 환생한 사람은 상점을 처음 열 때 지난 환생만큼 한 번에 지급.

@@ -26,15 +26,70 @@ import java.util.concurrent.ThreadLocalRandom;
  * 필드 보스 (v5.1.9): bosses.yml 에서 field: true 인 보스를 일정 시간마다 접속자 근처 야외에 등장시킨다.
  * 지역 레벨 ±level-range 안, 바이옴이 맞는 보스만 고른다. 오래 아무도 없으면 조용히 사라진다.
  */
-public class FieldBossManager {
+public class FieldBossManager implements org.bukkit.event.Listener {
     private final RpgCraft plugin;
     private final Map<UUID, Long> alive = new HashMap<>();   // 보스 → 마지막으로 근처에 사람이 있던 시각
+    /** 보스가 있는 청크를 붙잡아 둠: 불러낸 플레이어가 멀어져도 다른 사람이 찾아올 때까지 사라지지 않게 */
+    private final Map<UUID, org.bukkit.Chunk> held = new HashMap<>();
     private long nextAt;
 
     public FieldBossManager(RpgCraft plugin) {
         this.plugin = plugin;
         nextAt = System.currentTimeMillis() + intervalMs();
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 200L, 200L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::keepAlive, 40L, 40L);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    private static boolean isBoss(org.bukkit.entity.Entity e) {
+        return e.getPersistentDataContainer().has(kr.rpgcraft.Keys.BOSS, org.bukkit.persistence.PersistentDataType.STRING);
+    }
+
+    // ------------------------------------------------------------------ 바닐라 소멸 막기 (모든 보스)
+    /** 호글린 → 조글린(오버월드 15초), 좀비 → 드라운드 등 변신하면 보스가 사라지므로 막음 */
+    @org.bukkit.event.EventHandler(ignoreCancelled = true)
+    public void onTransform(org.bukkit.event.entity.EntityTransformEvent e) {
+        if (isBoss(e.getEntity())) e.setCancelled(true);
+    }
+
+    /** 햇빛에 타지 않음 (서리 리치 등 언데드 보스) */
+    @org.bukkit.event.EventHandler(ignoreCancelled = true)
+    public void onCombust(org.bukkit.event.entity.EntityCombustEvent e) {
+        if (e.getClass() == org.bukkit.event.entity.EntityCombustEvent.class && isBoss(e.getEntity())) e.setCancelled(true);
+    }
+
+    /** 2초마다: 워든은 가까운 플레이어에게 계속 화가 나 있게(땅속으로 숨지 않도록), 청크 붙잡기 갱신 */
+    private void keepAlive() {
+        for (Iterator<Map.Entry<UUID, org.bukkit.Chunk>> it = held.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<UUID, org.bukkit.Chunk> en = it.next();
+            Entity e = Bukkit.getEntity(en.getKey());
+            if (!(e instanceof LivingEntity le) || !le.isValid() || le.isDead()) { en.getValue().removePluginChunkTicket(plugin); it.remove(); continue; }
+            org.bukkit.Chunk now = le.getLocation().getChunk();
+            if (!now.equals(en.getValue())) { en.getValue().removePluginChunkTicket(plugin); now.addPluginChunkTicket(plugin); en.setValue(now); }
+        }
+        for (World w : Bukkit.getWorlds())
+            for (org.bukkit.entity.Warden wd : w.getEntitiesByClass(org.bukkit.entity.Warden.class)) {
+                if (!isBoss(wd)) continue;
+                Player near = null;
+                double best = 48 * 48;
+                for (Player p : w.getPlayers()) {
+                    if (p.getGameMode() == GameMode.SPECTATOR || p.getGameMode() == GameMode.CREATIVE) continue;
+                    double d = p.getLocation().distanceSquared(wd.getLocation());
+                    if (d < best) { best = d; near = p; }
+                }
+                if (near != null) wd.setAnger(near, 150);
+            }
+    }
+
+    private void hold(LivingEntity e) {
+        org.bukkit.Chunk c = e.getLocation().getChunk();
+        c.addPluginChunkTicket(plugin);
+        held.put(e.getUniqueId(), c);
+    }
+
+    private void release(UUID id) {
+        org.bukkit.Chunk c = held.remove(id);
+        if (c != null) c.removePluginChunkTicket(plugin);
     }
 
     private FileConfiguration cfg() { return plugin.getConfig(); }
@@ -49,12 +104,12 @@ public class FieldBossManager {
         for (Iterator<Map.Entry<UUID, Long>> it = alive.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<UUID, Long> en = it.next();
             Entity e = Bukkit.getEntity(en.getKey());
-            if (!(e instanceof LivingEntity le) || !le.isValid() || le.isDead()) { it.remove(); continue; }
+            if (!(e instanceof LivingEntity le) || !le.isValid() || le.isDead()) { release(en.getKey()); it.remove(); continue; }
             boolean near = false;
             for (Player p : le.getWorld().getPlayers())
                 if (p.getLocation().distanceSquared(le.getLocation()) < 80 * 80) { near = true; break; }
             if (near) en.setValue(now);
-            else if (now - en.getValue() > idle) { le.remove(); it.remove(); }
+            else if (now - en.getValue() > idle) { release(en.getKey()); le.remove(); it.remove(); }
         }
         if (!cfg().getBoolean("field-bosses.enabled", true) || now < nextAt) return;
         nextAt = now + intervalMs();
@@ -98,6 +153,7 @@ public class FieldBossManager {
             if (e == null) return null;
             e.setPersistent(false);   // 청크가 내려가면 함께 사라짐 (쌓이지 않도록)
             alive.put(e.getUniqueId(), System.currentTimeMillis());
+            hold(e);
             String title = Text.c("&6&l⚔ 필드 보스 출현");
             String sub = Text.c("&f" + d0.name + " &7Lv." + d0.level);
             for (Player o : loc.getWorld().getPlayers())
@@ -132,5 +188,6 @@ public class FieldBossManager {
     public void shutdown() {
         for (UUID id : alive.keySet()) { Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
         alive.clear();
+        for (UUID id : new ArrayList<>(held.keySet())) release(id);
     }
 }

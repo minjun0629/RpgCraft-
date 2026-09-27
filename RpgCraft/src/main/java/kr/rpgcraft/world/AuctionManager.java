@@ -160,6 +160,47 @@ public class AuctionManager implements CommandExecutor {
         save();
     }
 
+    // ------------------------------------------------------------------ 회수 (v5.2.6)
+    /** 인벤토리에 넣고, 자리가 없으면 보관함으로 (땅에 떨어뜨리지 않음). @return 보관함으로 간 수 */
+    private int giveOrStore(Player p, ItemStack it) {
+        int stored = 0;
+        for (ItemStack left : p.getInventory().addItem(it.clone()).values()) {
+            pendingItems.computeIfAbsent(p.getUniqueId(), k -> new ArrayList<>()).add(left);
+            stored++;
+        }
+        return stored;
+    }
+
+    /** 내가 올린 물건 하나를 내려서 바로 돌려받음 */
+    private void retrieve(Player p, Listing l) {
+        if (!l.seller.equals(p.getUniqueId()) || list.remove(l.id) == null) { Text.actionBar(p, "&c이미 팔렸거나 없는 물건입니다"); return; }
+        int stored = giveOrStore(p, l.item);
+        save();
+        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
+        Text.msg(p, stored > 0 ? "&e인벤토리가 가득 차 보관함으로 옮겼습니다. &f/옥션 수령" : "&a옥션에서 회수했습니다: &f" + name(l.item));
+    }
+
+    /** 내가 올린 물건 전부 회수 */
+    private void retrieveAll(Player p) {
+        int n = 0, stored = 0;
+        for (Iterator<Listing> it = list.values().iterator(); it.hasNext(); ) {
+            Listing l = it.next();
+            if (!l.seller.equals(p.getUniqueId())) continue;
+            it.remove();
+            n++;
+            stored += giveOrStore(p, l.item);
+        }
+        if (n == 0) { Text.msg(p, "&7옥션에 올린 물건이 없습니다."); return; }
+        save();
+        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 0.9f);
+        Text.msg(p, "&a옥션에 올린 물건 " + n + "개를 회수했습니다." + (stored > 0 ? " &e(인벤토리가 가득 차 일부는 보관함에: /옥션 수령)" : ""));
+    }
+
+    private static String name(ItemStack it) {
+        ItemMeta m = it.getItemMeta();
+        return (m != null && m.hasDisplayName() ? m.getDisplayName() : it.getType().name()) + (it.getAmount() > 1 ? Text.c(" &7x" + it.getAmount()) : "");
+    }
+
     private ItemStack icon(Listing l, String... extra) {
         ItemStack it = l.item.clone();
         ItemMeta m = it.getItemMeta();
@@ -182,17 +223,17 @@ public class AuctionManager implements CommandExecutor {
             int pages = Math.max(1, (ls.size() + 44) / 45);
             for (int i = 0; i < 45 && page * 45 + i < ls.size(); i++) {
                 Listing l = ls.get(page * 45 + i);
-                set(i, icon(l, mineOnly ? "&c▶ 클릭: 등록 취소 (보관함으로)" : "&a▶ 좌클릭: 구매"), e -> {
-                    if (mineOnly) {
-                        if (list.remove(l.id) != null) { pendingItems.computeIfAbsent(l.seller, k -> new ArrayList<>()).add(l.item); save(); }
-                        Text.msg(p, "&7등록을 취소했습니다. &e/옥션 수령");
-                    } else if (e.isLeftClick()) buy(p, l);
+                boolean mine = l.seller.equals(p.getUniqueId());
+                set(i, icon(l, mine ? "&c▶ 클릭: 회수 (등록 취소 후 바로 돌려받기)" : "&a▶ 좌클릭: 구매"), e -> {
+                    if (mine) retrieve(p, l);
+                    else if (e.isLeftClick()) buy(p, l);
                     new BrowseGui(p, page, mineOnly).open(p);
                 });
             }
             if (page > 0) set(45, button(Material.ARROW, "&f이전"), e -> new BrowseGui(p, page - 1, mineOnly).open(p));
             if (page + 1 < pages) set(53, button(Material.ARROW, "&f다음"), e -> new BrowseGui(p, page + 1, mineOnly).open(p));
-            set(48, button(Material.CHEST, "&e내 물건", "&7/옥션 등록 <가격> 으로 등록"), e -> new BrowseGui(p, 0, true).open(p));
+            set(48, button(Material.CHEST, "&e내 물건", "&7/옥션 등록 <가격> 으로 등록", "&7내 물건을 클릭하면 회수"), e -> new BrowseGui(p, 0, true).open(p));
+            if (mineOnly) set(47, button(Material.BARREL, "&c모두 회수", "&7옥션에 올린 물건을 전부 내려 돌려받습니다"), e -> { retrieveAll(p); new BrowseGui(p, 0, true).open(p); });
             set(49, button(Material.GOLD_INGOT, "&6소지금 " + Text.money(plugin.economy().balance(p)), "&7" + (page + 1) + " / " + pages), null);
             set(50, button(Material.HOPPER, "&a수령하기", "&7판매 대금 · 돌려받은 물건"), e -> { p.closeInventory(); claim(p); });
             fill(45, 53);
@@ -205,6 +246,7 @@ public class AuctionManager implements CommandExecutor {
         if (a.length >= 2 && (a[0].equals("등록") || a[0].equals("sell"))) register(p, a[1]);
         else if (a.length >= 1 && (a[0].equals("수령") || a[0].equals("claim"))) claim(p);
         else if (a.length >= 1 && (a[0].equals("내물건") || a[0].equals("mine"))) new BrowseGui(p, 0, true).open(p);
+        else if (a.length >= 1 && (a[0].equals("회수") || a[0].equals("취소") || a[0].equals("cancel"))) retrieveAll(p);
         else new BrowseGui(p, 0, false).open(p);
         return true;
     }

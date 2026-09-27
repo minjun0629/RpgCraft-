@@ -191,6 +191,7 @@ public class HiddenQuestManager implements Listener {
             data.set("owners." + q.id(), now);
             save();
             plugin.passives().grant(p, q.reward(), true);
+            if (plugin.content() != null) plugin.content().onHiddenPassive(p, q.reward());   // 히든 칭호
             p.closeInventory();
             p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.7f);
         });

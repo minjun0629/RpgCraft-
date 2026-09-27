@@ -99,12 +99,16 @@ public class BossManager {
     }
 
     /**
-     * 보스 처치 경험치 (1등 100% 기준).
-     * 필드 보스는 자주 나오므로 bosses.yml 의 exp 대신 "그 보스 레벨에서 레벨업에 필요한 경험치 × field-bosses.exp-levels(1.5)" (v5.3.5).
+     * 보스 처치 경험치 (참가자 전체 합계, 혼자면 전부).
+     * bosses.yml 의 exp 는 레벨 수십~수백 개 분량이라 너무 많아서, "그 보스 레벨에서 레벨업에 필요한 경험치 × 배율" 로 계산 (v5.4.3).
+     * 필드 보스 1.5 · 일반 보스 2.5 · 월드보스 4 (레벨 분량). bosses.yml 값이 더 작으면 그 값.
      */
     public double bossExp(BossDefinition d) {
-        if (!d.field) return d.exp;
-        double lv = plugin.getConfig().getDouble("field-bosses.exp-levels", 1.5);
+        var c = plugin.getConfig();
+        double lv = d.field ? c.getDouble("field-bosses.exp-levels", 1.5)
+                : kr.rpgcraft.world.WorldBossManager.isWorldBoss(d.id) ? c.getDouble("bosses.world-exp-levels", 4)
+                : c.getDouble("bosses.exp-levels", 2.5);
+        if (lv <= 0) return d.exp;   // 0 이하로 두면 bosses.yml 값 그대로
         return Math.min(d.exp, plugin.levels().need(d.level) * lv);
     }
 

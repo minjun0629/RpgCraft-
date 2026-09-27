@@ -845,6 +845,8 @@ public class StructureManager implements Listener {
         String id, world, type;
         int x, y, z;
         long despawnAt;
+        String boss;        // 월드보스 전장: 그 보스 UUID (v5.4.2, 재시작해도 보스가 죽으면 복구)
+        long until;         // 월드보스 전장: 이 시각이 지나면 보스가 없어도 복구
         List<String> chests = new ArrayList<>();
         Map<String, String> snapshot = new LinkedHashMap<>();
     }
@@ -859,6 +861,33 @@ public class StructureManager implements Listener {
         lastRecordId = null;
         build(type, at, null, null, true);
         return lastRecordId;
+    }
+
+    /** 전장 기록에 보스 · 제한 시각을 남김 (서버가 재시작돼도 보스가 죽거나 시간이 지나면 원래 지형으로) */
+    public void linkBoss(String recordId, UUID boss, long until) {
+        Record r = recordId == null ? null : records.get(recordId);
+        if (r == null) return;
+        r.boss = boss.toString();
+        r.until = until;
+        saveRecords();
+    }
+
+    /** 모든 월드보스 전장을 곧 복구 (관리자 정리) */
+    public int despawnArenas(long ms) {
+        int n = 0;
+        for (Record r : records.values())
+            if (r.type != null && r.type.startsWith("arena_")) { r.despawnAt = System.currentTimeMillis() + ms; n++; }
+        if (n > 0) saveRecords();
+        return n;
+    }
+
+    @EventHandler
+    public void onArenaBossDeath(org.bukkit.event.entity.EntityDeathEvent e) {
+        String id = e.getEntity().getUniqueId().toString();
+        boolean ch = false;
+        for (Record r : records.values())
+            if (id.equals(r.boss) && r.despawnAt <= 0) { r.despawnAt = System.currentTimeMillis() + 20_000L; ch = true; }
+        if (ch) saveRecords();
     }
 
     public void despawnSoon(String recordId, long ms) {
@@ -876,6 +905,13 @@ public class StructureManager implements Listener {
         r.x = at.getBlockX(); r.y = at.getBlockY(); r.z = at.getBlockZ();
         for (Location c : recordChests) r.chests.add(c.getBlockX() + "," + c.getBlockY() + "," + c.getBlockZ());
         r.snapshot.putAll(recording);
+        // 아직 복구되지 않은 다른 전장 위에 지었으면, 그 자리의 "원래 지형"은 앞 전장의 기록을 이어받음
+        // (그러지 않으면 나중에 복구할 때 앞 전장의 블록을 되살려 구조물이 남음)
+        for (Record old : records.values())
+            for (Map.Entry<String, String> en : r.snapshot.entrySet()) {
+                String orig = old.snapshot.get(en.getKey());
+                if (orig != null) en.setValue(orig);
+            }
         records.put(r.id, r);
         lastRecordId = r.id;
         saveRecords();
@@ -891,6 +927,10 @@ public class StructureManager implements Listener {
             r.id = id; r.world = s.getString("world"); r.type = s.getString("type");
             r.x = s.getInt("x"); r.y = s.getInt("y"); r.z = s.getInt("z");
             r.despawnAt = s.getLong("despawn-at");
+            r.boss = s.getString("boss");
+            r.until = s.getLong("until");
+            if (r.type != null && r.type.startsWith("arena_") && r.despawnAt <= 0 && r.until <= 0)   // 예전 버전에서 남은 전장: 보스 기록이 없으니 일정 시간 뒤 복구
+                r.until = System.currentTimeMillis() + plugin.getConfig().getLong("world-boss.stay-minutes", 30) * 60_000;
             r.chests.addAll(s.getStringList("chests"));
             for (String line : s.getStringList("snapshot")) {
                 int i = line.indexOf('|');
@@ -906,6 +946,8 @@ public class StructureManager implements Listener {
             y.set(r.id + ".world", r.world); y.set(r.id + ".type", r.type);
             y.set(r.id + ".x", r.x); y.set(r.id + ".y", r.y); y.set(r.id + ".z", r.z);
             y.set(r.id + ".despawn-at", r.despawnAt);
+            if (r.boss != null) y.set(r.id + ".boss", r.boss);
+            if (r.until > 0) y.set(r.id + ".until", r.until);
             y.set(r.id + ".chests", r.chests);
             List<String> snap = new ArrayList<>();
             r.snapshot.forEach((k, v) -> snap.add(k + "|" + v));
@@ -1023,6 +1065,7 @@ public class StructureManager implements Listener {
         long now = System.currentTimeMillis();
         boolean changed = false;
         for (Record r : new ArrayList<>(records.values())) {
+            if (r.despawnAt <= 0 && r.until > 0 && now > r.until + 60_000) r.despawnAt = now;   // 전장 제한 시각이 지남 (보스를 놓쳤거나 재시작으로 기록이 끊긴 경우)
             if (r.despawnAt <= 0 || r.despawnAt > now) continue;
             World wd = Bukkit.getWorld(r.world);
             if (wd == null) continue;

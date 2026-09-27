@@ -33,7 +33,7 @@ import java.util.Locale;
 
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
-    private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal",
+    private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
             "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
     private final RpgCraft plugin;
 
@@ -49,6 +49,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 stat <플레이어> <포인트> &7- 스탯 포인트 지급");
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
+        Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
         Text.msg(s, "&e/rpg관리 npc <상점ID> &7- 현재 위치에 상점 NPC (제거: 쉬프트+방벽 우클릭)");
         Text.msg(s, "&e/rpg관리 castle <create|pos1|pos2|wall|beacon|spawn|owner|delete|list|restore> ...");
@@ -167,6 +168,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     if (p == null) return true;
                     plugin.health().set(p, plugin.health().max(p));
                     Text.msg(s, "회복 완료");
+                }
+                case "starter" -> {
+                    Player p = a.length > 1 ? Bukkit.getPlayerExact(a[1]) : s instanceof Player pp ? pp : null;
+                    if (p == null) { Text.msg(s, "&c접속 중인 플레이어를 입력하세요."); return true; }
+                    int n = kr.rpgcraft.data.ResetPending.giveStarter(plugin, p);
+                    Text.msg(s, "&a" + p.getName() + " 에게 기본 지급품 " + n + "종을 주었습니다.");
                 }
                 case "boss" -> boss(s, a);
                 case "npc" -> {

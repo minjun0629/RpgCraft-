@@ -41,16 +41,25 @@ public final class ResetPending {
         return true;
     }
 
+    /** 기본 지급품 (config player.starter-kit). 인벤토리가 가득 차면 발밑에 떨굼 */
+    public static int giveStarter(RpgCraft pl, Player p) {
+        int n = 0;
+        for (String k : pl.getConfig().getStringList("player.starter-kit")) {
+            String[] kv = k.split(":");
+            ItemStack it = pl.items().create(kv[0], kv.length > 1 ? Text.parseInt(kv[1], 1) : 1);
+            if (it == null) { pl.getLogger().warning("player.starter-kit 의 아이템을 찾을 수 없습니다: " + kv[0]); continue; }
+            for (ItemStack left : p.getInventory().addItem(it).values()) p.getWorld().dropItemNaturally(p.getLocation(), left);
+            n++;
+        }
+        return n;
+    }
+
     /** 인벤토리 · 엔더 상자 비우고 기본 지급품, 체력 가득, 스폰으로 */
     public static void freshStart(RpgCraft pl, Player p) {
         PlayerData d = pl.data().get(p);
         p.getInventory().clear();
         p.getEnderChest().clear();
-        for (String k : pl.getConfig().getStringList("player.starter-kit")) {
-            String[] kv = k.split(":");
-            ItemStack it = pl.items().create(kv[0], kv.length > 1 ? Text.parseInt(kv[1], 1) : 1);
-            if (it != null) p.getInventory().addItem(it);
-        }
+        giveStarter(pl, p);
         pl.stats().refresh(p);
         d.hp = d.stats.maxHp;
         p.teleport(p.getWorld().getSpawnLocation());

@@ -74,6 +74,41 @@ public class MobManager implements Listener {
                 if (e != null) e.setCustomNameVisible(false);
             }
         }, 20L, 20L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::revealNearby, 10L, 5L);
+    }
+
+    /** 때리지 않아도 이름표(레벨 · 이름 · 체력바)를 보여줌: 플레이어 근처에 있거나 플레이어가 바라보는 몬스터 */
+    private void revealNearby() {
+        double near = plugin.getConfig().getDouble("mobs.name-display.near", 16);
+        double look = plugin.getConfig().getDouble("mobs.name-display.look", 32);
+        if (near <= 0 && look <= 0) return;
+        long until = System.currentTimeMillis() + 1500;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (near > 0) {
+                for (Entity en : p.getNearbyEntities(near, near * 0.5, near)) reveal(en, until);
+            }
+            if (look > 0) {
+                var hit = p.getWorld().rayTraceEntities(p.getEyeLocation(), p.getEyeLocation().getDirection(), look, 0.4,
+                        en -> en != p && en instanceof LivingEntity && !(en instanceof Player));
+                if (hit != null && hit.getHitEntity() != null) reveal(hit.getHitEntity(), until);
+            }
+        }
+    }
+
+    private void reveal(Entity en, long until) {
+        if (!(en instanceof LivingEntity le) || en instanceof Player || !le.isValid()) return;
+        MobState s = states.get(le.getUniqueId());
+        if (s == null) {
+            if (!(le instanceof Enemy) || le.getPersistentDataContainer().has(Keys.INDICATOR, PersistentDataType.BYTE)) return;
+            List<String> worlds = plugin.getConfig().getStringList("mobs.enabled-worlds");
+            if (!worlds.isEmpty() && !worlds.contains(le.getWorld().getName())) return;
+            s = init(le);   // 서버 재시작 · 청크 로드로 아직 추적되지 않던 몬스터
+        }
+        if (s.bossId != null) return;
+        if (s.shownUntil == 0 && le.isCustomNameVisible()) return;   // 다른 기능이 항상 보이게 해 둔 이름표 (웨이브 몬스터 · 허수아비)
+        boolean was = s.shownUntil > System.currentTimeMillis();
+        s.shownUntil = Math.max(s.shownUntil, until);
+        if (!was || !le.isCustomNameVisible()) le.setCustomNameVisible(true);
     }
 
     public static String korean(EntityType t) {

@@ -452,6 +452,8 @@ economy:                    # 경제 밸런스 (배율)
 boss-models:                # 보스 3D 모델 (리소스팩)
   enabled: true
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로
+  hitbox: true               # 모델 크기에 맞는 판정 상자 (큰 보스를 모델 어디를 때려도 맞음)
+  hitbox-mult: 1.0           # 판정 상자 크기 배율
   scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}
 
 vfx:

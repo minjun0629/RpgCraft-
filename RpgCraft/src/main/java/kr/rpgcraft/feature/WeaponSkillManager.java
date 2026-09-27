@@ -399,7 +399,7 @@ public class WeaponSkillManager implements Listener {
                 w.spawnParticle(Particle.END_ROD, pos, 1, 0, 0, 0, 0);
                 LivingEntity target = null;
                 for (Entity en : w.getNearbyEntities(pos, 1.2, 1.2, 1.2))
-                    if (en instanceof LivingEntity le && plugin.combat().isEnemy(p, le)) { target = le; break; }
+                    if (plugin.bossModels().resolve(en) instanceof LivingEntity le && plugin.combat().isEnemy(p, le)) { target = le; break; }   // 큰 보스는 모델 크기 판정
                 if (target == null && pos.getBlock().isPassable()) return;
                 cancel();
                 Vfx.burst(pos, 1.8, c);

@@ -10,6 +10,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -46,6 +47,9 @@ public class BossModelManager implements Listener {
     private final RpgCraft plugin;
     private final Map<UUID, UUID> displays = new HashMap<>();
     private final Map<UUID, Float> scales = new HashMap<>();
+    /** 보스 → 모델 크기의 판정 상자 (Interaction). 1.20.1 은 몹 크기를 못 바꾸므로 이걸로 대신 맞게 한다 */
+    private final Map<UUID, UUID> hitboxes = new HashMap<>();
+    private final Map<UUID, UUID> hitboxOwner = new HashMap<>();
     private int tick;
 
     public BossModelManager(RpgCraft plugin) {
@@ -94,6 +98,51 @@ public class BossModelManager implements Listener {
         if (boss.getEquipment() != null) boss.getEquipment().clear();
         displays.put(boss.getUniqueId(), d.getUniqueId());
         scales.put(boss.getUniqueId(), scale);
+        attachHitbox(boss, scale);
+    }
+
+    private void attachHitbox(LivingEntity boss, float scale) {
+        if (!plugin.getConfig().getBoolean("boss-models.hitbox", true)) return;
+        double mult = plugin.getConfig().getDouble("boss-models.hitbox-mult", 1.0);
+        float h = (float) (scale * mult), wdt = (float) (scale * 0.75 * mult);
+        if (h <= boss.getHeight() + 0.2 && wdt <= boss.getWidth() + 0.2) return;   // 원래 몸이 더 크면 필요 없음
+        Interaction box = boss.getWorld().spawn(boss.getLocation(), Interaction.class, x -> {
+            x.setInteractionWidth(Math.max(wdt, (float) boss.getWidth()));
+            x.setInteractionHeight(Math.max(h, (float) boss.getHeight()));
+            x.setResponsive(true);
+            x.setPersistent(false);
+            x.getPersistentDataContainer().set(Keys.INDICATOR, PersistentDataType.BYTE, (byte) 1);
+        });
+        hitboxes.put(boss.getUniqueId(), box.getUniqueId());
+        hitboxOwner.put(box.getUniqueId(), boss.getUniqueId());
+    }
+
+    private void removeHitbox(UUID boss) {
+        UUID hb = hitboxes.remove(boss);
+        if (hb == null) return;
+        hitboxOwner.remove(hb);
+        Entity e = Bukkit.getEntity(hb);
+        if (e != null) e.remove();
+    }
+
+    /** 투사체 · 광선형 스킬 판정용: 살아있는 개체는 그대로, 보스 판정 상자는 그 보스로 바꿔 준다 (아니면 null) */
+    public LivingEntity resolve(Entity en) {
+        if (en instanceof LivingEntity le) return le;
+        if (!(en instanceof Interaction)) return null;
+        UUID owner = hitboxOwner.get(en.getUniqueId());
+        return owner != null && Bukkit.getEntity(owner) instanceof LivingEntity boss && !boss.isDead() ? boss : null;
+    }
+
+    /** 판정 상자를 때리면 보스를 때린 것으로 (공격 쿨다운 · 치명타 · 무기 스킬 모두 원래대로) */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onHitbox(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Interaction)) return;
+        UUID owner = hitboxOwner.get(e.getEntity().getUniqueId());
+        if (owner == null) return;
+        e.setCancelled(true);
+        if (!(e.getDamager() instanceof Player p) || !(Bukkit.getEntity(owner) instanceof LivingEntity boss) || boss.isDead()) return;
+        if (p.getGameMode() == org.bukkit.GameMode.SPECTATOR) return;
+        p.attack(boss);
     }
 
     private float yawOffset() {
@@ -111,12 +160,19 @@ public class BossModelManager implements Listener {
             if (!(b instanceof LivingEntity boss) || !boss.isValid() || boss.isDead() || d == null || !d.isValid()) {
                 if (d != null) d.remove();
                 scales.remove(en.getKey());
+                removeHitbox(en.getKey());
                 it.remove();
                 continue;
             }
             Location l = boss.getLocation();
             float yaw = boss instanceof Mob ? ((Mob) boss).getLocation().getYaw() : l.getYaw();
             d.teleport(new Location(l.getWorld(), l.getX(), l.getY(), l.getZ(), yaw, 0));
+            UUID hb = hitboxes.get(en.getKey());
+            if (hb != null) {
+                Entity box = Bukkit.getEntity(hb);
+                if (box != null && box.isValid()) box.teleport(new Location(l.getWorld(), l.getX(), l.getY(), l.getZ()));
+                else removeHitbox(en.getKey());
+            }
             if (tick % 20 == 0 && d instanceof ItemDisplay id) { // 숨쉬기
                 float s = scales.getOrDefault(en.getKey(), 1.8f);
                 id.setInterpolationDelay(0);
@@ -163,6 +219,7 @@ public class BossModelManager implements Listener {
     public void onDeath(EntityDeathEvent e) {
         UUID did = displays.remove(e.getEntity().getUniqueId());
         scales.remove(e.getEntity().getUniqueId());
+        removeHitbox(e.getEntity().getUniqueId());
         if (did != null) {
             Entity d = Bukkit.getEntity(did);
             if (d != null) d.remove();
@@ -175,5 +232,6 @@ public class BossModelManager implements Listener {
             if (d != null) d.remove();
         }
         displays.clear();
+        for (UUID boss : new ArrayList<>(hitboxes.keySet())) removeHitbox(boss);
     }
 }

@@ -555,7 +555,7 @@ public class SkillBook {
                         Location c = from.clone().add(d.clone().multiply(t));
                         if (!c.getBlock().isPassable()) { hitAt = c; break; }
                         for (Entity en : w.getNearbyEntities(c, 0.8, 0.9, 0.8))
-                            if (en instanceof LivingEntity le && plugin.combat().isEnemy(p, le)) { victim = le; break; }
+                            if (plugin.bossModels().resolve(en) instanceof LivingEntity le && plugin.combat().isEnemy(p, le)) { victim = le; break; }   // 큰 보스는 모델 크기 판정
                         if (victim != null) { hitAt = c; break; }
                     }
                     kr.rpgcraft.util.Vfx.beam(from, hitAt, 0.45, col);

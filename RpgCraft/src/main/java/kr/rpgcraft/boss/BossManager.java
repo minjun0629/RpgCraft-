@@ -192,17 +192,10 @@ public class BossManager {
                     for (Player q : near) if (!q.equals(target) && q.getLocation().distanceSquared(bl) < 30 * 30) { second = q; break; }
                     if (second != null) {
                         Player s2 = second;
-                        kr.rpgcraft.util.Vfx.ring(s2.getLocation(), Math.max(3, k.radius), Color.fromRGB(0xFF2A2A));
                         Bukkit.getScheduler().runTaskLater(plugin, () -> { if (a.entity.isValid()) cast(a, k, s2, s); }, 18L);
                     }
                 }
-                // 보스 기술도 범위를 먼저 표시하고 0.75초 뒤 발동
-                Color red = Color.fromRGB(0xFF2A2A);
-                switch (k.type) {
-                    case "SLAM", "PULL" -> kr.rpgcraft.util.Vfx.ring(a.entity.getLocation(), Math.max(3, k.radius), red);
-                    case "METEOR" -> kr.rpgcraft.util.Vfx.ring(target.getLocation(), Math.max(3, k.radius), red);
-                    default -> { }
-                }
+                // 예고(차오르는 위험 지역 · 표식)는 각 기술이 직접 그린다
                 Player tg = target;
                 Bukkit.getScheduler().runTaskLater(plugin, () -> { if (a.entity.isValid() && !a.entity.isDead()) cast(a, k, tg, s); }, 8L);   // 예고 짧게 (명중률↑)
             }
@@ -256,80 +249,211 @@ public class BossManager {
         for (Player p : ps) if (once == null || once.add(p.getUniqueId())) plugin.combat().mobSkillDamage(b, p, dmg);
     }
 
+    // =================================================================== 레이드 연출 도구 (v5.1.5)
+    /** 보스별 분위기 입자 */
+    private static Particle themeParticle(String id) {
+        return switch (id == null ? "" : id) {
+            case "kain", "balrog", "volcano_giant", "bungbung" -> Particle.LAVA;
+            case "frost_queen", "sea_gatekeeper" -> Particle.SNOWFLAKE;
+            case "vengeful_spirit" -> Particle.SOUL_FIRE_FLAME;
+            case "void_apostle", "primordial_dragon" -> Particle.REVERSE_PORTAL;
+            case "thunder_god", "harpy_queen" -> Particle.ELECTRIC_SPARK;
+            case "witch" -> Particle.SPELL_WITCH;
+            case "siphonia", "elf_queen" -> Particle.COMPOSTER;
+            case "desert_nightmare" -> Particle.ASH;
+            default -> Particle.FLAME;
+        };
+    }
+
+    private static void dustAt(Location l, Color c, float size) {
+        l.getWorld().spawnParticle(Particle.REDSTONE, l, 1, 0, 0, 0, 0, new Particle.DustOptions(c, size));
+    }
+
+    private static void dustCircle(Location c, double r, Color col, float size) {
+        int n = (int) Math.max(10, Math.min(90, r * 7));
+        for (int i = 0; i < n; i++) {
+            double a = Math.PI * 2 * i / n;
+            dustAt(c.clone().add(Math.cos(a) * r, 0.12, Math.sin(a) * r), col, size);
+        }
+    }
+
+    /**
+     * 바닥 위험 지역 (레이드 예고): 테두리가 표시되고 가운데부터 붉게 차오르다가 가득 차는 순간 발동.
+     * 판정은 호출한 쪽에서 ticks 뒤에 한다 (여기는 연출만).
+     */
+    private void telegraph(Location c, double r, int ticks, Color col) {
+        Location o = c.clone();
+        for (int t = 0; t <= ticks; t += 2) {
+            int tt = t;
+            later(t, () -> {
+                double f = Math.max(0.08, tt / (double) ticks);
+                if (tt % 4 == 0) dustCircle(o, r, col, 1.6f);                                  // 테두리
+                dustCircle(o, r * f, Vfx2.light(col, 0.35), 1.2f);                              // 차오르는 선
+                if (tt % 6 == 0) for (int i = 0; i < (int) (r * r * f * 0.6) + 2; i++) {         // 안쪽 채움
+                    double a = ThreadLocalRandom.current().nextDouble(Math.PI * 2), rr = Math.sqrt(ThreadLocalRandom.current().nextDouble()) * r * f;
+                    dustAt(o.clone().add(Math.cos(a) * rr, 0.1, Math.sin(a) * rr), col, 1.0f);
+                }
+            });
+        }
+        later(ticks, () -> kr.rpgcraft.util.Vfx.ring(o, r, Color.WHITE));                         // 발동 순간 번쩍
+    }
+
+    /** 직선 위험 지역: 폭 width 의 띠가 뿌리부터 끝까지 차오름 */
+    private void telegraphLine(Location from, Vector dir, double len, double width, int ticks, Color col) {
+        Vector d = dir.clone().setY(0).normalize(), side = new Vector(-d.getZ(), 0, d.getX()).multiply(width / 2);
+        Location o = from.clone();
+        for (int t = 0; t <= ticks; t += 2) {
+            int tt = t;
+            later(t, () -> {
+                double f = Math.max(0.1, tt / (double) ticks);
+                for (double s = 0; s <= len; s += 0.7) {
+                    Location p = o.clone().add(d.clone().multiply(s)).add(0, 0.12, 0);
+                    if (tt % 4 == 0) { dustAt(p.clone().add(side), col, 1.3f); dustAt(p.clone().subtract(side), col, 1.3f); }
+                    if (s <= len * f && tt % 4 == 2) dustAt(p, Vfx2.light(col, 0.3), 1.1f);
+                }
+            });
+        }
+    }
+
+    /** 대상 머리 위 표식 (!) — 이 사람을 노린다 */
+    private void markTarget(Player p, int ticks, Color col) {
+        for (int t = 0; t < ticks; t += 3) {
+            later(t, () -> {
+                if (!p.isOnline()) return;
+                Location h = p.getLocation().add(0, 2.6, 0);
+                for (int i = 0; i < 4; i++) dustAt(h.clone().add(0, i * 0.18, 0), col, 1.1f);
+                dustAt(h.clone().add(0, -0.3, 0), col, 1.3f);
+                dustCircle(p.getLocation(), 1.2, col, 1.0f);
+            });
+        }
+    }
+
+    /** 착탄 흔적: 연기 · 불씨가 잠깐 남음 (연출만) */
+    private void scorch(Location at, double r, String bossId) {
+        Particle tp = themeParticle(bossId);
+        for (int t = 0; t < 30; t += 5) {
+            later(t, () -> {
+                at.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, at.clone().add(0, 0.2, 0), 2, r * 0.3, 0.05, r * 0.3, 0.01);
+                at.getWorld().spawnParticle(tp, at.clone().add(0, 0.3, 0), 4, r * 0.4, 0.1, r * 0.4, 0.02);
+            });
+        }
+    }
+
+    /** 보스가 기를 모으는 연출 (입자가 몸으로 빨려 들어옴) */
+    private void charge(LivingEntity b, int ticks, Color c) {
+        Particle tp = themeParticle(b.getPersistentDataContainer().get(Keys.BOSS, PersistentDataType.STRING));
+        for (int t = 0; t < ticks; t += 2) {
+            int tt = t;
+            later(t, () -> {
+                if (!b.isValid()) return;
+                Location o = b.getLocation().add(0, b.getHeight() * 0.6, 0);
+                double r = 3.5 - 3 * tt / (double) ticks;
+                for (int i = 0; i < 6; i++) {
+                    double a = tt * 0.5 + i * Math.PI / 3;
+                    Location p = o.clone().add(Math.cos(a) * r, Math.sin(a * 2) * 0.6, Math.sin(a) * r);
+                    dustAt(p, c, 1.3f);
+                }
+                b.getWorld().spawnParticle(tp, o, 2, 0.3, 0.3, 0.3, 0.01);
+            });
+        }
+        b.getWorld().playSound(b.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1.4f, 0.7f);
+    }
+
+    private static final class Vfx2 {
+        static Color light(Color c, double t) {
+            return Color.fromRGB((int) (c.getRed() + (255 - c.getRed()) * t), (int) (c.getGreen() + (255 - c.getGreen()) * t), (int) (c.getBlue() + (255 - c.getBlue()) * t));
+        }
+    }
+
+    // =================================================================== 보스 기술 (레이드 패턴)
     private void cast(Active a, BossDefinition.Skill k, Player target, MobManager.MobState s) {
         LivingEntity b = a.entity;
         World w = b.getWorld();
         Color c = theme(a.def.id);
+        Color red = Color.fromRGB(0xFF2A2A);
         boolean aw = s.awakened;
         double dmg = s.damage * k.power;
+        Particle tp = themeParticle(a.def.id);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (k.type) {
-            case "SLAM" -> {   // 대지 강타: 몸을 띄웠다가 내려찍기 → 충격파 3겹이 퍼지고 땅이 갈라짐 (각성: 한 번 더, 더 넓게)
-                b.setVelocity(new Vector(0, 0.6, 0));
+            case "SLAM" -> {   // 대지 분쇄: 붉은 원이 차오르는 동안 보스가 높이 뛰어올랐다가 내려찍음 → 크레이터 + 바깥으로 번지는 여진 (각성: 두 번째 더 넓게)
                 for (int rep = 0; rep < (aw ? 2 : 1); rep++) {
                     double R = k.radius * (1 + rep * 0.4);
-                    long base = 10L + rep * 22L;
-                    if (rep > 0) later(base - 12, () -> kr.rpgcraft.util.Vfx.ring(b.getLocation(), R, Color.fromRGB(0xFF2A2A)));
+                    long base = 18L + rep * 30L;
+                    later(base - 18, () -> {
+                        if (!b.isValid()) return;
+                        telegraph(b.getLocation(), R, 18, red);
+                        b.setVelocity(new Vector(0, 0.9, 0));
+                        w.playSound(b.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 1.2f, 0.7f);
+                    });
                     later(base, () -> {
                         if (!b.isValid()) return;
                         Location o = b.getLocation();
                         Set<UUID> once = new HashSet<>();
-                        for (int wv = 1; wv <= 3; wv++) {
-                            double rr = R * wv / 3;
+                        w.spawnParticle(Particle.FLASH, o.clone().add(0, 0.5, 0), 1);
+                        w.spawnParticle(Particle.EXPLOSION_HUGE, o, 1);
+                        kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), R * 0.7, Color.WHITE);
+                        for (int wv = 1; wv <= 4; wv++) {   // 여진 4겹 (안쪽 → 바깥)
+                            double rr = R * wv / 4;
                             later(wv * 2L, () -> {
                                 kr.rpgcraft.util.Vfx.ring(o, rr, wv(c));
-                                kr.rpgcraft.util.Vfx.ring(o, rr * 0.9, Color.WHITE);
+                                w.spawnParticle(tp, o, (int) (rr * 4), rr * 0.6, 0.2, rr * 0.6, 0.05);
                                 for (Player p : playersNear(o, rr)) if (once.add(p.getUniqueId())) {
                                     plugin.combat().mobSkillDamage(b, p, dmg);
                                     p.setVelocity(p.getLocation().toVector().subtract(o.toVector()).setY(0).normalize().multiply(0.9).setY(0.6));
                                 }
                             });
                         }
-                        for (int d = 0; d < 8; d++) {   // 갈라지는 땅
-                            double ang = d * Math.PI / 4;
-                            Location crack = o.clone().add(Math.cos(ang) * R * 0.7, 0.3, Math.sin(ang) * R * 0.7);
-                            kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 0.3, 0), crack, 0.8, c);
-                            kr.rpgcraft.util.Vfx.burst(crack, 1.6, c);
+                        for (int d = 0; d < 10; d++) {   // 갈라지는 땅 (빛나는 균열)
+                            double ang = d * Math.PI / 5 + ThreadLocalRandom.current().nextDouble(0.3);
+                            Location crack = o.clone().add(Math.cos(ang) * R * 0.85, 0.2, Math.sin(ang) * R * 0.85);
+                            kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 0.2, 0), crack, 0.7, c);
+                            later(4, () -> kr.rpgcraft.util.Vfx.burst(crack, 1.8, c));
                         }
-                        kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), R * 0.6, Color.WHITE);
-                        w.spawnParticle(Particle.EXPLOSION_LARGE, o, 6, R / 3, 0.2, R / 3);
-                        w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.6f, 0.6f);
-                        w.playSound(o, Sound.ENTITY_RAVAGER_ROAR, 1f, 0.6f);
+                        w.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, o, 30, R * 0.4, 0.2, R * 0.4, 0.03);
+                        scorch(o, R * 0.6, a.def.id);
+                        w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
+                        w.playSound(o, Sound.ENTITY_WARDEN_ATTACK_IMPACT, 1.6f, 0.6f);
+                        for (Player p : playersNear(o, 20)) p.playSound(p.getLocation(), Sound.ENTITY_IRON_GOLEM_DAMAGE, 0.7f, 0.5f);   // 땅울림
                     });
                 }
             }
-            case "METEOR" -> {   // 낙하 폭발: 하늘에서 떨어지는 빛기둥 → 대폭발 (각성·여럿이면 여러 개)
+            case "METEOR" -> {   // 유성 낙하: 대상 발밑에 차오르는 원 → 하늘이 갈라지며 불타는 유성이 떨어짐 → 크레이터 (각성 · 여럿이면 여러 개)
                 List<Player> targets = new ArrayList<>(playersNear(b.getLocation(), 30));
                 Collections.shuffle(targets);
                 if (!targets.contains(target)) targets.add(0, target);
                 int n = Math.min(targets.size(), aw ? 3 : 1);
+                w.playSound(b.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1.4f, 0.5f);
                 for (int i = 0; i < n; i++) {
                     Location at = targets.get(i).getLocation().clone();
-                    kr.rpgcraft.util.Vfx.ring(at, k.radius, Color.fromRGB(0xFF2A2A));
-                    later(12, () -> kr.rpgcraft.util.Vfx.ring(at, k.radius * 0.6, Color.fromRGB(0xFF2A2A)));
-                    for (int f = 0; f < 4; f++) {   // 떨어지는 유성
+                    telegraph(at, k.radius, 24, red);
+                    for (int f = 0; f < 8; f++) {   // 떨어지는 유성 (꼬리)
                         int ff = f;
-                        later(14 + f * 3L, () -> {
-                            Location hi = at.clone().add(0, 20 - ff * 5, 0), lo = at.clone().add(0, 15 - ff * 5, 0);
-                            kr.rpgcraft.util.Vfx.beam(hi, lo, 2.2, c);
-                            kr.rpgcraft.util.Vfx.burst(lo, 2.4, c);
+                        later(12 + f * 1.5 > 23 ? 23 : 12 + (long) (f * 1.5), () -> {
+                            Location hi = at.clone().add(-6 + ff * 0.75, 24 - ff * 3, -3 + ff * 0.37);
+                            kr.rpgcraft.util.Vfx.burst(hi, 2.6 - ff * 0.1, c);
+                            w.spawnParticle(Particle.FLAME, hi, 12, 0.4, 0.4, 0.4, 0.05);
+                            w.spawnParticle(Particle.SMOKE_LARGE, hi, 6, 0.3, 0.3, 0.3, 0.02);
                         });
                     }
-                    later(18, () -> {
+                    later(24, () -> {
                         if (!b.isValid()) return;
-                        kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), k.radius * 1.3, c);
-                        kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), k.radius * 0.7, Color.WHITE);
-                        kr.rpgcraft.util.Vfx.ring(at, k.radius * 1.4, wv(c));
+                        kr.rpgcraft.util.Vfx.beam(at.clone().add(-6, 24, -3), at.clone().add(0, 1, 0), 2.4, c);
+                        kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), k.radius * 1.4, c);
+                        kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), k.radius * 0.8, Color.WHITE);
+                        kr.rpgcraft.util.Vfx.ring(at, k.radius * 1.5, wv(c));
                         for (int q = 0; q < 4; q++) kr.rpgcraft.util.Vfx.slash(at.clone().add(0, 1, 0), new Vector(1, 0, 0), k.radius * 1.4, q * 45, q % 2 == 0 ? c : Color.WHITE);
                         w.spawnParticle(Particle.FLASH, at.clone().add(0, 1, 0), 1);
                         w.spawnParticle(Particle.EXPLOSION_HUGE, at, 1);
+                        w.spawnParticle(Particle.LAVA, at, 20, k.radius * 0.5, 0.3, k.radius * 0.5, 0.1);
+                        scorch(at, k.radius * 0.7, a.def.id);
                         w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
                         w.playSound(at, Sound.ITEM_TRIDENT_THUNDER, 1f, 0.6f);
                         hurt(b, playersNear(at, k.radius * 1.25), dmg, null);
                     });
                 }
             }
-            case "SUMMON" -> {   // 소환: 바닥 마법진 → 빛기둥에서 부하가 솟아남
+            case "SUMMON" -> {   // 소환 의식: 룬 마법진 + 빛기둥 여섯 개 → 기둥에서 부하가 솟아남
                 EntityType type;
                 try {
                     type = EntityType.valueOf(k.entity == null ? "ZOMBIE" : k.entity);
@@ -338,15 +462,29 @@ public class BossManager {
                 }
                 EntityType ft = type;
                 int lv = k.level > 0 ? k.level : Math.max(1, a.def.level - 10);
-                kr.rpgcraft.util.Vfx.ring(b.getLocation(), 6, c);
-                kr.rpgcraft.util.Vfx.ring(b.getLocation(), 4, Color.WHITE);
-                w.playSound(b.getLocation(), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1.5f, 0.8f);
+                Location o = b.getLocation();
+                for (int t = 0; t < 3; t++) {
+                    int tt = t;
+                    later(t * 5L, () -> { kr.rpgcraft.util.Vfx.ring(o, 7 - tt, tt % 2 == 0 ? c : Color.WHITE); dustCircle(o, 5.5, c, 1.4f); });
+                }
+                for (int i = 0; i < 6; i++) {
+                    double ang = i * Math.PI / 3;
+                    Location pl = o.clone().add(Math.cos(ang) * 5.5, 0, Math.sin(ang) * 5.5);
+                    kr.rpgcraft.util.Vfx.beam(pl, pl.clone().add(0, 7, 0), 0.8, c);
+                    w.spawnParticle(tp, pl.clone().add(0, 1, 0), 10, 0.2, 1.5, 0.2, 0.02);
+                }
+                w.playSound(o, Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1.6f, 0.7f);
+                w.playSound(o, Sound.BLOCK_END_PORTAL_FRAME_FILL, 1.2f, 0.6f);
                 for (int i = 0; i < k.amount + (aw ? 1 : 0); i++) {
                     Location l = b.getLocation().add(ThreadLocalRandom.current().nextDouble(-5, 5), 0.5, ThreadLocalRandom.current().nextDouble(-5, 5));
-                    kr.rpgcraft.util.Vfx.beam(l, l.clone().add(0, 8, 0), 1.2, c);
-                    later(10 + i * 3L, () -> {
+                    later(6, () -> {
+                        telegraph(l.clone().subtract(0, 0.5, 0), 1.5, 8, c);
+                        kr.rpgcraft.util.Vfx.beam(l, l.clone().add(0, 10, 0), 1.4, c);
+                    });
+                    later(14 + i * 3L, () -> {
                         if (!b.isValid()) return;
-                        kr.rpgcraft.util.Vfx.burst(l.clone().add(0, 1, 0), 2.2, c);
+                        kr.rpgcraft.util.Vfx.burst(l.clone().add(0, 1, 0), 2.6, c);
+                        w.spawnParticle(Particle.REVERSE_PORTAL, l, 30, 0.3, 1, 0.3, 0.1);
                         Entity raw = w.spawnEntity(l, ft);
                         if (!(raw instanceof LivingEntity m)) { raw.remove(); return; }
                         m.getPersistentDataContainer().set(Keys.MINION, PersistentDataType.STRING, a.def.id);
@@ -358,78 +496,104 @@ public class BossManager {
                     });
                 }
             }
-            case "FIREBALL" -> {   // 마탄: 빛나는 구체가 부채꼴로 날아가 (조금 따라감) 폭발
+            case "FIREBALL" -> {   // 마탄 일제 사격: 기를 모은 뒤 부채꼴로 발사, 꼬리를 남기며 살짝 유도 → 폭발
                 int n = Math.max(1, k.amount) + (aw ? 2 : 0);
-                w.playSound(b.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.2f, 0.7f);
+                charge(b, 12, c);
+                later(12, () -> w.playSound(b.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.4f, 0.6f));
                 for (int i = 0; i < n; i++) {
                     double spread = (i - (n - 1) / 2.0) * 0.25;
-                    Location eye = b.getEyeLocation().add(0, 1, 0);
-                    Vector dir = target.getEyeLocation().toVector().subtract(eye.toVector()).normalize();
-                    dir = new Vector(dir.getX() * Math.cos(spread) - dir.getZ() * Math.sin(spread), dir.getY(), dir.getX() * Math.sin(spread) + dir.getZ() * Math.cos(spread));
-                    Vector start = dir.clone();
                     new org.bukkit.scheduler.BukkitRunnable() {
-                        final Location pos = eye.clone();
-                        Vector v = start.multiply(0.8);
+                        Location pos;
+                        Vector v;
                         int t;
 
                         @Override
                         public void run() {
                             if (!b.isValid() || ++t > 60) { cancel(); return; }
+                            if (pos == null) {
+                                pos = b.getEyeLocation().add(0, 1, 0);
+                                Vector dir = target.getEyeLocation().toVector().subtract(pos.toVector()).normalize();
+                                v = new Vector(dir.getX() * Math.cos(spread) - dir.getZ() * Math.sin(spread), dir.getY(), dir.getX() * Math.sin(spread) + dir.getZ() * Math.cos(spread)).multiply(0.8);
+                                kr.rpgcraft.util.Vfx.burst(pos, 2, Color.WHITE);
+                            }
                             if (target.isOnline() && target.getWorld().equals(pos.getWorld())) {   // 살짝 유도
                                 Vector want = target.getEyeLocation().toVector().subtract(pos.toVector()).normalize().multiply(0.8);
                                 v = v.multiply(0.92).add(want.multiply(0.08));
                             }
                             pos.add(v);
-                            if (t % 2 == 0) kr.rpgcraft.util.Vfx.burst(pos, 1.4, c);
-                            w.spawnParticle(Particle.FLAME, pos, 2, 0.1, 0.1, 0.1, 0.01);
+                            if (t % 2 == 0) kr.rpgcraft.util.Vfx.burst(pos, 1.5, c);
+                            w.spawnParticle(Particle.FLAME, pos, 3, 0.12, 0.12, 0.12, 0.01);
+                            w.spawnParticle(tp, pos, 2, 0.1, 0.1, 0.1, 0.01);
+                            dustAt(pos.clone().subtract(v.clone().multiply(0.6)), c, 1.6f);
                             boolean hit = !pos.getBlock().isPassable();
                             for (Player p : playersNear(pos, 1.4)) { hit = true; break; }
                             if (!hit) return;
                             cancel();
-                            kr.rpgcraft.util.Vfx.burst(pos, 3.2, c);
+                            kr.rpgcraft.util.Vfx.burst(pos, 3.4, c);
                             kr.rpgcraft.util.Vfx.ring(pos.clone().add(0, -1, 0), 2.6, Color.WHITE);
-                            w.playSound(pos, Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.3f);
+                            w.spawnParticle(Particle.EXPLOSION_LARGE, pos, 1);
+                            w.playSound(pos, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 1.3f);
                             hurt(b, playersNear(pos, 2.6), dmg, null);
                         }
-                    }.runTaskTimer(plugin, i * 3L, 1L);
+                    }.runTaskTimer(plugin, 12L + i * 3L, 1L);
                 }
             }
-            case "PULL" -> {   // 소용돌이: 고리가 좁혀지며 끌어당긴 뒤 한가운데서 내파
+            case "PULL" -> {   // 심연의 소용돌이: 중심에 위험 원이 차오르는 동안 나선으로 빨아들임 → 한가운데서 내파 (밖으로 버텨서 벗어나야 함)
                 Location o = b.getLocation();
-                w.playSound(o, Sound.ENTITY_WARDEN_SONIC_CHARGE, 1.2f, 0.7f);
-                for (int st = 0; st < 5; st++) {
+                telegraph(o, 4, 24, red);
+                w.playSound(o, Sound.ENTITY_WARDEN_SONIC_CHARGE, 1.4f, 0.7f);
+                for (int st = 0; st < 6; st++) {
                     int stt = st;
                     later(st * 4L, () -> {
-                        double rr = k.radius * (1 - stt * 0.18);
+                        double rr = k.radius * (1 - stt * 0.15);
                         kr.rpgcraft.util.Vfx.ring(o, rr, stt % 2 == 0 ? c : Color.WHITE);
+                        for (int i = 0; i < 12; i++) {   // 나선 기류
+                            double ang = stt * 0.6 + i * Math.PI / 6;
+                            dustAt(o.clone().add(Math.cos(ang) * rr, 0.6 + (i % 3) * 0.5, Math.sin(ang) * rr), c, 1.3f);
+                        }
+                        w.spawnParticle(Particle.REVERSE_PORTAL, o.clone().add(0, 1, 0), 20, rr * 0.5, 0.5, rr * 0.5, 0.05);
                         for (Player p : playersNear(o, k.radius)) {
                             Vector v = o.toVector().subtract(p.getLocation().toVector());
                             if (v.lengthSquared() > 1) p.setVelocity(v.normalize().multiply(0.7).setY(0.15));
                         }
                     });
                 }
-                later(22, () -> {
+                later(24, () -> {
                     if (!b.isValid()) return;
-                    kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), 5, c);
-                    kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), 2.5, Color.WHITE);
+                    kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), 6, c);
+                    kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), 3, Color.WHITE);
+                    kr.rpgcraft.util.Vfx.ring(o, 5, wv(c));
                     w.spawnParticle(Particle.FLASH, o.clone().add(0, 1, 0), 1);
-                    w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.4f, 0.8f);
+                    w.spawnParticle(Particle.SONIC_BOOM, o.clone().add(0, 1, 0), 1);
+                    w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.6f, 0.7f);
                     hurt(b, playersNear(o, 4), dmg, null);
                 });
             }
-            case "BLINK" -> {   // 그림자 습격: 잔상을 남기고 대상 뒤로 → X 베기 (각성: 두 번)
+            case "BLINK" -> {   // 그림자 습격: 대상에게 표식(!) + 돌진 경로 예고 → 잔상을 남기며 뒤로 순간이동해 X 베기 (각성: 두 번)
                 for (int rep = 0; rep < (aw ? 2 : 1); rep++) {
-                    later(rep * 14L, () -> {
+                    later(rep * 22L, () -> {
+                        if (!b.isValid() || !target.isOnline()) return;
+                        markTarget(target, 12, red);
+                        Vector path = target.getLocation().toVector().subtract(b.getLocation().toVector()).setY(0);
+                        if (path.lengthSquared() > 0.01) telegraphLine(b.getLocation(), path, path.length() + 2, 1.6, 12, red);
+                        w.playSound(target.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 0.5f);
+                    });
+                    later(rep * 22L + 12, () -> {
                         if (!b.isValid() || !target.isOnline()) return;
                         Location from = b.getLocation();
                         Location behind = target.getLocation().clone().subtract(target.getLocation().getDirection().setY(0).normalize().multiply(2));
-                        kr.rpgcraft.util.Vfx.burst(from.clone().add(0, 1.5, 0), 3, c);
-                        kr.rpgcraft.util.Vfx.beam(from.clone().add(0, 1, 0), behind.clone().add(0, 1, 0), 1.4, c);
+                        for (int g = 1; g <= 4; g++) {   // 잔상
+                            Location ghost = from.clone().add(behind.toVector().subtract(from.toVector()).multiply(g / 5.0)).add(0, 1, 0);
+                            kr.rpgcraft.util.Vfx.burst(ghost, 2.2, Vfx2.light(c, g * 0.15));
+                            w.spawnParticle(Particle.SMOKE_LARGE, ghost, 4, 0.2, 0.4, 0.2, 0.01);
+                        }
+                        kr.rpgcraft.util.Vfx.beam(from.clone().add(0, 1, 0), behind.clone().add(0, 1, 0), 1.6, c);
                         b.teleport(behind);
                         Vector f = target.getLocation().toVector().subtract(behind.toVector()).setY(0);
                         if (f.lengthSquared() < 0.01) f = new Vector(1, 0, 0);
-                        kr.rpgcraft.util.Vfx.slash(target.getLocation().add(0, 1, 0), f, 4, 45, c);
-                        kr.rpgcraft.util.Vfx.slash(target.getLocation().add(0, 1, 0), f, 4, -45, Color.WHITE);
+                        kr.rpgcraft.util.Vfx.slash(target.getLocation().add(0, 1, 0), f, 4.5, 45, c);
+                        kr.rpgcraft.util.Vfx.slash(target.getLocation().add(0, 1, 0), f, 4.5, -45, Color.WHITE);
+                        w.spawnParticle(Particle.SWEEP_ATTACK, target.getLocation().add(0, 1, 0), 3, 0.4, 0.3, 0.4, 0);
                         w.playSound(behind, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 0.6f);
                         w.playSound(behind, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.2f, 0.6f);
                         plugin.combat().mobSkillDamage(b, target, dmg);
@@ -445,27 +609,27 @@ public class BossManager {
         return Color.fromRGB(Math.min(255, c.getRed() + 60), Math.min(255, c.getGreen() + 60), Math.min(255, c.getBlue() + 60));
     }
 
-    /** 고유 대형 패턴 (레벨 80 이상 보스, 각성하면 더 자주) */
+    /** 고유 대형 패턴 (레벨 80 이상 보스, 각성하면 더 자주) — 레이드 기믹 6종 */
     private void signature(Active a, Player target, MobManager.MobState s) {
         LivingEntity b = a.entity;
         World w = b.getWorld();
         Color c = theme(a.def.id);
-        Color red = Color.fromRGB(0xFF2A2A);
+        Color red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
         double dmg = s.damage * 1.6;
         Location o = b.getLocation();
-        int pick = ThreadLocalRandom.current().nextInt(4);
+        Particle tp = themeParticle(a.def.id);
+        int pick = ThreadLocalRandom.current().nextInt(6);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (pick) {
-            case 0 -> {   // 십자 광선: 빨간 선이 먼저 → 네 방향 광선 (각성: 대각선까지 8방향)
+            case 0 -> {   // 십자 광선: 붉은 띠가 차오른 뒤 네 방향 광선 (각성: 8방향)
                 int dirs = s.awakened ? 8 : 4;
                 double L = 18;
+                charge(b, 22, c);
                 for (int d = 0; d < dirs; d++) {
                     double ang = d * Math.PI * 2 / dirs;
-                    Location end = o.clone().add(Math.cos(ang) * L, 0.5, Math.sin(ang) * L);
-                    kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 0.5, 0), end, 0.6, red);
-                    later(10, () -> kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 0.5, 0), end, 0.6, red));
+                    telegraphLine(o, new Vector(Math.cos(ang), 0, Math.sin(ang)), L, 3.6, 22, red);
                 }
-                w.playSound(o, Sound.BLOCK_BEACON_POWER_SELECT, 1.2f, 0.6f);
+                w.playSound(o, Sound.BLOCK_BEACON_POWER_SELECT, 1.4f, 0.6f);
                 later(22, () -> {
                     if (!b.isValid()) return;
                     Set<UUID> once = new HashSet<>();
@@ -473,9 +637,11 @@ public class BossManager {
                         double ang = d * Math.PI * 2 / dirs;
                         Vector dv = new Vector(Math.cos(ang), 0, Math.sin(ang));
                         Location end = o.clone().add(dv.clone().multiply(L)).add(0, 1, 0);
-                        kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 1, 0), end, 3.0, c);
-                        kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 1, 0), end, 1.2, Color.WHITE);
-                        kr.rpgcraft.util.Vfx.burst(end, 2.5, c);
+                        kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 1, 0), end, 3.4, c);
+                        kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 1, 0), end, 1.3, Color.WHITE);
+                        later(3, () -> kr.rpgcraft.util.Vfx.beam(o.clone().add(0, 1, 0), end, 2.4, c));
+                        kr.rpgcraft.util.Vfx.burst(end, 3, c);
+                        for (double t = 2; t < L; t += 3) w.spawnParticle(tp, o.clone().add(dv.clone().multiply(t)).add(0, 1, 0), 3, 0.3, 0.3, 0.3, 0.02);
                         for (Player p : playersNear(o, L + 1)) {
                             Vector to = p.getLocation().toVector().subtract(o.toVector()).setY(0);
                             double along = to.dot(dv);
@@ -483,50 +649,54 @@ public class BossManager {
                                 plugin.combat().mobSkillDamage(b, p, dmg);
                         }
                     }
-                    w.playSound(o, Sound.ENTITY_WARDEN_SONIC_BOOM, 1.5f, 0.8f);
+                    w.spawnParticle(Particle.SONIC_BOOM, o.clone().add(0, 1, 0), 1);
+                    w.playSound(o, Sound.ENTITY_WARDEN_SONIC_BOOM, 1.6f, 0.8f);
                 });
-                announce(a, "&c십자 광선! &7빨간 선을 피하세요");
+                announce(a, "&c십자 광선! &7붉은 띠에서 벗어나세요");
             }
-            case 1 -> {   // 파멸의 고리: 가까이 붙어야 안전 (바깥 고리가 폭발)
+            case 1 -> {   // 파멸의 고리: 보스 곁 초록 원만 안전, 바깥 전체가 폭발
                 double safe = 4, outer = 16;
-                kr.rpgcraft.util.Vfx.ring(o, safe, Color.fromRGB(0x5AFF7A));
-                kr.rpgcraft.util.Vfx.ring(o, outer, red);
-                later(12, () -> { kr.rpgcraft.util.Vfx.ring(o, safe, Color.fromRGB(0x5AFF7A)); kr.rpgcraft.util.Vfx.ring(o, outer, red); });
-                w.playSound(o, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.5f, 0.6f);
+                telegraph(o, outer, 30, red);
+                for (int t = 0; t <= 30; t += 4) later(t, () -> dustCircle(o, safe, green, 1.8f));
+                charge(b, 30, c);
+                w.playSound(o, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.6f, 0.6f);
                 later(30, () -> {
                     if (!b.isValid()) return;
                     for (double r = safe + 2; r <= outer; r += 3) {
                         double rr = r;
-                        later((long) ((r - safe) / 3), () -> { kr.rpgcraft.util.Vfx.ring(o, rr, c); kr.rpgcraft.util.Vfx.ring(o, rr - 0.8, Color.WHITE); });
+                        later((long) ((r - safe) / 3), () -> { kr.rpgcraft.util.Vfx.ring(o, rr, c); kr.rpgcraft.util.Vfx.ring(o, rr - 0.8, Color.WHITE); w.spawnParticle(tp, o, 20, rr * 0.6, 0.3, rr * 0.6, 0.05); });
                     }
                     for (Player p : playersNear(o, outer)) if (p.getLocation().distance(o) > safe) plugin.combat().mobSkillDamage(b, p, dmg * 1.2);
-                    kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 2, 0), 8, c);
+                    kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 2, 0), 9, c);
+                    w.spawnParticle(Particle.EXPLOSION_HUGE, o, 3, 5, 0.5, 5);
                     w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
                 });
-                announce(a, "&a파멸의 고리! &7보스 가까이(초록 원 안)로");
+                announce(a, "&a파멸의 고리! &7보스 곁 초록 원 안으로");
             }
-            case 2 -> {   // 유성 폭격: 전장 곳곳에 빨간 원 10~16개가 차례로 폭발
+            case 2 -> {   // 유성 폭격: 전장 곳곳에 차오르는 원 10~16개 → 차례로 유성 낙하
                 int n = s.awakened ? 16 : 10;
-                w.playSound(o, Sound.ENTITY_WITHER_SHOOT, 1.2f, 0.5f);
+                w.playSound(o, Sound.ENTITY_WITHER_SHOOT, 1.4f, 0.5f);
                 for (int i = 0; i < n; i++) {
                     Location at = o.clone().add(ThreadLocalRandom.current().nextDouble(-14, 14), 0, ThreadLocalRandom.current().nextDouble(-14, 14));
                     if (i < 3 && target.isOnline()) at = target.getLocation().clone().add(ThreadLocalRandom.current().nextDouble(-2, 2), 0, ThreadLocalRandom.current().nextDouble(-2, 2));
                     Location fat = at;
                     long delay = i * 3L;
-                    later(delay, () -> kr.rpgcraft.util.Vfx.ring(fat, 3, red));
+                    later(delay, () -> telegraph(fat, 3, 16, red));
                     later(delay + 16, () -> {
                         if (!b.isValid()) return;
-                        kr.rpgcraft.util.Vfx.beam(fat.clone().add(0, 16, 0), fat, 1.6, c);
-                        kr.rpgcraft.util.Vfx.burst(fat.clone().add(0, 0.8, 0), 3.4, c);
-                        w.playSound(fat, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 0.9f);
+                        kr.rpgcraft.util.Vfx.beam(fat.clone().add(-3, 18, -2), fat, 1.8, c);
+                        kr.rpgcraft.util.Vfx.burst(fat.clone().add(0, 0.8, 0), 3.6, c);
+                        w.spawnParticle(Particle.LAVA, fat, 8, 1, 0.2, 1, 0.1);
+                        w.spawnParticle(Particle.EXPLOSION_LARGE, fat, 1);
+                        w.playSound(fat, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.9f);
                         hurt(b, playersNear(fat, 3), dmg * 0.7, null);
                     });
                 }
-                announce(a, "&6유성 폭격! &7빨간 원을 피하세요");
+                announce(a, "&6유성 폭격! &7차오르는 원을 피하세요");
             }
-            default -> {   // 칼날 폭풍: 보스 주위를 도는 참격이 3바퀴 휩쓸고 지나감
-                w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.5f, 0.5f);
-                kr.rpgcraft.util.Vfx.ring(o, 9, red);
+            case 3 -> {   // 칼날 폭풍: 보스 주위를 도는 참격 3바퀴 (가까울수록 위험)
+                telegraph(o, 9, 10, red);
+                w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.6f, 0.5f);
                 Set<UUID> once = new HashSet<>();
                 for (int t = 0; t < 18; t++) {
                     int tt = t;
@@ -535,7 +705,9 @@ public class BossManager {
                         double ang = tt * Math.PI / 3;
                         Vector f = new Vector(Math.cos(ang), 0, Math.sin(ang));
                         Location at = b.getLocation().add(f.clone().multiply(5)).add(0, 1, 0);
-                        kr.rpgcraft.util.Vfx.slash(at, f, 7, tt % 2 == 0 ? 30 : -30, tt % 3 == 0 ? Color.WHITE : c);
+                        kr.rpgcraft.util.Vfx.slash(at, f, 7.5, tt % 2 == 0 ? 30 : -30, tt % 3 == 0 ? Color.WHITE : c);
+                        w.spawnParticle(Particle.SWEEP_ATTACK, at, 2, 1, 0.3, 1, 0);
+                        if (tt % 3 == 0) w.playSound(at, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 0.7f + tt * 0.02f);
                         for (Player p : playersNear(at, 4)) if (once.add(p.getUniqueId())) {
                             plugin.combat().mobSkillDamage(b, p, dmg * 0.8);
                             p.setVelocity(f.clone().multiply(0.8).setY(0.4));
@@ -544,6 +716,62 @@ public class BossManager {
                     });
                 }
                 announce(a, "&c칼날 폭풍! &7멀리 떨어지세요");
+            }
+            case 4 -> {   // 심판의 낙인: 최대 3명에게 낙인 → 3초 뒤 그 자리 주변 폭발 (다른 사람과 흩어지세요)
+                List<Player> ps = new ArrayList<>(playersNear(o, 30));
+                Collections.shuffle(ps);
+                int n = Math.min(ps.size(), s.awakened ? 3 : 2);
+                double R = 4.5;
+                for (int i = 0; i < n; i++) {
+                    Player p = ps.get(i);
+                    markTarget(p, 60, c);
+                    for (int t = 0; t < 60; t += 4) {
+                        int tt = t;
+                        later(t, () -> { if (p.isOnline()) dustCircle(p.getLocation(), R, tt > 44 ? red : c, 1.4f); });
+                    }
+                    p.sendTitle(Text.c("&4&l낙인"), Text.c("&c다른 사람에게서 떨어지세요!"), 0, 40, 10);
+                    p.playSound(p.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 1f);
+                    later(60, () -> {
+                        if (!b.isValid() || !p.isOnline()) return;
+                        Location at = p.getLocation();
+                        kr.rpgcraft.util.Vfx.beam(at.clone().add(0, 20, 0), at, 2.4, c);
+                        kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), R * 1.3, c);
+                        kr.rpgcraft.util.Vfx.ring(at, R, Color.WHITE);
+                        w.spawnParticle(Particle.FLASH, at.clone().add(0, 1, 0), 1);
+                        w.spawnParticle(tp, at, 30, R * 0.5, 0.5, R * 0.5, 0.05);
+                        w.playSound(at, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.2f, 0.8f);
+                        hurt(b, playersNear(at, R), dmg * 0.9, null);
+                    });
+                }
+                announce(a, "&5심판의 낙인! &7낙인 찍힌 사람은 흩어지세요");
+            }
+            default -> {   // 안전지대: 전장 전체가 폭발, 초록 원 3곳만 안전
+                double R = 18;
+                List<Location> safes = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    double ang = ThreadLocalRandom.current().nextDouble(Math.PI * 2), d = ThreadLocalRandom.current().nextDouble(6, 13);
+                    safes.add(o.clone().add(Math.cos(ang) * d, 0, Math.sin(ang) * d));
+                }
+                telegraph(o, R, 40, red);
+                for (int t = 0; t <= 40; t += 3) later(t, () -> { for (Location sf : safes) { dustCircle(sf, 3, green, 1.8f); w.spawnParticle(Particle.VILLAGER_HAPPY, sf.clone().add(0, 0.5, 0), 3, 1, 0.2, 1, 0); } });
+                for (Location sf : safes) kr.rpgcraft.util.Vfx.beam(sf, sf.clone().add(0, 12, 0), 1.2, green);
+                charge(b, 40, c);
+                w.playSound(o, Sound.ENTITY_WITHER_SPAWN, 1f, 0.8f);
+                later(40, () -> {
+                    if (!b.isValid()) return;
+                    for (int k2 = 0; k2 < 8; k2++) {
+                        Location at = o.clone().add(ThreadLocalRandom.current().nextDouble(-R, R), 0, ThreadLocalRandom.current().nextDouble(-R, R));
+                        later(k2, () -> { kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), 5, c); w.spawnParticle(Particle.EXPLOSION_HUGE, at, 1); });
+                    }
+                    kr.rpgcraft.util.Vfx.ring(o, R, wv(c));
+                    w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.4f);
+                    for (Player p : playersNear(o, R)) {
+                        boolean ok = false;
+                        for (Location sf : safes) if (p.getLocation().distanceSquared(sf) <= 3.2 * 3.2) { ok = true; break; }
+                        if (!ok) plugin.combat().mobSkillDamage(b, p, dmg * 1.1);
+                    }
+                });
+                announce(a, "&a안전지대! &7초록 원 안으로 들어가세요");
             }
         }
     }

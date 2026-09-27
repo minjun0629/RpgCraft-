@@ -447,7 +447,9 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             set(22, button(Material.BOOK, "&f현재 능력치",
                     "&f공격력 &6" + Text.num(s.attack), "&f체력 &c" + Text.num(s.maxHp),
                     "&f마력 &d" + Text.num(s.magic), "&f크리티컬 &e" + String.format("%.1f", s.crit) + "% &7(피해 +" + String.format("%.0f", 100 + s.critDmg) + "%)",
-                    "&f방어력 &b" + String.format("%.1f", s.def) + "%", "&f이동속도 &a+" + String.format("%.1f", s.speed) + "%",
+                    "&f방어력 &b" + String.format("%.1f", s.def) + "%", "&f이동속도 &a" + String.format("%+.1f", s.speed) + "%",
+                    "&f흡혈 &c" + String.format("%.1f", s.lifesteal) + "% &7(주는 피해만큼 체력 회복)",
+                    "&f회피 &b" + String.format("%.1f", s.dodge) + "% &f방어 관통 &b" + String.format("%.1f", s.armorPen) + "%",
                     "&f직업 &e" + plugin.jobs().title(d)));
             fill(0, 26);
         }

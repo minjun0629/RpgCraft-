@@ -112,7 +112,9 @@ public class PlayerListener implements Listener {
                 "&f힘 &6" + (int) s.str + " &f민첩 &a" + (int) s.dex + " &f모험 &b" + (int) s.adv,
                 "&f공격력 &c" + Text.num(s.attack) + " &f마력 &d" + Text.num(s.magic),
                 "&f체력 &c" + Text.num(s.maxHp) + " &f방어력 &7" + String.format("%.1f", s.def),
-                "&f치명타 &e" + String.format("%.1f", s.crit) + "% &f치명타 피해 &e" + (int) s.critDmg + "%"), null);
+                "&f치명타 &e" + String.format("%.1f", s.crit) + "% &f치명타 피해 &e" + (int) s.critDmg + "%",
+                "&f흡혈 &c" + String.format("%.1f", s.lifesteal) + "% &f이동속도 &a" + String.format("%+.1f", s.speed) + "%",
+                "&f회피 &b" + String.format("%.1f", s.dodge) + "% &f방어 관통 &b" + String.format("%.1f", s.armorPen) + "%"), null);
         for (int i = 0; i < 3; i++) if (d.accessories[i] != null) g.set(37 + i, d.accessories[i].clone(), null);
         for (int i = 0; i < 3; i++) if (d.runes[i] != null) g.set(41 + i, d.runes[i].clone(), null);
         g.set(47, kr.rpgcraft.gui.Gui.button(Material.EMERALD, "&a거래 신청"), ev -> { p.closeInventory(); plugin.trades().request(p, t.getName()); });

@@ -193,6 +193,8 @@ public class MenuManager implements Listener {
                     "",
                     "&c❤ " + Text.num(d.hp) + "/" + Text.num(s.maxHp) + "  &6⚔ " + Text.num(s.attack),
                     "&e✦ 크리 " + String.format("%.1f", s.crit) + "%  &b🛡 방어 " + String.format("%.1f", s.def) + "%",
+                    "&c✚ 흡혈 " + String.format("%.1f", s.lifesteal) + "%  &a» 이동속도 " + String.format("%+.1f", s.speed) + "%",
+                    "&7회피 " + String.format("%.1f", s.dodge) + "%  &7방어 관통 " + String.format("%.1f", s.armorPen) + "%",
                     "&c힘 " + (int) s.str + "  &a민첩 " + (int) s.dex + "  &b모험 " + (int) s.adv)));
 
             ItemStack stat = icon(Material.NETHER_STAR, "&e&l스탯", List.of("&7힘 / 민첩 / 모험 분배", "",

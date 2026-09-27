@@ -90,6 +90,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.NickManager nicks;
     private kr.rpgcraft.boss.FieldBossManager fieldBosses;
     private kr.rpgcraft.feature.DismantleManager dismantle;
+    private kr.rpgcraft.guild.GuildRaidManager guildRaids;
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
@@ -174,6 +175,7 @@ public final class RpgCraft extends JavaPlugin {
         nicks = new kr.rpgcraft.feature.NickManager(this);
         fieldBosses = new kr.rpgcraft.boss.FieldBossManager(this);
         dismantle = new kr.rpgcraft.feature.DismantleManager(this);
+        guildRaids = new kr.rpgcraft.guild.GuildRaidManager(this);
         command("pet", pets);
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
@@ -224,6 +226,7 @@ public final class RpgCraft extends JavaPlugin {
         if (pets != null) pets.cleanup();
         if (nicks != null) nicks.shutdown();
         if (fieldBosses != null) fieldBosses.shutdown();
+        if (guildRaids != null) guildRaids.shutdown();
         for (org.bukkit.entity.Player op : getServer().getOnlinePlayers())   // 서버 종료 중에도 주문서 시간 보관
             if (data != null) kr.rpgcraft.listener.PlayerListener.pauseBuffs(data.get(op));
         if (pack != null) pack.shutdown();
@@ -409,6 +412,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.NickManager nicks() { return nicks; }
     public kr.rpgcraft.boss.FieldBossManager fieldBosses() { return fieldBosses; }
     public kr.rpgcraft.feature.DismantleManager dismantle() { return dismantle; }
+    public kr.rpgcraft.guild.GuildRaidManager guildRaids() { return guildRaids; }
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }

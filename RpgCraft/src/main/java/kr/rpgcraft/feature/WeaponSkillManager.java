@@ -135,6 +135,7 @@ public class WeaponSkillManager implements Listener {
         p.sendTitle("", Text.c("&6&l궁극기"), 0, 15, 5);
         w.playSound(p.getLocation(), Sound.ENTITY_WARDEN_SONIC_CHARGE, 0.8f, 1.3f);
         Fx.circle(p.getLocation().add(0, 0.1, 0), 3, 24, col, 1.4f);
+        ultimateChargeFx(p, col);   // (연출) 기 모으기 1초
         if (id != null && id.contains("xuanwu")) { // 현무: 수호 결계
             plugin.health().healPercent(p, 30);
             plugin.data().get(p).invulnUntil = System.currentTimeMillis() + 3000;
@@ -150,8 +151,59 @@ public class WeaponSkillManager implements Listener {
             }
             Fx.shockwave(plugin, p.getLocation(), 7, col);
             Vfx.burst(p.getLocation().add(0, 1.2, 0), 7, col);
+            ultimateBlastFx(p, col);   // (연출) 빛기둥 · 3겹 충격파 · 하늘로 솟는 광선
             w.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.7f);
         }, 20L);
+    }
+
+    // ------------------------------------------------------------------ 연출 전용 (v5.1.6)
+    /** 회전 베기: 몸 둘레를 한 바퀴 도는 참격 6장 */
+    private void spinFx(Player p, Color c, double r) {
+        for (int i = 0; i < 6; i++) {
+            int ii = i;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!p.isOnline()) return;
+                double a = ii * Math.PI / 3;
+                Vector f = new Vector(Math.cos(a), 0, Math.sin(a));
+                Vfx.slash(p.getLocation().add(0, 1, 0).add(f.clone().multiply(r * 0.6)), f, r * 1.3, ii % 2 == 0 ? 20 : -20, ii % 3 == 0 ? Color.WHITE : c);
+            }, i / 2);
+        }
+        Vfx.ring(p.getLocation(), r, c);
+    }
+
+    /** 궁극기 기 모으기: 발밑 마법진 3겹 + 빨려드는 빛 + 나선 */
+    private void ultimateChargeFx(Player p, Color col) {
+        Fx.helix(plugin, p, 3.2, 1.2, 20, col, Color.WHITE);
+        for (int t = 0; t < 20; t += 4) {
+            int tt = t;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!p.isOnline()) return;
+                Vfx.ring(p.getLocation(), 4.5 - tt * 0.15, tt % 8 == 0 ? col : Color.WHITE);
+                p.getWorld().spawnParticle(Particle.END_ROD, p.getLocation().add(0, 1, 0), 12, 2.2, 1.2, 2.2, -0.12);
+            }, t);
+        }
+        p.getWorld().playSound(p.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1f, 1.3f);
+    }
+
+    /** 궁극기 폭발: 8방향 빛기둥 · 3겹 충격파 · 하늘로 솟는 광선 · 섬광 */
+    private void ultimateBlastFx(Player p, Color col) {
+        Location o = p.getLocation();
+        World w = p.getWorld();
+        w.spawnParticle(Particle.FLASH, o.clone().add(0, 1, 0), 1);
+        Vfx.beam(o.clone(), o.clone().add(0, 20, 0), 3.0, col);
+        Vfx.beam(o.clone(), o.clone().add(0, 20, 0), 1.2, Color.WHITE);
+        for (int i = 0; i < 8; i++) {
+            double a = i * Math.PI / 4;
+            Location pl = o.clone().add(Math.cos(a) * 5, 0, Math.sin(a) * 5);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> { Vfx.beam(pl, pl.clone().add(0, 7, 0), 0.9, col); Vfx.burst(pl.clone().add(0, 1, 0), 2, col); }, i % 3);
+        }
+        for (int k = 1; k <= 3; k++) {
+            int kk = k;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> Vfx.ring(o, 3.0 * kk, kk % 2 == 0 ? Color.WHITE : col), k * 2L);
+        }
+        for (int k = 0; k < 4; k++) Vfx.slash(o.clone().add(0, 1.2, 0), p.getLocation().getDirection().setY(0), 9, k * 45, k % 2 == 0 ? col : Color.WHITE);
+        w.spawnParticle(Particle.EXPLOSION_HUGE, o, 2, 1.5, 0.3, 1.5);
+        w.playSound(o, Sound.ITEM_TRIDENT_THUNDER, 1f, 0.8f);
     }
 
     private long strongCd(Kind k) {
@@ -496,12 +548,14 @@ public class WeaponSkillManager implements Listener {
                 Vfx.burst(at.clone().add(0, 1, 0), 3.0, c);
                 for (LivingEntity le : enemiesNear(p, at, 3.2)) hit(p, le, power(p, 0.3, 1.4));
                 w.playSound(at, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 0.8f, 1.2f);
+                WeaponFx.eruption(at, 3.2, SkillBook.Effect.HOLY);   // (연출)
                 Text.actionBar(p, "&b마력 폭발");
             }
             case SWORD -> { // 회전 베기
                 for (LivingEntity le : enemiesNear(p, p.getLocation(), 2.8)) hit(p, le, power(p, 0.8, 0.3));
                 w.spawnParticle(Particle.SWEEP_ATTACK, p.getLocation().add(0, 1, 0), 6, 1.2, 0.2, 1.2);
                 w.playSound(p.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1.2f);
+                spinFx(p, slashColor(p), 2.8);   // (연출) 한 바퀴 도는 참격
                 Text.actionBar(p, "&e평타 스킬 · 회전 베기");
             }
             case DAGGER -> { // 연속 찌르기
@@ -510,6 +564,8 @@ public class WeaponSkillManager implements Listener {
                         if (target.isValid() && !target.isDead()) {
                             hit(p, target, power(p, 0.35, 0.15));
                             w.spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 8, 0.2, 0.3, 0.2, 0.2);
+                            Vfx.slash(target.getLocation().add(0, 1, 0), p.getLocation().getDirection().setY(0), 2.2, java.util.concurrent.ThreadLocalRandom.current().nextBoolean() ? 60 : -60, slashColor(p));   // (연출)
+                            Vfx.burst(target.getLocation().add(0, 1, 0), 1.3, Color.WHITE);
                             w.playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 0.7f, 1.8f);
                         }
                     }, i * 3L);
@@ -523,6 +579,8 @@ public class WeaponSkillManager implements Listener {
                     le.setVelocity(le.getVelocity().setY(0.45));
                 }
                 w.spawnParticle(Particle.BLOCK_CRACK, c, 30, 1, 0.1, 1, Material.DIRT.createBlockData());
+                Vfx.ring(c, 2.2, slashColor(p));   // (연출) 내려찍은 자리 충격파 · 균열
+                WeaponFx.crater(c, 2.2, SkillBook.Effect.EARTH);
                 w.playSound(c, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 1.2f);
                 Text.actionBar(p, "&e평타 스킬 · 내려찍기");
             }
@@ -530,16 +588,21 @@ public class WeaponSkillManager implements Listener {
                 hit(p, target, power(p, 0.6, 0.4));
                 plugin.combat().stun(target, 20);
                 w.playSound(target.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1f, 0.7f);
+                Vfx.burst(target.getLocation().add(0, 1, 0), 2.2, Color.WHITE);   // (연출) 기절 별빛
+                WeaponFx.element(target.getLocation().add(0, target.getHeight() + 0.3, 0), SkillBook.Effect.STUN, 0.6);
                 Text.actionBar(p, "&e평타 스킬 · 방패 강타 (기절)");
             }
             case SPEAR -> { // 관통 찌르기
                 for (LivingEntity le : line(p, 4.5, 1.2)) hit(p, le, power(p, 0.8, 0.3));
                 Fx.line(p.getEyeLocation(), p.getEyeLocation().add(p.getLocation().getDirection().multiply(4.5)), 0.3, Color.fromRGB(0xA0FFCF), 1f);
+                WeaponFx.lineSpiral(p.getEyeLocation(), p.getLocation().getDirection(), 4.5, SkillBook.Effect.WIND);   // (연출)
                 Text.actionBar(p, "&e평타 스킬 · 관통 찌르기");
             }
             default -> { // 몽둥이 강타
                 hit(p, target, power(p, 0.5, 0.2));
                 plugin.combat().knockback(target, p.getLocation(), 4);
+                Vfx.burst(target.getLocation().add(0, 1, 0), 2.0, slashColor(p));   // (연출)
+                WeaponFx.element(target.getLocation().add(0, 1, 0), SkillBook.Effect.STUN, 0.6);
                 Text.actionBar(p, "&e평타 스킬 · 강타");
             }
         }
@@ -568,6 +631,7 @@ public class WeaponSkillManager implements Listener {
         ar.getPersistentDataContainer().set(Keys.ARROW_ATK, PersistentDataType.DOUBLE, atk);
         ar.getPersistentDataContainer().set(Keys.ARROW_FORCE, PersistentDataType.DOUBLE, 1.0);
         Bukkit.getScheduler().runTaskLater(plugin, () -> { if (ar.isValid()) ar.remove(); }, 100L);
+        WeaponFx.trail(ar, slashColor(p), 20);   // (연출) 화살 꼬리
     }
 
     private void quickShot(Player p) {

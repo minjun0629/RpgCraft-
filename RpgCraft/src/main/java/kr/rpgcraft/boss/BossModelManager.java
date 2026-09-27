@@ -32,6 +32,8 @@ public class BossModelManager implements Listener {
             "megalodon", "kraken", "mount_wolf", "mount_lizard", "mount_warhorse", "mount_icebear", "mount_lion", "mount_panther", "mount_griffin", "mount_dragon",
             "pet_slime", "pet_chick", "pet_bunny", "pet_fox", "pet_penguin", "pet_owl", "pet_golem", "pet_fairy", "pet_ghost", "pet_phoenix", "pet_dragon", "pet_star");
     private static final Map<String, Float> SCALE = new HashMap<>();
+    /** 보스 모델 좌표는 장식 공간을 위해 (8,8,8) 기준 0.75 배로 줄여 저장됨 (tools/boss_models.py BOSS_SHRINK) → 그릴 때 되돌림 */
+    private static final float MODEL_SHRINK = 0.75f;
 
     static {
         String[] ids = {"witch", "elf_queen", "dwarf_king", "harpy_queen", "sea_gatekeeper", "bungbung", "desert_nightmare", "siphonia", "kain",
@@ -70,7 +72,7 @@ public class BossModelManager implements Listener {
 
     private Transformation tf(float scale, float bob, float yawRad) {
         // 게임이 ItemDisplay 의 아이템을 Y축 180° 돌려 그리므로 π 를 더해 정면을 맞춤
-        return new Transformation(new Vector3f(0, 0.5f * scale + bob, 0), new AxisAngle4f(yawRad + (float) Math.PI, 0, 1, 0), new Vector3f(scale), new AxisAngle4f());
+        return new Transformation(new Vector3f(0, 0.5f * scale + bob, 0), new AxisAngle4f(yawRad + (float) Math.PI, 0, 1, 0), new Vector3f(scale / MODEL_SHRINK), new AxisAngle4f());
     }
 
     public void attach(LivingEntity boss, String id) {
@@ -132,7 +134,7 @@ public class BossModelManager implements Listener {
         float s = scales.getOrDefault(e.getEntity().getUniqueId(), 1.8f);
         d.setInterpolationDelay(0);
         d.setInterpolationDuration(2);
-        d.setTransformation(new Transformation(new Vector3f(0, 0.5f * s, 0), new AxisAngle4f(yawOffset() + 0.15f, 0, 1, 0), new Vector3f(s * 0.95f), new AxisAngle4f()));
+        d.setTransformation(new Transformation(new Vector3f(0, 0.5f * s, 0), new AxisAngle4f(yawOffset() + 0.15f, 0, 1, 0), new Vector3f(s * 0.95f / MODEL_SHRINK), new AxisAngle4f()));
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!d.isValid()) return;
             d.setInterpolationDelay(0);

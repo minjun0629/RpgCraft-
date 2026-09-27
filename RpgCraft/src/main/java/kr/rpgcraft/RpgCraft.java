@@ -89,6 +89,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.PetManager pets;
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
+    private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
     private kr.rpgcraft.world.AuctionManager auction;
     private PartyManager party;
     private LegendaryManager legendary;
@@ -168,12 +169,17 @@ public final class RpgCraft extends JavaPlugin {
         command("mount", mounts);
         pets = new kr.rpgcraft.feature.PetManager(this);
         command("pet", pets);
+        command("collection", (s, c, l, a) -> {   // /도감: 탈것 · 펫 도감
+            if (s instanceof Player pl) openCollections(pl);
+            return true;
+        });
         limitBreak = new kr.rpgcraft.feature.LimitBreakManager(this);
         hiddenJobs = new kr.rpgcraft.world.HiddenJobManager(this);
         getServer().getPluginManager().registerEvents(hiddenJobs, this);
         auction = new kr.rpgcraft.world.AuctionManager(this);
         command("auction", auction);
-        getServer().getPluginManager().registerEvents(new kr.rpgcraft.world.HiddenQuestManager(this), this);
+        hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
+        getServer().getPluginManager().registerEvents(hiddenQuests, this);
         new kr.rpgcraft.world.BgmManager(this);
         command("guide", guide);
         casino = new kr.rpgcraft.world.CasinoManager(this);
@@ -339,6 +345,19 @@ public final class RpgCraft extends JavaPlugin {
         for (Listener l : ls) Bukkit.getPluginManager().registerEvents(l, this);
     }
 
+    /** 도감 모음 창 */
+    public void openCollections(Player p) {
+        var d = data.get(p);
+        kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(3, "&8도감") {
+        };
+        g.set(11, kr.rpgcraft.gui.Gui.button(org.bukkit.Material.SADDLE, "&6&l탈것 도감", "&7모은 탈것 &f" + mounts.ownedCount(d) + " / " + kr.rpgcraft.feature.MountManager.Mount.values().length,
+                "", "&e▶ 클릭"), e -> mounts.openCollection(p));
+        g.set(15, kr.rpgcraft.gui.Gui.button(org.bukkit.Material.EGG, "&d&l펫 도감", "&7모은 펫 &f" + pets.ownedCount(d) + " / " + kr.rpgcraft.feature.PetManager.Pet.values().length,
+                "", "&e▶ 클릭"), e -> pets.open(p));
+        g.fill(0, 26);
+        g.open(p);
+    }
+
     private void command(String name, CommandExecutor ex) {
         PluginCommand c = getCommand(name);
         if (c == null) {
@@ -398,6 +417,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.PetManager pets() { return pets; }
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
+    public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }
     public kr.rpgcraft.world.AuctionManager auction() { return auction; }
     public PartyManager party() { return party; }
     public LegendaryManager legendary() { return legendary; }

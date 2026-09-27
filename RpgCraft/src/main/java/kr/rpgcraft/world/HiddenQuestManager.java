@@ -52,6 +52,7 @@ public class HiddenQuestManager implements Listener {
         this.file = new File(plugin.getDataFolder(), "hidden_quests.yml");
         this.data = YamlConfiguration.loadConfiguration(file);
         Bukkit.getScheduler().runTaskLater(plugin, this::ensurePlaced, 200L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> respawnMissing(null), 400L);   // 사라진 히든 NPC 는 원래 자리에 다시
     }
 
     private void save() {
@@ -74,24 +75,45 @@ public class HiddenQuestManager implements Listener {
                 w.getChunkAt(l).load(true);
                 Block top = kr.rpgcraft.util.Locs.surface(w, l);
                 if (top.isLiquid() || top.getType().name().contains("LEAVES")) continue;
-                w.spawn(top.getLocation().add(0.5, 1, 0.5), Villager.class, v -> {
-                    v.setAI(false);
-                    v.setInvulnerable(true);
-                    v.setSilent(true);
-                    v.setPersistent(true);
-                    v.setRemoveWhenFarAway(false);
-                    v.setProfession(q.prof());
-                    v.setVillagerLevel(5);
-                    v.setCustomName(Text.c("&8???"));
-                    v.setCustomNameVisible(true);
-                    v.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, q.id());
-                    v.getPersistentDataContainer().set(kr.rpgcraft.Keys.INDICATOR, PersistentDataType.BYTE, (byte) 0);
-                });
-                top.getRelative(1, 1, 0).setType(Material.SOUL_LANTERN, false);
+                spawnNpc(w, q, top);
                 data.set("placed." + q.id(), top.getX() + "," + top.getZ());
                 save();
                 break;
             }
+        }
+    }
+
+    private void spawnNpc(World w, HQ q, Block top) {
+        w.spawn(top.getLocation().add(0.5, 1, 0.5), Villager.class, v -> {
+            v.setAI(false);
+            v.setInvulnerable(true);
+            v.setSilent(true);
+            v.setPersistent(true);
+            v.setRemoveWhenFarAway(false);
+            v.setProfession(q.prof());
+            v.setVillagerLevel(5);
+            v.setCustomName(Text.c("&8???"));
+            v.setCustomNameVisible(true);
+            v.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, q.id());
+            v.getPersistentDataContainer().set(kr.rpgcraft.Keys.INDICATOR, PersistentDataType.BYTE, (byte) 0);
+        });
+        top.getRelative(1, 1, 0).setType(Material.SOUL_LANTERN, false);
+    }
+
+    /** 배치 기록은 있는데 NPC 가 없어졌으면 같은 자리에 다시 세운다. who: 결과를 알려줄 사람 (없으면 콘솔 로그) */
+    public void respawnMissing(org.bukkit.command.CommandSender who) {
+        World w = Bukkit.getWorlds().get(0);
+        for (HQ q : LIST) {
+            String xz = data.getString("placed." + q.id());
+            if (xz == null) continue;
+            String[] v = xz.split(",");
+            int x = Integer.parseInt(v[0].trim()), z = Integer.parseInt(v[1].trim());
+            kr.rpgcraft.util.NpcRespawn.ensure(plugin, w, x, z, KEY, q.id(), top -> spawnNpc(w, q, top), again -> {
+                if (!again) return;
+                String msg = "히든 NPC 「" + q.name() + "」 다시 배치: " + x + ", " + z;
+                if (who != null) who.sendMessage(Text.c("&d" + msg));
+                else plugin.getLogger().info(msg);
+            });
         }
     }
 

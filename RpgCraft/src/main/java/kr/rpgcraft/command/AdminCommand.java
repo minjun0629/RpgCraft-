@@ -59,6 +59,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 mob <list|spawn <id> [레벨]|killall> &7- 커스텀 몬스터");
         Text.msg(s, "&e/rpg관리 structure <종류> [ID] &7- 구조물 자동 건설 (castle, ruin, temple, tower ...)");
         Text.msg(s, "&e/rpg관리 wave [플레이어] &7| &emerchant &7- 필드 웨이브 깃발 / 히든 상인 즉시 등장");
+        Text.msg(s, "&e/rpg관리 hiddennpc [respawn] &7- 히든 NPC 위치 / 사라진 히든 NPC 다시 배치");
         Text.msg(s, "&e/rpg관리 reset <all confirm|player <이름> confirm> &7- 게임 초기화");
         Text.msg(s, "&e/rpg관리 dungeon <create <ID> <단계>|generate [개수]|list|delete <ID|all>> &7- 대형 던전");
         Text.msg(s, "&e/rpg관리 questnpc <scatter <수>|here <유형>> &7- 의뢰 NPC 배치");
@@ -252,6 +253,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     ap.openInventory(a[0].equals("inv") ? t.getInventory() : t.getEnderChest());
                 }
                 case "hiddennpc" -> {
+                    if (a.length > 1 && (a[1].equalsIgnoreCase("respawn") || a[1].equals("재배치"))) {   // 사라진 히든 NPC 다시 세우기
+                        plugin.hiddenQuests().respawnMissing(s);
+                        plugin.hiddenJobs().respawnMissing(s);
+                        Text.msg(s, "&a히든 NPC 확인 중... 없어진 NPC 는 원래 자리에 다시 세웁니다. &7(몇 초 걸림)");
+                        return true;
+                    }
                     for (String hl : plugin.hiddenJobs().locations()) Text.msg(s, "&5[숨은 직업] &f" + hl);
                     var y = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(new java.io.File(plugin.getDataFolder(), "hidden_quests.yml"));
                     var sec = y.getConfigurationSection("placed");

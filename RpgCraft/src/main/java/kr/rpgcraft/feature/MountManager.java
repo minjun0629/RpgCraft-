@@ -126,6 +126,7 @@ public class MountManager implements Listener, CommandExecutor {
         lore.add("");
         lore.add("&e▶ 클릭하여 뽑기");
         g.set(13, Gui.button(Material.SADDLE, "&6&l탈것 뽑기", lore.toArray(new String[0])), e -> draw(p));
+        g.set(22, Gui.button(Material.BOOK, "&e&l탈것 도감 &f" + ownedCount(plugin.data().get(p)) + " / " + Mount.values().length, "&e▶ 클릭"), e -> openCollection(p));
         g.fill(0, 26);
         g.open(p);
     }
@@ -139,11 +140,88 @@ public class MountManager implements Listener, CommandExecutor {
         List<Mount> pool = new ArrayList<>();
         for (Mount m : Mount.values()) if (m.grade == grade) pool.add(m);
         Mount got = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+        markOwned(p, got);
         for (ItemStack l : p.getInventory().addItem(token(got)).values()) p.getWorld().dropItemNaturally(p.getLocation(), l);
         p.playSound(p.getLocation(), grade >= 2 ? Sound.UI_TOAST_CHALLENGE_COMPLETE : Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
         p.sendTitle(Text.c(GRADE[grade]), Text.c("&f" + got.label), 5, 40, 10);
         if (grade == 3) Text.announce(Text.PREFIX + Text.c("&6&l" + p.getName() + "&f님이 전설 탈것 &6" + got.label + "&f을(를) 뽑았습니다!"));
         openShop(p);
+    }
+
+    // ------------------------------------------------------------------ 도감
+    public boolean owns(kr.rpgcraft.data.PlayerData d, Mount m) {
+        return d.counter("mount_own_" + m.name()) > 0;
+    }
+
+    public int ownedCount(kr.rpgcraft.data.PlayerData d) {
+        int n = 0;
+        for (Mount m : Mount.values()) if (owns(d, m)) n++;
+        return n;
+    }
+
+    private void markOwned(Player p, Mount m) {
+        var d = plugin.data().get(p);
+        if (owns(d, m)) return;
+        d.counters.put("mount_own_" + m.name(), 1.0);
+        Text.actionBar(p, "&e탈것 도감에 &f" + m.label + "&e이(가) 등록되었습니다! &7(/도감)");
+    }
+
+    /** 가진 탈것 아이템을 도감에 등록 (도감이 생기기 전에 뽑은 탈것 포함) */
+    private void scanTokens(Player p) {
+        for (ItemStack[] inv : new ItemStack[][]{p.getInventory().getContents(), p.getEnderChest().getContents()})
+            for (ItemStack it : inv) {
+                if (it == null || !it.hasItemMeta()) continue;
+                String id = it.getItemMeta().getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
+                if (id == null) continue;
+                try { markOwned(p, Mount.valueOf(id)); } catch (IllegalArgumentException ignored) { }
+            }
+    }
+
+    @EventHandler
+    public void onJoinScan(org.bukkit.event.player.PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        Bukkit.getScheduler().runTaskLater(plugin, () -> { if (p.isOnline()) scanTokens(p); }, 40L);
+    }
+
+    /** 탈것 도감: 얻은 탈것은 모델 · 능력치, 얻지 못한 탈것은 가림 */
+    public void openCollection(Player p) {
+        scanTokens(p);
+        var d = plugin.data().get(p);
+        Gui g = new Gui(4, "&8탈것 도감") {
+        };
+        for (Mount m : Mount.values()) {
+            int slot = 10 + m.grade * 2 + (m.ordinal() % 2) * 9;
+            boolean own = owns(d, m);
+            List<String> lore = new ArrayList<>();
+            lore.add(GRADE[m.grade] + " &7탈것");
+            lore.add("");
+            if (own) {
+                lore.add("&a이동 속도 &f" + (int) (m.speed() * 300));
+                lore.add("&a점프력 &f" + (int) (m.jump() * 100));
+                if (m.flies()) lore.add("&b✈ 비행 가능");
+                lore.add("");
+                lore.add("&a✔ 보유 &7(탈것 아이템을 우클릭해 타기)");
+            } else {
+                lore.add("&8능력치: ???");
+                lore.add("");
+                lore.add("&8미보유 — /탈것 에서 뽑을 수 있습니다");
+            }
+            ItemStack icon;
+            if (own) {
+                icon = Gui.button(Material.PAPER, GRADE[m.grade].substring(0, 2) + "&l" + m.label, lore.toArray(new String[0]));
+                ItemMeta im = icon.getItemMeta();
+                im.setCustomModelData(9000 + kr.rpgcraft.boss.BossModelManager.ORDER.indexOf(m.model));
+                icon.setItemMeta(im);
+            } else icon = Gui.button(Material.GRAY_DYE, "&8??? " + GRADE[m.grade].substring(0, 2) + "(" + m.label + ")", lore.toArray(new String[0]));
+            g.set(slot, icon);
+        }
+        int n = ownedCount(d);
+        g.set(4, Gui.button(Material.BOOK, "&e&l탈것 도감 &f" + n + " / " + Mount.values().length, "&7모은 탈것: " + (n * 100 / Mount.values().length) + "%",
+                "&7얻지 못한 탈것의 능력치는 가려집니다"));
+        g.set(27, Gui.button(Material.SADDLE, "&6탈것 뽑기", "&e▶ 클릭"), e -> openShop(p));
+        if (plugin.pets() != null) g.set(35, Gui.button(Material.EGG, "&d펫 도감 보기", "&e▶ 클릭"), e -> plugin.pets().open(p));
+        g.fill(0, 35);
+        g.open(p);
     }
 
     // ------------------------------------------------------------------ 타기 · 내리기
@@ -164,6 +242,7 @@ public class MountManager implements Listener, CommandExecutor {
         if (plugin.dungeons() != null && plugin.dungeons().runOf(p) != null) { Text.actionBar(p, "&c던전에서는 탈 수 없습니다"); return; }
         Mount m;
         try { m = Mount.valueOf(id); } catch (IllegalArgumentException ex) { return; }
+        markOwned(p, m);
         summon(p, m);
     }
 

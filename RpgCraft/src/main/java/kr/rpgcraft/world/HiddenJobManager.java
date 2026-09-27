@@ -52,6 +52,7 @@ public class HiddenJobManager implements Listener {
         this.file = new File(plugin.getDataFolder(), "hidden_jobs.yml");
         this.data = YamlConfiguration.loadConfiguration(file);
         Bukkit.getScheduler().runTaskLater(plugin, this::ensurePlaced, 260L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> respawnMissing(null), 460L);   // 사라진 NPC 는 원래 자리에 다시
     }
 
     public static Tier of(PlayerData d) {
@@ -79,22 +80,45 @@ public class HiddenJobManager implements Listener {
                 w.getChunkAt(l).load(true);
                 Block top = kr.rpgcraft.util.Locs.surface(w, l);
                 if (top.isLiquid()) continue;
-                w.spawn(top.getLocation().add(0.5, 1, 0.5), Villager.class, v -> {
-                    v.setAI(false);
-                    v.setInvulnerable(true);
-                    v.setSilent(true);
-                    v.setPersistent(true);
-                    v.setRemoveWhenFarAway(false);
-                    v.setProfession(t.line().equals("A") ? Villager.Profession.CLERIC : Villager.Profession.CARTOGRAPHER);
-                    v.setVillagerLevel(5);
-                    v.setCustomName(Text.c("&8…"));
-                    v.setCustomNameVisible(true);
-                    v.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, id);
-                });
+                spawnNpc(w, t, top);
                 data.set("placed." + id, top.getX() + "," + top.getZ());
                 save();
                 break;
             }
+        }
+    }
+
+    private void spawnNpc(World w, Tier t, Block top) {
+        String id = t.line() + t.tier();
+        w.spawn(top.getLocation().add(0.5, 1, 0.5), Villager.class, v -> {
+            v.setAI(false);
+            v.setInvulnerable(true);
+            v.setSilent(true);
+            v.setPersistent(true);
+            v.setRemoveWhenFarAway(false);
+            v.setProfession(t.line().equals("A") ? Villager.Profession.CLERIC : Villager.Profession.CARTOGRAPHER);
+            v.setVillagerLevel(5);
+            v.setCustomName(Text.c("&8…"));
+            v.setCustomNameVisible(true);
+            v.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, id);
+        });
+    }
+
+    /** 배치 기록은 있는데 NPC 가 없어졌으면 같은 자리에 다시 세운다 */
+    public void respawnMissing(org.bukkit.command.CommandSender who) {
+        World w = Bukkit.getWorlds().get(0);
+        for (Tier t : TIERS) {
+            String id = t.line() + t.tier();
+            String xz = data.getString("placed." + id);
+            if (xz == null) continue;
+            String[] v = xz.split(",");
+            int x = Integer.parseInt(v[0].trim()), z = Integer.parseInt(v[1].trim());
+            kr.rpgcraft.util.NpcRespawn.ensure(plugin, w, x, z, KEY, id, top -> spawnNpc(w, t, top), again -> {
+                if (!again) return;
+                String msg = "숨은 직업 NPC " + id + " 다시 배치: " + x + ", " + z;
+                if (who != null) who.sendMessage(Text.c("&5" + msg));
+                else plugin.getLogger().info(msg);
+            });
         }
     }
 

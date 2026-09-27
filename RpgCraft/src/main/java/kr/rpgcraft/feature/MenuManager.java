@@ -292,15 +292,20 @@ public class MenuManager implements Listener {
 
     // =================================================================== 상점 목록
     private class ShopListGui extends Gui {
-        ShopListGui(Player p) {
-            super(4, "&8상점 목록");
+        ShopListGui(Player p) { this(p, 0); }
+
+        /** 한 쪽에 28개 (상점이 많아져 페이지로 나눔 — 이전엔 14개까지만 보였음) */
+        ShopListGui(Player p, int page) {
+            super(6, "&8상점 목록" + (page > 0 ? " (" + (page + 1) + ")" : ""));
             boolean admin = p.hasPermission("rpgcraft.admin");
+            List<ShopManager.Shop> list = new ArrayList<>();
+            for (ShopManager.Shop s : plugin.shops().all()) if (!s.id.equals("hidden")) list.add(s);   // 히든 상인에게서만
+            int per = 28, pages = Math.max(1, (list.size() + per - 1) / per);
             int slot = 10;
-            for (ShopManager.Shop s : plugin.shops().all()) {
-                if (slot > 25) break;
-                if (s.id.equals("hidden")) continue; // 히든 상인에게서만
+            for (int i = page * per; i < list.size() && i < (page + 1) * per; i++) {
+                ShopManager.Shop s = list.get(i);
                 boolean ok = s.command || admin;
-                Material m = s.id.contains("weapon") ? Material.IRON_SWORD : s.id.contains("armor") ? Material.IRON_CHESTPLATE
+                Material m = s.id.contains("weapon") || s.id.startsWith("armory") ? Material.IRON_SWORD : s.id.equals("fish") ? Material.COD : s.id.contains("armor") ? Material.IRON_CHESTPLATE
                         : s.id.contains("war") ? Material.TNT : s.id.contains("wander") ? Material.LEAD : s.id.contains("special") ? Material.AMETHYST_SHARD : Material.EMERALD;
                 set(slot, icon(ok ? m : Material.GRAY_DYE, (ok ? "&a" : "&8") + Text.strip(s.title),
                         List.of("&7상품 " + s.entries.size() + "종" + (s.multiplier != 1 ? " &c(가격 x" + s.multiplier + ")" : ""),
@@ -310,8 +315,10 @@ public class MenuManager implements Listener {
                 slot++;
                 if (slot % 9 == 8) slot += 2;
             }
-            back(this, 27, p);
-            fill(0, 35);
+            if (page > 0) set(45, icon(Material.ARROW, "&f이전 페이지", List.of()), e -> new ShopListGui(p, page - 1).open(p));
+            if (page + 1 < pages) set(53, icon(Material.ARROW, "&f다음 페이지", List.of()), e -> new ShopListGui(p, page + 1).open(p));
+            back(this, 49, p);
+            fill(0, 53);
         }
     }
 

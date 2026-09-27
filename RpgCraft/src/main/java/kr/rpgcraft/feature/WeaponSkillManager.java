@@ -312,6 +312,11 @@ public class WeaponSkillManager implements Listener {
         Bukkit.getScheduler().runTask(plugin, () -> basic(p, k, victim));
     }
 
+    /** 지팡이 평타(마법탄) 간격 — v5.4.36: 0.7초 → 0.9초 */
+    private long boltCooldown() {
+        return plugin.getConfig().getLong("weapon-skills.bolt-cooldown-ms", 900);
+    }
+
     // ------------------------------------------------------------------ 참격 (좌클릭)
     private long interval(Kind k) {
         return switch (k) {
@@ -320,7 +325,7 @@ public class WeaponSkillManager implements Listener {
             case SHIELD -> WeaponClass.SHIELD.interval;
             case SPEAR -> WeaponClass.SPEAR.interval;
             case CLUB -> WeaponClass.CLUB.interval;
-            case STAFF -> 700L;
+            case STAFF -> boltCooldown();
             default -> WeaponClass.SWORD.interval;
         };
     }
@@ -381,7 +386,7 @@ public class WeaponSkillManager implements Listener {
             return;
         }
         if (d.onCooldown("slash")) return;
-        d.cooldown("slash", 700);
+        d.cooldown("slash", boltCooldown());
         Color c = magicColor(p);
         Location start = p.getEyeLocation().add(p.getEyeLocation().getDirection().multiply(0.8)).add(0, -0.2, 0);
         Vector step = p.getEyeLocation().getDirection().normalize().multiply(1.3);

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.4.36
+- **지팡이 평타 쿨타임 조금 늘림**: 좌클릭 마법탄 간격 0.7초 → **0.9초**. `config.yml` 의 `weapon-skills.bolt-cooldown-ms` 로 바꿀 수 있습니다.
+
 ## v5.4.35
 - **옥션만 초기화 `/rpg관리 reset auction confirm`**: 플레이어 데이터 · 길드 등은 그대로 두고 옥션에 올라온 물건, 받지 않은 판매 대금, 돌려받을 물건만 모두 지웁니다 (`/rpg관리 auction clear confirm` 과 같음). Tab 자동완성 · 도움말에 추가.
 

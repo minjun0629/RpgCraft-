@@ -163,7 +163,7 @@ public class MountManager implements Listener, CommandExecutor {
         var d = plugin.data().get(p);
         if (owns(d, m)) return;
         d.counters.put("mount_own_" + m.name(), 1.0);
-        Text.actionBar(p, "&e탈것 도감에 &f" + m.label + "&e이(가) 등록되었습니다! &7(/도감)");
+        Text.actionBar(p, "&e탈것 도감에 &f" + m.label + "&e이(가) 등록되었습니다! &7(메뉴 → 도감)");
     }
 
     /** 가진 탈것 아이템을 도감에 등록 (도감이 생기기 전에 뽑은 탈것 포함) */
@@ -219,7 +219,7 @@ public class MountManager implements Listener, CommandExecutor {
         g.set(4, Gui.button(Material.BOOK, "&e&l탈것 도감 &f" + n + " / " + Mount.values().length, "&7모은 탈것: " + (n * 100 / Mount.values().length) + "%",
                 "&7얻지 못한 탈것의 능력치는 가려집니다"));
         g.set(27, Gui.button(Material.SADDLE, "&6탈것 뽑기", "&e▶ 클릭"), e -> openShop(p));
-        if (plugin.pets() != null) g.set(35, Gui.button(Material.EGG, "&d펫 도감 보기", "&e▶ 클릭"), e -> plugin.pets().open(p));
+        g.set(31, Gui.button(Material.ARROW, "&f◀ 도감"), e -> plugin.menu().openCodex(p));
         g.fill(0, 35);
         g.open(p);
     }

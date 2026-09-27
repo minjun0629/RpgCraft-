@@ -659,6 +659,11 @@ public class MenuManager implements Listener {
         return c >= 1 ? "확정" : String.format("%.1f%%", c * 100);
     }
 
+    /** 메인 메뉴의 도감 창 (탈것 · 펫 도감의 ◀ 버튼에서도 사용) */
+    public void openCodex(Player p) {
+        new CodexGui(p).open(p);
+    }
+
     private class CodexGui extends Gui {
         CodexGui(Player p) {
             super(4, "&8도감");
@@ -671,8 +676,15 @@ public class MenuManager implements Listener {
                 set(slots[i], icon(found > 0 ? s.icon() : Material.GRAY_DYE, "&e&l" + s.name(),
                         List.of("&f발견 &a" + found + " &7/ " + n, "&7한 번이라도 얻은 아이템만 표시됩니다", "&e▶ 클릭")), e -> new CodexPage(p, s, 0).open(p));
             }
-            set(22, icon(Material.ZOMBIE_HEAD, "&2&l몬스터 도감", List.of("&7잡아 본 몬스터의 드롭 확률", "&e▶ 클릭")), e -> new MobCodex(p, 0).open(p));
-            set(24, icon(Material.DRAGON_EGG, "&c&l보스 도감", List.of("&7" + plugin.bosses().ids().size() + "종", "&7스킬 · 드롭 확률", "&e▶ 클릭")), e -> new BossCodex(p).open(p));
+            set(21, icon(Material.ZOMBIE_HEAD, "&2&l몬스터 도감", List.of("&7잡아 본 몬스터의 드롭 확률", "&e▶ 클릭")), e -> new MobCodex(p, 0).open(p));
+            set(22, icon(Material.DRAGON_EGG, "&c&l보스 도감", List.of("&7" + plugin.bosses().ids().size() + "종", "&7스킬 · 드롭 확률", "&e▶ 클릭")), e -> new BossCodex(p).open(p));
+            PlayerData cd = plugin.data().get(p);
+            if (plugin.mounts() != null)
+                set(24, icon(Material.SADDLE, "&6&l탈것 도감", List.of("&f모은 탈것 &a" + plugin.mounts().ownedCount(cd) + " &7/ " + MountManager.Mount.values().length,
+                        "&7얻지 못한 탈것의 능력치는 가려집니다", "&e▶ 클릭")), e -> plugin.mounts().openCollection(p));
+            if (plugin.pets() != null)
+                set(25, icon(Material.EGG, "&d&l펫 도감", List.of("&f모은 펫 &a" + plugin.pets().ownedCount(cd) + " &7/ " + PetManager.Pet.values().length,
+                        "&7얻지 못한 펫의 능력치는 가려집니다", "&e▶ 클릭")), e -> plugin.pets().open(p));
             back(this, 27, p);
             fill(0, 35);
         }

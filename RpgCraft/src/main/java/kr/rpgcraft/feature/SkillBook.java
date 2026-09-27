@@ -347,11 +347,13 @@ public class SkillBook {
             kr.rpgcraft.util.Vfx.burst(hc, 1.6, col);
             kr.rpgcraft.util.Vfx.slash(hc, ff, 1.8, 60, Color.WHITE);
             w.spawnParticle(Particle.CRIT, hc, 8, 0.2, 0.3, 0.2, 0.4);
+            WeaponFx.impact(hc, s.effect());   // (연출) 속성 폭발
         };
         // 시전 연출: 발밑 마법진 + 손끝 번쩍임
         kr.rpgcraft.util.Vfx.ring(p.getLocation(), 1.8, col);
         kr.rpgcraft.util.Vfx.burst(eye.clone().add(look.clone().multiply(1.1)).add(0, -0.3, 0), 1.6, col);
         w.spawnParticle(Particle.ENCHANTMENT_TABLE, p.getLocation().add(0, 1, 0), 30, 0.5, 0.6, 0.5, 1.2);
+        WeaponFx.castCircle(p.getLocation(), eye.clone().add(look.clone().multiply(1.1)).add(0, -0.3, 0), s.effect());   // (연출) 마법진 · 속성 기둥
         switch (s.shape()) {
             case CONE -> {
                 for (LivingEntity le : near(p, p.getLocation(), s.range())) {
@@ -365,6 +367,7 @@ public class SkillBook {
                     kr.rpgcraft.util.Vfx.slash(p.getLocation().add(0, 1.2, 0).add(ff.clone().multiply(s.range() * 0.5)), ff, s.range() * 1.4, -35, col);
                 }, 2L);
                 w.playSound(p.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 0.7f);
+                WeaponFx.coneSweep(p.getLocation(), ff, s.range(), s.effect());   // (연출)
             }
             case CIRCLE -> {
                 for (LivingEntity le : near(p, p.getLocation(), s.range())) strike.accept(le);
@@ -372,6 +375,7 @@ public class SkillBook {
                 kr.rpgcraft.util.Vfx.burst(p.getLocation().add(0, 1, 0), s.range() * 0.9, col);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> kr.rpgcraft.util.Vfx.ring(p.getLocation(), s.range() * 1.2, Color.WHITE), 2L);
                 w.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.6f, 1.3f);
+                WeaponFx.eruption(p.getLocation(), s.range(), s.effect());   // (연출)
             }
             case LINE -> {
                 if (bow) { heavyArrow(p, dmg); break; }
@@ -387,6 +391,7 @@ public class SkillBook {
                     kr.rpgcraft.util.Vfx.burst(eye.clone().add(dir.clone().multiply(s.range())), 2.2, col);
                 }, 1L);
                 w.playSound(p.getLocation(), Sound.ITEM_TRIDENT_THROW, 1f, 1.2f);
+                WeaponFx.lineSpiral(eye.clone().add(0, -0.2, 0), dir, s.range(), s.effect());   // (연출)
             }
             case DASH -> {
                 p.setVelocity(ff.clone().multiply(bow ? -1.1 : 1.7).setY(bow ? 0.45 : 0.12));
@@ -397,9 +402,11 @@ public class SkillBook {
                 }, i);
                 kr.rpgcraft.util.Vfx.beam(p.getLocation().add(0, 1, 0), p.getLocation().add(0, 1, 0).add(ff.clone().multiply(s.range())), 1.2, col);
                 w.playSound(p.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1.6f);
+                WeaponFx.afterimage(p, s.effect(), 7);   // (연출) 잔상
             }
             case LEAP -> {
                 p.setVelocity(ff.clone().multiply(0.9).setY(0.9));
+                WeaponFx.afterimage(p, s.effect(), 10);   // (연출) 뛰어오르는 잔상
                 new org.bukkit.scheduler.BukkitRunnable() {
                     int t;
 
@@ -417,6 +424,7 @@ public class SkillBook {
                         Fx.shockwave(plugin, c, s.range(), col);
                         kr.rpgcraft.util.Vfx.burst(c.clone().add(0, 0.5, 0), 3.5, col);
                         w.playSound(c, Sound.ENTITY_GENERIC_EXPLODE, 0.7f, 0.9f);
+                        WeaponFx.crater(c, s.range(), s.effect());   // (연출) 착지 크레이터
                     }
                 }.runTaskTimer(plugin, 1L, 1L);
             }
@@ -426,7 +434,9 @@ public class SkillBook {
                 Location behind = t.getLocation().subtract(t.getLocation().getDirection().setY(0).normalize().multiply(1.3));
                 behind.setDirection(t.getLocation().toVector().subtract(behind.toVector()));
                 w.spawnParticle(Particle.SMOKE_LARGE, p.getLocation().add(0, 1, 0), 15, 0.3, 0.5, 0.3, 0.02);
+                Location blinkFrom = p.getLocation();
                 if (behind.getBlock().isPassable() && behind.clone().add(0, 1, 0).getBlock().isPassable()) p.teleport(behind);
+                WeaponFx.blink(blinkFrom, p.getLocation(), s.effect());   // (연출)
                 strike.accept(t);
                 kr.rpgcraft.util.Vfx.slash(t.getLocation().add(0, 1, 0), p.getLocation().getDirection(), 2.8, 45, col);
                 kr.rpgcraft.util.Vfx.slash(t.getLocation().add(0, 1, 0), p.getLocation().getDirection(), 2.8, -45, col);
@@ -443,6 +453,7 @@ public class SkillBook {
                     public void run() {
                         pos[0].add(step);
                         if (n % 2 == 0) kr.rpgcraft.util.Vfx.burst(pos[0], 1.0, col);
+                        WeaponFx.orbTrail(pos[0], s.effect(), n);   // (연출)
                         boolean boom = ++n * 0.9 >= s.range() || !pos[0].getBlock().isPassable() || !near(p, pos[0], 1.1).isEmpty();
                         if (boom) {
                             cancel();
@@ -450,6 +461,7 @@ public class SkillBook {
                             kr.rpgcraft.util.Vfx.ring(pos[0], 2.8, col);
                             kr.rpgcraft.util.Vfx.burst(pos[0], 3.0, col);
                             w.playSound(pos[0], Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.5f);
+                            WeaponFx.eruption(pos[0], 2.8, s.effect());   // (연출)
                         }
                     }
                 }.runTaskTimer(plugin, 0L, 1L);
@@ -457,12 +469,15 @@ public class SkillBook {
             case RAIN -> {
                 Location c = aim ? Optional.ofNullable(p.getTargetBlockExact((int) s.range())).map(b -> b.getLocation().add(0.5, 1, 0.5)).orElse(p.getLocation().add(ff.clone().multiply(8)))
                         : p.getLocation().add(ff.clone().multiply(Math.min(8, s.range() * 0.5)));
+                WeaponFx.zone(c, 3, s.effect());   // (연출) 바닥 마법진
                 for (int i = 0; i < 5; i++) Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     Fx.circle(c, 3, 18, col, 1.2f);
+                    WeaponFx.zone(c, 3, s.effect());
                     for (int k = 0; k < 3; k++) {
                         Location hitAt = c.clone().add(Math.random() * 5 - 2.5, 0.3, Math.random() * 5 - 2.5);
                         kr.rpgcraft.util.Vfx.beam(hitAt.clone().add(0, 7, 0), hitAt, 0.6, col);
                         kr.rpgcraft.util.Vfx.burst(hitAt, 1.2, col);
+                        WeaponFx.element(hitAt, s.effect(), 0.6);   // (연출)
                     }
                     done.clear();
                     for (LivingEntity le : near(p, c, 3)) strike.accept(le);
@@ -476,6 +491,8 @@ public class SkillBook {
                 for (int i = 0; i < 5 && cur != null; i++) {
                     Location to = cur.getLocation().add(0, cur.getHeight() / 2, 0);
                     Fx.line(from, to, 0.3, col, 1.2f);
+                    kr.rpgcraft.util.Vfx.burst(to, 1.6, col);   // (연출) 연결 지점 번쩍
+                    WeaponFx.element(to, s.effect(), 0.5);
                     if (done.add(cur.getUniqueId())) { h.hit(p, cur, d); apply(p, cur, s.effect(), d, h); }
                     from = to;
                     d *= 0.8;
@@ -492,10 +509,12 @@ public class SkillBook {
                     if (v.lengthSquared() > 0.2) le.setVelocity(v.normalize().multiply(0.9).setY(0.2));
                 }
                 Fx.circle(c, 5, 24, col, 1.2f);
+                WeaponFx.vortex(c, 5, s.effect(), 12);   // (연출) 빨려드는 나선
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     for (LivingEntity le : near(p, c, 3.2)) strike.accept(le);
                     Fx.shockwave(plugin, c, 3.2, col);
                     w.playSound(c, Sound.ENTITY_EVOKER_CAST_SPELL, 0.8f, 0.7f);
+                    WeaponFx.eruption(c, 3.2, s.effect());   // (연출)
                 }, 12L);
             }
             case WAVE -> {
@@ -505,6 +524,7 @@ public class SkillBook {
                         Location c = p.getLocation().add(ff.clone().multiply(step));
                         Fx.circle(c.clone().add(0, 0.2, 0), 1.2, 10, col, 1.3f);
                         kr.rpgcraft.util.Vfx.burst(c.clone().add(0, 0.6, 0), 1.6, col);
+                        WeaponFx.element(c.clone().add(0, 0.4, 0), s.effect(), 0.7);   // (연출) 땅에서 솟는 속성
                         for (LivingEntity le : near(p, c, 1.7)) strike.accept(le);
                     }, step * 2L);
                 }
@@ -519,6 +539,7 @@ public class SkillBook {
                         if (!t0.isValid() || t0.isDead() || !p.isOnline()) return;
                         Location at = t0.getLocation().add(0, t0.getHeight() * 0.6, 0);
                         kr.rpgcraft.util.Vfx.slash(at, ff, 2.0, n % 2 == 0 ? 50 : -50, n == 5 ? Color.WHITE : col);
+                        WeaponFx.element(at, s.effect(), 0.35);   // (연출)
                         h.hit(p, t0, dmg / 6);
                         if (n == 5) { apply(p, t0, s.effect(), dmg, h); kr.rpgcraft.util.Vfx.burst(at, 2.0, col); }
                         w.playSound(at, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.7f, 1.6f + n * 0.08f);
@@ -539,6 +560,7 @@ public class SkillBook {
                     }
                     kr.rpgcraft.util.Vfx.beam(from, hitAt, 0.45, col);
                     kr.rpgcraft.util.Vfx.burst(hitAt, 1.1, col);
+                    WeaponFx.lineSpiral(from, d, from.distance(hitAt), s.effect());   // (연출) 회전하는 단검 빛
                     if (victim != null) strike.accept(victim);
                 }
                 w.playSound(p.getLocation(), Sound.ENTITY_WITCH_THROW, 1f, 1.4f);
@@ -584,6 +606,7 @@ public class SkillBook {
         ar.getPersistentDataContainer().set(Keys.ARROW_ATK, PersistentDataType.DOUBLE, atk);
         ar.getPersistentDataContainer().set(Keys.ARROW_FORCE, PersistentDataType.DOUBLE, 1.0);
         Bukkit.getScheduler().runTaskLater(plugin, () -> { if (ar.isValid()) ar.remove(); }, 100L);
+        WeaponFx.trail(ar, Color.fromRGB(0xFFE9A0), 30);   // (연출) 스킬 화살 꼬리
     }
 
     private void heavyArrow(Player p, double atk) {

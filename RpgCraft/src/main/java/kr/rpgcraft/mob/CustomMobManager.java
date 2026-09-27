@@ -441,6 +441,13 @@ public class CustomMobManager implements Listener {
             case "CHARGE" -> kr.rpgcraft.util.Vfx.beam(le.getLocation().add(0, 0.3, 0), t.getLocation().add(0, 0.3, 0), 1.2, red);
             default -> { return cast(le, t, a); }   // 사격·순간이동 등은 바로
         }
+        switch (a.type) {   // (연출) 차오르는 예고 + 기 모으기 — 예고 시간은 그대로 12틱
+            case "SLAM", "FROST", "POISON_CLOUD" -> MobFx.warnCircle(le.getLocation(), Math.max(2, a.radius), 12);
+            case "LEAP", "METEOR" -> MobFx.warnCircle(t.getLocation(), Math.max(2, a.radius), 12);
+            case "CHARGE" -> MobFx.warnLine(le.getLocation(), t.getLocation(), 12);
+            default -> { }
+        }
+        MobFx.windup(le, a.type.equals("FROST") ? MobFx.ICE : a.type.equals("POISON_CLOUD") ? MobFx.TOXIC : MobFx.RED, 12);
         le.getWorld().playSound(le.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.8f, 0.6f);
         Bukkit.getScheduler().runTaskLater(plugin, () -> { if (le.isValid() && !le.isDead() && t.isOnline()) cast(le, t, a); }, 12L);
         return true;
@@ -456,17 +463,20 @@ public class CustomMobManager implements Listener {
                 Vector v = tl.toVector().subtract(ml.toVector()).setY(0).normalize().multiply(Math.min(1.6, dist * 0.18)).setY(0.55);
                 le.setVelocity(v);
                 w.playSound(ml, Sound.ENTITY_RAVAGER_STEP, 1f, 1.4f);
+                MobFx.leapTrail(le, 14);   // (연출)
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     if (!le.isValid()) return;
                     for (Player p : le.getWorld().getPlayers())
                         if (p.getLocation().distanceSquared(le.getLocation()) <= a.radius * a.radius) plugin.combat().mobSkillDamage(le, p, dmg(le) * a.power);
                     le.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, le.getLocation(), 1);
+                    MobFx.quake(le.getLocation(), a.radius, MobFx.EARTH);   // (연출) 착지 크레이터
                 }, 14L);
                 return true;
             }
             case "BACKSTEP" -> {   // 뒤로 훌쩍 물러나며 거리 벌리기
                 org.bukkit.util.Vector away = le.getLocation().toVector().subtract(t.getLocation().toVector()).setY(0);
                 if (away.lengthSquared() < 0.01 || away.lengthSquared() > 64) return false;   // 가까울 때만
+                MobFx.backstep(le.getLocation());   // (연출)
                 le.setVelocity(away.normalize().multiply(1.1).setY(0.35));
                 le.getWorld().spawnParticle(Particle.CLOUD, le.getLocation(), 6, 0.2, 0.05, 0.2, 0.02);
                 le.getWorld().playSound(le.getLocation(), Sound.ENTITY_SKELETON_STEP, 1f, 1.5f);
@@ -477,10 +487,12 @@ public class CustomMobManager implements Listener {
                 Vector v = tl.toVector().subtract(ml.toVector()).setY(0).normalize().multiply(1.6).setY(0.15);
                 le.setVelocity(v);
                 w.playSound(ml, Sound.ENTITY_HORSE_ANGRY, 1f, 0.6f);
+                MobFx.chargeTrail(le, 8);   // (연출)
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     if (le.isValid() && t.getLocation().distanceSquared(le.getLocation()) < 6) {
                         plugin.combat().mobSkillDamage(le, t, dmg(le) * a.power);
                         t.setVelocity(v.clone().multiply(0.6).setY(0.4));
+                        MobFx.hitFlash(t.getLocation().add(0, 1, 0), MobFx.RED);   // (연출)
                     }
                 }, 8L);
                 return true;
@@ -488,6 +500,7 @@ public class CustomMobManager implements Listener {
             case "SLAM" -> {
                 if (dist > a.radius + 1) return false;
                 Fx.shockwave(plugin, ml, a.radius, Color.fromRGB(0x8B6B4A));
+                MobFx.quake(ml, a.radius, MobFx.EARTH);   // (연출)
                 w.playSound(ml, Sound.ENTITY_GENERIC_EXPLODE, 0.7f, 1.3f);
                 for (Player p : w.getPlayers())
                     if (p.getLocation().distanceSquared(ml) <= a.radius * a.radius) {
@@ -499,6 +512,7 @@ public class CustomMobManager implements Listener {
             case "FROST" -> {
                 if (dist > a.radius + 1) return false;
                 Fx.circle(ml.clone().add(0, 0.2, 0), a.radius, 30, Color.fromRGB(0xA8E0FF), 1.4f);
+                MobFx.frostNova(ml, a.radius);   // (연출)
                 w.playSound(ml, Sound.BLOCK_GLASS_BREAK, 1f, 0.6f);
                 for (Player p : w.getPlayers())
                     if (p.getLocation().distanceSquared(ml) <= a.radius * a.radius) {
@@ -517,6 +531,7 @@ public class CustomMobManager implements Listener {
                         Arrow ar = le.launchProjectile(Arrow.class, dir.multiply(1.8));
                         ar.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
                         ar.getPersistentDataContainer().set(Keys.POWER, PersistentDataType.DOUBLE, a.power);
+                        MobFx.shot(le, ar, Color.fromRGB(0xE0D0A0));   // (연출)
                     }, delay);
                 }
                 return true;
@@ -527,6 +542,7 @@ public class CustomMobManager implements Listener {
                 SmallFireball fb = le.launchProjectile(SmallFireball.class, dir);
                 fb.getPersistentDataContainer().set(Keys.POWER, PersistentDataType.DOUBLE, a.power);
                 w.playSound(ml, Sound.ENTITY_BLAZE_SHOOT, 1f, 1f);
+                MobFx.shot(le, fb, MobFx.FIRE);   // (연출)
                 return true;
             }
             case "BLINK" -> {
@@ -536,6 +552,7 @@ public class CustomMobManager implements Listener {
                 if (!behind.getBlock().isPassable() || !behind.clone().add(0, 1, 0).getBlock().isPassable()) return false;
                 w.spawnParticle(Particle.PORTAL, ml.clone().add(0, 1, 0), 30, 0.3, 0.6, 0.3, 0.3);
                 le.teleport(behind.setDirection(tl.toVector().subtract(behind.toVector())));
+                MobFx.blink(ml, behind);   // (연출)
                 w.playSound(behind, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
                 return true;
             }
@@ -545,6 +562,7 @@ public class CustomMobManager implements Listener {
                 double hr = le instanceof org.bukkit.entity.Witch || (alive.get(le.getUniqueId()) != null && alive.get(le.getUniqueId()).name.contains("마녀")) ? 0.1 : 0.2;   // 마녀 회복 절반
                 plugin.health().heal(le, s.maxHp * hr * a.power);
                 w.spawnParticle(Particle.HEART, le.getLocation().add(0, le.getHeight() + 0.3, 0), 6, 0.4, 0.3, 0.4);
+                MobFx.heal(le);   // (연출)
                 w.playSound(ml, Sound.ENTITY_WITCH_DRINK, 1f, 1f);
                 return true;
             }
@@ -557,6 +575,7 @@ public class CustomMobManager implements Listener {
                 }
                 MobManager.MobState s = plugin.mobs().peek(le);
                 int lv = s == null ? 1 : Math.max(1, s.level - 3);
+                MobFx.summonCircle(ml);   // (연출)
                 for (int i = 0; i < a.amount; i++) {
                     Location at = ml.clone().add(ThreadLocalRandom.current().nextDouble(-2, 2), 0, ThreadLocalRandom.current().nextDouble(-2, 2));
                     Entity m = w.spawnEntity(at, type);
@@ -566,6 +585,7 @@ public class CustomMobManager implements Listener {
                         if (m instanceof Mob mob) mob.setTarget(t);
                     }
                     w.spawnParticle(Particle.SMOKE_LARGE, at.add(0, 0.5, 0), 10, 0.3, 0.5, 0.3, 0.02);
+                    MobFx.summonPillar(at);   // (연출)
                 }
                 return true;
             }
@@ -576,6 +596,7 @@ public class CustomMobManager implements Listener {
                 c.setDuration(80);
                 c.setColor(Color.fromRGB(0x5FE05A));
                 c.addCustomEffect(new PotionEffect(PotionEffectType.POISON, 60, 0), true);
+                MobFx.toxic(tl, a.radius, 80);   // (연출)
                 return true;
             }
             default -> {

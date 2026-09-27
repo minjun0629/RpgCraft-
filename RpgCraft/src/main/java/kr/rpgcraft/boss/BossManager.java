@@ -98,8 +98,18 @@ public class BossManager {
         return e;
     }
 
+    /**
+     * 보스 처치 경험치 (1등 100% 기준).
+     * 필드 보스는 자주 나오므로 bosses.yml 의 exp 대신 "그 보스 레벨에서 레벨업에 필요한 경험치 × field-bosses.exp-levels(1.5)" (v5.3.5).
+     */
+    public double bossExp(BossDefinition d) {
+        if (!d.field) return d.exp;
+        double lv = plugin.getConfig().getDouble("field-bosses.exp-levels", 1.5);
+        return Math.min(d.exp, plugin.levels().need(d.level) * lv);
+    }
+
     public MobManager.MobState initState(LivingEntity e, BossDefinition d) {
-        MobManager.MobState s = plugin.mobs().initCustom(e, d.level, d.hp, d.damage * plugin.getConfig().getDouble("bosses.damage-mult", 1.15), d.defense, d.exp, d.money, d.name);
+        MobManager.MobState s = plugin.mobs().initCustom(e, d.level, d.hp, d.damage * plugin.getConfig().getDouble("bosses.damage-mult", 1.15), d.defense, (long) bossExp(d), d.money, d.name);
         s.bossId = d.id;
         plugin.mobs().updateName(e, s);
         if (!active.containsKey(e.getUniqueId())) {
@@ -937,7 +947,7 @@ public class BossManager {
             rank++;
             if (p == null || share < minShare) continue;
             double mult = Math.max(0.1, share);
-            plugin.levels().addExp(p, d.exp * mult);
+            plugin.levels().addExp(p, bossExp(d) * mult);
             plugin.economy().give(p, (long) (d.money * mult * plugin.getConfig().getDouble("economy.boss-money-mult", 0.35)));
             // 재료 등은 바로 지급, 장비는 「보스 수정」으로 (마크에이지식: 수정을 쓰면 확률로 장비)
             for (BossDefinition.Drop dr : d.drops) {

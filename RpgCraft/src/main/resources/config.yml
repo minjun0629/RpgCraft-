@@ -403,6 +403,7 @@ field-bosses:              # 필드 보스 (bosses.yml 의 field: true) - 접속
   max-distance: 50
   level-range: 25          # 지역 레벨 ± 이 안의 보스만 (없으면 가장 가까운 레벨)
   despawn-minutes: 10      # 근처(80칸)에 아무도 없으면 이 시간 뒤 사라짐
+  exp-levels: 1.5          # 처치 경험치 = 보스 레벨에서 필요한 경험치 × 이 값 (1등 기준, 기여도에 비례)
   worlds: []               # 비우면 기본 월드 + 네더
 
 tpa:

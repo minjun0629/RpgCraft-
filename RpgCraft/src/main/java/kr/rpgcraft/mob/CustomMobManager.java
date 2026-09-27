@@ -169,6 +169,24 @@ public class CustomMobManager implements Listener {
     }
 
     // ------------------------------------------------------------------ 자연 스폰 교체
+    /** 일반 마녀가 던지는 독 물약: 바닐라는 최대 45초 → 최대 7초 (보스 제외, config mobs.witch-poison-seconds) */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onWitchPotion(org.bukkit.event.entity.PotionSplashEvent e) {
+        ThrownPotion tp = e.getPotion();
+        if (!(tp.getShooter() instanceof Witch w) || w.getPersistentDataContainer().has(Keys.BOSS, PersistentDataType.STRING)) return;
+        PotionEffect poison = null;
+        for (PotionEffect pe : tp.getEffects()) if (PotionEffectType.POISON.equals(pe.getType())) poison = pe;
+        if (poison == null) return;
+        int cap = (int) (plugin.getConfig().getDouble("mobs.witch-poison-seconds", 7) * 20);
+        for (LivingEntity le : e.getAffectedEntities()) {
+            double in = e.getIntensity(le);
+            if (in <= 0) continue;
+            e.setIntensity(le, 0);   // 바닐라 적용은 막고 줄인 시간으로 직접 적용
+            int dur = Math.min(cap, (int) (poison.getDuration() * in + 0.5));
+            if (dur > 0) le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, dur, poison.getAmplifier()));
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawn(CreatureSpawnEvent e) {
         if (!plugin.getConfig().getBoolean("custom-mobs.enabled", true)) return;

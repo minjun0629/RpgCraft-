@@ -28,6 +28,45 @@ public final class Text {
         return ChatColor.stripColor(c(s));
     }
 
+    // ------------------------------------------------------------------ 닉네임 (/닉네임): 화면에 보이는 이름은 모두 이것으로
+    /** 표시 이름: /닉네임 으로 정한 이름, 없으면 계정 이름 */
+    public static String name(org.bukkit.OfflinePlayer p) {
+        if (p == null) return "?";
+        var pl = kr.rpgcraft.RpgCraft.get();
+        if (pl != null && pl.data() != null) {
+            var d = pl.data().get(p.getUniqueId());
+            if (d != null && d.nick != null && !d.nick.isBlank()) return d.nick;
+            if (p.getName() == null && d != null && d.name != null) return d.name;
+        }
+        return p.getName() == null ? "?" : p.getName();
+    }
+
+    public static String name(java.util.UUID id) {
+        return id == null ? "?" : name(org.bukkit.Bukkit.getOfflinePlayer(id));
+    }
+
+    /** 접속 중인 플레이어 찾기: 계정 이름 또는 닉네임 (대소문자 무시) */
+    public static Player player(String nameOrNick) {
+        if (nameOrNick == null) return null;
+        Player p = org.bukkit.Bukkit.getPlayerExact(nameOrNick);
+        if (p != null) return p;
+        for (Player op : org.bukkit.Bukkit.getOnlinePlayers()) if (name(op).equalsIgnoreCase(nameOrNick) || op.getName().equalsIgnoreCase(nameOrNick)) return op;
+        return null;
+    }
+
+    /** Tab 자동완성용: 접속자 표시 이름 (닉네임이 있으면 닉네임) */
+    public static List<String> onlineNames(String prefix, CommandSender except) {
+        List<String> out = new ArrayList<>();
+        String pre = prefix == null ? "" : prefix.toLowerCase(java.util.Locale.ROOT);
+        for (Player op : org.bukkit.Bukkit.getOnlinePlayers()) {
+            if (op.equals(except)) continue;
+            String n = name(op);
+            if (n.toLowerCase(java.util.Locale.ROOT).startsWith(pre)) out.add(n);
+            else if (op.getName().toLowerCase(java.util.Locale.ROOT).startsWith(pre)) out.add(op.getName());
+        }
+        return out;
+    }
+
     public static void msg(CommandSender s, String m) {
         s.sendMessage(PREFIX + c(m));
     }

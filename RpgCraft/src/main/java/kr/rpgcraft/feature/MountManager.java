@@ -149,7 +149,7 @@ public class MountManager implements Listener, CommandExecutor {
         for (ItemStack l : p.getInventory().addItem(token(got)).values()) p.getWorld().dropItemNaturally(p.getLocation(), l);
         p.playSound(p.getLocation(), grade >= 2 ? Sound.UI_TOAST_CHALLENGE_COMPLETE : Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
         p.sendTitle(Text.c(GRADE[grade]), Text.c("&f" + got.label), 5, 40, 10);
-        if (grade == 3) Text.announce(Text.PREFIX + Text.c("&6&l" + p.getName() + "&f님이 전설 탈것 &6" + got.label + "&f을(를) 뽑았습니다!"));
+        if (grade == 3) Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(p) + "&f님이 전설 탈것 &6" + got.label + "&f을(를) 뽑았습니다!"));
         openShop(p);
     }
 

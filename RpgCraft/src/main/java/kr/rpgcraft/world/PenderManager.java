@@ -164,7 +164,7 @@ public class PenderManager implements Listener {
                     p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 1f, 0.8f);
                     p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                     Fx.helix(plugin, p, 2.6, 1.0, 30, Color.fromRGB(0xFFD23F), Color.fromRGB(0xFF7A1F));
-                    Text.announce(Text.PREFIX + Text.c("&6&l" + p.getName() + "&f님이 &6「" + t.name + "」&f을(를) 손에 넣었습니다!"));
+                    Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(p) + "&f님이 &6「" + t.name + "」&f을(를) 손에 넣었습니다!"));
                 });
                 slot++;
             }

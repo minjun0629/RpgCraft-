@@ -113,14 +113,14 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
                 if (party == null) { party = new Party(); party.leader = p.getUniqueId(); party.members.add(p.getUniqueId()); byMember.put(p.getUniqueId(), party); }
                 if (!party.leader.equals(p.getUniqueId())) { Text.msg(p, "&c파티장만 초대할 수 있습니다."); return true; }
                 if (a.length < 2) { Text.msg(p, "&e/파티 초대 <플레이어>"); return true; }
-                Player t = Bukkit.getPlayerExact(a[1]);
+                Player t = Text.player(a[1]);
                 if (t == null || t.equals(p)) { Text.msg(p, "&c접속 중인 다른 플레이어를 입력하세요."); return true; }
                 if (of(t) != null) { Text.msg(p, "&c이미 다른 파티에 속한 플레이어입니다."); return true; }
                 if (party.members.size() >= max()) { Text.msg(p, "&c파티 인원이 가득 찼습니다. (최대 " + max() + "명)"); return true; }
                 invites.put(t.getUniqueId(), party);
                 inviteTime.put(t.getUniqueId(), System.currentTimeMillis());
-                Text.msg(p, "&a" + t.getName() + "님을 파티에 초대했습니다.");
-                TradeManager.buttons(t, Text.c(Text.PREFIX + "&e" + p.getName() + "&f님의 파티 초대 &7(60초) "), "/파티 수락", "/파티 거절");
+                Text.msg(p, "&a" + Text.name(t) + "님을 파티에 초대했습니다.");
+                TradeManager.buttons(t, Text.c(Text.PREFIX + "&e" + Text.name(p) + "&f님의 파티 초대 &7(60초) "), "/파티 수락", "/파티 거절");
             }
             case "수락", "accept" -> {
                 Party party = invites.remove(p.getUniqueId());
@@ -130,30 +130,30 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
                 if (party.members.size() >= max()) { Text.msg(p, "&c파티 인원이 가득 찼습니다."); return true; }
                 party.members.add(p.getUniqueId());
                 byMember.put(p.getUniqueId(), party);
-                broadcast(party, "&a" + p.getName() + "님이 파티에 들어왔습니다.");
+                broadcast(party, "&a" + Text.name(p) + "님이 파티에 들어왔습니다.");
             }
             case "거절", "deny" -> {
                 invites.remove(p.getUniqueId());
                 Text.msg(p, "파티 초대를 거절했습니다.");
             }
-            case "탈퇴", "leave" -> leave(p, "&7" + p.getName() + "님이 파티를 떠났습니다.");
+            case "탈퇴", "leave" -> leave(p, "&7" + Text.name(p) + "님이 파티를 떠났습니다.");
             case "추방", "kick" -> {
                 Party party = of(p);
                 if (party == null || !party.leader.equals(p.getUniqueId())) { Text.msg(p, "&c파티장만 추방할 수 있습니다."); return true; }
-                Player t = a.length > 1 ? Bukkit.getPlayerExact(a[1]) : null;
+                Player t = a.length > 1 ? Text.player(a[1]) : null;
                 UUID tid = t != null ? t.getUniqueId() : null;
                 if (tid == null || !party.members.contains(tid) || tid.equals(p.getUniqueId())) { Text.msg(p, "&c파티원 이름을 입력하세요."); return true; }
                 party.members.remove(tid);
                 byMember.remove(tid);
                 Text.msg(t, "&c파티에서 추방되었습니다.");
-                broadcast(party, "&7" + t.getName() + "님이 파티에서 추방되었습니다.");
+                broadcast(party, "&7" + Text.name(t) + "님이 파티에서 추방되었습니다.");
             }
             case "위임", "leader" -> {
                 Party party = of(p);
-                Player t = a.length > 1 ? Bukkit.getPlayerExact(a[1]) : null;
+                Player t = a.length > 1 ? Text.player(a[1]) : null;
                 if (party == null || !party.leader.equals(p.getUniqueId()) || t == null || !party.members.contains(t.getUniqueId())) { Text.msg(p, "&c/파티 위임 <파티원>"); return true; }
                 party.leader = t.getUniqueId();
-                broadcast(party, "&e" + t.getName() + "님이 새 파티장이 되었습니다.");
+                broadcast(party, "&e" + Text.name(t) + "님이 새 파티장이 되었습니다.");
             }
             case "위치", "where" -> {
                 Party party = of(p);
@@ -162,7 +162,7 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
                     if (m.equals(p)) continue;
                     var ml = m.getLocation();
                     String dist = m.getWorld().equals(p.getWorld()) ? " &7(" + (int) ml.distance(p.getLocation()) + "m)" : " &7(" + ml.getWorld().getName() + ")";
-                    p.sendMessage(Text.c(" &b● &f" + m.getName() + " &e" + ml.getBlockX() + ", " + ml.getBlockY() + ", " + ml.getBlockZ() + dist));
+                    p.sendMessage(Text.c(" &b● &f" + Text.name(m) + " &e" + ml.getBlockX() + ", " + ml.getBlockY() + ", " + ml.getBlockZ() + dist));
                 }
             }
             case "해산", "disband" -> {
@@ -178,7 +178,7 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
                 Text.msg(p, "&e파티원 (" + party.members.size() + "/" + max() + ")");
                 for (UUID u : party.members) {
                     Player m = Bukkit.getPlayer(u);
-                    String name = m != null ? m.getName() : Optional.ofNullable(Bukkit.getOfflinePlayer(u).getName()).orElse("?");
+                    String name = Text.name(u);
                     p.sendMessage(Text.c(" " + (u.equals(party.leader) ? "&6♔ " : "&7- ") + (m != null ? "&f" : "&8") + name
                             + (m != null ? " &7Lv." + plugin.data().get(m).level + " &c" + Text.num(plugin.data().get(m).hp) + "HP" : " (오프라인)")));
                 }
@@ -208,7 +208,7 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
         if (party == null) return;
         // 파티장이 나가면 다른 접속 중인 파티원에게 위임 (파티는 유지)
         if (party.leader.equals(e.getPlayer().getUniqueId())) {
-            for (Player m : party.online()) if (!m.equals(e.getPlayer())) { party.leader = m.getUniqueId(); broadcast(party, "&e" + m.getName() + "님이 파티장이 되었습니다."); break; }
+            for (Player m : party.online()) if (!m.equals(e.getPlayer())) { party.leader = m.getUniqueId(); broadcast(party, "&e" + Text.name(m) + "님이 파티장이 되었습니다."); break; }
         }
     }
 
@@ -217,7 +217,7 @@ public class PartyManager implements Listener, CommandExecutor, TabCompleter {
         if (a.length == 1) return List.of("생성", "초대", "수락", "거절", "탈퇴", "추방", "위임", "해산", "목록", "위치");
         if (a.length == 2 && List.of("초대", "추방", "위임").contains(a[0])) {
             List<String> out = new ArrayList<>();
-            for (Player p : Bukkit.getOnlinePlayers()) out.add(p.getName());
+            for (Player p : Bukkit.getOnlinePlayers()) out.add(Text.name(p));
             return out;
         }
         return List.of();

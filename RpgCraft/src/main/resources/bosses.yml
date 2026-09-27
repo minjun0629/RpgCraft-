@@ -440,3 +440,218 @@ kraken:
     - {item: fish_legend, chance: 0.5}
     - {item: loot_core, min: 4, max: 8, chance: 1}
     - {item: legend_seal_storm_eye, chance: 0.03}
+
+# ============================================================
+#  필드 보스 (v5.1.9): field: true 인 보스는 주기적으로 플레이어 근처(지역 레벨 · 바이옴이 맞는 곳)에 나타난다.
+#  config field-bosses.* 로 간격 · 동시 수 조절, /rpg관리 fieldboss 로 즉시 등장
+#  biomes: 바이옴 이름 일부 (비우면 어디서나)
+# ============================================================
+
+field_boar_king:
+  name: "대지의 멧돼지왕 고르반"
+  type: HOGLIN
+  field: true
+  biomes: [PLAINS, FOREST, SAVANNA, MEADOW, BIRCH]
+  level: 25
+  hp: 60000
+  damage: 300
+  defense: 8
+  exp: 25000
+  money: 300000
+  bossbar-color: GREEN
+  skills:
+    - {type: SLAM, interval: 7, radius: 5, power: 1.2}
+    - {type: BLINK, interval: 12, power: 1.0}
+    - {type: SUMMON, interval: 22, entity: HOGLIN, amount: 2, level: 22, name: "성난 멧돼지"}
+  drops:
+    - {item: armory2_axe_2, chance: 0.06}
+    - {item: armory2_sword_3, chance: 0.05}
+    - {item: armory2_shield_2, chance: 0.06}
+    - {item: loot_hide, min: 3, max: 6, chance: 1}
+    - {item: crystal_low, min: 2, max: 4, chance: 1}
+
+field_frost_bear:
+  name: "설원의 대곰 우르사"
+  type: POLAR_BEAR
+  field: true
+  biomes: [SNOWY, ICE, FROZEN, GROVE, JAGGED, TAIGA]
+  level: 40
+  hp: 150000
+  damage: 700
+  defense: 15
+  exp: 70000
+  money: 800000
+  bossbar-color: BLUE
+  skills:
+    - {type: SLAM, interval: 8, radius: 6, power: 1.3}
+    - {type: METEOR, interval: 12, radius: 3, power: 1.0}
+    - {type: PULL, interval: 16, radius: 8, power: 0.8}
+  drops:
+    - {item: armory2_sword_4, chance: 0.05}
+    - {item: armory2_axe_4, chance: 0.05}
+    - {item: armory2_bow_4, chance: 0.05}
+    - {item: loot_frost, min: 2, max: 5, chance: 1}
+    - {item: crystal_mid, min: 1, max: 3, chance: 1}
+
+field_bandit_lord:
+  name: "도적왕 바르칸"
+  type: VINDICATOR
+  field: true
+  biomes: [FOREST, TAIGA, DARK, OLD_GROWTH, JUNGLE]
+  level: 55
+  hp: 300000
+  damage: 1100
+  defense: 20
+  exp: 150000
+  money: 2000000
+  bossbar-color: RED
+  skills:
+    - {type: BLINK, interval: 7, power: 1.3}
+    - {type: FIREBALL, interval: 9, amount: 3, power: 0.9}
+    - {type: SUMMON, interval: 20, entity: PILLAGER, amount: 3, level: 50, name: "바르칸의 부하"}
+  drops:
+    - {item: armory2_dagger_5, chance: 0.05}
+    - {item: armory2_bow_5, chance: 0.05}
+    - {item: armory2_spear_5, chance: 0.05}
+    - {item: loot_ink, min: 2, max: 4, chance: 1}
+    - {item: crystal_mid, min: 2, max: 4, chance: 1}
+
+field_ravager:
+  name: "사막의 파괴수 카르둠"
+  type: RAVAGER
+  field: true
+  biomes: [DESERT, BADLANDS, SAVANNA, ERODED]
+  level: 75
+  hp: 700000
+  damage: 1900
+  defense: 26
+  exp: 350000
+  money: 4000000
+  bossbar-color: YELLOW
+  skills:
+    - {type: SLAM, interval: 7, radius: 7, power: 1.4}
+    - {type: METEOR, interval: 11, radius: 3.5, power: 1.1}
+    - {type: PULL, interval: 18, radius: 10, power: 0.9}
+  drops:
+    - {item: armory2_axe_6, chance: 0.05}
+    - {item: armory2_shield_6, chance: 0.05}
+    - {item: armory2_sword_6, chance: 0.05}
+    - {item: loot_scale, min: 2, max: 4, chance: 1}
+    - {item: crystal_high, min: 1, max: 3, chance: 1}
+
+field_ancient_golem:
+  name: "고대 수호 골렘 테라곤"
+  type: IRON_GOLEM
+  field: true
+  biomes: [PEAKS, STONY, MEADOW, SLOPES, WINDSWEPT]
+  level: 95
+  hp: 1800000
+  damage: 3000
+  defense: 34
+  exp: 900000
+  money: 8000000
+  bossbar-color: GREEN
+  skills:
+    - {type: SLAM, interval: 7, radius: 7, power: 1.5}
+    - {type: METEOR, interval: 10, radius: 4, power: 1.2}
+    - {type: PULL, interval: 16, radius: 10, power: 1.0}
+  drops:
+    - {item: armory2_sword_7, chance: 0.05}
+    - {item: armory2_shield_7, chance: 0.05}
+    - {item: armory2_staff_7, chance: 0.05}
+    - {item: loot_core, min: 1, max: 2, chance: 1}
+    - {item: crystal_high, min: 2, max: 4, chance: 1}
+
+field_swamp_witch:
+  name: "늪의 대마녀 모르가나"
+  type: EVOKER
+  field: true
+  biomes: [SWAMP, MANGROVE, DARK]
+  level: 120
+  hp: 5000000
+  damage: 4500
+  defense: 40
+  exp: 2500000
+  money: 15000000
+  bossbar-color: PURPLE
+  skills:
+    - {type: FIREBALL, interval: 6, amount: 4, power: 1.0}
+    - {type: PULL, interval: 14, radius: 9, power: 1.0}
+    - {type: SUMMON, interval: 20, entity: WITCH, amount: 3, level: 115, name: "늪 마녀", ai: true}
+  drops:
+    - {item: trans_dagger_1, chance: 0.03}
+    - {item: trans_shield_1, chance: 0.03}
+    - {item: trans_armor_1_1, chance: 0.03}
+    - {item: loot_venom, min: 3, max: 6, chance: 1}
+    - {item: crystal_top, min: 1, max: 2, chance: 1}
+
+field_flame_knight:
+  name: "화염 기사 이그니스"
+  type: WITHER_SKELETON
+  field: true
+  biomes: [BADLANDS, DESERT, BASALT, NETHER, SOUL, CRIMSON, WARPED]
+  level: 150
+  hp: 12000000
+  damage: 7000
+  defense: 46
+  exp: 5000000
+  money: 25000000
+  bossbar-color: RED
+  skills:
+    - {type: BLINK, interval: 7, power: 1.3}
+    - {type: METEOR, interval: 9, radius: 4, power: 1.2}
+    - {type: FIREBALL, interval: 11, amount: 3, power: 1.0}
+    - {type: SLAM, interval: 14, radius: 7, power: 1.4}
+  drops:
+    - {item: trans_sword_2, chance: 0.03}
+    - {item: trans_axe_2, chance: 0.03}
+    - {item: trans_armor_2_1, chance: 0.03}
+    - {item: loot_ember, min: 3, max: 6, chance: 1}
+    - {item: crystal_top, min: 1, max: 3, chance: 1}
+
+field_deep_warden:
+  name: "심층의 감시자"
+  type: WARDEN
+  field: true
+  biomes: []
+  level: 200
+  hp: 40000000
+  damage: 11000
+  defense: 55
+  exp: 14000000
+  money: 50000000
+  bossbar-color: BLUE
+  skills:
+    - {type: PULL, interval: 10, radius: 10, power: 1.2}
+    - {type: SLAM, interval: 8, radius: 8, power: 1.5}
+    - {type: METEOR, interval: 12, radius: 4, power: 1.2}
+  drops:
+    - {item: trans_sword_3, chance: 0.03}
+    - {item: trans_dagger_3, chance: 0.03}
+    - {item: trans_armor_3_0, chance: 0.03}
+    - {item: loot_eye, min: 2, max: 4, chance: 1}
+    - {item: crystal_top, min: 2, max: 4, chance: 1}
+
+field_frost_lich:
+  name: "서리 리치 칼라스"
+  type: STRAY
+  field: true
+  biomes: [SNOWY, ICE, FROZEN, JAGGED, GROVE]
+  level: 250
+  hp: 70000000
+  damage: 15000
+  defense: 60
+  exp: 28000000
+  money: 90000000
+  bossbar-color: BLUE
+  skills:
+    - {type: FIREBALL, interval: 6, amount: 5, power: 1.0}
+    - {type: METEOR, interval: 9, radius: 4, power: 1.3}
+    - {type: BLINK, interval: 11, power: 1.3}
+    - {type: SUMMON, interval: 20, entity: STRAY, amount: 4, level: 240, name: "서리 망자", ai: true}
+  drops:
+    - {item: trans_sword_4, chance: 0.03}
+    - {item: trans_shield_4, chance: 0.03}
+    - {item: trans_armor_4_2, chance: 0.03}
+    - {item: loot_frost, min: 4, max: 8, chance: 1}
+    - {item: crystal_top, min: 2, max: 5, chance: 1}

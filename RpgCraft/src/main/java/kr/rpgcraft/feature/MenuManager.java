@@ -183,7 +183,7 @@ public class MenuManager implements Listener {
             double need = plugin.levels().need(d.level);
             double ratio = d.level >= plugin.levels().maxLevel(d) ? 1 : d.exp / need;
 
-            set(4, head(p, "&e&l" + p.getName() + " &7Lv." + d.level, List.of(
+            set(4, head(p, "&e&l" + Text.name(p) + " &7Lv." + d.level, List.of(
                     "&8" + plugin.rounds().round() + "회차 · " + (d.blacksmith ? "대장장이" : "모험가"),
                     "",
                     "&f경험치 " + bar(ratio, 20) + " &7" + String.format("%.1f", ratio * 100) + "%",
@@ -466,7 +466,7 @@ public class MenuManager implements Listener {
                     if (slot > 43) break;
                     Player op = Bukkit.getPlayer(m);
                     PlayerData md = plugin.data().isLoaded(m) ? plugin.data().get(m) : null;
-                    String name = op != null ? op.getName() : md != null && md.name != null ? md.name : String.valueOf(Bukkit.getOfflinePlayer(m).getName());
+                    String name = Text.name(m);
                     set(slot, headOf(m, (g.isLeader(m) ? "&6♛ " : "&f") + name, List.of(op != null ? "&a● 접속 중" : "&7● 오프라인",
                             md != null ? "&7Lv." + md.level + " · 전투력 " + Text.num(md.counter("power")) : "",
                             leader && !g.isLeader(m) ? "&c쉬프트+우클릭: 추방" : "")), e -> {
@@ -533,14 +533,14 @@ public class MenuManager implements Listener {
             File[] files = folder.listFiles((dir, n) -> n.endsWith(".yml"));
             if (files != null) for (File f : files) {
                 YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
-                String n = y.getString("name");
+                String n = y.getString("nick", y.getString("name"));   // 랭킹도 닉네임으로
                 if (n == null) continue;
                 map.put(f.getName().replace(".yml", ""), new Rank(n, y.getInt("level", 1), y.getDouble("exp"), y.getLong("money"), (long) y.getDouble("counters.power")));
             }
             Bukkit.getScheduler().runTask(plugin, () -> {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData d = plugin.data().get(p);
-                    map.put(p.getUniqueId().toString(), new Rank(p.getName(), d.level, d.exp, d.money, Power.of(d.stats)));
+                    map.put(p.getUniqueId().toString(), new Rank(Text.name(p), d.level, d.exp, d.money, Power.of(d.stats)));
                 }
                 ranks = new ArrayList<>(map.values());
                 ranksBuilt = System.currentTimeMillis();
@@ -580,7 +580,7 @@ public class MenuManager implements Listener {
                 list.sort(cmp);
                 for (int i = 0; i < Math.min(slots.length, list.size()); i++) {
                     Rank r = list.get(i);
-                    Player online = Bukkit.getPlayerExact(r.name());
+                    Player online = Text.player(r.name());
                     List<String> lore = List.of("&7Lv." + r.level(), "&7전투력 " + Text.num(r.power()), "&7재산 " + Text.money(r.money()),
                             online != null ? "&a● 접속 중" : "&8● 오프라인");
                     String title = (i < 3 ? medal[i] : "&7" + (i + 1) + "위") + " &f" + r.name();

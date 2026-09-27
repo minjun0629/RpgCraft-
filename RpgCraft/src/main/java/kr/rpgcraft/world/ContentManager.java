@@ -309,12 +309,12 @@ public class ContentManager implements Listener {
         if (ls != null && ls.level >= plugin.getConfig().getInt("spirit-summon.balrog-min-level", 120)
                 && ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("spirit-summon.balrog-chance", 0.00005)) {
             e.getDrops().add(plugin.items().create("balrog_seal", 1));
-            Text.announce(Text.PREFIX + Text.c("&4&l" + k.getName() + "&f님이 &4발록의 봉인석&f을 얻었습니다!"));
+            Text.announce(Text.PREFIX + Text.c("&4&l" + Text.name(k) + "&f님이 &4발록의 봉인석&f을 얻었습니다!"));
         }
         // 원혼의 부적 (극악의 확률)
         if (ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("spirit-summon.drop-chance", 0.0008)) {
             e.getDrops().add(plugin.items().create("spirit_summon", 1));
-            Text.announce(Text.PREFIX + Text.c("&5&l" + k.getName() + "&f님이 &5원혼의 부적&f을 얻었습니다!"));
+            Text.announce(Text.PREFIX + Text.c("&5&l" + Text.name(k) + "&f님이 &5원혼의 부적&f을 얻었습니다!"));
         }
         // 보물 지도 드롭
         var tc = plugin.getConfig();
@@ -399,7 +399,7 @@ public class ContentManager implements Listener {
         if (rnd.nextDouble() < 0.3) give(k, lv >= 60 ? "rune_mid" : "rune_low", 1);
         plugin.data().get(k).counters.merge("ach_bounty", 1.0, Double::sum);
         bounty = null;
-        Text.announce(Text.PREFIX + Text.c("&e" + k.getName() + "&f님이 현상수배범을 처치하고 현상금 &e" + Text.money(money) + "&f을(를) 받았습니다!"));
+        Text.announce(Text.PREFIX + Text.c("&e" + Text.name(k) + "&f님이 현상수배범을 처치하고 현상금 &e" + Text.money(money) + "&f을(를) 받았습니다!"));
     }
 
     // =================================================================== 4. 보물 지도

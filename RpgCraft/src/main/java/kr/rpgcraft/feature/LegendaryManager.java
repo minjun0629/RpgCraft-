@@ -164,7 +164,7 @@ public class LegendaryManager implements Listener, CommandExecutor {
         }
         if (owners.containsKey(l)) {
             OfflinePlayer o = Bukkit.getOfflinePlayer(owners.get(l));
-            Text.msg(p, "&c「" + l.label + "」은(는) 이미 " + (o.getName() == null ? "다른 플레이어" : o.getName()) + "님이 가지고 있습니다. 주인이 포기해야 얻을 수 있습니다.");
+            Text.msg(p, "&c「" + l.label + "」은(는) 이미 " + Text.name(o) + "님이 가지고 있습니다. 주인이 포기해야 얻을 수 있습니다.");
             return;
         }
         if (!acquire(p, l)) {
@@ -175,7 +175,7 @@ public class LegendaryManager implements Listener, CommandExecutor {
         plugin.stats().refresh(p);
         p.sendTitle(Text.c("&6&l✦ " + l.label + " ✦"), Text.c("&f" + l.desc), 5, 70, 15);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.7f);
-        Text.announce(Text.PREFIX + Text.c("&6&l" + p.getName() + "&f님이 레전더리 패시브 &6「" + l.label + "」&f의 주인이 되었습니다!"));
+        Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(p) + "&f님이 레전더리 패시브 &6「" + l.label + "」&f의 주인이 되었습니다!"));
     }
 
     // ------------------------------------------------------------------ /레전더리
@@ -198,7 +198,7 @@ public class LegendaryManager implements Listener, CommandExecutor {
         Text.msg(s, "&6&l레전더리 패시브 &7(종류마다 서버에 단 한 명)");
         for (Legend l : Legend.values()) {
             UUID o = owners.get(l);
-            String who = o == null ? "&a주인 없음" : "&e" + Optional.ofNullable(Bukkit.getOfflinePlayer(o).getName()).orElse("?");
+            String who = o == null ? "&a주인 없음" : "&e" + Text.name(o);
             s.sendMessage(Text.c(" &6" + l.label + " &8- &7" + l.desc + " &8| " + who));
         }
         Text.msg(s, "&7월드보스가 드물게 떨어뜨리는 &6레전더리 각인석&7을 우클릭해 얻습니다. &8(/레전더리 포기)");

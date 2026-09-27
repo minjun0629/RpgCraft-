@@ -259,7 +259,7 @@ public class VisualManager implements Listener {
                 Fx.shockwave(plugin, l, 3, c);
                 w.spawnParticle(Particle.TOTEM, l.clone().add(0, 1, 0), 25, 0.4, 0.8, 0.4, 0.25);
                 if (notice) p.sendTitle(Text.c("&c&l❖ 레전드 획득 ❖"), Text.c(name), 3, 30, 10);
-                Text.announce(Text.PREFIX + Text.c("&c&l" + p.getName() + "&f님이 레전드 " + name + "&f을(를) 손에 넣었습니다!"));
+                Text.announce(Text.PREFIX + Text.c("&c&l" + Text.name(p) + "&f님이 레전드 " + name + "&f을(를) 손에 넣었습니다!"));
             }
             case MYTHIC -> {
                 p.playSound(l, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.8f);
@@ -269,7 +269,7 @@ public class VisualManager implements Listener {
                 Fx.shockwave(plugin, l, 4.5, c);
                 Fx.sphere(l.clone().add(0, 1, 0), 1.6, 50, c, 1.2f);
                 if (notice) p.sendTitle(Text.c("&d&l✧ 신화 ✧"), Text.c(name), 3, 35, 12);
-                Text.announce(Text.PREFIX + Text.c("&d&l✧ " + p.getName() + "&f님이 신화 유물 " + name + "&f을(를) 깨웠습니다! ✧"));
+                Text.announce(Text.PREFIX + Text.c("&d&l✧ " + Text.name(p) + "&f님이 신화 유물 " + name + "&f을(를) 깨웠습니다! ✧"));
                 for (Player o : Bukkit.getOnlinePlayers())
                     if (!o.equals(p) && Setting.ANNOUNCE.get(plugin.data().get(o))) o.playSound(o.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_RESONATE, 0.6f, 0.8f);
             }

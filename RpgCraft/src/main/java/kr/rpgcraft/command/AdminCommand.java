@@ -63,7 +63,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 structure <종류> [ID] &7- 구조물 자동 건설 (castle, ruin, temple, tower ...)");
         Text.msg(s, "&e/rpg관리 wave [플레이어] &7| &emerchant &7- 필드 웨이브 깃발 / 히든 상인 즉시 등장");
         Text.msg(s, "&e/rpg관리 hiddennpc [respawn] &7- 히든 NPC 위치 / 사라진 히든 NPC 다시 배치");
-        Text.msg(s, "&e/rpg관리 reset <all confirm|player <이름> confirm> &7- 게임 초기화");
+        Text.msg(s, "&e/rpg관리 reset <all confirm|player <이름> confirm|auction confirm> &7- 게임 초기화 / 옥션만 초기화");
         Text.msg(s, "&e/rpg관리 dungeon <create <ID> <단계>|generate [개수]|list|delete <ID|all>> &7- 대형 던전");
         Text.msg(s, "&e/rpg관리 questnpc <scatter <수>|here <유형>> &7- 의뢰 NPC 배치");
         Text.msg(s, "&e/rpg관리 worldboss [random|desert_nightmare|siphonia|kain] [here] &7- 월드보스 + 전장");
@@ -475,6 +475,13 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 
     /** 게임 초기화 */
     private void reset(CommandSender s, String[] a) {
+        if (a.length >= 2 && a[1].equals("auction")) {   // 옥션만 초기화 (v5.4.35) — /rpg관리 auction clear confirm 과 같음
+            if (a.length < 3 || !a[2].equals("confirm")) { Text.msg(s, "&c정말 옥션만 초기화하려면: /rpg관리 reset auction confirm &7(올라온 물건 · 받지 않은 대금 · 돌려받을 물건 모두 삭제)"); return; }
+            if (plugin.auction() == null) { Text.msg(s, "&c옥션이 꺼져 있습니다."); return; }
+            int n = plugin.auction().clearAll();
+            Text.msg(s, "&a옥션을 초기화했습니다. &7(올라온 물건 " + n + "개 삭제, 다른 데이터는 그대로)");
+            return;
+        }
         if (a.length >= 3 && a[1].equals("player")) {
             PlayerData d = target(s, a, 2);
             if (d == null) return;
@@ -509,6 +516,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
         Text.msg(s, "&e/rpg관리 reset all confirm &7- 모든 플레이어 데이터·길드·성 소유·옥션·회차 초기화 (맵·구조물·설정은 유지)");
         Text.msg(s, "&e/rpg관리 reset player <이름> confirm &7- 한 명만 초기화");
+        Text.msg(s, "&e/rpg관리 reset auction confirm &7- 옥션만 초기화 (올라온 물건 · 받지 않은 대금 · 돌려받을 물건)");
     }
 
     private void resetPlayer(PlayerData d) {
@@ -845,8 +853,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 if (a.length == 3 && a[1].equals("delete")) { out.add("all"); for (var d : plugin.dungeons().all()) out.add(d.id); } if (a.length == 4 && a[1].equals("create")) out.addAll(List.of("1", "2", "3", "4")); }
             case "questnpc" -> { if (a.length == 2) out.addAll(List.of("scatter", "here")); if (a.length == 3 && a[1].equals("here")) out.addAll(List.of("hunter", "collector", "herder", "explorer")); }
             case "reset" -> {
-                if (a.length == 2) out.addAll(List.of("all", "player"));
-                if (a.length == 3 && a[1].equals("all")) out.add("confirm");
+                if (a.length == 2) out.addAll(List.of("all", "player", "auction"));
+                if (a.length == 3 && (a[1].equals("all") || a[1].equals("auction"))) out.add("confirm");
             }
             case "mob" -> {
                 if (a.length == 2) out.addAll(List.of("list", "spawn", "killall"));

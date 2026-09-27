@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.4.35
+- **옥션만 초기화 `/rpg관리 reset auction confirm`**: 플레이어 데이터 · 길드 등은 그대로 두고 옥션에 올라온 물건, 받지 않은 판매 대금, 돌려받을 물건만 모두 지웁니다 (`/rpg관리 auction clear confirm` 과 같음). Tab 자동완성 · 도움말에 추가.
+
 ## v5.4.34
 - **야차 (1대1 결투) `/야차 <닉네임>`**
   - 신청하면 상대 채팅에 **[수락] / [거절]** 버튼이 뜹니다 (30초, `/야차 수락` · `/야차 거절` 도 됨). 이름은 Tab 자동완성.

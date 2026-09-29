@@ -193,6 +193,8 @@ public class MenuManager implements Listener {
                     "",
                     "&c❤ " + Text.num(d.hp) + "/" + Text.num(s.maxHp) + "  &6⚔ " + Text.num(s.attack),
                     "&e✦ 크리 " + String.format("%.1f", s.crit) + "%  &b🛡 방어 " + String.format("%.1f", s.def) + "%",
+                    "&c✚ 흡혈 " + String.format("%.1f", s.lifesteal) + "%  &a» 이동속도 " + String.format("%+.1f", s.speed) + "%",
+                    "&7회피 " + String.format("%.1f", s.dodge) + "%  &7방어 관통 " + String.format("%.1f", s.armorPen) + "%",
                     "&c힘 " + (int) s.str + "  &a민첩 " + (int) s.dex + "  &b모험 " + (int) s.adv)));
 
             ItemStack stat = icon(Material.NETHER_STAR, "&e&l스탯", List.of("&7힘 / 민첩 / 모험 분배", "",
@@ -219,7 +221,7 @@ public class MenuManager implements Listener {
             });
 
             int done = plugin.quests().completedCount(d);
-            ItemStack quest = icon(Material.WRITABLE_BOOK, "&a&l일일 의뢰", List.of("&7매일 자정(한국 시간) 초기화", "&f진행 " + done + "/3", "&e▶ 클릭"));
+            ItemStack quest = icon(Material.WRITABLE_BOOK, "&a&l일일 · 주간 의뢰", List.of("&7일일: 매일 자정 · 주간: 매주 월요일 (한국 시간)", "&f일일 " + done + "/3 &7· &b주간 " + plugin.quests().weeklyCompleted(d) + "/3", "&e▶ 클릭"));
             if (done > 0) quest.setAmount(done);
             set(28, quest, e -> new QuestGui(p).open(p));
             set(29, icon(Material.EMERALD, "&a&l상점", List.of("&7이용 가능한 상점 목록", "&e▶ 클릭")), e -> new ShopListGui(p).open(p));
@@ -265,9 +267,27 @@ public class MenuManager implements Listener {
     // =================================================================== 일일 의뢰
     private class QuestGui extends Gui {
         QuestGui(Player p) {
-            super(3, "&8일일 의뢰", "quest");
+            super(5, "&8일일 · 주간 의뢰", "quest");
             PlayerData d = plugin.data().get(p);
             QuestManager qm = plugin.quests();
+            qm.ensureWeekly(d);
+            for (int i = 0; i < 3; i++) {   // 주간 의뢰 (v5.5.0) — 아래 줄
+                int slot = i;
+                QuestManager.Quest q = qm.weekly(d, i);
+                int prog = qm.weeklyProgress(d, i);
+                boolean done = qm.weeklyDone(d, i), claimed = qm.weeklyClaimed(d, i);
+                ItemStack it = icon(claimed ? Material.LIGHT_BLUE_STAINED_GLASS_PANE : q.icon(),
+                        (claimed ? "&7&m" : done ? "&b&l" : "&3&l") + "[주간] " + String.format(q.label(), q.amount()),
+                        List.of("&f진행 " + bar(prog / (double) q.amount(), 16) + " &7" + prog + "/" + q.amount(), "",
+                                "&f보상: &e" + Text.money(qm.weeklyMoney(d, i)) + " &f+ 경험치 &a" + Text.num(qm.weeklyExp(d)), "",
+                                claimed ? "&7수령 완료" : done ? "&a▶ 클릭하여 보상 수령" : "&7진행 중... &8(매주 월요일 새로 배정)"));
+                set(29 + i * 2, it, e -> {
+                    qm.claimWeekly(p, slot);
+                    new QuestGui(p).open(p);
+                });
+            }
+            set(22, Gui.button(Material.ENDER_CHEST, "&b주간 올클리어 보상", "&7주간 의뢰 3개 모두 수령 시 결정 10개 + 강화 확률 10% 증가권",
+                    d.counter("wq_bonus") > 0 ? "&a수령 완료" : "&7미수령"));
             for (int i = 0; i < 3; i++) {
                 int slot = i;
                 QuestManager.Quest q = qm.quest(d, i);
@@ -285,8 +305,8 @@ public class MenuManager implements Listener {
             }
             set(4, Gui.button(Material.CHEST, "&6올클리어 보상", "&73개 모두 수령 시 결정 3개 (+10% 확률로 강화 확률 증가권)",
                     d.counter("dq_bonus") > 0 ? "&a수령 완료" : "&7미수령"));
-            back(this, 18, p);
-            fill(0, 26);
+            back(this, 36, p);
+            fill(0, 44);
         }
     }
 
@@ -706,11 +726,11 @@ public class MenuManager implements Listener {
                 set(slots[i], icon(found > 0 ? s.icon() : Material.GRAY_DYE, "&e&l" + s.name(),
                         List.of("&f발견 &a" + found + " &7/ " + n, "&7한 번이라도 얻은 아이템만 표시됩니다", "&e▶ 클릭")), e -> new CodexPage(p, s, 0).open(p));
             }
-            set(21, icon(Material.ZOMBIE_HEAD, "&2&l몬스터 도감", List.of("&7잡아 본 몬스터의 드롭 확률", "&e▶ 클릭")), e -> new MobCodex(p, 0).open(p));
-            set(22, icon(Material.DRAGON_EGG, "&c&l보스 도감", List.of("&7" + plugin.bosses().ids().size() + "종", "&7스킬 · 드롭 확률", "&e▶ 클릭")), e -> new BossCodex(p).open(p));
+            set(19, icon(Material.ZOMBIE_HEAD, "&2&l몬스터 도감", List.of("&7잡아 본 몬스터의 드롭 확률", "&e▶ 클릭")), e -> new MobCodex(p, 0).open(p));
+            set(21, icon(Material.DRAGON_EGG, "&c&l보스 도감", List.of("&7" + plugin.bosses().ids().size() + "종", "&7스킬 · 드롭 확률", "&e▶ 클릭")), e -> new BossCodex(p).open(p));
             PlayerData cd = plugin.data().get(p);
             if (plugin.mounts() != null)
-                set(24, icon(Material.SADDLE, "&6&l탈것 도감", List.of("&f모은 탈것 &a" + plugin.mounts().ownedCount(cd) + " &7/ " + MountManager.Mount.values().length,
+                set(23, icon(Material.SADDLE, "&6&l탈것 도감", List.of("&f모은 탈것 &a" + plugin.mounts().ownedCount(cd) + " &7/ " + MountManager.Mount.values().length,
                         "&7얻지 못한 탈것의 능력치는 가려집니다", "&e▶ 클릭")), e -> plugin.mounts().openCollection(p));
             if (plugin.pets() != null)
                 set(25, icon(Material.EGG, "&d&l펫 도감", List.of("&f모은 펫 &a" + plugin.pets().ownedCount(cd) + " &7/ " + PetManager.Pet.values().length,
@@ -821,9 +841,24 @@ public class MenuManager implements Listener {
             case "SLAM" -> "대지 강타";
             case "METEOR" -> "낙하 폭발";
             case "SUMMON" -> "소환";
-            case "FIREBALL" -> "화염구";
+            case "FIREBALL", "VOLLEY" -> "직선 일제 사격";
+            case "BACKSTEP_VOLLEY" -> "백스텝 사격";
+            case "CHECKER" -> "바둑판 폭발";
+            case "SAFE_ZONE" -> "안전지대";
+            case "DONUT" -> "안팎 교대";
+            case "SWEEP" -> "회전 베기";
+            case "WAVE_WALL" -> "밀려오는 벽";
+            case "GUST" -> "힘껏 밀기";
+            case "FRONT_BACK" -> "앞뒤 베기";
+            case "SPREAD" -> "낙뢰 표식";
             case "PULL" -> "끌어당기기";
             case "BLINK" -> "순간이동 기습";
+            case "CHARGE" -> "돌진";
+            case "NOVA" -> "파동";
+            case "ERUPTION" -> "분출";
+            case "CROSS" -> "십자 베기";
+            case "FROST_FIELD" -> "서리 장판";
+            case "ROAR" -> "포효";
             default -> type;
         };
     }
@@ -834,9 +869,24 @@ public class MenuManager implements Listener {
             case "SLAM" -> "대지 강타 &8— 주변 " + (int) k.radius + "칸 충격파 · 빨간 고리 밖으로";
             case "METEOR" -> "낙하 폭발 &8— 대상 발밑 " + (int) k.radius + "칸 · 고리에서 벗어나기";
             case "SUMMON" -> "소환 &8— " + (k.name != null ? k.name : kr.rpgcraft.mob.MobManager.korean(org.bukkit.entity.EntityType.valueOf(k.entity == null ? "ZOMBIE" : k.entity))) + " " + k.amount + "마리";
-            case "FIREBALL" -> "화염구 &8— 대상에게 날아옴 · 옆으로 피하기";
+            case "FIREBALL", "VOLLEY" -> "직선 일제 사격 &8— 탄도 띠가 먼저 보임 · 띠 사이 틈에 서기";
+            case "BACKSTEP_VOLLEY" -> "백스텝 사격 &8— 뒤로 물러난 뒤 부채꼴 화살 · 화살 띠 사이로";
+            case "CHECKER" -> "바둑판 폭발 &8— 칸이 반씩 두 번 터짐 · 먼저 터진 칸으로 옮기기";
+            case "SAFE_ZONE" -> "안전지대 &8— " + (int) k.radius + "칸 전체 폭발 · 초록 원 안만 안전";
+            case "DONUT" -> "안팎 교대 &8— 안쪽 원과 바깥 고리가 번갈아 터짐 · 들어갔다 나오기";
+            case "SWEEP" -> "회전 베기 &8— 긴 띠가 한 바퀴 돎 · 보스 발밑 초록 원으로";
+            case "WAVE_WALL" -> "밀려오는 벽 &8— 넓은 벽이 밀려옴 · 초록 틈으로 통과";
+            case "GUST" -> "힘껏 밀기 &8— 앞쪽 부채꼴 돌풍 · 옆이나 뒤로 돌기";
+            case "FRONT_BACK" -> "앞뒤 베기 &8— 앞 반원과 뒤 반원이 차례로 · 순서를 보고 돌기";
+            case "SPREAD" -> "낙뢰 표식 &8— 모두의 자리에 낙뢰 · 흩어져서 표식 밖으로";
             case "PULL" -> "끌어당기기 &8— " + (int) k.radius + "칸 안을 당김 · 멀리 떨어지기";
             case "BLINK" -> "순간이동 기습 &8— 대상 뒤로 이동해 공격";
+            case "CHARGE" -> "돌진 &8— 붉은 띠를 따라 돌진 · 띠 밖으로 비키기";
+            case "NOVA" -> "파동 &8— 고리 3개가 차례로 퍼짐 · 고리 사이에 서거나 점프";
+            case "ERUPTION" -> "분출 &8— 모두의 발밑이 솟구침 · 원에서 벗어나기";
+            case "CROSS" -> "십자 베기 &8— 십자 · X자 띠 폭발 · 띠 사이로";
+            case "FROST_FIELD" -> "서리 장판 &8— " + (int) k.radius + "칸 5초 지속 · 느려짐 · 바로 나가기";
+            case "ROAR" -> "포효 &8— " + (int) k.radius + "칸 밀쳐내기 · 약화";
             default -> k.type;
         };
     }
@@ -914,23 +964,37 @@ public class MenuManager implements Listener {
     // =================================================================== 설정
     private class SettingsGui extends Gui {
         SettingsGui(Player p) {
-            super(3, "&8설정", "settings");
+            super(4, "&8설정", "settings");
             PlayerData d = plugin.data().get(p);
-            int slot = 10;
-            for (Setting s : Setting.values()) {
+            // 첫 줄 7칸(10~16) + 나머지는 둘째 줄 가운데 정렬 (좌우 대칭)
+            Setting[] all = Setting.values();
+            int rest = Math.max(0, all.length - 7);
+            int[] slots = new int[all.length];
+            for (int i = 0; i < all.length; i++) {
+                if (i < 7) { slots[i] = 10 + i + (all.length < 7 ? (7 - all.length) / 2 : 0); continue; }
+                int j = i - 7, start = 22 - rest / 2;
+                slots[i] = rest % 2 == 1 ? start + j : start + j + (j >= rest / 2 ? 1 : 0);
+            }
+            int idx = 0;
+            for (Setting s : all) {
+                int slot = slots[idx++];
                 boolean on = s.get(d);
                 set(slot, icon(on ? s.icon : Material.GRAY_DYE, (on ? "&a&l" : "&7&l") + s.label + (on ? " ON" : " OFF"),
                         List.of("&7" + s.desc, "", "&e▶ 클릭하여 전환")), e -> {
+                    if (s == Setting.PVP && s.get(d) && plugin.combat().inPvp(p)) {   // 싸우다가 끄고 도망가기 방지
+                        Text.actionBar(p, "&cPvP 전투 중에는 끌 수 없습니다. &7(15초 뒤 다시)");
+                        return;
+                    }
                     boolean now = s.toggle(d);
                     plugin.data().save(d);   // 나갔다 와도 유지
                     if (s == Setting.SIDEBAR) plugin.hud().applySidebar(p);
                     Text.actionBar(p, "&f" + s.label + " " + (now ? "&aON" : "&7OFF"));
+                    if (s == Setting.BGM && !now) plugin.bgm().stop(p);
                     new SettingsGui(p).open(p);
                 });
-                slot++;
             }
-            back(this, 18, p);
-            fill(0, 26);
+            back(this, 27, p);
+            fill(0, 35);
         }
     }
 
@@ -951,8 +1015,8 @@ public class MenuManager implements Listener {
             set(15, Gui.button(Material.AMETHYST_CLUSTER, "&e&l사신수", "&7월드보스와 채집에서 기운 파편 획득", "&7파편 5개 → 결정 → 30% 확률로 기운",
                     "&7기운 5개 + 유니크 무기 = 사신수 무기"));
             set(16, Gui.button(Material.BEACON, "&e&l공성전", "&7전쟁권으로 선포, 채집도구로 성벽 파괴", "&7성벽 3개 파괴 후 신호기를 부수면 점령"));
-            set(19, Gui.button(Material.ENCHANTED_BOOK, "&e&l히든 패시브", "&7특정 행동을 계속 반복하면 해금", "&7무엇을 반복해야 할지는 비밀!"));
-            set(20, Gui.button(Material.MOSSY_STONE_BRICKS, "&e&l유적", "&7시작 블록을 밟고 도착 블록까지 도달", "&7모험 스탯이 입장 조건", "&7최초 클리어 시 특별 패시브"));
+            set(21, Gui.button(Material.ENCHANTED_BOOK, "&e&l히든 패시브", "&7특정 행동을 계속 반복하면 해금", "&7무엇을 반복해야 할지는 비밀!"));
+            set(23, Gui.button(Material.MOSSY_STONE_BRICKS, "&e&l유적", "&7시작 블록을 밟고 도착 블록까지 도달", "&7모험 스탯이 입장 조건", "&7최초 클리어 시 특별 패시브"));
             back(this, 27, p);
             fill(0, 35);
         }

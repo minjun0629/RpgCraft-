@@ -118,6 +118,11 @@ public enum Passive {
         return cooldown > 0;
     }
 
+    /** 표시용 종류 이름: 쿨타임이 있는 것은 "히든 액티브" 처럼 (v5.4.26: 공지에 "히든 패시브 휴전"으로 나왔음) */
+    public String kindLabel() {
+        return isActive() ? type.label.replace("패시브", "액티브") : type.label;
+    }
+
     public static Passive find(String s) {
         for (Passive p : values()) if (p.name().equalsIgnoreCase(s) || p.label.replace(" ", "").equals(s.replace(" ", ""))) return p;
         return null;

@@ -106,6 +106,32 @@ public class PotionManager implements Listener {
         g.open(p);
     }
 
+    /** 우클릭으로 바로 마심 (64개씩 쌓이는 포션) */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onRightClick(org.bukkit.event.player.PlayerInteractEvent e) {
+        var a = e.getAction();
+        if (a != org.bukkit.event.block.Action.RIGHT_CLICK_AIR && a != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
+        ItemStack it = e.getItem();
+        if (it == null || it.getType() == Material.POTION || ItemData.category(it) != Category.POTION) return;   // 예전 병 포션은 바닐라처럼 마시기
+        e.setCancelled(true);
+        Player p = e.getPlayer();
+        if (drink(p, ItemData.id(it))) it.setAmount(it.getAmount() - 1);
+    }
+
+    /** 예전(병) 포션 → 64개씩 쌓이는 새 포션으로 바꿈. 바꾼 개수 반환 */
+    public int convertLegacy(org.bukkit.inventory.Inventory inv) {
+        int n = 0;
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack it = inv.getItem(i);
+            if (it == null || it.getType() != Material.POTION || ItemData.category(it) != Category.POTION) continue;
+            ItemStack nw = plugin.items().create(ItemData.id(it), it.getAmount());
+            if (nw == null) continue;
+            inv.setItem(i, nw);
+            n += it.getAmount();
+        }
+        return n;
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onConsume(PlayerItemConsumeEvent e) {
         ItemStack it = e.getItem();

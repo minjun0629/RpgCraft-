@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.4.11'
+version: '5.6.0'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -78,6 +78,18 @@ commands:
   dismantle:
     description: 장비 분해
     aliases: [분해]
+  ruins:
+    description: 유적 위치 안내
+    aliases: [유적]
+  stock:
+    description: 주식 시장
+    aliases: [주식]
+  event:
+    description: 이벤트 광장 (미니게임 · 이벤트 상점)
+    aliases: [이벤트, 미니게임, 이벤트상점]
+  duel:
+    description: 야차 (1대1 결투)
+    aliases: [야차]
   quickkey:
     description: 퀵 스킬 키 설정
     aliases: [퀵키]

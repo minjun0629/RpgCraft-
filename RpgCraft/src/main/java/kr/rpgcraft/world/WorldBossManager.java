@@ -74,7 +74,7 @@ public class WorldBossManager implements Listener {
         for (int i = 0; l == null && i < 20; i++) {
             double a = rnd.nextDouble() * Math.PI * 2, d = 400 + rnd.nextDouble() * plugin.getConfig().getDouble("world-boss.spread", 1200);
             Block top = kr.rpgcraft.util.Locs.surface(w, w.getSpawnLocation().clone().add(Math.cos(a) * d, 0, Math.sin(a) * d));
-            if (!top.isLiquid()) l = top.getLocation().add(0, 1, 0);
+            if (!top.isLiquid() && !plugin.bosses().nearSpawn(top.getLocation())) l = top.getLocation().add(0, 1, 0);
         }
         if (l == null) return false;
         Event ev = new Event();
@@ -106,6 +106,19 @@ public class WorldBossManager implements Listener {
         events.clear();
         plugin.structures().despawnArenas(1000);   // 기록이 끊긴 전장까지 모두
         return n;
+    }
+
+    /** 이 보스가 아직 살아 있으면 그 위치 (없으면 null) — 서버 재시작 뒤 남아 있는 보스도 찾음 */
+    public Location aliveAt(String id) {
+        for (Event ev : events) {
+            if (!id.equals(ev.id)) continue;
+            Entity e = Bukkit.getEntity(ev.boss);
+            if (e == null || !e.isDead()) return e != null ? e.getLocation() : ev.at;   // 청크가 내려가 있어도 기록이 남아 있으면 살아 있는 것
+        }
+        for (org.bukkit.World w : Bukkit.getWorlds())
+            for (org.bukkit.entity.LivingEntity le : w.getLivingEntities())
+                if (!le.isDead() && id.equals(le.getPersistentDataContainer().get(kr.rpgcraft.Keys.BOSS, org.bukkit.persistence.PersistentDataType.STRING))) return le.getLocation();
+        return null;
     }
 
     public int count() {

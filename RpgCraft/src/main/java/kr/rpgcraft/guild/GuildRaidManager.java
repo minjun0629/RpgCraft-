@@ -130,6 +130,10 @@ public class GuildRaidManager implements Listener {
         if (def == null) { Text.msg(p, "&c토벌할 보스를 찾지 못했습니다."); return; }
         Location at = spot(p);
         if (at == null) { Text.msg(p, "&c보스가 나올 자리가 없습니다. 탁 트인 곳에서 시도하세요."); return; }
+        if (plugin.bosses().nearSpawn(at)) {
+            Text.msg(p, "&c스폰 " + (int) plugin.getConfig().getDouble("bosses.spawn-safe-radius", 300) + "칸 안에서는 토벌전을 시작할 수 없습니다.");
+            return;
+        }
 
         g.bank -= st.cost();
         plugin.guilds().save();

@@ -369,6 +369,324 @@
         "custom_model_data": 9046
       },
       "model": "rpgcraft:boss/field_frost_lich"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12000
+      },
+      "model": "rpgcraft:item/minigame/mg_hole"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12001
+      },
+      "model": "rpgcraft:item/minigame/mg_mole"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12002
+      },
+      "model": "rpgcraft:item/minigame/mg_mole_hit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12003
+      },
+      "model": "rpgcraft:item/minigame/mg_mole_gold"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12004
+      },
+      "model": "rpgcraft:item/minigame/mg_bomb"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12005
+      },
+      "model": "rpgcraft:item/minigame/mg_boom"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12010
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_red"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12011
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_orange"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12012
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_yellow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12013
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_green"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12014
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_blue"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12015
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_purple"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12016
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_steel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12017
+      },
+      "model": "rpgcraft:item/minigame/mg_brick_cracked"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12018
+      },
+      "model": "rpgcraft:item/minigame/mg_ball"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12019
+      },
+      "model": "rpgcraft:item/minigame/mg_paddle_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12020
+      },
+      "model": "rpgcraft:item/minigame/mg_paddle_m"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12021
+      },
+      "model": "rpgcraft:item/minigame/mg_paddle_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12030
+      },
+      "model": "rpgcraft:item/minigame/mg_tile"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12031
+      },
+      "model": "rpgcraft:item/minigame/mg_tile_open"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12032
+      },
+      "model": "rpgcraft:item/minigame/mg_num_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12033
+      },
+      "model": "rpgcraft:item/minigame/mg_num_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12034
+      },
+      "model": "rpgcraft:item/minigame/mg_num_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12035
+      },
+      "model": "rpgcraft:item/minigame/mg_num_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12036
+      },
+      "model": "rpgcraft:item/minigame/mg_num_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12037
+      },
+      "model": "rpgcraft:item/minigame/mg_num_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12038
+      },
+      "model": "rpgcraft:item/minigame/mg_num_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12039
+      },
+      "model": "rpgcraft:item/minigame/mg_num_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12040
+      },
+      "model": "rpgcraft:item/minigame/mg_flag"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12041
+      },
+      "model": "rpgcraft:item/minigame/mg_mine"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12042
+      },
+      "model": "rpgcraft:item/minigame/mg_mine_boom"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12050
+      },
+      "model": "rpgcraft:item/minigame/mg_card_back"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12051
+      },
+      "model": "rpgcraft:item/minigame/mg_face_0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12052
+      },
+      "model": "rpgcraft:item/minigame/mg_face_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12053
+      },
+      "model": "rpgcraft:item/minigame/mg_face_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12054
+      },
+      "model": "rpgcraft:item/minigame/mg_face_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12055
+      },
+      "model": "rpgcraft:item/minigame/mg_face_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12056
+      },
+      "model": "rpgcraft:item/minigame/mg_face_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12057
+      },
+      "model": "rpgcraft:item/minigame/mg_face_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12058
+      },
+      "model": "rpgcraft:item/minigame/mg_face_7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12059
+      },
+      "model": "rpgcraft:item/minigame/mg_face_8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12060
+      },
+      "model": "rpgcraft:item/minigame/mg_face_9"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12061
+      },
+      "model": "rpgcraft:item/minigame/mg_face_10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12062
+      },
+      "model": "rpgcraft:item/minigame/mg_face_11"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12063
+      },
+      "model": "rpgcraft:item/minigame/mg_face_12"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12064
+      },
+      "model": "rpgcraft:item/minigame/mg_face_13"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12070
+      },
+      "model": "rpgcraft:item/minigame/mg_coin_mole"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12071
+      },
+      "model": "rpgcraft:item/minigame/mg_coin_brick"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12072
+      },
+      "model": "rpgcraft:item/minigame/mg_coin_mine"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12073
+      },
+      "model": "rpgcraft:item/minigame/mg_coin_card"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12080
+      },
+      "model": "rpgcraft:item/minigame/mg_easy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12081
+      },
+      "model": "rpgcraft:item/minigame/mg_normal"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12082
+      },
+      "model": "rpgcraft:item/minigame/mg_hard"
     }
   ]
 }

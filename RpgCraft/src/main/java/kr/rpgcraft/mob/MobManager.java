@@ -74,7 +74,7 @@ public class MobManager implements Listener {
                 if (e != null) e.setCustomNameVisible(false);
             }
         }, 20L, 20L);
-        Bukkit.getScheduler().runTaskTimer(plugin, this::revealNearby, 10L, 5L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::revealNearby, 10L, 10L);
     }
 
     /** 때리지 않아도 이름표(레벨 · 이름 · 체력바)를 보여줌: 플레이어 근처에 있거나 플레이어가 바라보는 몬스터 */

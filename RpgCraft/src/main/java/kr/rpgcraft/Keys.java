@@ -6,7 +6,7 @@ import org.bukkit.plugin.Plugin;
 /** PersistentDataContainer 키 모음 */
 public final class Keys {
     public static NamespacedKey ID, STATS, ENH, GRADE, WCLASS, ASLOT, SET, SET_BONUS, SET_N, CRAFTER, CRAFTER_UUID,
-            UNIQUE, VALUE, RUNE, TOTEM, NAME, LEVEL, BOSS, MINION, NPC_SHOP, ARROW_ATK, ARROW_FORCE, POWER, INDICATOR, FILLER;
+            UNIQUE, VALUE, RUNE, TOTEM, NAME, LEVEL, BOSS, MINION, NPC_SHOP, ARROW_ATK, ARROW_FORCE, POWER, INDICATOR, FILLER, FISH_LEN, FISH_KG, FISH_MULT;
 
     private Keys() {}
 
@@ -36,5 +36,8 @@ public final class Keys {
         POWER = new NamespacedKey(p, "power");
         INDICATOR = new NamespacedKey(p, "indicator");
         FILLER = new NamespacedKey(p, "gui_filler");
+        FISH_LEN = new NamespacedKey(p, "fish_len");     // v5.6.0 물고기 길이(cm)
+        FISH_KG = new NamespacedKey(p, "fish_kg");       // 무게(kg)
+        FISH_MULT = new NamespacedKey(p, "fish_mult");   // 무게에 따른 판매가 배율
     }
 }

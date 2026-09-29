@@ -160,10 +160,20 @@ public final class ItemLore {
         }
         String crafter = m.getPersistentDataContainer().get(Keys.CRAFTER, PersistentDataType.STRING);
         if (crafter != null) lore.add("&6⚒ 제작: " + crafter);
+        Double len = m.getPersistentDataContainer().get(Keys.FISH_LEN, PersistentDataType.DOUBLE);   // v5.6.0 낚은 물고기: 길이 · 무게
+        double fm = 1;
+        if (len != null) {
+            Double kg = m.getPersistentDataContainer().get(Keys.FISH_KG, PersistentDataType.DOUBLE);
+            Double mult = m.getPersistentDataContainer().get(Keys.FISH_MULT, PersistentDataType.DOUBLE);
+            fm = mult == null ? 1 : mult;
+            lore.add("");
+            lore.add("&b📏 길이 &f" + String.format("%.1f", len) + "cm   &b⚖ 무게 &f" + (kg == null ? "?" : kg >= 1 ? String.format("%.2fkg", kg) : String.format("%.0fg", kg * 1000)));
+            lore.add("&7무게 판정 " + (fm >= 1.5 ? "&6&l초대형" : fm >= 1.15 ? "&e대물" : fm >= 0.85 ? "&f보통" : "&7작은 편") + " &8(판매가 x" + String.format("%.2f", fm) + ")");
+        }
         if (t.sell > 0) {
             double sm = 1;
             if (t.id.startsWith("loot_") || t.id.startsWith("fish_")) sm = RpgCraft.get() == null ? 1 : RpgCraft.get().getConfig().getDouble("economy.loot-sell-mult", 0.15);
-            lore.add("&8판매가 " + Text.money(Math.max(1, Math.round(t.sell * sm))));
+            lore.add("&8판매가 " + Text.money(Math.max(1, Math.round(t.sell * sm * fm))));
         }
         m.setLore(Text.c(lore));
         it.setItemMeta(m);

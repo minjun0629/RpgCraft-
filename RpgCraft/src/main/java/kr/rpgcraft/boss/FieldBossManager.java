@@ -137,6 +137,7 @@ public class FieldBossManager implements org.bukkit.event.Listener {
         List<Player> cands = new ArrayList<>();
         if (near != null) cands.add(near);
         else for (Player p : Bukkit.getOnlinePlayers()) if (eligible(p)) cands.add(p);
+        if (near == null) cands.removeIf(p -> plugin.bosses().nearSpawn(p.getLocation()));   // 스폰 근처에 있는 사람 옆에는 나오지 않음
         if (cands.isEmpty()) return null;
         ThreadLocalRandom r = ThreadLocalRandom.current();
         Player p = cands.get(r.nextInt(cands.size()));
@@ -147,6 +148,7 @@ public class FieldBossManager implements org.bukkit.event.Listener {
             Block top = Locs.surface(p.getWorld(), at);
             if (top.isLiquid() || Math.abs(top.getY() - p.getLocation().getY()) > 20) continue;
             Location loc = top.getLocation().add(0.5, 1, 0.5);
+            if (plugin.bosses().nearSpawn(loc)) continue;   // 스폰 300칸 안에는 등장 금지 (v5.4.27)
             BossDefinition d0 = pick(loc);
             if (d0 == null) return null;
             LivingEntity e = plugin.bosses().spawn(d0.id, loc);

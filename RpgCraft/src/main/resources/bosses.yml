@@ -1,6 +1,9 @@
 # ============================================================
 #  보스 정의. /rpg관리 boss spawn <id>
-#  skills.type: SLAM(주변 강타) METEOR(대상 위치 폭발) SUMMON(소환) FIREBALL PULL(끌어당김) BLINK(뒤로 순간이동)
+#  skills.type: SLAM(주변 강타) METEOR(대상 위치 폭발) SUMMON(소환) PULL(끌어당김) BLINK(뒤로 순간이동)
+#    v5.6.0: VOLLEY(직선 일제 사격, speed=속도) BACKSTEP_VOLLEY(뒤로 물러나 화살) CHECKER(바둑판 2단 폭발) SAFE_ZONE(초록 원만 안전)
+#            DONUT(안쪽↔바깥 교대) SWEEP(회전 베기) WAVE_WALL(틈 있는 벽) GUST(부채꼴 밀치기) FRONT_BACK(앞뒤 베기) SPREAD(낙뢰 표식)
+#    기술이 터진 직후 보스는 잠깐 경직됩니다 (config: bosses.stagger-ticks)
 #  보스 이름/드롭 세트는 나무위키 4R 기준, 체력·스킬 수치는 자체 설계
 # ============================================================
 
@@ -14,10 +17,11 @@ witch:
   exp: 30000
   money: 500000
   bossbar-color: PURPLE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: FIREBALL, interval: 6, amount: 3, power: 1.0}
+    - {type: VOLLEY, interval: 6, amount: 3, speed: 0.45, power: 1.0}
     - {type: SUMMON, interval: 20, entity: ZOMBIE, amount: 3, level: 18, name: "마녀의 하수인"}
-    - {type: PULL, interval: 15, radius: 8, power: 0.8}
+    - {type: CHECKER, interval: 16, radius: 7, power: 0.9}
   drops:
     - {item: witch_w0, chance: 0.08}
     - {item: witch_w1, chance: 0.08}
@@ -42,8 +46,10 @@ elf_queen:
   exp: 60000
   money: 800000
   bossbar-color: GREEN
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: BLINK, interval: 10, power: 1.2}
+    - {type: BACKSTEP_VOLLEY, interval: 9, amount: 4, speed: 1.0, power: 1.1}
+    - {type: SAFE_ZONE, interval: 18, radius: 12, amount: 2, power: 1.0}
     - {type: SUMMON, interval: 25, entity: SKELETON, amount: 4, level: 28, name: "엘프 궁수"}
   drops:
     - {item: bow_elf, chance: 0.15}
@@ -60,9 +66,11 @@ dwarf_king:
   exp: 120000
   money: 1500000
   bossbar-color: YELLOW
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
     - {type: SLAM, interval: 8, radius: 5, power: 1.5}
-    - {type: SUMMON, interval: 25, entity: PILLAGER, amount: 3, level: 38, name: "드워프 광부"}
+    - {type: CROSS, interval: 12, radius: 6, power: 1.3}
+    - {type: SUMMON, interval: 25, entity: PILLAGER, amount: 3, level: 38, name: "드워프 궁병"}
   drops:
     - {item: dwarf_w0, chance: 0.08}
     - {item: dwarf_w1, chance: 0.08}
@@ -87,9 +95,11 @@ harpy_queen:
   exp: 300000
   money: 3000000
   bossbar-color: WHITE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: BLINK, interval: 7, power: 1.3}
-    - {type: PULL, interval: 12, radius: 10, power: 1.0}
+    - {type: BLINK, interval: 9, power: 1.3}
+    - {type: GUST, interval: 11, radius: 10, power: 1.0}
+    - {type: VOLLEY, interval: 8, amount: 5, speed: 0.8, power: 0.9}
     - {type: SUMMON, interval: 30, entity: VEX, amount: 4, level: 55, name: "하피"}
   drops:
     - {item: harpy_w0, chance: 0.08}
@@ -113,9 +123,11 @@ sea_gatekeeper:
   exp: 700000
   money: 6000000
   bossbar-color: BLUE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: SLAM, interval: 8, radius: 7, power: 1.5}
-    - {type: METEOR, interval: 14, radius: 4, power: 2.0}
+    - {type: WAVE_WALL, interval: 12, power: 1.5}
+    - {type: DONUT, interval: 14, radius: 8, power: 1.6}
+    - {type: SLAM, interval: 9, radius: 7, power: 1.5}
     - {type: SUMMON, interval: 30, entity: GUARDIAN, amount: 3, level: 75, name: "심해 파수꾼"}
   drops:
     - {item: sea_w0, chance: 0.08}
@@ -139,9 +151,10 @@ bungbung:
   exp: 1500000
   money: 12000000
   bossbar-color: RED
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: FIREBALL, interval: 5, amount: 5, power: 1.2}
-    - {type: METEOR, interval: 10, radius: 5, power: 2.5}
+    - {type: VOLLEY, interval: 6, amount: 5, speed: 0.7, power: 1.2}
+    - {type: CHECKER, interval: 13, radius: 8, power: 2.0}
     - {type: SLAM, interval: 12, radius: 6, power: 1.8}
   drops:
     - {item: bungbung_w0, chance: 0.08}
@@ -167,9 +180,11 @@ desert_nightmare:
   exp: 2000000
   money: 20000000
   bossbar-color: YELLOW
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: METEOR, interval: 8, radius: 5, power: 2.0}
-    - {type: SLAM, interval: 10, radius: 7, power: 1.5}
+    - {type: SWEEP, interval: 12, radius: 7, power: 1.8}
+    - {type: SAFE_ZONE, interval: 18, radius: 14, amount: 2, power: 2.0}
+    - {type: METEOR, interval: 10, radius: 5, power: 2.0}
     - {type: SUMMON, interval: 25, entity: HUSK, amount: 5, level: 85, name: "모래 망령"}
   drops:
     - {item: shard_fire, min: 1, max: 3, chance: 1}
@@ -189,10 +204,12 @@ siphonia:
   exp: 3000000
   money: 25000000
   bossbar-color: GREEN
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: SUMMON, interval: 12, entity: VEX, amount: 5, level: 95, name: "떠다니는 검"}
+    - {type: CROSS, interval: 10, radius: 7, power: 1.5}
+    - {type: SAFE_ZONE, interval: 17, radius: 13, amount: 2, power: 1.6}
     - {type: BLINK, interval: 9, power: 1.5}
-    - {type: PULL, interval: 15, radius: 12, power: 1.0}
+    - {type: SUMMON, interval: 12, entity: VEX, amount: 5, level: 95, name: "떠다니는 검"}
   drops:
     - {item: shard_wind, min: 1, max: 3, chance: 1}
     - {item: crystal_top, min: 2, max: 4, chance: 1}
@@ -213,11 +230,13 @@ kain:
   awaken: true
   awaken-multiplier: 1.5
   bossbar-color: PURPLE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: SLAM, interval: 8, radius: 6, power: 1.8}
+    - {type: FRONT_BACK, interval: 9, radius: 7, power: 2.0}
+    - {type: DONUT, interval: 14, radius: 8, power: 2.2}
     - {type: BLINK, interval: 11, power: 2.0}
-    - {type: SUMMON, interval: 30, entity: SHULKER, amount: 3, level: 105, name: "어둠의 포탑", ai: true}
     - {type: METEOR, interval: 15, radius: 6, power: 3.0}
+    - {type: SUMMON, interval: 30, entity: SHULKER, amount: 3, level: 105, name: "어둠의 포탑", ai: true}
   drops:
     - {item: shard_dark, min: 2, max: 4, chance: 1}
     - {item: crystal_top, min: 3, max: 6, chance: 1}
@@ -240,9 +259,11 @@ frost_queen:
   awaken: true
   awaken-multiplier: 1.4
   bossbar-color: BLUE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: SLAM, interval: 8, radius: 7, power: 1.8}
-    - {type: METEOR, interval: 14, radius: 6, power: 2.6}
+    - {type: CHECKER, interval: 12, radius: 9, power: 2.2}
+    - {type: FROST_FIELD, interval: 14, radius: 6, power: 1.4}
+    - {type: SAFE_ZONE, interval: 20, radius: 14, amount: 2, power: 2.4}
     - {type: SUMMON, interval: 30, entity: STRAY, amount: 4, level: 125, name: "얼음 시녀", ai: true}
   drops:
     - {item: loot_frost, min: 5, max: 10, chance: 1}
@@ -262,10 +283,12 @@ volcano_giant:
   awaken: true
   awaken-multiplier: 1.5
   bossbar-color: RED
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: SLAM, interval: 7, radius: 8, power: 2.0}
-    - {type: FIREBALL, interval: 6, power: 1.8}
-    - {type: METEOR, interval: 12, radius: 7, power: 3.0}
+    - {type: SLAM, interval: 8, radius: 8, power: 2.0}
+    - {type: CHECKER, interval: 12, radius: 9, power: 2.6}
+    - {type: VOLLEY, interval: 8, amount: 3, speed: 0.8, power: 1.8}
+    - {type: METEOR, interval: 14, radius: 7, power: 3.0}
   drops:
     - {item: loot_ember, min: 6, max: 12, chance: 1}
     - {item: loot_core, min: 2, max: 4, chance: 1}
@@ -284,10 +307,11 @@ void_apostle:
   awaken: true
   awaken-multiplier: 1.5
   bossbar-color: PURPLE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: BLINK, interval: 7, power: 2.2}
-    - {type: PULL, interval: 12, radius: 12, power: 1.6}
-    - {type: METEOR, interval: 13, radius: 7, power: 3.2}
+    - {type: SAFE_ZONE, interval: 14, radius: 14, amount: 1, power: 3.0}
+    - {type: DONUT, interval: 12, radius: 9, power: 2.6}
+    - {type: BLINK, interval: 8, power: 2.2}
     - {type: SUMMON, interval: 28, entity: ENDERMITE, amount: 5, level: 200, name: "공허 벌레", ai: true}
   drops:
     - {item: loot_eye, min: 3, max: 6, chance: 1}
@@ -307,10 +331,12 @@ thunder_god:
   awaken: true
   awaken-multiplier: 1.6
   bossbar-color: YELLOW
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: METEOR, interval: 9, radius: 8, power: 3.2}
-    - {type: SLAM, interval: 8, radius: 8, power: 2.2}
-    - {type: BLINK, interval: 10, power: 2.4}
+    - {type: SPREAD, interval: 10, radius: 7, power: 3.0}
+    - {type: CROSS, interval: 9, radius: 8, power: 2.6}
+    - {type: SLAM, interval: 10, radius: 8, power: 2.2}
+    - {type: BLINK, interval: 12, power: 2.4}
   drops:
     - {item: loot_crown, min: 1, max: 3, chance: 1}
     - {item: crystal_top, min: 8, max: 12, chance: 1}
@@ -329,11 +355,12 @@ primordial_dragon:
   awaken: true
   awaken-multiplier: 1.7
   bossbar-color: PURPLE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: FIREBALL, interval: 4, power: 2.2}
-    - {type: METEOR, interval: 8, radius: 9, power: 3.6}
-    - {type: SLAM, interval: 7, radius: 9, power: 2.6}
-    - {type: PULL, interval: 14, radius: 14, power: 1.8}
+    - {type: SWEEP, interval: 10, radius: 9, power: 3.0}
+    - {type: VOLLEY, interval: 6, amount: 5, speed: 0.9, power: 2.2}
+    - {type: DONUT, interval: 13, radius: 10, power: 3.2}
+    - {type: METEOR, interval: 12, radius: 9, power: 3.6}
   drops:
     - {item: loot_crown, min: 3, max: 5, chance: 1}
     - {item: loot_core, min: 5, max: 10, chance: 1}
@@ -354,9 +381,10 @@ vengeful_spirit:
   awaken: true
   awaken-multiplier: 1.3
   bossbar-color: PURPLE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: PULL, interval: 13, radius: 9, power: 1.1}
-    - {type: METEOR, interval: 12, radius: 5, power: 1.8}
+    - {type: SAFE_ZONE, interval: 14, radius: 12, amount: 2, power: 1.8}
+    - {type: FRONT_BACK, interval: 10, radius: 7, power: 1.6}
     - {type: BLINK, interval: 11, power: 1.4}
     - {type: SUMMON, interval: 32, entity: VEX, amount: 3, level: 120, name: "떠도는 원한", ai: true}
   drops:
@@ -380,11 +408,12 @@ balrog:
   awaken: true
   awaken-multiplier: 1.6
   bossbar-color: RED
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: FIREBALL, interval: 4, power: 1.8}
-    - {type: METEOR, interval: 9, radius: 8, power: 3.0}
-    - {type: SLAM, interval: 7, radius: 7, power: 2.4}
-    - {type: PULL, interval: 13, radius: 12, power: 1.6}
+    - {type: SWEEP, interval: 10, radius: 8, power: 2.6}
+    - {type: CHECKER, interval: 13, radius: 9, power: 2.8}
+    - {type: VOLLEY, interval: 6, amount: 4, speed: 0.8, power: 1.8}
+    - {type: SLAM, interval: 8, radius: 7, power: 2.4}
     - {type: SUMMON, interval: 22, entity: BLAZE, amount: 4, level: 190, name: "화염 마귀", ai: true}
   drops:
     - {item: cube_master, min: 2, max: 4, chance: 1}
@@ -407,9 +436,10 @@ megalodon:
   awaken: true
   awaken-multiplier: 1.3
   bossbar-color: BLUE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
     - {type: BLINK, interval: 8, power: 1.6}
-    - {type: PULL, interval: 12, radius: 8, power: 1.2}
+    - {type: WAVE_WALL, interval: 12, power: 1.4}
     - {type: SUMMON, interval: 26, entity: DROWNED, amount: 3, level: 45, name: "상어 떼", ai: true}
   drops:
     - {item: loot_fang, min: 3, max: 6, chance: 1}
@@ -429,11 +459,11 @@ kraken:
   awaken: true
   awaken-multiplier: 1.4
   bossbar-color: PURPLE
+  patterns: 2                # v5.6.0 컨셉 패턴 (이 번호가 오르면 기존 서버의 기술 목록도 새로 받음)
   skills:
-    - {type: SLAM, interval: 9, radius: 8, power: 1.8}
-    - {type: PULL, interval: 12, radius: 12, power: 1.4}
-    - {type: METEOR, interval: 11, radius: 6, power: 2.0}
-    - {type: FIREBALL, interval: 6, amount: 3, power: 1.2}
+    - {type: DONUT, interval: 12, radius: 8, power: 1.8}
+    - {type: WAVE_WALL, interval: 14, power: 1.6}
+    - {type: VOLLEY, interval: 7, amount: 3, speed: 0.7, power: 1.2}
     - {type: SUMMON, interval: 30, entity: GUARDIAN, amount: 3, level: 140, name: "심해의 파수꾼", ai: true}
   drops:
     - {item: cube_master, min: 1, max: 3, chance: 1}
@@ -463,6 +493,8 @@ field_boar_king:
     - {type: SLAM, interval: 7, radius: 5, power: 1.2}
     - {type: BLINK, interval: 12, power: 1.0}
     - {type: SUMMON, interval: 22, entity: HOGLIN, amount: 2, level: 22, name: "성난 멧돼지"}
+    - {type: CHARGE, interval: 9, radius: 6, power: 1.3}
+    - {type: ROAR, interval: 15, radius: 6, power: 1.0}
   drops:
     - {item: armory2_axe_2, chance: 0.06}
     - {item: armory2_sword_3, chance: 0.05}
@@ -486,6 +518,8 @@ field_frost_bear:
     - {type: SLAM, interval: 8, radius: 6, power: 1.3}
     - {type: METEOR, interval: 12, radius: 3, power: 1.0}
     - {type: PULL, interval: 16, radius: 8, power: 0.8}
+    - {type: FROST_FIELD, interval: 13, radius: 5, power: 1.0}
+    - {type: CHARGE, interval: 10, radius: 6, power: 1.3}
   drops:
     - {item: armory2_sword_4, chance: 0.05}
     - {item: armory2_axe_4, chance: 0.05}
@@ -509,6 +543,8 @@ field_bandit_lord:
     - {type: BLINK, interval: 7, power: 1.3}
     - {type: FIREBALL, interval: 9, amount: 3, power: 0.9}
     - {type: SUMMON, interval: 20, entity: PILLAGER, amount: 3, level: 50, name: "바르칸의 부하"}
+    - {type: CROSS, interval: 12, radius: 6, power: 1.1}
+    - {type: CHARGE, interval: 10, radius: 5, power: 1.2}
   drops:
     - {item: armory2_dagger_5, chance: 0.05}
     - {item: armory2_bow_5, chance: 0.05}
@@ -532,6 +568,9 @@ field_ravager:
     - {type: SLAM, interval: 7, radius: 7, power: 1.4}
     - {type: METEOR, interval: 11, radius: 3.5, power: 1.1}
     - {type: PULL, interval: 18, radius: 10, power: 0.9}
+    - {type: CHARGE, interval: 8, radius: 8, power: 1.5}
+    - {type: ROAR, interval: 14, radius: 7, power: 1.1}
+    - {type: NOVA, interval: 18, radius: 12, power: 1.2}
   drops:
     - {item: armory2_axe_6, chance: 0.05}
     - {item: armory2_shield_6, chance: 0.05}
@@ -555,6 +594,8 @@ field_ancient_golem:
     - {type: SLAM, interval: 7, radius: 7, power: 1.5}
     - {type: METEOR, interval: 10, radius: 4, power: 1.2}
     - {type: PULL, interval: 16, radius: 10, power: 1.0}
+    - {type: NOVA, interval: 13, radius: 12, power: 1.3}
+    - {type: ERUPTION, interval: 17, radius: 5, amount: 1, power: 1.2}
   drops:
     - {item: armory2_sword_7, chance: 0.05}
     - {item: armory2_shield_7, chance: 0.05}
@@ -578,6 +619,8 @@ field_swamp_witch:
     - {type: FIREBALL, interval: 6, amount: 4, power: 1.0}
     - {type: PULL, interval: 14, radius: 9, power: 1.0}
     - {type: SUMMON, interval: 20, entity: WITCH, amount: 3, level: 115, name: "늪 마녀", ai: true}
+    - {type: ERUPTION, interval: 12, radius: 5, amount: 2, power: 1.0}
+    - {type: NOVA, interval: 16, radius: 10, power: 1.0}
   drops:
     - {item: trans_dagger_1, chance: 0.03}
     - {item: trans_shield_1, chance: 0.03}
@@ -602,6 +645,8 @@ field_flame_knight:
     - {type: METEOR, interval: 9, radius: 4, power: 1.2}
     - {type: FIREBALL, interval: 11, amount: 3, power: 1.0}
     - {type: SLAM, interval: 14, radius: 7, power: 1.4}
+    - {type: CROSS, interval: 10, radius: 7, power: 1.3}
+    - {type: CHARGE, interval: 12, radius: 7, power: 1.4}
   drops:
     - {item: trans_sword_2, chance: 0.03}
     - {item: trans_axe_2, chance: 0.03}
@@ -625,6 +670,9 @@ field_deep_warden:
     - {type: PULL, interval: 10, radius: 10, power: 1.2}
     - {type: SLAM, interval: 8, radius: 8, power: 1.5}
     - {type: METEOR, interval: 12, radius: 4, power: 1.2}
+    - {type: NOVA, interval: 12, radius: 12, power: 1.4}
+    - {type: ROAR, interval: 15, radius: 8, power: 1.2}
+    - {type: ERUPTION, interval: 18, radius: 5, amount: 1, power: 1.3}
   drops:
     - {item: trans_sword_3, chance: 0.03}
     - {item: trans_dagger_3, chance: 0.03}
@@ -649,6 +697,9 @@ field_frost_lich:
     - {type: METEOR, interval: 9, radius: 4, power: 1.3}
     - {type: BLINK, interval: 11, power: 1.3}
     - {type: SUMMON, interval: 20, entity: STRAY, amount: 4, level: 240, name: "서리 망자", ai: true}
+    - {type: FROST_FIELD, interval: 10, radius: 5, power: 1.1}
+    - {type: CROSS, interval: 14, radius: 7, power: 1.2}
+    - {type: NOVA, interval: 18, radius: 11, power: 1.2}
   drops:
     - {item: trans_sword_4, chance: 0.03}
     - {item: trans_shield_4, chance: 0.03}

@@ -95,8 +95,8 @@ public class NickManager implements Listener {
                 if (e != null) e.remove();
                 spawn(p, at);
             } else {
-                e.teleport(at);
-                if (e instanceof TextDisplay td) td.setSeeThrough(!p.isSneaking());   // 웅크리면 벽 너머로 안 보임 (바닐라와 같게)
+                if (e.getLocation().distanceSquared(at) > 0.0004) e.teleport(at);   // 렉 줄이기: 움직였을 때만 (v5.4.29)
+                if (e instanceof TextDisplay td && td.isSeeThrough() == p.isSneaking()) td.setSeeThrough(!p.isSneaking());   // 웅크리면 벽 너머로 안 보임 (바닐라와 같게)
             }
         }
     }

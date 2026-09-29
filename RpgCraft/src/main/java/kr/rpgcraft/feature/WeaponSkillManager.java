@@ -312,6 +312,11 @@ public class WeaponSkillManager implements Listener {
         Bukkit.getScheduler().runTask(plugin, () -> basic(p, k, victim));
     }
 
+    /** 지팡이 평타(마법탄) 간격 — v5.4.36: 0.7초 → 0.9초, v5.4.38: 1.1초 */
+    private long boltCooldown() {
+        return plugin.getConfig().getLong("weapon-skills.bolt-cooldown-ms", 1100);
+    }
+
     // ------------------------------------------------------------------ 참격 (좌클릭)
     private long interval(Kind k) {
         return switch (k) {
@@ -320,7 +325,7 @@ public class WeaponSkillManager implements Listener {
             case SHIELD -> WeaponClass.SHIELD.interval;
             case SPEAR -> WeaponClass.SPEAR.interval;
             case CLUB -> WeaponClass.CLUB.interval;
-            case STAFF -> 700L;
+            case STAFF -> boltCooldown();
             default -> WeaponClass.SWORD.interval;
         };
     }
@@ -381,11 +386,13 @@ public class WeaponSkillManager implements Listener {
             return;
         }
         if (d.onCooldown("slash")) return;
-        d.cooldown("slash", 700);
+        d.cooldown("slash", boltCooldown());
         Color c = magicColor(p);
         Location start = p.getEyeLocation().add(p.getEyeLocation().getDirection().multiply(0.8)).add(0, -0.2, 0);
         Vector step = p.getEyeLocation().getDirection().normalize().multiply(1.3);
         double dmg = (d.stats.magic + d.stats.attack * 0.3) * plugin.getConfig().getDouble("weapon-skills.bolt-damage", 0.9);
+        // 날아가는 거리 (v5.4.25: 약 23칸 → 18칸, v5.4.29: 14칸)
+        int maxSteps = Math.max(1, (int) Math.round(plugin.getConfig().getDouble("weapon-skills.bolt-range", 14) / 1.3));
         World w = p.getWorld();
         w.playSound(p.getLocation(), Sound.ENTITY_EVOKER_CAST_SPELL, 0.6f, 1.8f);
         Vfx.burst(start, 0.9, c);
@@ -395,7 +402,7 @@ public class WeaponSkillManager implements Listener {
 
             @Override
             public void run() {
-                if (!p.isOnline() || ++n > 18) { cancel(); return; }
+                if (!p.isOnline() || ++n > maxSteps) { cancel(); return; }
                 pos.add(step);
                 if (n % 2 == 0) Vfx.burst(pos, 0.7, c);
                 w.spawnParticle(Particle.END_ROD, pos, 1, 0, 0, 0, 0);

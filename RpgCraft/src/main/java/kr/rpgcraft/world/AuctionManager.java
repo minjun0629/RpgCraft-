@@ -91,6 +91,26 @@ public class AuctionManager implements CommandExecutor {
         }
     }
 
+    /** 게임 전체 초기화: 올라온 물건 · 받지 않은 판매 대금 · 돌려받을 물건 모두 삭제 */
+    public int clearAll() {
+        int n = list.size();
+        list.clear();
+        pendingMoney.clear();
+        pendingItems.clear();
+        save();
+        return n;
+    }
+
+    /** 한 사람 초기화: 그 사람이 올린 물건과 받지 않은 대금 · 물건 삭제 */
+    public int clearPlayer(UUID id) {
+        int before = list.size();
+        list.values().removeIf(l -> l.seller.equals(id));
+        pendingMoney.remove(id);
+        pendingItems.remove(id);
+        save();
+        return before - list.size();
+    }
+
     private void expire() {
         long now = System.currentTimeMillis();
         boolean ch = false;
@@ -232,10 +252,78 @@ public class AuctionManager implements CommandExecutor {
             }
             if (page > 0) set(45, button(Material.ARROW, "&f이전"), e -> new BrowseGui(p, page - 1, mineOnly).open(p));
             if (page + 1 < pages) set(53, button(Material.ARROW, "&f다음"), e -> new BrowseGui(p, page + 1, mineOnly).open(p));
-            set(48, button(Material.CHEST, "&e내 물건", "&7/옥션 등록 <가격> 으로 등록", "&7내 물건을 클릭하면 회수"), e -> new BrowseGui(p, 0, true).open(p));
+            // 아래 줄 좌우 대칭 (v5.5.0): 45 이전 · 47 내 물건(내 물건 화면에선 모두 회수) · 49 소지금 · 51 수령하기 · 53 다음
             if (mineOnly) set(47, button(Material.BARREL, "&c모두 회수", "&7옥션에 올린 물건을 전부 내려 돌려받습니다"), e -> { retrieveAll(p); new BrowseGui(p, 0, true).open(p); });
+            else set(47, button(Material.CHEST, "&e내 물건", "&7/옥션 등록 <가격> 으로 등록", "&7내 물건을 클릭하면 회수"), e -> new BrowseGui(p, 0, true).open(p));
             set(49, button(Material.GOLD_INGOT, "&6소지금 " + Text.money(plugin.economy().balance(p)), "&7" + (page + 1) + " / " + pages), null);
-            set(50, button(Material.HOPPER, "&a수령하기", "&7판매 대금 · 돌려받은 물건"), e -> { p.closeInventory(); claim(p); });
+            set(51, button(Material.HOPPER, "&a수령하기", "&7판매 대금 · 돌려받은 물건"), e -> { p.closeInventory(); claim(p); });
+            fill(45, 53);
+        }
+    }
+
+    // ------------------------------------------------------------------ 관리자 (v5.4.19)
+    /** 관리자가 물건 하나를 내림. back = true 면 판매자 보관함으로 돌려보내고, false 면 그냥 삭제 */
+    public boolean adminRemove(String id, boolean back) {
+        Listing l = list.remove(id);
+        if (l == null) return false;
+        if (back) {
+            pendingItems.computeIfAbsent(l.seller, k -> new ArrayList<>()).add(l.item);
+            Player s = Bukkit.getPlayer(l.seller);
+            if (s != null) Text.msg(s, "&7관리자가 옥션 물건을 내렸습니다. 보관함으로 돌아왔습니다: &f" + name(l.item) + " &e/옥션 수령");
+        } else {
+            Player s = Bukkit.getPlayer(l.seller);
+            if (s != null) Text.msg(s, "&c관리자가 옥션 물건을 삭제했습니다: &f" + name(l.item));
+        }
+        save();
+        return true;
+    }
+
+    /** 관리자: 한 사람이 올린 물건 전부 내림 */
+    public int adminRemoveSeller(UUID seller, boolean back) {
+        int n = 0;
+        for (Listing l : new ArrayList<>(list.values())) if (l.seller.equals(seller) && adminRemove(l.id, back)) n++;
+        return n;
+    }
+
+    public java.util.Set<String> ids() {
+        return java.util.Collections.unmodifiableSet(list.keySet());
+    }
+
+    /** 채팅 목록: 번호(id) · 물건 · 가격 · 판매자 */
+    public void adminList(CommandSender s, int page) {
+        List<Listing> ls = new ArrayList<>(list.values());
+        int pages = Math.max(1, (ls.size() + 9) / 10);
+        page = Math.max(0, Math.min(pages - 1, page));
+        Text.msg(s, "&6옥션 물건 " + ls.size() + "개 &7(" + (page + 1) + "/" + pages + " 페이지)");
+        for (int i = page * 10; i < Math.min(ls.size(), page * 10 + 10); i++) {
+            Listing l = ls.get(i);
+            s.sendMessage(Text.c("&e" + l.id + " &f" + name(l.item) + " &7| &6" + Text.money(l.price) + " &7| " + l.sellerName));
+        }
+        Text.msg(s, "&7/rpg관리 auction remove <번호> &8(삭제) &7· return <번호> &8(판매자에게 돌려보냄)");
+    }
+
+    public void openAdmin(Player p, int page) {
+        new AdminGui(p, page).open(p);
+    }
+
+    private class AdminGui extends Gui {
+        AdminGui(Player p, int page) {
+            super(6, "&4옥션 관리");
+            List<Listing> ls = new ArrayList<>(list.values());
+            int pages = Math.max(1, (ls.size() + 44) / 45);
+            for (int i = 0; i < 45 && page * 45 + i < ls.size(); i++) {
+                Listing l = ls.get(page * 45 + i);
+                set(i, icon(l, "&8번호 " + l.id, "&c▶ 좌클릭: 삭제 (물건이 사라짐)", "&e▶ 우클릭: 판매자에게 돌려보내기"), e -> {
+                    boolean back = e.isRightClick();
+                    if (adminRemove(l.id, back)) Text.msg(p, (back ? "&e판매자에게 돌려보냈습니다: &f" : "&c삭제했습니다: &f") + name(l.item) + " &7(" + l.sellerName + ")");
+                    else Text.actionBar(p, "&c이미 팔렸거나 없는 물건입니다");
+                    new AdminGui(p, page).open(p);
+                });
+            }
+            if (page > 0) set(45, button(Material.ARROW, "&f이전"), e -> new AdminGui(p, page - 1).open(p));
+            if (page + 1 < pages) set(53, button(Material.ARROW, "&f다음"), e -> new AdminGui(p, page + 1).open(p));
+            set(49, button(Material.BARRIER, "&4옥션 관리", "&7전체 " + ls.size() + "개 · " + (page + 1) + " / " + pages + " 페이지",
+                    "&7좌클릭 삭제 · 우클릭 판매자에게 돌려보내기"), null);
             fill(45, 53);
         }
     }

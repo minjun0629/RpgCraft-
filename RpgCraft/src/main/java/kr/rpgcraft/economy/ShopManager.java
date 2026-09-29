@@ -208,9 +208,11 @@ public class ShopManager implements Listener {
             return;
         }
         int sold = 0;
+        long money = 0;
         for (ItemStack it : p.getInventory().getStorageContents()) {
             if (!ItemData.is(it, e.id()) || ItemData.enh(it) > 0) continue;
             int n = all ? it.getAmount() : Math.min(1 - sold, it.getAmount());
+            money += Math.max(1, Math.round(sellPrice(e) * ItemData.fishMult(it))) * n;   // v5.6.0: 물고기는 무게에 따라 값이 다름
             it.setAmount(it.getAmount() - n);
             sold += n;
             if (!all && sold >= 1) break;
@@ -219,9 +221,9 @@ public class ShopManager implements Listener {
             Text.msg(p, "&c판매할 아이템이 없습니다. (강화된 장비는 판매 불가)");
             return;
         }
-        plugin.economy().give(p, sellPrice(e) * sold);
+        plugin.economy().give(p, money);
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 0.8f);
-        Text.actionBar(p, "&e판매: " + plugin.items().get(e.id()).name + " x" + sold + " &7(+" + Text.money(sellPrice(e) * sold) + ")");
+        Text.actionBar(p, "&e판매: " + plugin.items().get(e.id()).name + " x" + sold + " &7(+" + Text.money(money) + ")");
     }
 
     // ------------------------------------------------------------------ NPC
@@ -307,7 +309,7 @@ public class ShopManager implements Listener {
             }
             if (page > 0) set(45, button(Material.ARROW, "&f이전 페이지"), e -> new ShopGui(p, s, page - 1).open(p));
             if (page + 1 < pages) set(53, button(Material.ARROW, "&f다음 페이지"), e -> new ShopGui(p, s, page + 1).open(p));
-            set(51, button(Material.HOPPER, "&6전체 판매", "&7인벤토리에서 이 상점이 사는 물건을 모두 판매"), e -> {
+            set(50, button(Material.HOPPER, "&6전체 판매", "&7인벤토리에서 이 상점이 사는 물건을 모두 판매"), e -> {
                 Map<String, Entry> sellable = new HashMap<>();
                 for (Entry en : s.entries) if (en.sell() > 0) sellable.put(en.id(), en);
                 long total = 0;
@@ -317,7 +319,7 @@ public class ShopManager implements Listener {
                     ItemStack it = inv[i];
                     Entry en = sellable.get(ItemData.id(it));
                     if (en == null || ItemData.enh(it) > 0) continue;   // 강화한 장비는 보호
-                    total += sellPrice(en) * it.getAmount();
+                    total += Math.max(1, Math.round(sellPrice(en) * ItemData.fishMult(it))) * it.getAmount();
                     count += it.getAmount();
                     p.getInventory().setItem(i, null);
                 }
@@ -327,7 +329,7 @@ public class ShopManager implements Listener {
                 Text.actionBar(p, "&a" + count + "개 판매 · " + Text.money(total));
                 new ShopGui(p, s, page).open(p);
             });
-            set(49, button(Material.GOLD_INGOT, "&e소지금: " + Text.money(plugin.economy().balance(p)),
+            set(48, button(Material.GOLD_INGOT, "&e소지금: " + Text.money(plugin.economy().balance(p)),
                     "&7페이지 " + (page + 1) + "/" + pages + (s.multiplier != 1 ? " &c(가격 x" + s.multiplier + ")" : "")));
             fill(45, 53);
         }

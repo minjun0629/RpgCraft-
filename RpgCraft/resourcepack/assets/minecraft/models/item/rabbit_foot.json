@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/rabbit_foot"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 700
+      },
+      "model": "rpgcraft:item/potion_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 701
+      },
+      "model": "rpgcraft:item/potion_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 702
+      },
+      "model": "rpgcraft:item/potion_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 703
+      },
+      "model": "rpgcraft:item/potion_4"
+    }
+  ]
+}

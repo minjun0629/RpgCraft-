@@ -64,7 +64,7 @@ public class BossModelManager implements Listener {
     public BossModelManager(RpgCraft plugin) {
         this.plugin = plugin;
         Bukkit.getScheduler().runTaskTimer(plugin, this::follow, 1L, 1L);
-        Bukkit.getScheduler().runTaskTimer(plugin, this::scan, 20L, 20L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::scan, 20L, 100L);   // 렉 줄이기: 전체 엔티티 검사는 5초마다 (새 보스는 등장 때 바로 붙임, v5.4.29)
     }
 
     private boolean enabled() {
@@ -75,12 +75,26 @@ public class BossModelManager implements Listener {
     private void scan() {
         if (!enabled()) return;
         for (World w : Bukkit.getWorlds()) {
+            // 잔상 제거 (v5.5.0): 플러그인을 다시 불러오는 등으로 주인을 잃은 보스 모델 · 판정 상자가 그 자리에 멈춰 남아 있었음
+            for (ItemDisplay idp : w.getEntitiesByClass(ItemDisplay.class)) {
+                if (!idp.getPersistentDataContainer().has(Keys.INDICATOR, PersistentDataType.BYTE) || displays.containsValue(idp.getUniqueId())) continue;
+                ItemStack st = idp.getItemStack();
+                int cmd = st != null && st.hasItemMeta() && st.getItemMeta().hasCustomModelData() ? st.getItemMeta().getCustomModelData() - 9000 : -1;
+                if (cmd >= 0 && cmd < ORDER.size() && !ORDER.get(cmd).startsWith("mount_") && !ORDER.get(cmd).startsWith("pet_")) idp.remove();
+            }
+            for (Interaction box : w.getEntitiesByClass(Interaction.class))
+                if (box.getPersistentDataContainer().has(Keys.INDICATOR, PersistentDataType.BYTE) && !hitboxOwner.containsKey(box.getUniqueId())) box.remove();
             for (LivingEntity le : w.getLivingEntities()) {
                 String id = le.getPersistentDataContainer().get(Keys.BOSS, PersistentDataType.STRING);
                 if (id == null || displays.containsKey(le.getUniqueId()) || !ORDER.contains(id)) continue;
                 attach(le, id);
             }
         }
+    }
+
+    /** 보스가 등장할 때 바로 모델을 붙임 */
+    public void ensure(LivingEntity le, String id) {
+        if (enabled() && id != null && !displays.containsKey(le.getUniqueId()) && ORDER.contains(id)) attach(le, id);
     }
 
     private Transformation tf(float scale, float bob, float yawRad) {

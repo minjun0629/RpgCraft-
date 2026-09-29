@@ -57,6 +57,7 @@ public class DungeonManager implements Listener {
         final Set<UUID> players = new LinkedHashSet<>();
         final Set<UUID> mobs = new HashSet<>();
         final Map<UUID, Integer> deaths = new HashMap<>();
+        final Set<UUID> eliminated = new HashSet<>();   // 데스 한도로 탈락한 사람 — 이번 공략에 다시 못 들어옴 (v5.4.30)
         int room = -1;
         long deadline, nextAt;
         UUID boss;
@@ -214,6 +215,11 @@ public class DungeonManager implements Listener {
             boolean ally = false;
             for (UUID u : run.players) { Player q = Bukkit.getPlayer(u); if (q != null && plugin.party().same(p, q)) ally = true; }
             if (!ally) { Text.msg(p, "&c다른 플레이어가 공략 중입니다. 잠시 후 다시 시도하세요."); return; }
+            if (run.eliminated.contains(p.getUniqueId())
+                    || run.deaths.getOrDefault(p.getUniqueId(), 0) >= plugin.getConfig().getInt("dungeon.death-limit", 2)) {
+                Text.msg(p, "&c이번 공략에서 탈락했습니다. 파티가 공략을 마칠 때까지 다시 들어갈 수 없습니다.");
+                return;
+            }
             run.players.add(p.getUniqueId());
             p.teleport(d.interior);
             Text.msg(p, "&a파티원이 공략 중인 " + d.name + "에 합류했습니다.");
@@ -406,6 +412,7 @@ public class DungeonManager implements Listener {
             return;
         }
         r.players.remove(e.getPlayer().getUniqueId());
+        r.eliminated.add(e.getPlayer().getUniqueId());
         r.bar.removePlayer(e.getPlayer());
         e.setRespawnLocation(r.d.entrance);
         Text.msg(e.getPlayer(), "&7데스 " + max + "회 — 던전에서 탈락했습니다.");

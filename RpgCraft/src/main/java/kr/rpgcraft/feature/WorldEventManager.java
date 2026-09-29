@@ -84,8 +84,9 @@ public class WorldEventManager implements Listener {
             x.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
             x.setShadowed(true);
             x.setPersistent(false);
-            x.setTransformation(new org.bukkit.util.Transformation(new org.joml.Vector3f(0, 1.25f, 0), new org.joml.AxisAngle4f(),
-                    new org.joml.Vector3f(2.2f, 2.2f, 2.2f), new org.joml.AxisAngle4f()));
+            // 이름표(레벨 · 체력바)는 머리 위 약 0.5칸에 그려지므로 ▼ 는 그보다 한참 위에 둠 (v5.4.15: 겹쳐서 체력바가 가려졌음)
+            x.setTransformation(new org.bukkit.util.Transformation(new org.joml.Vector3f(0, 2.1f, 0), new org.joml.AxisAngle4f(),
+                    new org.joml.Vector3f(1.8f, 1.8f, 1.8f), new org.joml.AxisAngle4f()));
             x.getPersistentDataContainer().set(WAVE_MARK, PersistentDataType.BYTE, (byte) 1);
         });
         m.addPassenger(t);

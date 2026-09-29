@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -50,6 +50,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
+        Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
+        Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7- 주식 가격 직접 지정");
+        Text.msg(s, "&e/rpg관리 coin <플레이어> <mole|brick|mine|card> <수> &7- 미니게임 코인 지급 (음수면 회수)");
+        Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록)");
+        Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
+        Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
         Text.msg(s, "&e/rpg관리 npc <상점ID> &7- 현재 위치에 상점 NPC (제거: 쉬프트+방벽 우클릭)");
         Text.msg(s, "&e/rpg관리 castle <create|pos1|pos2|wall|beacon|spawn|owner|delete|list|restore> ...");
@@ -61,7 +67,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 structure <종류> [ID] &7- 구조물 자동 건설 (castle, ruin, temple, tower ...)");
         Text.msg(s, "&e/rpg관리 wave [플레이어] &7| &emerchant &7- 필드 웨이브 깃발 / 히든 상인 즉시 등장");
         Text.msg(s, "&e/rpg관리 hiddennpc [respawn] &7- 히든 NPC 위치 / 사라진 히든 NPC 다시 배치");
-        Text.msg(s, "&e/rpg관리 reset <all confirm|player <이름> confirm> &7- 게임 초기화");
+        Text.msg(s, "&e/rpg관리 reset <all confirm|player <이름> confirm|auction confirm> &7- 게임 초기화 / 옥션만 초기화");
         Text.msg(s, "&e/rpg관리 dungeon <create <ID> <단계>|generate [개수]|list|delete <ID|all>> &7- 대형 던전");
         Text.msg(s, "&e/rpg관리 questnpc <scatter <수>|here <유형>> &7- 의뢰 NPC 배치");
         Text.msg(s, "&e/rpg관리 worldboss [random|desert_nightmare|siphonia|kain] [here] &7- 월드보스 + 전장");
@@ -168,6 +174,38 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     if (p == null) return true;
                     plugin.health().set(p, plugin.health().max(p));
                     Text.msg(s, "회복 완료");
+                }
+                case "auction" -> auction(s, a);
+                case "coin", "코인" -> {   // /rpg관리 coin <플레이어> <종류> <수> (v5.6.0)
+                    if (a.length < 4) { Text.msg(s, "&e/rpg관리 coin <플레이어> <mole|brick|mine|card> <수>"); return true; }
+                    Player t = Bukkit.getPlayerExact(a[1]);
+                    if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
+                    long n;
+                    try { n = Long.parseLong(a[3]); } catch (NumberFormatException ex) { Text.msg(s, "&c수는 숫자로 적어 주세요."); return true; }
+                    Text.msg(s, plugin.minigames().giveCoins(t, a[2], n) ? "&a" + t.getName() + " 에게 " + a[2] + " 코인 " + n + "개" : "&c코인 종류: mole, brick, mine, card");
+                    return true;
+                }
+                case "stock", "주식" -> {   // /rpg관리 stock <종목> <가격> (v5.6.0)
+                    if (a.length < 3) { Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7종목: " + String.join(", ", kr.rpgcraft.economy.StockManager.STOCKS.stream().map(kr.rpgcraft.economy.StockManager.Stock::id).toList())); return true; }
+                    double v;
+                    try { v = Double.parseDouble(a[2]); } catch (NumberFormatException ex) { Text.msg(s, "&c가격은 숫자로 적어 주세요."); return true; }
+                    Text.msg(s, plugin.stocks().setPrice(a[1], v) ? "&a" + a[1] + " 가격을 " + Text.money(Math.round(plugin.stocks().price(a[1]))) + "(으)로 정했습니다." : "&c없는 종목입니다.");
+                    return true;
+                }
+                case "enhance", "강화" -> {   // /rpg관리 enhance <수치> [플레이어] : 손에 든 장비의 강화 수치를 바로 정함 (v5.4.39)
+                    if (a.length < 2) { Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정 (0 ~ 최대 강화)"); return true; }
+                    Player t = a.length > 2 ? Text.player(a[2]) : s instanceof Player pp ? pp : null;
+                    if (t == null) { Text.msg(s, "&c접속 중인 플레이어를 입력하세요."); return true; }
+                    ItemStack it = t.getInventory().getItemInMainHand();
+                    if (it == null || it.getType().isAir() || !ItemData.enhanceable(it)) { Text.msg(s, "&c" + Text.name(t) + "님이 강화할 수 있는 장비를 손에 들고 있지 않습니다."); return true; }
+                    int want = Text.parseInt(a[1], -1), max = ItemData.maxEnhance(it);
+                    if (want < 0) { Text.msg(s, "&c강화 수치는 0 이상의 숫자로 입력하세요."); return true; }
+                    int lv = Math.min(want, max);
+                    ItemData.setInt(it, kr.rpgcraft.Keys.ENH, lv);
+                    ItemData.refresh(it);
+                    t.getInventory().setItemInMainHand(it);
+                    plugin.stats().refresh(t);
+                    Text.msg(s, "&a" + Text.name(t) + "님의 " + it.getItemMeta().getDisplayName() + " &a강화를 &e+" + lv + "&a로 설정했습니다." + (want > max ? " &7(최대 +" + max + ")" : ""));
                 }
                 case "starter" -> {
                     Player p = a.length > 1 ? Bukkit.getPlayerExact(a[1]) : s instanceof Player pp ? pp : null;
@@ -440,8 +478,45 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    /** 옥션 관리: 창 / 목록 / 삭제 / 돌려보내기 / 한 사람 / 전체 */
+    private void auction(CommandSender s, String[] a) {
+        var au = plugin.auction();
+        if (au == null) { Text.msg(s, "&c옥션이 꺼져 있습니다."); return; }
+        String sub = a.length > 1 ? a[1].toLowerCase(Locale.ROOT) : "";
+        switch (sub) {
+            case "list" -> au.adminList(s, a.length > 2 ? Text.parseInt(a[2], 1) - 1 : 0);
+            case "remove", "delete", "삭제", "return", "돌려보내기" -> {
+                if (a.length < 3) { Text.msg(s, "&c/rpg관리 auction " + sub + " <번호> &7(번호는 /rpg관리 auction list)"); return; }
+                boolean back = sub.equals("return") || sub.equals("돌려보내기");
+                Text.msg(s, au.adminRemove(a[2], back) ? (back ? "&e판매자에게 돌려보냈습니다." : "&c삭제했습니다.") : "&c그 번호의 물건이 없습니다.");
+            }
+            case "player" -> {
+                PlayerData d = target(s, a, 2);
+                if (d == null) return;
+                boolean back = a.length > 3 && (a[3].equals("return") || a[3].equals("돌려보내기"));
+                int n = au.adminRemoveSeller(d.uuid, back);
+                Text.msg(s, "&a" + d.name + " 님의 옥션 물건 " + n + "개를 " + (back ? "돌려보냈습니다." : "삭제했습니다."));
+            }
+            case "clear" -> {
+                if (a.length < 3 || !a[2].equals("confirm")) { Text.msg(s, "&c정말 옥션 물건을 모두 지우려면: /rpg관리 auction clear confirm"); return; }
+                Text.msg(s, "&c옥션 물건 " + au.clearAll() + "개를 모두 삭제했습니다. &7(받지 않은 대금 · 물건 포함)");
+            }
+            default -> {
+                if (s instanceof Player p) au.openAdmin(p, 0);
+                else au.adminList(s, 0);
+            }
+        }
+    }
+
     /** 게임 초기화 */
     private void reset(CommandSender s, String[] a) {
+        if (a.length >= 2 && a[1].equals("auction")) {   // 옥션만 초기화 (v5.4.35) — /rpg관리 auction clear confirm 과 같음
+            if (a.length < 3 || !a[2].equals("confirm")) { Text.msg(s, "&c정말 옥션만 초기화하려면: /rpg관리 reset auction confirm &7(올라온 물건 · 받지 않은 대금 · 돌려받을 물건 모두 삭제)"); return; }
+            if (plugin.auction() == null) { Text.msg(s, "&c옥션이 꺼져 있습니다."); return; }
+            int n = plugin.auction().clearAll();
+            Text.msg(s, "&a옥션을 초기화했습니다. &7(올라온 물건 " + n + "개 삭제, 다른 데이터는 그대로)");
+            return;
+        }
         if (a.length >= 3 && a[1].equals("player")) {
             PlayerData d = target(s, a, 2);
             if (d == null) return;
@@ -453,6 +528,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         if (a.length >= 3 && a[1].equals("all") && a[2].equals("confirm")) {
             plugin.bosses().killAll();
             plugin.customMobs().killAll();
+            if (plugin.auction() != null) plugin.auction().clearAll();   // 옥션 물건 · 대금 모두 삭제 (v5.4.18)
             for (var g : new ArrayList<>(plugin.guilds().all())) plugin.guilds().disband(g);
             for (var c : plugin.wars().castles()) c.owner = null;
             plugin.wars().save();
@@ -473,12 +549,14 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             Text.announce(Text.PREFIX + Text.c("&c&l게임이 초기화되었습니다! &f모든 플레이어가 처음부터 시작합니다."));
             return;
         }
-        Text.msg(s, "&e/rpg관리 reset all confirm &7- 모든 플레이어 데이터·길드·성 소유·회차 초기화 (맵·구조물·설정은 유지)");
+        Text.msg(s, "&e/rpg관리 reset all confirm &7- 모든 플레이어 데이터·길드·성 소유·옥션·회차 초기화 (맵·구조물·설정은 유지)");
         Text.msg(s, "&e/rpg관리 reset player <이름> confirm &7- 한 명만 초기화");
+        Text.msg(s, "&e/rpg관리 reset auction confirm &7- 옥션만 초기화 (올라온 물건 · 받지 않은 대금 · 돌려받을 물건)");
     }
 
     private void resetPlayer(PlayerData d) {
-        d.level = 1;
+        if (plugin.auction() != null) plugin.auction().clearPlayer(d.uuid);   // 옥션에 올린 물건도 삭제 (v5.4.18)
+        d.level = 0;   // 새로 온 사람과 같이 Lv.0 부터 → Lv.1 이 될 때 스탯 포인트를 받음 (예전엔 Lv.1 로 되돌려 첫 스탯을 못 받았음)
         d.exp = 0;
         d.statPoints = 0;
         d.str = d.dex = d.adv = 0;
@@ -625,6 +703,15 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         var wm = plugin.wars();
         String sub = a.length > 1 ? a[1] : "list";
         switch (sub) {
+            case "build" -> {   // /rpg관리 castle build <1|2|3> <id> : 내 자리에 대형 공성 성 (성벽 · 신호기 자동 등록, v5.5.0)
+                if (a.length < 4) {
+                    Text.msg(p, "&e/rpg관리 castle build <1|2|3> <id> &7- 1 왕성 · 2 흑요 요새 · 3 백악 성채 (내 자리가 성 한가운데)");
+                    return;
+                }
+                String err = new kr.rpgcraft.war.SiegeCastleBuilder(plugin).start(p, Text.parseInt(a[2], 0), a[3], p.getLocation().getBlock().getLocation());
+                if (err != null) Text.msg(p, "&c" + err);
+                return;
+            }
             case "list" -> {
                 for (Castle c : wm.castles())
                     Text.msg(p, "&e" + c.id + " &f" + c.name + " &7소유 " + c.owner + " 성벽 " + c.walls.size() + " 신호기 " + (c.beacon == null ? "없음" : Locs.block(c.beacon)));
@@ -686,6 +773,36 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private void ruin(CommandSender s, String[] a) {
         RuinManager rm = plugin.ruins();
         String sub = a.length > 1 ? a[1] : "list";
+        if (sub.equals("themes")) {
+            StringBuilder sb = new StringBuilder("&e유적 테마: ");
+            for (var t : StructureManager.RUIN_THEMES) sb.append("&f").append(t.key()).append("&7(").append(t.label()).append(") ");
+            Text.msg(s, sb.toString());
+            return;
+        }
+        if (sub.equals("build")) {   // /rpg관리 ruin build [테마|random] [here|random]
+            var theme = a.length > 2 && !a[2].equalsIgnoreCase("random") ? StructureManager.ruinTheme(a[2]) : null;
+            if (a.length > 2 && !a[2].equalsIgnoreCase("random") && theme == null) { Text.msg(s, "&c없는 테마입니다. &7/rpg관리 ruin themes"); return; }
+            boolean here = s instanceof Player && !(a.length > 3 && a[3].equalsIgnoreCase("random"));
+            if (here) {
+                Player p = (Player) s;
+                String res = plugin.structures().buildRuin(p.getLocation().getBlock().getLocation(), theme, null);
+                Text.msg(s, "&a유적 생성: " + res);
+            } else {
+                Object[] res = plugin.structures().buildRuinRandom(theme);
+                if (res == null) { Text.msg(s, "&c유적을 지을 땅을 찾지 못했습니다."); return; }
+                Location at = (Location) res[1];
+                Text.msg(s, "&a유적 생성: " + res[0] + " &7@ " + at.getBlockX() + ", " + at.getBlockY() + ", " + at.getBlockZ());
+            }
+            return;
+        }
+        if (sub.equals("tp")) {
+            if (!(s instanceof Player p) || a.length < 3) { Text.msg(s, "&c/rpg관리 ruin tp <id>"); return; }
+            RuinManager.Ruin r = rm.get(a[2]);
+            Location l = r == null ? null : rm.startOf(r);
+            if (l == null) { Text.msg(s, "&c없는 유적입니다."); return; }
+            p.teleport(l);
+            return;
+        }
         if (sub.equals("list")) {
             for (RuinManager.Ruin r : rm.all())
                 Text.msg(s, "&e" + r.id + " &f" + r.name + " &7모험 " + r.minAdv + " 시작 " + r.start + " 도착 " + r.end + " 보상패시브 " + r.passive + "/" + r.firstPassive);
@@ -741,14 +858,35 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     out.add(Text.strip(Text.c(plugin.bosses().def(bid).name)).replace(' ', '_'));
                 }
             }
+            case "stock" -> {
+                if (a.length == 2) for (var st : kr.rpgcraft.economy.StockManager.STOCKS) out.add(st.id());
+            }
+            case "coin" -> {
+                if (a.length == 2) Bukkit.getOnlinePlayers().forEach(pl -> out.add(pl.getName()));
+                if (a.length == 3) out.addAll(List.of("mole", "brick", "mine", "card"));
+            }
+            case "enhance" -> {
+                if (a.length == 2) out.addAll(List.of("0", "5", "8", "10", "12", "15"));
+                if (a.length == 3) out.addAll(Text.onlineNames(a[2], s));
+            }
+            case "auction" -> {
+                if (a.length == 2) out.addAll(List.of("list", "remove", "return", "player", "clear"));
+                if (a.length == 3 && (a[1].equals("remove") || a[1].equals("return")) && plugin.auction() != null) out.addAll(plugin.auction().ids());
+                if (a.length == 3 && a[1].equals("player")) Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
+                if (a.length == 4 && a[1].equals("player")) out.addAll(List.of("delete", "return"));
+            }
             case "npc" -> plugin.shops().all().forEach(sh -> out.add(sh.id));
             case "castle" -> {
-                if (a.length == 2) out.addAll(List.of("create", "pos1", "pos2", "wall", "beacon", "spawn", "owner", "delete", "list", "restore"));
-                if (a.length == 3) plugin.wars().castles().forEach(ca -> out.add(ca.id));
+                if (a.length == 2) out.addAll(List.of("build", "create", "pos1", "pos2", "wall", "beacon", "spawn", "owner", "delete", "list", "restore"));
+                if (a.length == 3 && a[1].equals("build")) out.addAll(List.of("1", "2", "3"));
+                else if (a.length == 3) plugin.wars().castles().forEach(ca -> out.add(ca.id));
+                if (a.length == 4 && a[1].equals("build")) out.add("castle_" + (plugin.wars().castles().size() + 1));
             }
             case "ruin" -> {
-                if (a.length == 2) out.addAll(List.of("create", "start", "end", "adv", "limit", "passive", "first", "delete", "list"));
-                if (a.length == 3) plugin.ruins().all().forEach(r -> out.add(r.id));
+                if (a.length == 2) out.addAll(List.of("build", "themes", "tp", "create", "start", "end", "adv", "limit", "passive", "first", "delete", "list"));
+                if (a.length == 3 && a[1].equals("build")) { out.add("random"); StructureManager.RUIN_THEMES.forEach(t -> out.add(t.key())); }
+                else if (a.length == 3) plugin.ruins().all().forEach(r -> out.add(r.id));
+                if (a.length == 4 && a[1].equals("build")) out.addAll(List.of("here", "random"));
                 if (a.length == 4 && (a[1].equals("passive") || a[1].equals("first"))) for (Passive p : Passive.values()) out.add(p.name());
             }
             case "passive" -> {
@@ -772,8 +910,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 if (a.length == 3 && a[1].equals("delete")) { out.add("all"); for (var d : plugin.dungeons().all()) out.add(d.id); } if (a.length == 4 && a[1].equals("create")) out.addAll(List.of("1", "2", "3", "4")); }
             case "questnpc" -> { if (a.length == 2) out.addAll(List.of("scatter", "here")); if (a.length == 3 && a[1].equals("here")) out.addAll(List.of("hunter", "collector", "herder", "explorer")); }
             case "reset" -> {
-                if (a.length == 2) out.addAll(List.of("all", "player"));
-                if (a.length == 3 && a[1].equals("all")) out.add("confirm");
+                if (a.length == 2) out.addAll(List.of("all", "player", "auction"));
+                if (a.length == 3 && (a[1].equals("all") || a[1].equals("auction"))) out.add("confirm");
             }
             case "mob" -> {
                 if (a.length == 2) out.addAll(List.of("list", "spawn", "killall"));

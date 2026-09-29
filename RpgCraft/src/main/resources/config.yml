@@ -54,6 +54,7 @@ mobs:
   name-display:              # 몬스터 이름표 (레벨 · 이름 · 체력바) — 때리지 않아도 표시
     near: 16                 # 플레이어 주변 이 거리 안의 몬스터 (0 = 끔)
     look: 32                 # 플레이어가 바라보는 몬스터 (0 = 끔)
+  witch-poison-seconds: 7    # 일반 마녀가 던지는 독 물약의 최대 지속 시간 (바닐라 45초)
   level:
     base: 1
     blocks-per-level: 40     # 월드 스폰에서 40블록 멀어질 때마다 +1레벨
@@ -190,6 +191,8 @@ war:
   prepare-seconds: 600
   duration-seconds: 1200
   walls-required: 3          # [위키] 성벽 3개 파괴 후 신호기 파괴 시 승리 (0 = 전부)
+  castle-wall-hp-large: 60000   # /rpg관리 castle build 로 지은 대형 성의 성벽 구간 체력
+  castle-build-blocks-per-tick: 20000   # 대형 성을 지을 때 한 틱에 놓는 블록 수 (낮출수록 천천히 · 렉 적게)
   wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)
   hit-interval-ms: 400
   repair-seconds: 10         # [위키] 성벽 수리 망치 쉬프트 10초
@@ -218,6 +221,8 @@ weapon-skills:
   basic-notice: false        # 평타 스킬 발동 때 액션바에 기술 이름 표시 (끄면 화면을 가리지 않음)
   quick-shot-ms: 1100        # 활 좌클릭 사격 간격
   bow-damage-mult: 1.35      # 활 피해 배율 (사격·활 스킬 모두)
+  bolt-range: 14             # 지팡이 평타(마법탄)가 날아가는 거리 (칸, 예전 약 23칸 → 18칸 → 14칸)
+  bolt-cooldown-ms: 1100     # 지팡이 평타(마법탄) 간격 (밀리초, 예전 700 → 900 → 1100)
   slash-damage: 0.85         # 좌클릭 참격 피해 (공격력 배율, 무기 공격 간격마다)
   particle-melee: true       # 몬스터를 직접 때려도 바닐라 타격 대신 입자 참격으로 공격
   cooldown: {sword: 6, dagger: 7, axe: 9, shield: 8, bow: 6, spear: 6, club: 6}
@@ -332,11 +337,48 @@ pets:
   duplicate-refund: 0.2      # 이미 가진 펫이 나오면 비용의 20% 환급
   scale: 0.6                 # 펫 모델 크기
 
+server-list:                 # 서버 목록 (멀티플레이 화면)
+  enabled: true
+  address: ""                # 서버 주소 (예: play.rpgcraft.kr) — 설명 두 번째 줄에 표시
+  auto-address: true         # 주소를 비워 두면 서버 IP(자동 감지한 공인 IP)를 대신 표시
+  motd-line1: "&6&l⚔ RpgCraft &8| &e대규모 RPG · PvP 서버"
+  motd-line2: "&f주소: &b{address}"
+  motd-line2-no-address: "&7레벨 · 보스 · 길드 · 공성전 · 던전"
+  # 아이콘: plugins/RpgCraft/server-icon.png (64x64 PNG) 를 바꾸면 됨
+
+anti-bot:                    # 접속 폭주 · 봇 방어 (진짜 디도스는 호스팅 디도스 방어 / TCPShield 등 프록시로)
+  enabled: true
+  ip-window-seconds: 30      # 같은 IP 가 이 시간 안에
+  ip-max-attempts: 5         # 이만큼 넘게 접속 시도하면
+  ip-block-seconds: 120      # 이 시간 동안 차단
+  max-accounts-per-ip: 3     # 한 IP 동시 접속 수 (0 = 제한 없음)
+  flood-per-10s: 20          # 10초 안에 전체 접속 시도가 이만큼 넘으면
+  lockdown-seconds: 60       # 이 시간 동안 처음 오는 사람 접속 잠금
+
+anti-xray-alert:             # 엑스레이 의심 알림 (차단은 Paper anti-xray 설정으로)
+  enabled: true
+  window-minutes: 30
+  min-rare: 12               # 이 시간 안에 다이아 · 고대 잔해 · 에메랄드를 이만큼 이상 캤고
+  max-rare-per-100-stone: 4.0   # 돌 100개당 희귀 광석이 이보다 많으면 관리자에게 알림
+
+events:
+  timezone: Asia/Seoul       # 주말 · 주간 퀘스트 기준 시간대
+  weekend-exp:
+    enabled: true            # 토 · 일요일 경험치 이벤트
+    mult: 1.5                # 경험치 배율
+
+duel:                        # 야차 (1대1 결투, /야차 <닉네임>)
+  time-limit-seconds: 180    # 제한 시간 (끝나면 무승부)
+  arena-y: 250               # 하늘 결투장 높이
+  arena-offset-x: 20000      # 월드 스폰에서 동쪽으로 떨어진 거리 (결투장 8개가 64칸 간격)
+
 sea:
   megalodon-chance: 0.004    # 바다에서 헤엄칠 때 20초마다 메갈로돈 확률
   megalodon-cooldown-minutes: 20
   kraken-chance: 0.0005      # 20초마다 크라켄 확률 (월드보스급)
   kraken-cooldown-minutes: 120
+  fishing-megalodon-chance: 0.003   # 낚시에 성공할 때마다 메갈로돈 확률 (0.3%, 어디서든)
+  fishing-kraken-chance: 0.0005     # 낚시에 성공할 때마다 크라켄 확률 (0.05%, 어디서든)
 
 bosses:
   exp-levels: 2.5           # 보스 처치 경험치 = 보스 레벨에서 필요한 경험치 × 이 값 (참가자끼리 나눔, 0 이면 bosses.yml 값)
@@ -346,6 +388,11 @@ bosses:
   chest-chance: 0.3          # 보스 처치 시 "보스 상자"(보스 드롭표로 뽑기) 확률
   crowd-skill-speed: 0.25    # 보스 주변 1명 늘 때마다 기술 간격 -25% 가량
   crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
+  chase-radius: 48           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기
+  leash-radius: 0            # 등장 위치에서 이만큼 넘게 끌려가면 제자리로 돌아감 (0 = 끔, 기본 끔)
+  stagger-ticks: 24         # 기술이 터진 직후 보스 경직 시간 (틱, 20 = 1초). 0 = 경직 없음
+  minion-exp-mult: 0.4       # 보스가 소환한 부하 몬스터의 경험치 배율 (1 = 같은 레벨 일반 몬스터와 같음)
+  spawn-safe-radius: 300     # 월드 스폰에서 이 거리(칸) 안에는 필드 보스 · 바다 보스 · 월드보스 · 토벌전 보스가 나오지 않음 (0 = 제한 없음, 관리자 소환 · 던전 제외)
 
 dummy:
   minutes: 10                # 허수아비가 사라지기까지
@@ -360,12 +407,22 @@ spirit-summon:
   balrog-chance: 0.00005     # "발록의 봉인석" 확률 (0.005%, Lv.120 이상 몬스터)
   balrog-min-level: 120
 
-bgm:                        # 전투 배경음 (게임 내장 음악 사용)
+bgm:                        # 상황별 배경음악 (v5.5.0) — 곡 넣는 법은 README "배경음악" 참고
   enabled: true
-  boss: "minecraft:music.dragon"
-  dungeon: "minecraft:music_disc.pigstep"
-  wave: "minecraft:music_disc.otherside"
-  loop-seconds: 170
+  volume: 0.7                # 소리 설정의 "음반" 볼륨과 곱해짐
+  town-radius: 150           # 월드 스폰에서 이 거리 안 = 마을 음악
+  town-worlds: []            # 이 월드에 있으면 항상 마을 음악 (로비 월드 등)
+  dungeon-worlds: []         # 이 월드에 있으면 항상 던전 음악 (신전 월드 등)
+  battle-min-mobs: 2         # 주변(14칸) 몬스터가 이만큼 이상일 때 싸우면 전투 음악
+  battle-hold-seconds: 15    # 마지막 전투 뒤 이만큼 전투 음악 유지
+  tracks: {}                 # 직접 추가: field: ["mypack:music.forest:180"]  (사운드 이름:길이초)
+  fallback:                  # 그 상황의 곡이 팩에 없을 때 틀 게임 내장 음악 (빈 칸 = 게임 기본 음악)
+    town: ""
+    field: ""
+    battle: "minecraft:music_disc.otherside"
+    boss: "minecraft:music.dragon"
+    dungeon: "minecraft:music_disc.pigstep"
+  fallback-seconds: 170
 
 rebirth:                    # 환생 (Lv.300 → Lv.1)
   max: 5
@@ -430,11 +487,30 @@ casino:
   max-bet: 100000
   daily-limit: 500000        # 하루 베팅 한도
 
+minigames:                  # 이벤트 광장 /이벤트 (v5.6.0)
+  daily-clears: 20           # 게임마다 하루에 코인을 받을 수 있는 성공 횟수
+  reward:                    # 성공 코인 [쉬움, 보통, 어려움]
+    mole: [1, 3, 6]
+    breakout: [1, 3, 6]
+    mines: [1, 3, 6]
+    memory: [1, 3, 6]
+
+stocks:                     # 주식 시장 /주식 (v5.6.0)
+  enabled: true
+  update-seconds: 60         # 가격이 바뀌는 간격
+  fee: 0.005                 # 사고팔 때 수수료 (0.5%)
+  news-chance: 0.06          # 가격이 바뀔 때마다 뉴스(한 종목 8~25% 급등락)가 뜰 확률
+  max-shares: 100000         # 한 종목 최대 보유 주 수
+
 fishing:
   enabled: true
   money: 300
   hits: 3                    # 미니게임에서 이 횟수만큼 성공해야 낚임
   treasure-chance: 0.008     # 낚시 「가라앉은 보물 상자」 확률 (보물 지도는 나오지 않음)
+  input-cooldown-ms: 250     # 우클릭이 두 번 들어가는 것 방지
+  exp-early-pct: 0.03        # 낚시 경험치: Lv.1 에서 다음 레벨 필요량의 3% (약 30마리에 1레벨)
+  exp-fade-level: 40         # 이 레벨로 갈수록 줄어듦
+  exp-min-pct: 0.002         # 그 뒤로는 0.2% (거의 없음)
 
 day-night:
   blood-moon-chance: 0.15

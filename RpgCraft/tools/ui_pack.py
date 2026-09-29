@@ -199,8 +199,8 @@ GUI_LAYOUTS = {
     "rune": ("\ue003", 3, {11, 13, 15, 22}, "rune"),
     "stat": ("\ue004", 3, {4, 11, 13, 15, 22}, None),
     "potion": ("\ue005", 3, {10, 12, 14, 16, 22}, None),
-    "quest": ("\ue006", 3, {4, 11, 13, 15, 18}, None),
-    "settings": ("\ue007", 3, {10, 11, 12, 13, 14, 15, 18}, None),
+    "quest": ("\ue006", 5, {4, 11, 13, 15, 22, 29, 31, 33, 36}, None),                 # v5.5.0: 일일 + 주간 (5줄)
+    "settings": ("\ue007", 4, {10, 11, 12, 13, 14, 15, 16, 21, 22, 23, 27}, None),       # v5.5.0: 설정 10개 (4줄)
     "spirit": ("\ue008", 6, {1, 2, 3, 4, 5, 10, 12, 14, 16, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 38, 39, 40, 41, 49}, "spirit"),
 }
 
@@ -252,6 +252,8 @@ def gui_layout_images(gui_background):
     for key, (ch, rows, slots, kind) in GUI_LAYOUTS.items():
         img = gui_background(rows, slots)
         out[key] = (ch, rows, decorate(img, kind, rows))
+    import minigame_art   # v5.6.0 미니게임 · 이벤트 상점 · 주식 배경
+    out.update(minigame_art.backgrounds(gui_background))
     return out
 
 

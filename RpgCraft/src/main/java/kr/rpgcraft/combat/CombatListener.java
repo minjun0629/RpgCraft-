@@ -182,7 +182,9 @@ public class CombatListener implements Listener {
         AttributeInstance a = victim.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         double vmax = a == null ? 20 : a.getValue();
         double scale = victim instanceof Player ? plugin.getConfig().getDouble("combat.environment-scale", 0.6) : 0.5;
-        double amount = e.getDamage() / Math.max(1, vmax) * plugin.health().max(victim) * scale;
+        // 허수아비는 체력이 1e15 라서 최대 체력 비율로 환산하면 불 · 독 등 한 번에 수조가 찍혔음 → 같은 레벨 일반 몬스터 체력 기준 (v5.4.37)
+        double base = st != null && plugin.dummies() != null && plugin.dummies().isDummy(victim) ? plugin.mobs().hpFor(st.level) : plugin.health().max(victim);
+        double amount = e.getDamage() / Math.max(1, vmax) * base * scale;
         if (victim instanceof Player vp) {
             PlayerData d = plugin.data().get(vp);
             amount *= 1 - d.stats.def / 200; // 방어력은 환경 대미지에 절반만 적용
@@ -192,12 +194,13 @@ public class CombatListener implements Listener {
 
     private void finish(EntityDamageEvent e, LivingEntity victim, double amount, Player attacker, Entity source, boolean crit) {
         if (amount > 0) plugin.combat().indicator(victim, amount, crit);
+        if (attacker != null && victim instanceof Player vp && !vp.equals(attacker)) plugin.combat().markPvp(attacker, vp);
         boolean lethal = amount > 0 && plugin.health().damage(victim, amount, attacker);
         if (lethal) {
             e.setDamage(victim.getHealth() + 100000);
             // 방패 막기 등으로 바닐라 대미지가 무효화된 경우를 대비
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (!victim.isDead() && victim.isValid() && plugin.health().cur(victim) <= 0) plugin.combat().kill(victim, source);
+                if (!victim.isDead() && victim.isValid() && plugin.health().cur(victim) <= 0 && !plugin.health().deathGuard(victim)) plugin.combat().kill(victim, source);
             });
         } else {
             e.setDamage(0);
@@ -214,7 +217,7 @@ public class CombatListener implements Listener {
         EntityRegainHealthEvent.RegainReason r = e.getRegainReason();
         if (r == EntityRegainHealthEvent.RegainReason.SATIATED || r == EntityRegainHealthEvent.RegainReason.REGEN) return;
         double amount = e.getAmount() / 20.0 * plugin.health().max(le) * 0.5;
-        if (le instanceof org.bukkit.entity.Witch) amount *= 0.5;   // 마녀 회복 절반
+        if (le instanceof org.bukkit.entity.Witch) amount *= 0.5 * 2 / 3.0;   // 마녀 회복: 절반 → 그 2/3 (v5.4.31)
         plugin.health().heal(le, amount);
     }
 

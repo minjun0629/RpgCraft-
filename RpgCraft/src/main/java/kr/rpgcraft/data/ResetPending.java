@@ -41,6 +41,33 @@ public final class ResetPending {
         return true;
     }
 
+    // ---------------------------------------------------------------- 기본 지급품 장부 (v5.4.28)
+    /** 플레이어 데이터와 별도로, 기본 지급품을 받은 사람의 UUID · 이름(소문자)을 기록 */
+    private static File starterFile(RpgCraft pl) {
+        return new File(pl.getDataFolder(), "starter.yml");
+    }
+
+    public static boolean hasStarter(RpgCraft pl, Player p) {
+        File f = starterFile(pl);
+        if (!f.exists()) return false;
+        YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
+        return y.getStringList("uuids").contains(p.getUniqueId().toString())
+                || y.getStringList("names").contains(p.getName().toLowerCase(java.util.Locale.ROOT));
+    }
+
+    public static void markStarter(RpgCraft pl, Player p) {
+        File f = starterFile(pl);
+        YamlConfiguration y = f.exists() ? YamlConfiguration.loadConfiguration(f) : new YamlConfiguration();
+        List<String> u = new java.util.ArrayList<>(y.getStringList("uuids")), n = new java.util.ArrayList<>(y.getStringList("names"));
+        String id = p.getUniqueId().toString(), nm = p.getName().toLowerCase(java.util.Locale.ROOT);
+        if (u.contains(id) && n.contains(nm)) return;
+        if (!u.contains(id)) u.add(id);
+        if (!n.contains(nm)) n.add(nm);
+        y.set("uuids", u);
+        y.set("names", n);
+        try { y.save(f); } catch (java.io.IOException ignored) { }
+    }
+
     /** 기본 지급품 (config player.starter-kit). 인벤토리가 가득 차면 발밑에 떨굼 */
     public static int giveStarter(RpgCraft pl, Player p) {
         int n = 0;
@@ -60,6 +87,10 @@ public final class ResetPending {
         p.getInventory().clear();
         p.getEnderChest().clear();
         giveStarter(pl, p);
+        markStarter(pl, p);
+        d.starterGiven = true;   // 지급 기록 (v5.4.23: 초기화 후 접속한 사람은 기록이 안 남아 다음 접속 때 또 받았음)
+        d.starterWorld = org.bukkit.Bukkit.getWorlds().get(0).getUID().toString();
+        pl.data().save(d);
         pl.stats().refresh(p);
         d.hp = d.stats.maxHp;
         p.teleport(p.getWorld().getSpawnLocation());

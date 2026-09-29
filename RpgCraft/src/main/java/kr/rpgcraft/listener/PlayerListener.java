@@ -50,6 +50,10 @@ public class PlayerListener implements Listener {
             if (!e.getPlayer().isOnline()) return;
             for (ItemStack it : e.getPlayer().getInventory().getContents())
                 if (it != null && kr.rpgcraft.item.ItemData.template(it) != null) kr.rpgcraft.item.ItemData.refresh(it);
+            if (plugin.potions() != null) {   // 예전 병 포션 → 64개씩 쌓이는 포션 (v5.4.22)
+                int n = plugin.potions().convertLegacy(e.getPlayer().getInventory()) + plugin.potions().convertLegacy(e.getPlayer().getEnderChest());
+                if (n > 0) Text.msg(e.getPlayer(), "&a포션 " + n + "개를 64개씩 쌓이는 새 포션으로 바꿨습니다. &7(우클릭으로 마시기)");
+            }
         }, 20L);
         PlayerData bj = plugin.data().get(e.getPlayer());
         for (String k : new String[]{"buff_atk", "buff_def", "buff_speed", "buff_exp"}) {   // 나가 있던 동안 멈춰 있던 주문서 시간 복원
@@ -60,21 +64,31 @@ public class PlayerListener implements Listener {
         if (plugin.auction() != null) Bukkit.getScheduler().runTaskLater(plugin, () -> plugin.auction().onJoinNotice(e.getPlayer()), 60L);
         Player p = e.getPlayer();
         PlayerData d = plugin.data().get(p);
+        boolean known = d.name != null;   // 저장된 기록이 있는 사람 (처음 온 사람은 이름 기록이 없음)
         d.name = p.getName();
-        // 기본 지급품: 처음 온 사람 + 맵(월드)을 새로 만들어 바닐라 인벤토리가 비어 버린 사람 (플러그인 기록은 남아 있어도)
-        boolean firstTime = !d.starterGiven;
-        if (!resetOnJoin && (firstTime || !p.hasPlayedBefore())) {
+        // 기본 지급품: 정말 처음 온 사람에게 딱 한 번 (v5.4.28)
+        //  - 플레이어 데이터에 "받음" 기록이 있거나, 저장된 기록(이름)이 있거나, 별도 장부(starter.yml: UUID · 이름)에 있으면 주지 않음
+        //  - 예전의 "맵(월드 UID)이 바뀌면 다시 지급" 규칙은 서버에 따라 월드 UID 가 바뀌어 접속할 때마다 복제돼서 없앰
+        //  - 초기화(/rpg관리 reset)된 사람은 freshStart 가 따로 지급
+        boolean ledger = kr.rpgcraft.data.ResetPending.hasStarter(plugin, p);
+        boolean firstTime = !resetOnJoin && !d.starterGiven && !known && !ledger;
+        if (!firstTime) {
+            if (!d.starterGiven || !ledger) { d.starterGiven = true; kr.rpgcraft.data.ResetPending.markStarter(plugin, p); }
+        } else {
             d.starterGiven = true;
-            if (firstTime) {
-                d.money += plugin.getConfig().getLong("player.starting-money", 0);
-                kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));
-            }
+            kr.rpgcraft.data.ResetPending.markStarter(plugin, p);
+            plugin.data().save(d);   // 지급 기록을 바로 저장 (서버가 갑자기 꺼져도 다시 받지 않게)
+            plugin.getLogger().info("기본 지급품 지급 (처음 접속): " + p.getName() + " " + p.getUniqueId());
+            d.money += plugin.getConfig().getLong("player.starting-money", 0);
+            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 RpgCraft에 처음 오셨습니다!"));
             // 다른 플러그인이 접속 직후 인벤토리를 정리해도 지워지지 않게 조금 뒤에 지급
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (!p.isOnline()) return;
                 if (kr.rpgcraft.data.ResetPending.giveStarter(plugin, p) > 0) Text.msg(p, "&a기본 지급품을 받았습니다! &7(인벤토리를 확인하세요)");
             }, 10L);
         }
+        if (plugin.levels().weekendMult() > 1)   // v5.5.0 주말 경험치 이벤트 안내
+            Bukkit.getScheduler().runTaskLater(plugin, () -> { if (p.isOnline()) Text.msg(p, "&6&l주말 이벤트! &e모든 경험치 x" + plugin.levels().weekendMult() + " &7(토 · 일)"); }, 80L);
         plugin.stats().refresh(p);
         plugin.hud().setup(p);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -112,7 +126,9 @@ public class PlayerListener implements Listener {
                 "&f힘 &6" + (int) s.str + " &f민첩 &a" + (int) s.dex + " &f모험 &b" + (int) s.adv,
                 "&f공격력 &c" + Text.num(s.attack) + " &f마력 &d" + Text.num(s.magic),
                 "&f체력 &c" + Text.num(s.maxHp) + " &f방어력 &7" + String.format("%.1f", s.def),
-                "&f치명타 &e" + String.format("%.1f", s.crit) + "% &f치명타 피해 &e" + (int) s.critDmg + "%"), null);
+                "&f치명타 &e" + String.format("%.1f", s.crit) + "% &f치명타 피해 &e" + (int) s.critDmg + "%",
+                "&f흡혈 &c" + String.format("%.1f", s.lifesteal) + "% &f이동속도 &a" + String.format("%+.1f", s.speed) + "%",
+                "&f회피 &b" + String.format("%.1f", s.dodge) + "% &f방어 관통 &b" + String.format("%.1f", s.armorPen) + "%"), null);
         for (int i = 0; i < 3; i++) if (d.accessories[i] != null) g.set(37 + i, d.accessories[i].clone(), null);
         for (int i = 0; i < 3; i++) if (d.runes[i] != null) g.set(41 + i, d.runes[i].clone(), null);
         g.set(47, kr.rpgcraft.gui.Gui.button(Material.EMERALD, "&a거래 신청"), ev -> { p.closeInventory(); plugin.trades().request(p, t.getName()); });
@@ -157,6 +173,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
+        plugin.health().markDeath(p);
         PlayerData d = plugin.data().get(p);
         if (plugin.getConfig().getBoolean("death.keep-inventory", true)) {
             e.setKeepInventory(true);
@@ -181,6 +198,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Player p = e.getPlayer();
+        plugin.health().markRespawn(p);   // 체력을 바로 채움 (예전엔 2틱 뒤 → 그 사이 피해로 한 번 더 죽었음)
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!p.isOnline()) return;
             PlayerData d = plugin.data().get(p);

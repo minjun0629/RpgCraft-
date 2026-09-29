@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/potion_1"
+        }
+      },
+      {
+        "threshold": 701,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/potion_2"
+        }
+      },
+      {
+        "threshold": 702,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/potion_3"
+        }
+      },
+      {
+        "threshold": 703,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/potion_4"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/rabbit_foot"
+    }
+  }
+}

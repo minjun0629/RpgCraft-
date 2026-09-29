@@ -209,6 +209,9 @@ public class PackManager implements Listener {
 
     private volatile String publicIp;
 
+    /** 자동 감지한 공인 IP (못 찾았으면 null) */
+    public String publicIp() { return publicIp; }
+
     /** Player#getVirtualHost (Spigot/Paper) → 접속에 쓴 주소 */
     private static String virtualHost(Player p) {
         try {
@@ -466,6 +469,14 @@ public class PackManager implements Listener {
                 case "quest": return '\uE006';
                 case "settings": return '\uE007';
                 case "spirit": return '\uE008';
+                case "event": return '\uE009';      // v5.6.0 이벤트 광장 · 미니게임 · 주식
+                case "mole": return '\uE00A';
+                case "breakout": return '\uE00B';
+                case "mines": return '\uE00C';
+                case "memory": return '\uE00D';
+                case "stock": return '\uE00E';
+                case "eshop": return '\uE00F';
+                case "eshop_sub": return '\uE010';
                 default: break;
             }
         }

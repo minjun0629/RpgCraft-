@@ -83,6 +83,7 @@ public class DataManager {
         d.thirdJob = y.getString("third-job");
         d.nick = y.getString("nick");
         d.starterGiven = y.getBoolean("starter-given");
+        d.starterWorld = y.getString("starter-world");
         d.passives.addAll(y.getStringList("passives"));
         d.hp = y.getDouble("hp", -1);
         d.quickSkill = y.getString("quick-skill");
@@ -106,6 +107,32 @@ public class DataManager {
     }
 
     public void save(PlayerData d) {
+        write(d.uuid, serialize(d), seq.incrementAndGet());
+    }
+
+    /** 저장 순번: 비동기 자동 저장이 늦게 끝나도 더 새로운 저장(퇴장 등)을 덮어쓰지 않게 */
+    private final java.util.concurrent.atomic.AtomicLong seq = new java.util.concurrent.atomic.AtomicLong();
+    private final Map<UUID, Long> written = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private synchronized void write(UUID id, String text, long n) {
+        if (written.getOrDefault(id, 0L) > n) return;
+        written.put(id, n);
+        try {
+            java.nio.file.Files.writeString(new File(folder, id + ".yml").toPath(), text, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            plugin.getLogger().warning("플레이어 데이터 저장 실패: " + id + " " + e.getMessage());
+        }
+    }
+
+    /** 자동 저장: 내용은 메인 스레드에서 만들고, 파일 쓰기만 비동기로 (렉 줄이기, v5.4.29) */
+    public void saveAllAsync() {
+        Map<UUID, String> out = new HashMap<>();
+        for (PlayerData d : cache.values()) out.put(d.uuid, serialize(d));
+        long n = seq.incrementAndGet();
+        org.bukkit.Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> out.forEach((id, text) -> write(id, text, n)));
+    }
+
+    private String serialize(PlayerData d) {
         YamlConfiguration y = new YamlConfiguration();
         y.set("name", d.name);
         y.set("level", d.level);
@@ -121,6 +148,7 @@ public class DataManager {
         y.set("third-job", d.thirdJob);
         y.set("nick", d.nick);
         y.set("starter-given", d.starterGiven);
+        y.set("starter-world", d.starterWorld);
         y.set("passives", new ArrayList<>(d.passives));
         y.set("hp", d.hp);
         y.set("quick-skill", d.quickSkill);
@@ -133,11 +161,7 @@ public class DataManager {
         d.potionBag.forEach((k, v) -> y.set("potion-bag." + k, v));
         for (int i = 0; i < 3; i++) y.set("runes." + i, d.runes[i]);
         for (int i = 0; i < 3; i++) y.set("accessories." + i, d.accessories[i]);
-        try {
-            y.save(new File(folder, d.uuid + ".yml"));
-        } catch (IOException e) {
-            plugin.getLogger().warning("플레이어 데이터 저장 실패: " + d.uuid + " " + e.getMessage());
-        }
+        return y.saveToString();
     }
 
     public void saveAll() {

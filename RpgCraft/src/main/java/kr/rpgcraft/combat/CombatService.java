@@ -306,6 +306,7 @@ public class CombatService {
         if (victim.isDead() || !victim.isValid()) return;
         if (victim instanceof Player vp && (vp.getGameMode() == GameMode.CREATIVE || vp.getGameMode() == GameMode.SPECTATOR)) return;
         indicator(victim, amount, crit);
+        if (attacker != null && victim instanceof Player vp2 && !vp2.equals(attacker)) markPvp(attacker, vp2);
         boolean lethal = plugin.health().damage(victim, amount, attacker);
         if (lethal) kill(victim, source);
         else {
@@ -322,7 +323,7 @@ public class CombatService {
         } finally {
             BYPASS.set(false);
         }
-        if (!victim.isDead() && plugin.health().cur(victim) <= 0) victim.setHealth(0);
+        if (!victim.isDead() && plugin.health().cur(victim) <= 0 && !plugin.health().deathGuard(victim)) victim.setHealth(0);
     }
 
     /** 스킬 대미지 (플레이어 → 대상). 크리티컬 판정 포함. */
@@ -357,17 +358,44 @@ public class CombatService {
         if (isNpc(victim)) return false;
         if (!(victim instanceof Player vp)) return true;
         if (vp.equals(attacker)) return false;
+        if (plugin.duels() != null && (plugin.duels().inDuel(attacker) || plugin.duels().inDuel(vp))) {   // 야차: 서로만, 시작 후에만 (PvP 설정 · 길드 · 초보 보호 무시)
+            if (plugin.duels().fighting(attacker, vp)) return true;
+            Text.actionBar(attacker, plugin.duels().pair(attacker, vp) ? "&e야차 시작 전입니다." : "&c야차 중인 사람과는 싸울 수 없습니다.");
+            return false;
+        }
         Guild ga = plugin.guilds().of(attacker.getUniqueId());
         Guild gv = plugin.guilds().of(vp.getUniqueId());
         if (ga != null && ga == gv && !plugin.getConfig().getBoolean("combat.guild-friendly-fire", false)) return false;
         if (ga != null && gv != null && plugin.wars().isAtWar(ga.name, gv.name)) return true;
         if (!plugin.getConfig().getBoolean("combat.pvp", true)) return false;
+        if (!kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(attacker))) {
+            Text.actionBar(attacker, "&cPvP 가 꺼져 있습니다. &7(메뉴 → 설정)");
+            return false;
+        }
+        if (!kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(vp))) {
+            Text.actionBar(attacker, "&c" + Text.name(vp) + " 님은 PvP 를 꺼 두었습니다.");
+            return false;
+        }
         int prot = plugin.getConfig().getInt("combat.newbie-protection-level", 10);
         if (plugin.data().get(vp).level < prot || plugin.data().get(attacker).level < prot) {
             Text.actionBar(attacker, "&cLv." + prot + " 미만은 PvP 보호 중입니다.");
             return false;
         }
         return true;
+    }
+
+    /** 최근 PvP 시각 (PvP 끄기 제한용) */
+    private final java.util.Map<java.util.UUID, Long> lastPvp = new java.util.HashMap<>();
+
+    public void markPvp(Player a, Player v) {
+        long now = System.currentTimeMillis();
+        lastPvp.put(a.getUniqueId(), now);
+        lastPvp.put(v.getUniqueId(), now);
+    }
+
+    /** 최근 15초 안에 PvP 로 때리거나 맞았는지 */
+    public boolean inPvp(Player p) {
+        return System.currentTimeMillis() - lastPvp.getOrDefault(p.getUniqueId(), 0L) < 15_000;
     }
 
     /** 범위 스킬 대상 판정 */
@@ -384,6 +412,7 @@ public class CombatService {
     }
 
     private boolean canHitSilently(Player a, Player v) {
+        if (plugin.duels() != null && (plugin.duels().inDuel(a) || plugin.duels().inDuel(v))) return plugin.duels().fighting(a, v);
         if (plugin.party() != null && plugin.party().same(a, v)) return false; // 파티원끼리 공격 불가
         Guild ga = plugin.guilds().of(a.getUniqueId());
         Guild gv = plugin.guilds().of(v.getUniqueId());
@@ -391,6 +420,7 @@ public class CombatService {
         if (ga != null && gv != null && plugin.wars().isAtWar(ga.name, gv.name)) return true;
         int prot = plugin.getConfig().getInt("combat.newbie-protection-level", 10);
         return plugin.getConfig().getBoolean("combat.pvp", true)
+                && kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(a)) && kr.rpgcraft.data.Setting.PVP.get(plugin.data().get(v))
                 && plugin.data().get(v).level >= prot && plugin.data().get(a).level >= prot;
     }
 

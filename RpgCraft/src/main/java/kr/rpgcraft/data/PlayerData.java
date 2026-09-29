@@ -27,6 +27,8 @@ public class PlayerData {
     }
     public String job, subJob, thirdJob, nick;
     public boolean starterGiven;
+    /** 기본 지급품을 받은 기본 월드의 UID (맵을 새로 만들면 달라짐 → 다시 지급) */
+    public String starterWorld;
     public final Set<String> passives = new LinkedHashSet<>();
     /** 영구 카운터 (단련된 공포 누적치 등) */
     public final Map<String, Double> counters = new HashMap<>();

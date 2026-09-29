@@ -331,10 +331,11 @@ public class ItemRegistry {
         reg(new ItemTemplate("tool_gather_2", "중급자용 채집도구", Material.IRON_PICKAXE, Category.TOOL).tier(2).cooldown(150).value(70).price(150000, -1).model(701));
         reg(new ItemTemplate("tool_gather_3", "숙련자용 채집도구", Material.DIAMOND_PICKAXE, Category.TOOL).tier(3).cooldown(120).value(100).price(750000, -1).model(702));
 
-        reg(new ItemTemplate("potion_1", "하급 체력 회복 포션", Material.POTION, Category.POTION).value(500).price(1000, -1).model(700).color(0xFF6B6B));
-        reg(new ItemTemplate("potion_2", "중급 체력 회복 포션", Material.POTION, Category.POTION).value(2000).price(5000, -1).model(701).color(0xE03131));
-        reg(new ItemTemplate("potion_3", "상급 체력 회복 포션", Material.POTION, Category.POTION).value(6000).price(25000, -1).model(702).color(0xA61E4D).grade(Grade.RARE));
-        reg(new ItemTemplate("potion_4", "최상급 체력 회복 포션", Material.POTION, Category.POTION).value(15000).price(80000, -1).model(703).color(0x5F0F40).grade(Grade.UNIQUE));
+        // 회복 포션: 1.20.1 의 POTION 은 1개씩만 쌓이므로 64개씩 쌓이는 토끼발(RABBIT_FOOT)에 포션 모델을 씌움 · 우클릭으로 마심 (v5.4.22)
+        reg(new ItemTemplate("potion_1", "하급 체력 회복 포션", Material.RABBIT_FOOT, Category.POTION).value(500).price(1000, -1).model(700).color(0xFF6B6B));
+        reg(new ItemTemplate("potion_2", "중급 체력 회복 포션", Material.RABBIT_FOOT, Category.POTION).value(2000).price(5000, -1).model(701).color(0xE03131));
+        reg(new ItemTemplate("potion_3", "상급 체력 회복 포션", Material.RABBIT_FOOT, Category.POTION).value(6000).price(25000, -1).model(702).color(0xA61E4D).grade(Grade.RARE));
+        reg(new ItemTemplate("potion_4", "최상급 체력 회복 포션", Material.RABBIT_FOOT, Category.POTION).value(15000).price(80000, -1).model(703).color(0x5F0F40).grade(Grade.UNIQUE));
 
         reg(new ItemTemplate("ticket_protect", "파괴 방지권", Material.PAPER, Category.TICKET).grade(Grade.UNIQUE).price(1000000, -1).model(10).desc("강화 창에 넣으면 강화 파괴를 1회 방지"));
         reg(new ItemTemplate("ticket_rate10", "강화 확률 10% 증가권", Material.PAPER, Category.TICKET).grade(Grade.UNIQUE).price(500000, -1).model(11).desc("강화 창에 넣으면 성공 확률 +10% (중복 불가)"));

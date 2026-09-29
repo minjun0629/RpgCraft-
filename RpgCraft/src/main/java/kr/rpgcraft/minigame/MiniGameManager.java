@@ -23,7 +23,8 @@ import java.util.*;
 /**
  * 이벤트 광장 (v5.6.0) — /이벤트
  *  - 미니게임 4종 (두더지 잡기 · 벽돌깨기 · 지뢰찾기 · 같은 그림 찾기), 난이도 쉬움 · 보통 · 어려움
- *  - 성공하면 게임별 코인 (아이템이 아닌 디지털 재화, counters: coin_xxx). 하루에 받을 수 있는 횟수 제한 (minigames.daily-clears)
+ *  - 성공하면 게임별 코인 (아이템이 아닌 디지털 재화, counters: coin_xxx)
+ *  - 하루에 할 수 있는 판 수 제한 (minigames.daily-plays, 기본 게임마다 5판 — 시작할 때 1판 차감, 도중에 닫아도 차감) (v5.6.2)
  *  - 이벤트 상점: 상점 목록 → 세부 상점 (plugins/RpgCraft/event-shop.yml 로 품목 · 가격 · 구매 제한을 바꿀 수 있음)
  */
 public class MiniGameManager implements CommandExecutor {
@@ -74,26 +75,43 @@ public class MiniGameManager implements CommandExecutor {
         return LocalDate.now(ZoneId.of(plugin.getConfig().getString("events.timezone", "Asia/Seoul"))).toEpochDay();
     }
 
-    private int clearsToday(PlayerData d, Game g) {
+    /** 날짜가 바뀌었으면 오늘 판 수 초기화 */
+    private void rollDay(PlayerData d) {
         if (d.counters.getOrDefault("mg_day", -1.0) != today()) {
             d.counters.put("mg_day", (double) today());
-            for (Game x : Game.values()) d.counters.remove("mg_clears_" + x.key());
+            d.counters.remove("mg_plays_all");
+            for (Game x : Game.values()) { d.counters.remove("mg_plays_" + x.key()); d.counters.remove("mg_clears_" + x.key()); }
         }
-        return (int) Math.round(d.counters.getOrDefault("mg_clears_" + g.key(), 0.0));
     }
 
-    /** 성공 보상 지급, 받은 코인 수 반환 (하루 제한을 넘으면 0) */
+    /** 하루 판 수를 게임마다 따로 세는지 (per-game), 전부 합쳐 세는지 (total) */
+    private boolean total() {
+        return "total".equalsIgnoreCase(plugin.getConfig().getString("minigames.daily-plays-scope", "per-game"));
+    }
+
+    private String playKey(Game g) {
+        return total() ? "mg_plays_all" : "mg_plays_" + g.key();
+    }
+
+    public int dailyPlays() {
+        return plugin.getConfig().getInt("minigames.daily-plays", 5);
+    }
+
+    /** 오늘 남은 판 수 */
+    public int playsLeft(PlayerData d, Game g) {
+        rollDay(d);
+        return Math.max(0, dailyPlays() - (int) Math.round(d.counters.getOrDefault(playKey(g), 0.0)));
+    }
+
+    /** 성공 보상 지급, 받은 코인 수 반환 */
     long reward(Player p, Game g, Diff diff) {
         PlayerData d = plugin.data().get(p);
-        int done = clearsToday(d, g);
         d.counters.merge("mg_best_" + g.key() + "_" + diff.name().toLowerCase(), 1.0, Double::sum);
-        if (done >= plugin.getConfig().getInt("minigames.daily-clears", 20)) { plugin.data().save(d); return 0; }
         List<Integer> r = plugin.getConfig().getIntegerList("minigames.reward." + g.key());
         long got = r.size() >= 3 ? r.get(diff.ordinal()) : diff.pick(1, 3, 6);
         g.coin.add(d, got);
-        d.counters.put("mg_clears_" + g.key(), (double) (done + 1));
         plugin.data().save(d);
-        Text.msg(p, "&a" + g.label + " " + diff.color + diff.label + " &a성공! " + g.coin.color + g.coin.label + " +" + got + " &7(보유 " + g.coin.get(d) + " · 오늘 " + (done + 1) + "/" + plugin.getConfig().getInt("minigames.daily-clears", 20) + "회)");
+        Text.msg(p, "&a" + g.label + " " + diff.color + diff.label + " &a성공! " + g.coin.color + g.coin.label + " +" + got + " &7(보유 " + g.coin.get(d) + " · 오늘 남은 판 " + playsLeft(d, g) + "/" + dailyPlays() + ")");
         return got;
     }
 
@@ -118,13 +136,16 @@ public class MiniGameManager implements CommandExecutor {
             Game[] gs = Game.values();
             for (int i = 0; i < gs.length; i++) {
                 Game g = gs[i];
-                int left = Math.max(0, plugin.getConfig().getInt("minigames.daily-clears", 20) - clearsToday(d, g));
-                set(top[i], Icons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.goal, "", "&f오늘 보상 남은 횟수 &e" + left, "&e▶ 클릭하여 난이도 선택"), e -> openDifficulty(p, g));
+                int left = playsLeft(d, g);
+                set(top[i], Icons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.goal, "",
+                        "&f오늘 남은 판 " + (left > 0 ? "&e" : "&c") + left + " &7/ " + dailyPlays() + (total() ? " &8(모든 게임 합계)" : ""),
+                        left > 0 ? "&e▶ 클릭하여 난이도 선택" : "&c오늘은 더 할 수 없습니다 (자정에 초기화)"), e -> openDifficulty(p, g));
                 set(bottom[i], Icons.of(g.coin.icon, (int) Math.max(1, Math.min(64, g.coin.get(d))), g.coin.color + "&l" + g.coin.label + " &f" + g.coin.get(d) + "개",
                         "&7" + g.label + " 성공 보상", "&7이벤트 상점의 " + g.label.replace("같은 ", "") + " 상점에서 사용"), e -> new ShopMain(p).open(p));
             }
             set(40, Gui.button(Material.EMERALD, "&a&l이벤트 상점", "&7코인으로 여러 보상을 살 수 있습니다", "&e▶ 클릭"), e -> new ShopMain(p).open(p));
             set(49, Gui.button(Material.BOOK, "&f도움말", "&7각 게임은 쉬움 · 보통 · 어려움 3단계", "&7어려울수록 코인을 많이 줍니다",
+                    "&7하루에 " + (total() ? "모든 게임 합쳐 " : "게임마다 ") + dailyPlays() + "판 (시작하면 1판 차감)",
                     "&7코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
             fill(0, 53);
         }
@@ -133,7 +154,8 @@ public class MiniGameManager implements CommandExecutor {
     private class DiffGui extends Gui {
         DiffGui(Player p, Game g) {
             super(3, "&8" + g.label + " - 난이도");
-            set(4, Icons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.goal));
+            int left = playsLeft(plugin.data().get(p), g);
+            set(4, Icons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.goal, "", "&f오늘 남은 판 " + (left > 0 ? "&e" : "&c") + left + " &7/ " + dailyPlays()));
             int[] at = {11, 13, 15};
             for (Diff df : Diff.values()) {
                 List<Integer> r = plugin.getConfig().getIntegerList("minigames.reward." + g.key());
@@ -155,6 +177,15 @@ public class MiniGameManager implements CommandExecutor {
     }
 
     private void start(Player p, Game g, Diff d) {
+        PlayerData pd = plugin.data().get(p);
+        if (playsLeft(pd, g) <= 0) {   // v5.6.2: 하루 판 수 제한
+            Text.actionBar(p, "&c오늘은 " + (total() ? "미니게임을" : g.label + "을(를)") + " 더 할 수 없습니다. &7(하루 " + dailyPlays() + "판 · 자정에 초기화)");
+            p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+            return;
+        }
+        pd.counters.merge(playKey(g), 1.0, Double::sum);   // 시작하는 순간 1판 차감 (도중에 닫아도 차감 — 다시 시작해서 쉬운 판 고르기 방지)
+        plugin.data().save(pd);
+        Text.actionBar(p, "&e" + g.label + " 시작! &7오늘 남은 판 " + playsLeft(pd, g) + "/" + dailyPlays());
         MiniGame mg = switch (g) {
             case MOLE -> new MoleGame(this, p, d);
             case BREAKOUT -> new BreakoutGame(this, p, d);

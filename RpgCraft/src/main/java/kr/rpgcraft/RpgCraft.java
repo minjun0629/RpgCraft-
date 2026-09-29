@@ -287,6 +287,8 @@ public final class RpgCraft extends JavaPlugin {
         for (String[] e : new String[][]{{"bgm.boss", "boss"}, {"bgm.dungeon", "dungeon"}, {"bgm.wave", "battle"}})   // 예전 배경음 설정 → bgm.fallback.* (v5.5.0)
             if (getConfig().isString(e[0])) { getConfig().set("bgm.fallback." + e[1], getConfig().getString(e[0])); getConfig().set(e[0], null); }
         if (getConfig().contains("bgm.loop-seconds")) { getConfig().set("bgm.fallback-seconds", getConfig().getInt("bgm.loop-seconds")); getConfig().set("bgm.loop-seconds", null); }
+        if (!getConfig().contains("minigames.coins-unified", true)) { getConfig().set("minigames.daily-plays-scope", "total"); getConfig().set("minigames.coins-unified", true); }   // 미니게임 4종 합쳐 하루 5판 — 한 번만 (v5.6.4)
+        if (!getConfig().contains("server-list.show-ip", true)) { getConfig().set("server-list.auto-address", false); getConfig().set("server-list.show-ip", false); }   // 서버 목록에 IP 표시 끔 — 한 번만 (v5.6.4)
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
         if (Math.abs(getConfig().getDouble("weapon-skills.bolt-range", 14) - 18) < 1e-9) getConfig().set("weapon-skills.bolt-range", 14);   // 지팡이 평타 18 → 14칸 (v5.4.29)
         if (Math.abs(getConfig().getDouble("bosses.chase-radius", 48) - 24) < 1e-9) getConfig().set("bosses.chase-radius", 48);   // 보스 추격 24 → 48칸 (v5.5.0)

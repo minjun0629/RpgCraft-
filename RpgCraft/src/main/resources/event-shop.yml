@@ -1,12 +1,12 @@
 # ============================================================
 #  이벤트 상점 (v5.6.0) — /이벤트 상점
-#  세부 상점마다 쓰는 코인(coin: MOLE · BRICK · MINE · CARD)이 다릅니다.
+#  모든 세부 상점은 이벤트 코인 하나로 삽니다 (v5.6.4 통합, coin 값은 EVENT).
 #  items: item = 아이템 ID (/rpg관리 items 로 확인), amount = 개수, price = 코인 가격, limit = 한 사람이 살 수 있는 횟수 (0 = 무제한)
 #  세부 상점을 더 만들려면 아래처럼 블록을 하나 더 추가하면 됩니다 (최대 4개 표시).
 # ============================================================
 mole:
   name: "두더지 상점"
-  coin: MOLE
+  coin: EVENT
   icon: BROWN_WOOL
   items:
     - {item: potion_2, amount: 5, price: 3}
@@ -19,7 +19,7 @@ mole:
 
 brick:
   name: "벽돌 상점"
-  coin: BRICK
+  coin: EVENT
   icon: BRICKS
   items:
     - {item: potion_3, amount: 3, price: 4}
@@ -32,7 +32,7 @@ brick:
 
 mine:
   name: "지뢰 상점"
-  coin: MINE
+  coin: EVENT
   icon: TNT
   items:
     - {item: potion_3, amount: 5, price: 5}
@@ -45,7 +45,7 @@ mine:
 
 card:
   name: "그림 상점"
-  coin: CARD
+  coin: EVENT
   icon: PAINTING
   items:
     - {item: potion_4, amount: 2, price: 6}

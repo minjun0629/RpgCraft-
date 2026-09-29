@@ -672,6 +672,12 @@
     },
     {
       "predicate": {
+        "custom_model_data": 12074
+      },
+      "model": "rpgcraft:item/minigame/mg_coin_event"
+    },
+    {
+      "predicate": {
         "custom_model_data": 12080
       },
       "model": "rpgcraft:item/minigame/mg_easy"

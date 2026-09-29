@@ -782,6 +782,13 @@
         }
       },
       {
+        "threshold": 12074,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_coin_event"
+        }
+      },
+      {
         "threshold": 12080,
         "model": {
           "type": "minecraft:model",

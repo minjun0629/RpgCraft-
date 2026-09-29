@@ -23,8 +23,8 @@ import java.util.*;
 /**
  * 이벤트 광장 (v5.6.0) — /이벤트
  *  - 미니게임 4종 (두더지 잡기 · 벽돌깨기 · 지뢰찾기 · 같은 그림 찾기), 난이도 쉬움 · 보통 · 어려움
- *  - 성공하면 게임별 코인 (아이템이 아닌 디지털 재화, counters: coin_xxx)
- *  - 하루에 할 수 있는 판 수 제한 (minigames.daily-plays, 기본 게임마다 5판 — 시작할 때 1판 차감, 도중에 닫아도 차감) (v5.6.2)
+ *  - 성공하면 이벤트 코인 (아이템이 아닌 디지털 재화, counters: coin_event — v5.6.4 에서 하나로 통합)
+ *  - 하루에 할 수 있는 판 수 제한 (minigames.daily-plays, 기본 4종 합쳐 5판 — 시작할 때 1판 차감, 도중에 닫아도 차감) (v5.6.4)
  *  - 이벤트 상점: 상점 목록 → 세부 상점 (plugins/RpgCraft/event-shop.yml 로 품목 · 가격 · 구매 제한을 바꿀 수 있음)
  */
 public class MiniGameManager implements CommandExecutor {
@@ -86,7 +86,7 @@ public class MiniGameManager implements CommandExecutor {
 
     /** 하루 판 수를 게임마다 따로 세는지 (per-game), 전부 합쳐 세는지 (total) */
     private boolean total() {
-        return "total".equalsIgnoreCase(plugin.getConfig().getString("minigames.daily-plays-scope", "per-game"));
+        return !"per-game".equalsIgnoreCase(plugin.getConfig().getString("minigames.daily-plays-scope", "total"));
     }
 
     private String playKey(Game g) {
@@ -140,13 +140,16 @@ public class MiniGameManager implements CommandExecutor {
                 set(top[i], Icons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.goal, "",
                         "&f오늘 남은 판 " + (left > 0 ? "&e" : "&c") + left + " &7/ " + dailyPlays() + (total() ? " &8(모든 게임 합계)" : ""),
                         left > 0 ? "&e▶ 클릭하여 난이도 선택" : "&c오늘은 더 할 수 없습니다 (자정에 초기화)"), e -> openDifficulty(p, g));
-                set(bottom[i], Icons.of(g.coin.icon, (int) Math.max(1, Math.min(64, g.coin.get(d))), g.coin.color + "&l" + g.coin.label + " &f" + g.coin.get(d) + "개",
-                        "&7" + g.label + " 성공 보상", "&7이벤트 상점의 " + g.label.replace("같은 ", "") + " 상점에서 사용"), e -> new ShopMain(p).open(p));
+                List<Integer> rw = plugin.getConfig().getIntegerList("minigames.reward." + g.key());
+                String rs = rw.size() >= 3 ? rw.get(0) + " / " + rw.get(1) + " / " + rw.get(2) : "1 / 3 / 6";
+                set(bottom[i], Icons.of(Coin.EVENT.icon, "&e성공 보상", "&7쉬움 / 보통 / 어려움", "&e이벤트 코인 " + rs + "개"));
             }
-            set(40, Gui.button(Material.EMERALD, "&a&l이벤트 상점", "&7코인으로 여러 보상을 살 수 있습니다", "&e▶ 클릭"), e -> new ShopMain(p).open(p));
+            set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&a&l이벤트 상점", "&7이벤트 코인으로 여러 보상을 살 수 있습니다",
+                    "&f보유 &e" + Coin.EVENT.get(d) + " 이벤트 코인", "", "&f오늘 남은 판 " + (playsLeft(d, Game.MOLE) > 0 ? "&e" : "&c") + playsLeft(d, Game.MOLE) + " &7/ " + dailyPlays()
+                            + (total() ? " &8(4종 합계)" : ""), "&e▶ 클릭"), e -> new ShopMain(p).open(p));
             set(49, Gui.button(Material.BOOK, "&f도움말", "&7각 게임은 쉬움 · 보통 · 어려움 3단계", "&7어려울수록 코인을 많이 줍니다",
                     "&7하루에 " + (total() ? "모든 게임 합쳐 " : "게임마다 ") + dailyPlays() + "판 (시작하면 1판 차감)",
-                    "&7코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
+                    "&7이벤트 코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
             fill(0, 53);
         }
     }
@@ -204,12 +207,10 @@ public class MiniGameManager implements CommandExecutor {
             int[] at = {19, 21, 23, 25};
             for (int i = 0; i < shops.size() && i < at.length; i++) {
                 SubShop s = shops.get(i);
-                set(at[i], Gui.button(s.icon(), "&e&l" + s.name(), "&7" + s.coin().color + s.coin().label + "&7로 사는 상점", "&7품목 " + s.offers().size() + "개",
+                set(at[i], Gui.button(s.icon(), "&e&l" + s.name(), "&7품목 " + s.offers().size() + "개",
                         "", "&f보유 " + s.coin().color + s.coin().get(d) + "개", "&e▶ 클릭"), e -> new ShopSub(p, s).open(p));
             }
-            List<String> wallet = new ArrayList<>(List.of("&7미니게임에서 모은 코인"));
-            for (Coin c : Coin.values()) wallet.add(c.color + c.label + " &f" + c.get(d) + "개");
-            set(40, Gui.button(Material.CHEST, "&6&l내 코인 지갑", wallet.toArray(new String[0])));
+            set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&6&l내 이벤트 코인 &f" + Coin.EVENT.get(d) + "개", "&7미니게임 4종에서 모은 코인", "&7모든 세부 상점에서 함께 사용"));
             set(49, Gui.button(Material.NOTE_BLOCK, "&a미니게임 하러 가기", "&e▶ 클릭"), e -> new Hub(p).open(p));
             fill(0, 53);
         }
@@ -264,8 +265,7 @@ public class MiniGameManager implements CommandExecutor {
 
     /** 관리자: 코인 지급 */
     public boolean giveCoins(Player target, String coin, long n) {
-        Coin c = Coin.of(coin);
-        if (c == null) return false;
+        Coin c = Coin.EVENT;
         PlayerData d = plugin.data().get(target);
         c.add(d, n);
         plugin.data().save(d);

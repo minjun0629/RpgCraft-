@@ -1,13 +1,14 @@
 # ============================================================
-#  이벤트 상점 (v5.7.0) — /이벤트 상점
-#  모든 품목을 이벤트 코인 하나로 삽니다 (미니게임 4종 성공 보상). 세부 상점은 품목 종류별로 나뉩니다.
+#  이벤트 코인 상점 (v5.7.1) — /이벤트 상점
+#  상점은 하나이고, 모든 품목을 이벤트 코인으로 삽니다 (미니게임 4종 성공 보상).
+#  아래 블록 하나가 상점 창의 한 줄입니다 (최대 4줄 · 한 줄에 최대 7개). name 은 줄 맨 왼쪽에 표시되는 종류 이름.
 #  items: item = 아이템 ID (/rpg관리 items 로 확인), amount = 개수, price = 이벤트 코인 가격, limit = 한 사람이 살 수 있는 횟수 (0 = 무제한)
-#  세부 상점을 더 만들려면 아래처럼 블록을 하나 더 추가하면 됩니다 (최대 4개 표시). icon = 상점 아이콘 재료
+#  icon = 줄 이름 칸의 아이콘 재료
 # ============================================================
 version: 2
 
 consume:
-  name: "소모품 상점"
+  name: "소모품"
   icon: POTION
   items:
     - {item: potion_2, amount: 5, price: 3}
@@ -19,7 +20,7 @@ consume:
     - {item: scroll_exp, amount: 1, price: 5}
 
 growth:
-  name: "성장 재료 상점"
+  name: "성장 재료"
   icon: AMETHYST_SHARD
   items:
     - {item: crystal_low, amount: 5, price: 3}
@@ -30,7 +31,7 @@ growth:
     - {item: rune_high, amount: 1, price: 40, limit: 2}
 
 enhance:
-  name: "강화 · 잠재 상점"
+  name: "강화 · 잠재"
   icon: ANVIL
   items:
     - {item: ticket_rate10, amount: 1, price: 25, limit: 5}
@@ -40,7 +41,7 @@ enhance:
     - {item: cube_master, amount: 1, price: 60, limit: 2}
 
 special:
-  name: "특별 상점"
+  name: "특별"
   icon: NETHER_STAR
   items:
     - {item: ticket_rune, amount: 1, price: 8}

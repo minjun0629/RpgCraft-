@@ -124,7 +124,7 @@ public class MiniGameManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player p)) return true;
-        if (args.length > 0 && (args[0].equals("상점") || args[0].equalsIgnoreCase("shop"))) { new ShopMain(p).open(p); return true; }
+        if (args.length > 0 && (args[0].equals("상점") || args[0].equalsIgnoreCase("shop"))) { new EventShop(p).open(p); return true; }
         new Hub(p).open(p);
         return true;
     }
@@ -151,7 +151,7 @@ public class MiniGameManager implements CommandExecutor {
             }
             set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&a&l이벤트 상점", "&7이벤트 코인으로 여러 보상을 살 수 있습니다",
                     "&f보유 &e" + Coin.EVENT.get(d) + " 이벤트 코인", "", "&f오늘 남은 판 " + (playsLeft(d, Game.MOLE) > 0 ? "&e" : "&c") + playsLeft(d, Game.MOLE) + " &7/ " + dailyPlays()
-                            + (total() ? " &8(4종 합계)" : ""), "&e▶ 클릭"), e -> new ShopMain(p).open(p));
+                            + (total() ? " &8(4종 합계)" : ""), "&e▶ 클릭"), e -> new EventShop(p).open(p));
             set(49, Gui.button(Material.BOOK, "&f도움말", "&7각 게임은 쉬움 · 보통 · 어려움 3단계", "&7어려울수록 코인을 많이 줍니다",
                     "&7하루에 " + (total() ? "모든 게임 합쳐 " : "게임마다 ") + dailyPlays() + "판 (시작하면 1판 차감)",
                     "&7이벤트 코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
@@ -205,55 +205,35 @@ public class MiniGameManager implements CommandExecutor {
     }
 
     // ------------------------------------------------------------------ 이벤트 상점
-    private class ShopMain extends Gui {
-        ShopMain(Player p) {
-            super(6, "&8이벤트 상점 &7- 이벤트 코인", "eshop");
+    /** v5.7.1: 이벤트 코인 상점 하나 — 모든 품목을 한 창에 (품목 종류마다 한 줄, 맨 왼쪽 칸에 종류 이름) */
+    private class EventShop extends Gui {
+        EventShop(Player p) {
+            super(6, "&8이벤트 코인 상점", "eshop_sub");
             PlayerData d = plugin.data().get(p);
-            int[] at = {19, 21, 23, 25};
-            for (int i = 0; i < shops.size() && i < at.length; i++) {
-                SubShop s = shops.get(i);
-                List<String> lore = new ArrayList<>();
-                for (Offer o : s.offers()) {   // 품목 미리보기
-                    var t = plugin.items().get(o.item());
-                    lore.add("&8· &f" + (t == null ? o.item() : t.name) + (o.amount() > 1 ? " x" + o.amount() : "") + " &e" + o.price());
+            for (int row = 0; row < shops.size() && row < 4; row++) {
+                SubShop s = shops.get(row);
+                List<Offer> os = s.offers();
+                int first = 10 + row * 9, start = Math.max(0, (7 - Math.min(7, os.size())) / 2);   // 한 줄 7칸, 모자라면 가운데 정렬
+                set(first - 1, Gui.button(s.icon(), "&6&l" + s.name(), "&7오른쪽 줄의 품목"));
+                for (int i = 0; i < os.size() && i < 7; i++) {
+                    Offer o = os.get(i);
+                    ItemStack icon = plugin.items().create(o.item(), o.amount());
+                    if (icon == null) continue;
+                    ItemMeta m = icon.getItemMeta();
+                    List<String> lore = m.getLore() == null ? new ArrayList<>() : new ArrayList<>(m.getLore());
+                    lore.add("");
+                    lore.add(Text.c("&f가격 &e" + o.price() + " 이벤트 코인"));
+                    String key = "eshop_" + s.id() + "_" + o.item();
+                    int bought = (int) Math.round(d.counters.getOrDefault(key, 0.0));
+                    if (o.limit() > 0) lore.add(Text.c("&7구매 제한 " + bought + " / " + o.limit()));
+                    lore.add(Text.c("&e▶ 클릭하여 구매"));
+                    m.setLore(lore);
+                    icon.setItemMeta(m);
+                    set(first + start + i, icon, e -> buy(p, s, o));
                 }
-                lore.add("");
-                lore.add("&f보유 &e" + Coin.EVENT.get(d) + " 이벤트 코인");
-                lore.add("&e▶ 클릭");
-                set(at[i], Gui.button(s.icon(), "&e&l" + s.name(), lore.toArray(new String[0])), e -> new ShopSub(p, s).open(p));
             }
-            set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&6&l내 이벤트 코인 &f" + Coin.EVENT.get(d) + "개", "&7미니게임 4종에서 모은 코인", "&7모든 세부 상점에서 함께 사용"));
-            set(49, Gui.button(Material.NOTE_BLOCK, "&a미니게임 하러 가기", "&e▶ 클릭"), e -> new Hub(p).open(p));
-            fill(0, 53);
-        }
-    }
-
-    private static final int[] ITEM_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
-
-    private class ShopSub extends Gui {
-        ShopSub(Player p, SubShop s) {
-            super(6, "&8" + s.name(), "eshop_sub");
-            PlayerData d = plugin.data().get(p);
-            List<Offer> os = s.offers();
-            int start = Math.max(0, (7 - Math.min(7, os.size())) / 2);   // 한 줄이 다 차지 않으면 가운데 정렬
-            for (int i = 0; i < os.size() && i < ITEM_SLOTS.length; i++) {
-                Offer o = os.get(i);
-                ItemStack icon = plugin.items().create(o.item(), o.amount());
-                if (icon == null) continue;
-                ItemMeta m = icon.getItemMeta();
-                List<String> lore = m.getLore() == null ? new ArrayList<>() : new ArrayList<>(m.getLore());
-                lore.add("");
-                lore.add(Text.c("&f가격 " + s.coin().color + o.price() + " " + s.coin().label));
-                String key = "eshop_" + s.id() + "_" + o.item();
-                int bought = (int) Math.round(d.counters.getOrDefault(key, 0.0));
-                if (o.limit() > 0) lore.add(Text.c("&7구매 제한 " + bought + " / " + o.limit()));
-                lore.add(Text.c("&e▶ 클릭하여 구매"));
-                m.setLore(lore);
-                icon.setItemMeta(m);
-                int slot = os.size() <= 7 ? ITEM_SLOTS[7 + start + i] : ITEM_SLOTS[i];
-                set(slot, icon, e -> buy(p, s, o));
-            }
-            set(49, Icons.of(s.coin().icon, (int) Math.max(1, Math.min(64, s.coin().get(d))), s.coin().color + "&l보유 " + s.coin().label + " &f" + s.coin().get(d) + "개"));
+            set(49, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&e&l보유 이벤트 코인 &f" + Coin.EVENT.get(d) + "개",
+                    "&7미니게임 4종 성공 보상 (/이벤트)"));
             fill(0, 53);
         }
     }
@@ -272,7 +252,7 @@ public class MiniGameManager implements CommandExecutor {
         plugin.data().save(d);
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.2f);
         Text.actionBar(p, "&a구매: " + plugin.items().get(o.item()).name + " x" + o.amount() + " &7(-" + o.price() + " " + s.coin().label + ")");
-        new ShopSub(p, s).open(p);
+        new EventShop(p).open(p);
     }
 
     /** 관리자: 코인 지급 */

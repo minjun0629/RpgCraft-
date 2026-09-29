@@ -101,7 +101,7 @@ public class QuestManager {
     }
 
     public double weeklyExp(PlayerData d) {
-        return plugin.levels().need(d.level) * 1.0;   // 레벨 하나 분량
+        return plugin.levels().need(d.level) * plugin.getConfig().getDouble("quests.exp-weekly", 0.15);   // v5.6.3: 레벨 1개 → 15%
     }
 
     public void claimWeekly(Player p, int slot) {
@@ -186,7 +186,7 @@ public class QuestManager {
     }
 
     public double expReward(PlayerData d) {
-        return plugin.levels().need(d.level) * 0.12;
+        return plugin.levels().need(d.level) * plugin.getConfig().getDouble("quests.exp-daily", 0.03);   // v5.6.3: 12% → 3%
     }
 
     /** PassiveManager.track 에서 호출: 방금 완료된 의뢰가 있으면 알림 */

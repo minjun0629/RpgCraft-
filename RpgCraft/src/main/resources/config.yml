@@ -487,6 +487,11 @@ casino:
   max-bet: 100000
   daily-limit: 500000        # 하루 베팅 한도
 
+quests:                     # 의뢰 경험치 = 지금 레벨의 필요 경험치 × 이 값 (v5.6.3 대폭 하향)
+  exp-daily: 0.03            # 일일 의뢰 1개 (예전 0.12)
+  exp-weekly: 0.15           # 주간 의뢰 1개 (예전 1.0 = 레벨 하나)
+  exp-npc: 0.02              # 마을 의뢰 NPC 1개 (예전 0.08)
+
 minigames:                  # 이벤트 광장 /이벤트 (v5.6.0)
   daily-plays: 5             # 하루에 할 수 있는 판 수 (시작할 때 1판 차감, 자정에 초기화)
   daily-plays-scope: per-game  # per-game = 게임마다 5판 · total = 모든 게임 합쳐 5판

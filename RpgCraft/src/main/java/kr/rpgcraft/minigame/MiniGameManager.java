@@ -49,7 +49,7 @@ public class MiniGameManager implements CommandExecutor {
         File f = new File(plugin.getDataFolder(), "event-shop.yml");
         if (!f.exists()) plugin.saveResource("event-shop.yml", false);
         YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
-        if (y.getInt("version", 1) < 2) {   // v5.7.0: 코인별 상점(두더지 · 벽돌 · 지뢰 · 그림) → 품목 종류별 상점. 예전 파일은 event-shop.old.yml 로 보관
+        if (y.getInt("version", 1) < 3) {   // v5.7.0 품목 종류별 상점 · v5.7.2 「특별」 줄 제거 → 기본 파일로 교체. 예전 파일은 event-shop.old.yml 로 보관
             f.renameTo(new File(plugin.getDataFolder(), "event-shop.old.yml"));
             plugin.saveResource("event-shop.yml", true);
             y = YamlConfiguration.loadConfiguration(f);

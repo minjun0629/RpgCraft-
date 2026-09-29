@@ -539,6 +539,14 @@ public class ContentManager implements Listener {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.7f);
             return;
         }
+        if (bossId.equals("vengeful_spirit")) {   // v5.5.0: 원혼은 한 번에 하나 — 쓰러뜨리기 전에는 다시 소환 불가
+            Location alive = plugin.worldBoss().aliveAt("vengeful_spirit");
+            if (alive != null) {
+                Text.msg(p, "&c원혼이 이미 깨어나 있습니다. 쓰러뜨린 뒤에 다시 소환할 수 있습니다. &7(위치 " + alive.getBlockX() + ", " + alive.getBlockY() + ", " + alive.getBlockZ() + ")");
+                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.7f);
+                return;
+            }
+        }
         Location at = p.getLocation().add(p.getLocation().getDirection().setY(0).normalize().multiply("spirit_summon".equals(sid) ? 12 : 5));
         at.setY(p.getWorld().getHighestBlockYAt(at, org.bukkit.HeightMap.MOTION_BLOCKING_NO_LEAVES) + 1);
         boolean ok;

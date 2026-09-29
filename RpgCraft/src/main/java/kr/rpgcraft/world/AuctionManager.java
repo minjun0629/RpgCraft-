@@ -252,10 +252,11 @@ public class AuctionManager implements CommandExecutor {
             }
             if (page > 0) set(45, button(Material.ARROW, "&f이전"), e -> new BrowseGui(p, page - 1, mineOnly).open(p));
             if (page + 1 < pages) set(53, button(Material.ARROW, "&f다음"), e -> new BrowseGui(p, page + 1, mineOnly).open(p));
-            set(48, button(Material.CHEST, "&e내 물건", "&7/옥션 등록 <가격> 으로 등록", "&7내 물건을 클릭하면 회수"), e -> new BrowseGui(p, 0, true).open(p));
+            // 아래 줄 좌우 대칭 (v5.5.0): 45 이전 · 47 내 물건(내 물건 화면에선 모두 회수) · 49 소지금 · 51 수령하기 · 53 다음
             if (mineOnly) set(47, button(Material.BARREL, "&c모두 회수", "&7옥션에 올린 물건을 전부 내려 돌려받습니다"), e -> { retrieveAll(p); new BrowseGui(p, 0, true).open(p); });
+            else set(47, button(Material.CHEST, "&e내 물건", "&7/옥션 등록 <가격> 으로 등록", "&7내 물건을 클릭하면 회수"), e -> new BrowseGui(p, 0, true).open(p));
             set(49, button(Material.GOLD_INGOT, "&6소지금 " + Text.money(plugin.economy().balance(p)), "&7" + (page + 1) + " / " + pages), null);
-            set(50, button(Material.HOPPER, "&a수령하기", "&7판매 대금 · 돌려받은 물건"), e -> { p.closeInventory(); claim(p); });
+            set(51, button(Material.HOPPER, "&a수령하기", "&7판매 대금 · 돌려받은 물건"), e -> { p.closeInventory(); claim(p); });
             fill(45, 53);
         }
     }

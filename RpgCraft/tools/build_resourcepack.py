@@ -447,6 +447,88 @@ def item_model(name, handheld, vanilla):
     return m
 
 
+def protect_zip(path):
+    """리소스팩 뜯어보기 방지 (v5.5.0): 모든 파일의 CRC32 칸을 0 으로 지운다.
+    마인크래프트는 java.util.zip.ZipFile 로 읽어 CRC 를 확인하지 않으므로 그대로 적용되지만,
+    알집 · 반디집 · 7-Zip · 윈도우 탐색기 같은 압축 프로그램은 "CRC 오류 / 손상된 파일"로 풀기를 거부하거나 깨진 파일을 낸다.
+    (완벽한 보호는 불가능 — 작정하고 뜯는 사람은 막을 수 없고, 가볍게 뜯어보는 것을 막는 용도)
+    끄려면 환경 변수 RPGCRAFT_PACK_PROTECT=0"""
+    import struct
+    data = bytearray(open(path, "rb").read())
+    eocd = data.rfind(b"PK\x05\x06")   # 중앙 디렉터리 끝 → 실제 헤더 위치만 정확히 따라감 (압축된 내용 속 우연한 "PK.." 는 건드리지 않음)
+    if eocd < 0:
+        raise SystemExit("zip 중앙 디렉터리를 찾지 못함")
+    count, cd_size, cd_off = struct.unpack_from("<HII", data, eocd + 10)
+    i = cd_off
+    for _ in range(count):
+        if data[i:i + 4] != b"PK\x01\x02":
+            raise SystemExit("zip 중앙 디렉터리 형식 오류")
+        n_len, e_len, c_len = struct.unpack_from("<HHH", data, i + 28)
+        local = struct.unpack_from("<I", data, i + 42)[0]
+        if data[local:local + 4] != b"PK\x03\x04":
+            raise SystemExit("zip 로컬 헤더 형식 오류")
+        data[i + 16:i + 20] = b"\0\0\0\0"          # 중앙 디렉터리 CRC
+        data[local + 14:local + 18] = b"\0\0\0\0"  # 로컬 헤더 CRC
+        i += 46 + n_len + e_len + c_len
+    open(path, "wb").write(bytes(data))
+
+
+BGM_SITUATIONS = ("town", "field", "battle", "boss", "dungeon")
+# 게임 속 필드 음악(바닐라) — 필드 곡이 하나라도 있으면 겹치지 않게 비운다 (메뉴 화면 · 엔더 드래곤 · 엔딩 음악은 그대로)
+VANILLA_MUSIC = ["music.game", "music.creative", "music.under_water", "music.end", "music.nether.basalt_deltas", "music.nether.crimson_forest",
+                 "music.nether.nether_wastes", "music.nether.soul_sand_valley", "music.nether.warped_forest"] + [
+    "music.overworld." + b for b in ("deep_dark", "dripstone_caves", "grove", "jagged_peaks", "lush_caves", "swamp", "jungle", "old_growth_taiga",
+                                     "meadow", "cherry_grove", "frozen_peaks", "snowy_slopes", "stony_peaks", "forest", "flower_forest", "desert",
+                                     "badlands", "bamboo_jungle", "sparse_jungle")]
+
+
+def ogg_seconds(path):
+    """Ogg Vorbis 길이(초): 마지막 페이지의 granule position / 샘플레이트"""
+    import struct
+    data = open(path, "rb").read()
+    i = data.find(b"\x01vorbis")
+    if i < 0:
+        raise SystemExit("Ogg Vorbis 파일이 아님: " + path)
+    rate = struct.unpack_from("<I", data, i + 12)[0]
+    last = data.rfind(b"OggS")
+    granule = struct.unpack_from("<q", data, last + 6)[0]
+    return max(1, int(round(granule / float(rate))))
+
+
+def write_bgm():
+    """상황별 배경음악 (v5.5.0): tools/bgm/<상황>/*.ogg → rpgcraft:bgm.<상황>.<번호>
+    곡 길이는 assets/rpgcraft/bgm_tracks.txt 에 적어 두고 플러그인이 읽어서 반복 시점을 계산한다."""
+    import re as _re
+    src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bgm")
+    out = os.path.join(PACK, "assets", NS, "sounds", "bgm")
+    shutil.rmtree(out, ignore_errors=True)
+    for f in ("sounds.json", "bgm_tracks.txt"):
+        if os.path.exists(os.path.join(PACK, "assets", NS, f)):
+            os.remove(os.path.join(PACK, "assets", NS, f))
+    vs = os.path.join(PACK, "assets", "minecraft", "sounds.json")
+    if os.path.exists(vs):
+        os.remove(vs)
+    events, lines, counts = {}, ["# 상황 사운드이름 길이(초) — tools/build_resourcepack.py 가 자동 생성"], {}
+    for sit in BGM_SITUATIONS:
+        d = os.path.join(src, sit)
+        files = sorted(f for f in os.listdir(d) if f.lower().endswith(".ogg")) if os.path.isdir(d) else []
+        for n, f in enumerate(files, 1):
+            name = _re.sub(r"[^a-z0-9_]+", "_", os.path.splitext(f)[0].lower()).strip("_") or "track"
+            os.makedirs(os.path.join(out, sit), exist_ok=True)
+            shutil.copyfile(os.path.join(d, f), os.path.join(out, sit, name + ".ogg"))
+            ev = "bgm.%s.%d" % (sit, n)
+            events[ev] = {"sounds": [{"name": NS + ":bgm/%s/%s" % (sit, name), "stream": True, "attenuation_distance": 256}]}
+            lines.append("%s %s:%s %d" % (sit, NS, ev, ogg_seconds(os.path.join(d, f))))
+        counts[sit] = len(files)
+    if events:
+        write_json(os.path.join(PACK, "assets", NS, "sounds.json"), events)
+        with open(os.path.join(PACK, "assets", NS, "bgm_tracks.txt"), "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + "\n")
+    if counts.get("field"):
+        write_json(os.path.join(PACK, "assets", "minecraft", "sounds.json"), {m: {"replace": True, "sounds": []} for m in VANILLA_MUSIC})
+    print("배경음악: " + " / ".join("%s %d곡" % (k, v) for k, v in counts.items()))
+
+
 def main():
     build_items()
     made = 0
@@ -555,6 +637,7 @@ def main():
     # 1.21.4+ 클라이언트: 새 아이템 정의 형식(items/*.json)으로 커스텀 모델 연결
     ui_pack.write_item_definitions(PACK, overrides, write_json)
 
+    write_bgm()
     validate()
 
     dist = os.path.join(ROOT, "dist")
@@ -565,6 +648,8 @@ def main():
             for f in sorted(files):
                 full = os.path.join(base, f)
                 z.write(full, os.path.relpath(full, PACK))
+    if os.environ.get("RPGCRAFT_PACK_PROTECT", "1") != "0":
+        protect_zip(out)
     shutil.copyfile(out, os.path.join(ROOT, "src", "main", "resources", "resourcepack.zip"))
     sha1 = hashlib.sha1(open(out, "rb").read()).hexdigest()
     print("아이템 %d종 / 텍스처 %d장 (새로 그림 %d) / 3D 요소 %d개" % (len(ITEMS), textures, made, elements_total))

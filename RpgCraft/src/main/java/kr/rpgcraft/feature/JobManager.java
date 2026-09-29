@@ -156,9 +156,9 @@ public class JobManager {
             case PALADIN -> new JobSkill("성스러운 심판", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.HOLY, 2.4, 7, 13);
             case SENTINEL -> new JobSkill("파수꾼의 방벽", kr.rpgcraft.feature.SkillBook.Shape.WAVE, kr.rpgcraft.feature.SkillBook.Effect.GUARD, 2.2, 9, 12);
             case FORTRESS -> new JobSkill("대지 분쇄", kr.rpgcraft.feature.SkillBook.Shape.LEAP, kr.rpgcraft.feature.SkillBook.Effect.EARTH, 2.6, 7, 13);
-            case BATTLEMAGE -> new JobSkill("마력 폭풍 베기", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.FIRE, 2.6, 7, 12);
-            case ELEMENTALIST -> new JobSkill("원소 폭발", kr.rpgcraft.feature.SkillBook.Shape.CHAIN, kr.rpgcraft.feature.SkillBook.Effect.LIGHTNING, 2.6, 12, 10);
-            case ARCHMAGE -> new JobSkill("메테오", kr.rpgcraft.feature.SkillBook.Shape.RAIN, kr.rpgcraft.feature.SkillBook.Effect.FIRE, 2.8, 16, 13);
+            case BATTLEMAGE -> new JobSkill("마력 폭풍 베기", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.FIRE, 2.2, 7, 12);   // v5.5.0 마법사 계열 너프 2.6 → 2.2
+            case ELEMENTALIST -> new JobSkill("원소 폭발", kr.rpgcraft.feature.SkillBook.Shape.CHAIN, kr.rpgcraft.feature.SkillBook.Effect.LIGHTNING, 2.2, 12, 10);   // v5.5.0 2.6 → 2.2
+            case ARCHMAGE -> new JobSkill("메테오", kr.rpgcraft.feature.SkillBook.Shape.RAIN, kr.rpgcraft.feature.SkillBook.Effect.FIRE, 2.4, 16, 13);   // v5.5.0 2.8 → 2.4
         };
         if (b == null) return null;
         return switch (b) {
@@ -166,7 +166,7 @@ public class JobManager {
             case ARCHER -> new JobSkill("속사", kr.rpgcraft.feature.SkillBook.Shape.FAN, kr.rpgcraft.feature.SkillBook.Effect.NONE, 1.6, 14, 12);
             case ROGUE -> new JobSkill("급습", kr.rpgcraft.feature.SkillBook.Shape.BLINK, kr.rpgcraft.feature.SkillBook.Effect.BLEED, 1.8, 10, 12);
             case GUARDIAN -> new JobSkill("방패 충격파", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.STUN, 1.6, 6, 12);
-            case MAGE -> new JobSkill("마력탄", kr.rpgcraft.feature.SkillBook.Shape.ORB, kr.rpgcraft.feature.SkillBook.Effect.FROST, 1.8, 12, 11);
+            case MAGE -> new JobSkill("마력탄", kr.rpgcraft.feature.SkillBook.Shape.ORB, kr.rpgcraft.feature.SkillBook.Effect.FROST, 1.5, 12, 11);   // v5.5.0 1.8 → 1.5
         };
     }
 
@@ -438,7 +438,7 @@ public class JobManager {
                 slot += 2;
             }
             Sub pv = preview(d);
-            set(22, button(Material.NETHER_STAR, "&d&l2차 전직", sub(d) != null ? "&a현재: " + sub(d).label : pv == null ? "&7기초 직업을 먼저 선택하세요" : "&f지금 전직하면 → &d" + pv.label,
+            set(21, button(Material.NETHER_STAR, "&d&l2차 전직", sub(d) != null ? "&a현재: " + sub(d).label : pv == null ? "&7기초 직업을 먼저 선택하세요" : "&f지금 전직하면 → &d" + pv.label,
                     pv == null ? "" : "&7" + pv.perk, "&7가장 많이 투자한 스탯으로 결정됩니다",
                     "&7조건: Lv." + plugin.getConfig().getInt("jobs.advance-level", 40) + ", " + Text.money(plugin.getConfig().getLong("jobs.advance-cost", 500_000)),
                     sub(d) == null ? "&e▶ 쉬프트 클릭하여 전직" : ""), e -> {
@@ -459,7 +459,7 @@ public class JobManager {
                 }
                 thirdLore.add("");
             }
-            set(26, button(Material.DRAGON_HEAD, "&c&l3차 전직",
+            set(23, button(Material.DRAGON_HEAD, "&c&l3차 전직",
                     th != null ? "&a현재: " + th.label : next == null ? "&72차 전직을 먼저 하세요" : "&f전직하면 → &c" + next.label,
                     next == null ? "" : "&7" + next.perk,
                     "&7조건: Lv." + plugin.getConfig().getInt("jobs.third-level", 100) + ", " + Text.money(plugin.getConfig().getLong("jobs.third-cost", 10_000_000))

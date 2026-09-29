@@ -36,6 +36,7 @@ public class LevelService {
         PlayerData d = plugin.data().get(p);
         if (d.level >= maxLevel(d)) return;
         amount *= (1 + d.stats.expPct / 100) * plugin.getConfig().getDouble("player.exp-gain-mult", 0.8);   // 전체 경험치 -20%
+        amount *= weekendMult();   // v5.5.0: 주말 경험치 이벤트
         d.exp += amount;
         if (kr.rpgcraft.data.Setting.EXP_CHAT.get(d) && amount >= 1)   // 설정: 획득 경험치 채팅
             p.sendMessage(Text.c("&7+&a" + Text.num(amount) + " &7경험치 &8(" + String.format("%.1f", Math.min(100, d.exp / Math.max(1, need(d.level)) * 100)) + "%)"));
@@ -54,6 +55,14 @@ public class LevelService {
             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
             plugin.visuals().levelUp(p);
         }
+    }
+
+    /** 주말(토 · 일, 서버 시간대) 경험치 배율 — 평일은 1 */
+    public double weekendMult() {
+        var c = plugin.getConfig();
+        if (!c.getBoolean("events.weekend-exp.enabled", true)) return 1;
+        java.time.DayOfWeek dw = java.time.ZonedDateTime.now(java.time.ZoneId.of(c.getString("events.timezone", "Asia/Seoul"))).getDayOfWeek();
+        return dw == java.time.DayOfWeek.SATURDAY || dw == java.time.DayOfWeek.SUNDAY ? c.getDouble("events.weekend-exp.mult", 1.5) : 1;
     }
 
     public void setLevel(PlayerData d, int level) {

@@ -307,7 +307,7 @@ public class ShopManager implements Listener {
             }
             if (page > 0) set(45, button(Material.ARROW, "&f이전 페이지"), e -> new ShopGui(p, s, page - 1).open(p));
             if (page + 1 < pages) set(53, button(Material.ARROW, "&f다음 페이지"), e -> new ShopGui(p, s, page + 1).open(p));
-            set(51, button(Material.HOPPER, "&6전체 판매", "&7인벤토리에서 이 상점이 사는 물건을 모두 판매"), e -> {
+            set(50, button(Material.HOPPER, "&6전체 판매", "&7인벤토리에서 이 상점이 사는 물건을 모두 판매"), e -> {
                 Map<String, Entry> sellable = new HashMap<>();
                 for (Entry en : s.entries) if (en.sell() > 0) sellable.put(en.id(), en);
                 long total = 0;
@@ -327,7 +327,7 @@ public class ShopManager implements Listener {
                 Text.actionBar(p, "&a" + count + "개 판매 · " + Text.money(total));
                 new ShopGui(p, s, page).open(p);
             });
-            set(49, button(Material.GOLD_INGOT, "&e소지금: " + Text.money(plugin.economy().balance(p)),
+            set(48, button(Material.GOLD_INGOT, "&e소지금: " + Text.money(plugin.economy().balance(p)),
                     "&7페이지 " + (page + 1) + "/" + pages + (s.multiplier != 1 ? " &c(가격 x" + s.multiplier + ")" : "")));
             fill(45, 53);
         }

@@ -209,6 +209,9 @@ public class PackManager implements Listener {
 
     private volatile String publicIp;
 
+    /** 자동 감지한 공인 IP (못 찾았으면 null) */
+    public String publicIp() { return publicIp; }
+
     /** Player#getVirtualHost (Spigot/Paper) → 접속에 쓴 주소 */
     private static String virtualHost(Player p) {
         try {

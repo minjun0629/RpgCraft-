@@ -87,6 +87,8 @@ public class PlayerListener implements Listener {
                 if (kr.rpgcraft.data.ResetPending.giveStarter(plugin, p) > 0) Text.msg(p, "&a기본 지급품을 받았습니다! &7(인벤토리를 확인하세요)");
             }, 10L);
         }
+        if (plugin.levels().weekendMult() > 1)   // v5.5.0 주말 경험치 이벤트 안내
+            Bukkit.getScheduler().runTaskLater(plugin, () -> { if (p.isOnline()) Text.msg(p, "&6&l주말 이벤트! &e모든 경험치 x" + plugin.levels().weekendMult() + " &7(토 · 일)"); }, 80L);
         plugin.stats().refresh(p);
         plugin.hud().setup(p);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {

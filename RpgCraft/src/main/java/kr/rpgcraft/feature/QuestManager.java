@@ -34,6 +34,96 @@ public class QuestManager {
             new Quest("sprint_seconds", "%d초 동안 달리기", 600, 0.8, Material.LEATHER_BOOTS),
             new Quest("hits_taken", "공격 %d회 버텨내기", 200, 0.9, Material.SHIELD));
 
+    // ------------------------------------------------------------------ 주간 의뢰 (v5.5.0): 매주 월요일 새로 3개, 보상 더 큼
+    public static final List<Quest> WEEKLY = List.of(
+            new Quest("mob_kills", "몬스터 %d마리 처치", 1500, 1.0, Material.NETHERITE_SWORD),
+            new Quest("boss_kills", "보스 %d마리 처치", 5, 1.6, Material.WITHER_SKELETON_SKULL),
+            new Quest("gathers", "채집 %d회", 120, 1.0, Material.DIAMOND_PICKAXE),
+            new Quest("enhance_attempts", "장비 강화 %d회 시도", 40, 1.1, Material.ANVIL),
+            new Quest("fish", "낚시 %d회 성공", 80, 1.0, Material.FISHING_ROD),
+            new Quest("crit_hits", "크리티컬 %d회", 1500, 1.0, Material.GOLDEN_SWORD),
+            new Quest("potions", "포션 %d개 사용", 120, 0.8, Material.POTION),
+            new Quest("hits_taken", "공격 %d회 버텨내기", 2500, 0.9, Material.SHIELD));
+
+    private static long thisWeek(RpgCraft pl) {
+        java.time.LocalDate d = LocalDate.now(ZoneId.of(pl.getConfig().getString("events.timezone", "Asia/Seoul")));
+        return d.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).toEpochDay();
+    }
+
+    public void ensureWeekly(PlayerData d) {
+        if (d.counter("wq_week") == thisWeek(plugin)) return;
+        List<Integer> idx = new ArrayList<>();
+        for (int i = 0; i < WEEKLY.size(); i++) idx.add(i);
+        Collections.shuffle(idx, ThreadLocalRandom.current());
+        List<String> used = new ArrayList<>();
+        int slot = 0;
+        for (int i : idx) {
+            if (slot >= 3) break;
+            Quest q = WEEKLY.get(i);
+            if (used.contains(q.counter())) continue;
+            used.add(q.counter());
+            d.counters.put("wq_" + slot + "_idx", (double) i);
+            d.counters.put("wq_" + slot + "_base", d.counter(q.counter()));
+            d.counters.put("wq_" + slot + "_claimed", 0.0);
+            slot++;
+        }
+        d.counters.put("wq_bonus", 0.0);
+        d.counters.put("wq_week", (double) thisWeek(plugin));
+    }
+
+    public Quest weekly(PlayerData d, int slot) {
+        ensureWeekly(d);
+        int i = (int) d.counter("wq_" + slot + "_idx");
+        return i >= 0 && i < WEEKLY.size() ? WEEKLY.get(i) : WEEKLY.get(0);
+    }
+
+    public int weeklyProgress(PlayerData d, int slot) {
+        Quest q = weekly(d, slot);
+        return (int) Math.max(0, Math.min(q.amount(), d.counter(q.counter()) - d.counter("wq_" + slot + "_base")));
+    }
+
+    public boolean weeklyDone(PlayerData d, int slot) {
+        return weeklyProgress(d, slot) >= weekly(d, slot).amount();
+    }
+
+    public boolean weeklyClaimed(PlayerData d, int slot) {
+        return d.counter("wq_" + slot + "_claimed") > 0;
+    }
+
+    public int weeklyCompleted(PlayerData d) {
+        int n = 0;
+        for (int i = 0; i < 3; i++) if (weeklyDone(d, i)) n++;
+        return n;
+    }
+
+    public long weeklyMoney(PlayerData d, int slot) {
+        return (long) (60000 * (1 + d.level * 0.12) * weekly(d, slot).moneyMult() * plugin.getConfig().getDouble("economy.quest-money-mult", 1.0));
+    }
+
+    public double weeklyExp(PlayerData d) {
+        return plugin.levels().need(d.level) * 1.0;   // 레벨 하나 분량
+    }
+
+    public void claimWeekly(Player p, int slot) {
+        PlayerData d = plugin.data().get(p);
+        if (!weeklyDone(d, slot)) { Text.msg(p, "&c아직 완료하지 않은 주간 의뢰입니다."); return; }
+        if (weeklyClaimed(d, slot)) { Text.msg(p, "&7이미 보상을 받았습니다."); return; }
+        d.counters.put("wq_" + slot + "_claimed", 1.0);
+        long money = weeklyMoney(d, slot);
+        plugin.economy().give(p, money);
+        plugin.levels().addExp(p, weeklyExp(d));
+        p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.8f, 1.2f);
+        Text.msg(p, "&b주간 의뢰 보상: " + Text.money(money) + " + 경험치 " + Text.num(weeklyExp(d)));
+        if (d.counter("wq_bonus") == 0 && weeklyClaimed(d, 0) && weeklyClaimed(d, 1) && weeklyClaimed(d, 2)) {
+            d.counters.put("wq_bonus", 1.0);
+            String id = d.level >= 90 ? "crystal_top" : d.level >= 60 ? "crystal_high" : d.level >= 30 ? "crystal_mid" : "crystal_low";
+            for (ItemStack it : new ItemStack[]{plugin.items().create(id, 10), plugin.items().create("ticket_rate10", 1)})
+                if (it != null) for (ItemStack left : p.getInventory().addItem(it).values()) p.getWorld().dropItemNaturally(p.getLocation(), left);
+            p.sendTitle(Text.c("&b&l주간 의뢰 올클리어!"), Text.c("&f추가 보상: " + plugin.items().get(id).name + " x10 + 강화 확률 10% 증가권"), 5, 60, 10);
+            kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&b" + Text.name(p) + "&f님이 이번 주 주간 의뢰를 모두 끝냈습니다!"));
+        }
+    }
+
     private final RpgCraft plugin;
 
     public QuestManager(RpgCraft plugin) {
@@ -102,6 +192,15 @@ public class QuestManager {
     /** PassiveManager.track 에서 호출: 방금 완료된 의뢰가 있으면 알림 */
     public void onProgress(Player p, String counter, double before) {
         PlayerData d = plugin.data().get(p);
+        if (d.counter("wq_week") == thisWeek(plugin)) for (int s = 0; s < 3; s++) {   // 주간 의뢰 완료 알림
+            Quest q = weekly(d, s);
+            if (!q.counter().equals(counter) || weeklyClaimed(d, s)) continue;
+            double base = d.counter("wq_" + s + "_base");
+            if (before - base < q.amount() && d.counter(counter) - base >= q.amount()) {
+                p.sendTitle(Text.c("&b&l주간 의뢰 완료!"), Text.c("&f" + String.format(q.label(), q.amount()) + " &7- /메뉴 → 의뢰에서 보상 수령"), 5, 50, 10);
+                p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.9f, 1.1f);
+            }
+        }
         if (d.counter("dq_day") != today()) return;
         for (int s = 0; s < 3; s++) {
             Quest q = quest(d, s);

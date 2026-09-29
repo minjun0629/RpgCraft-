@@ -191,6 +191,8 @@ war:
   prepare-seconds: 600
   duration-seconds: 1200
   walls-required: 3          # [위키] 성벽 3개 파괴 후 신호기 파괴 시 승리 (0 = 전부)
+  castle-wall-hp-large: 60000   # /rpg관리 castle build 로 지은 대형 성의 성벽 구간 체력
+  castle-build-blocks-per-tick: 20000   # 대형 성을 지을 때 한 틱에 놓는 블록 수 (낮출수록 천천히 · 렉 적게)
   wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)
   hit-interval-ms: 400
   repair-seconds: 10         # [위키] 성벽 수리 망치 쉬프트 10초
@@ -335,6 +337,36 @@ pets:
   duplicate-refund: 0.2      # 이미 가진 펫이 나오면 비용의 20% 환급
   scale: 0.6                 # 펫 모델 크기
 
+server-list:                 # 서버 목록 (멀티플레이 화면)
+  enabled: true
+  address: ""                # 서버 주소 (예: play.rpgcraft.kr) — 설명 두 번째 줄에 표시
+  auto-address: true         # 주소를 비워 두면 서버 IP(자동 감지한 공인 IP)를 대신 표시
+  motd-line1: "&6&l⚔ RpgCraft &8| &e대규모 RPG · PvP 서버"
+  motd-line2: "&f주소: &b{address}"
+  motd-line2-no-address: "&7레벨 · 보스 · 길드 · 공성전 · 던전"
+  # 아이콘: plugins/RpgCraft/server-icon.png (64x64 PNG) 를 바꾸면 됨
+
+anti-bot:                    # 접속 폭주 · 봇 방어 (진짜 디도스는 호스팅 디도스 방어 / TCPShield 등 프록시로)
+  enabled: true
+  ip-window-seconds: 30      # 같은 IP 가 이 시간 안에
+  ip-max-attempts: 5         # 이만큼 넘게 접속 시도하면
+  ip-block-seconds: 120      # 이 시간 동안 차단
+  max-accounts-per-ip: 3     # 한 IP 동시 접속 수 (0 = 제한 없음)
+  flood-per-10s: 20          # 10초 안에 전체 접속 시도가 이만큼 넘으면
+  lockdown-seconds: 60       # 이 시간 동안 처음 오는 사람 접속 잠금
+
+anti-xray-alert:             # 엑스레이 의심 알림 (차단은 Paper anti-xray 설정으로)
+  enabled: true
+  window-minutes: 30
+  min-rare: 12               # 이 시간 안에 다이아 · 고대 잔해 · 에메랄드를 이만큼 이상 캤고
+  max-rare-per-100-stone: 4.0   # 돌 100개당 희귀 광석이 이보다 많으면 관리자에게 알림
+
+events:
+  timezone: Asia/Seoul       # 주말 · 주간 퀘스트 기준 시간대
+  weekend-exp:
+    enabled: true            # 토 · 일요일 경험치 이벤트
+    mult: 1.5                # 경험치 배율
+
 duel:                        # 야차 (1대1 결투, /야차 <닉네임>)
   time-limit-seconds: 180    # 제한 시간 (끝나면 무승부)
   arena-y: 250               # 하늘 결투장 높이
@@ -356,8 +388,9 @@ bosses:
   chest-chance: 0.3          # 보스 처치 시 "보스 상자"(보스 드롭표로 뽑기) 확률
   crowd-skill-speed: 0.25    # 보스 주변 1명 늘 때마다 기술 간격 -25% 가량
   crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
-  chase-radius: 24           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기
-  leash-radius: 28           # 등장 위치에서 이만큼 넘게 끌려가면 제자리로 돌아감 (0 = 끔)
+  chase-radius: 48           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기
+  leash-radius: 0            # 등장 위치에서 이만큼 넘게 끌려가면 제자리로 돌아감 (0 = 끔, 기본 끔)
+  minion-exp-mult: 0.4       # 보스가 소환한 부하 몬스터의 경험치 배율 (1 = 같은 레벨 일반 몬스터와 같음)
   spawn-safe-radius: 300     # 월드 스폰에서 이 거리(칸) 안에는 필드 보스 · 바다 보스 · 월드보스 · 토벌전 보스가 나오지 않음 (0 = 제한 없음, 관리자 소환 · 던전 제외)
 
 dummy:
@@ -373,12 +406,22 @@ spirit-summon:
   balrog-chance: 0.00005     # "발록의 봉인석" 확률 (0.005%, Lv.120 이상 몬스터)
   balrog-min-level: 120
 
-bgm:                        # 전투 배경음 (게임 내장 음악 사용)
+bgm:                        # 상황별 배경음악 (v5.5.0) — 곡 넣는 법은 README "배경음악" 참고
   enabled: true
-  boss: "minecraft:music.dragon"
-  dungeon: "minecraft:music_disc.pigstep"
-  wave: "minecraft:music_disc.otherside"
-  loop-seconds: 170
+  volume: 0.7                # 소리 설정의 "음반" 볼륨과 곱해짐
+  town-radius: 150           # 월드 스폰에서 이 거리 안 = 마을 음악
+  town-worlds: []            # 이 월드에 있으면 항상 마을 음악 (로비 월드 등)
+  dungeon-worlds: []         # 이 월드에 있으면 항상 던전 음악 (신전 월드 등)
+  battle-min-mobs: 2         # 주변(14칸) 몬스터가 이만큼 이상일 때 싸우면 전투 음악
+  battle-hold-seconds: 15    # 마지막 전투 뒤 이만큼 전투 음악 유지
+  tracks: {}                 # 직접 추가: field: ["mypack:music.forest:180"]  (사운드 이름:길이초)
+  fallback:                  # 그 상황의 곡이 팩에 없을 때 틀 게임 내장 음악 (빈 칸 = 게임 기본 음악)
+    town: ""
+    field: ""
+    battle: "minecraft:music_disc.otherside"
+    boss: "minecraft:music.dragon"
+    dungeon: "minecraft:music_disc.pigstep"
+  fallback-seconds: 170
 
 rebirth:                    # 환생 (Lv.300 → Lv.1)
   max: 5

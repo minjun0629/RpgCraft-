@@ -108,6 +108,19 @@ public class WorldBossManager implements Listener {
         return n;
     }
 
+    /** 이 보스가 아직 살아 있으면 그 위치 (없으면 null) — 서버 재시작 뒤 남아 있는 보스도 찾음 */
+    public Location aliveAt(String id) {
+        for (Event ev : events) {
+            if (!id.equals(ev.id)) continue;
+            Entity e = Bukkit.getEntity(ev.boss);
+            if (e == null || !e.isDead()) return e != null ? e.getLocation() : ev.at;   // 청크가 내려가 있어도 기록이 남아 있으면 살아 있는 것
+        }
+        for (org.bukkit.World w : Bukkit.getWorlds())
+            for (org.bukkit.entity.LivingEntity le : w.getLivingEntities())
+                if (!le.isDead() && id.equals(le.getPersistentDataContainer().get(kr.rpgcraft.Keys.BOSS, org.bukkit.persistence.PersistentDataType.STRING))) return le.getLocation();
+        return null;
+    }
+
     public int count() {
         return events.size();
     }

@@ -239,6 +239,8 @@ public class HudManager implements Listener {
             long left = (long) d.counter(b[0]) - now;
             if (left > 0) buffs.append("&d").append(b[1]).append(" &f").append(left / 60000).append(":").append(String.format("%02d", left / 1000 % 60)).append("  ");
         }
+        double wk = plugin.levels().weekendMult();
+        if (wk > 1) buffs.insert(0, "&6주말 경험치 x" + (wk == Math.floor(wk) ? String.valueOf((int) wk) : String.valueOf(wk)) + "  ");   // v5.5.0 주말 이벤트
         lines.add(buffs.length() > 0 ? "&7📜 " + buffs.toString().trim() : " ");
         String gl = plugin.guide() == null ? null : plugin.guide().line(d);
         if (gl != null) lines.add(gl);

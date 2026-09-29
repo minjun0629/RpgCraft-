@@ -75,6 +75,15 @@ public class BossModelManager implements Listener {
     private void scan() {
         if (!enabled()) return;
         for (World w : Bukkit.getWorlds()) {
+            // 잔상 제거 (v5.5.0): 플러그인을 다시 불러오는 등으로 주인을 잃은 보스 모델 · 판정 상자가 그 자리에 멈춰 남아 있었음
+            for (ItemDisplay idp : w.getEntitiesByClass(ItemDisplay.class)) {
+                if (!idp.getPersistentDataContainer().has(Keys.INDICATOR, PersistentDataType.BYTE) || displays.containsValue(idp.getUniqueId())) continue;
+                ItemStack st = idp.getItemStack();
+                int cmd = st != null && st.hasItemMeta() && st.getItemMeta().hasCustomModelData() ? st.getItemMeta().getCustomModelData() - 9000 : -1;
+                if (cmd >= 0 && cmd < ORDER.size() && !ORDER.get(cmd).startsWith("mount_") && !ORDER.get(cmd).startsWith("pet_")) idp.remove();
+            }
+            for (Interaction box : w.getEntitiesByClass(Interaction.class))
+                if (box.getPersistentDataContainer().has(Keys.INDICATOR, PersistentDataType.BYTE) && !hitboxOwner.containsKey(box.getUniqueId())) box.remove();
             for (LivingEntity le : w.getLivingEntities()) {
                 String id = le.getPersistentDataContainer().get(Keys.BOSS, PersistentDataType.STRING);
                 if (id == null || displays.containsKey(le.getUniqueId()) || !ORDER.contains(id)) continue;

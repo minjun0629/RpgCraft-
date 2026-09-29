@@ -32,6 +32,7 @@ public class BossManager {
         boolean seenAwake;
         double aura;                // 주변 기운 회전 각도
         Location home;              // 등장 위치 — 여기서 너무 멀어지면 되돌아감 (v5.4.24)
+        Location lastAura;          // 직전 기운 위치 (움직이는 중인지 판단)
     }
 
     private final RpgCraft plugin;
@@ -54,6 +55,11 @@ public class BossManager {
                 boolean added = false;
                 for (String k : def.getKeys(false)) if (!cur.contains(k)) { cur.set(k, def.get(k)); added = true; }
                 if (cur.getDouble("vengeful_spirit.hp", 0) == 30000000) { cur.set("vengeful_spirit", def.get("vengeful_spirit")); added = true; }   // 원혼 약화
+                for (String k : def.getKeys(false)) {   // v5.5.0: 필드 보스 새 패턴 (돌진 · 파동 · 분출 · 십자 · 서리 장판 · 포효) — 아직 하나도 없으면 기본 기술 목록으로
+                    if (!k.startsWith("field_") || !cur.contains(k + ".skills")) continue;
+                    String cs = String.valueOf(cur.get(k + ".skills"));
+                    if (!cs.matches("(?s).*(CHARGE|NOVA|ERUPTION|CROSS|FROST_FIELD|ROAR).*")) { cur.set(k + ".skills", def.get(k + ".skills")); added = true; }
+                }
                 if (added) cur.save(f);
             }
         } catch (Exception ignored) {
@@ -133,7 +139,7 @@ public class BossManager {
             a.def = d;
             a.home = e.getLocation().clone();
             var fr = e.getAttribute(Attribute.GENERIC_FOLLOW_RANGE);   // 멀리 있는 사람까지 알아채지 않게
-            if (fr != null) fr.setBaseValue(plugin.getConfig().getDouble("bosses.chase-radius", 24));
+            if (fr != null) fr.setBaseValue(plugin.getConfig().getDouble("bosses.chase-radius", 48));
             // WHITE 는 나침반 문구 전용 투명 바(리소스팩)라서 보스는 파란 바로
             a.bar = Bukkit.createBossBar(Text.c("&c" + d.name), d.color == org.bukkit.boss.BarColor.WHITE ? org.bukkit.boss.BarColor.BLUE : d.color, BarStyle.SEGMENTED_10);
             long now = System.currentTimeMillis();
@@ -197,7 +203,7 @@ public class BossManager {
             }
             // 끝없이 쫓아가지 않게 (v5.4.24): 등장 위치에서 leash 칸 넘게 벗어나면 제자리로 돌아가고,
             // chase 칸보다 멀어지거나 등장 위치에서 너무 먼 플레이어는 포기
-            double leash = plugin.getConfig().getDouble("bosses.leash-radius", 28), chase = plugin.getConfig().getDouble("bosses.chase-radius", 24);
+            double leash = plugin.getConfig().getDouble("bosses.leash-radius", 0), chase = plugin.getConfig().getDouble("bosses.chase-radius", 48);   // v5.5.0: 48칸 추격 · 제자리 복귀 끔
             boolean homeHere = a.home != null && leash > 0 && a.home.getWorld() == bl.getWorld();
             if (homeHere && bl.distanceSquared(a.home) > leash * leash) {
                 if (a.entity instanceof Mob mob) mob.setTarget(null);
@@ -210,7 +216,7 @@ public class BossManager {
             if (a.entity instanceof Mob mob && mob.getTarget() instanceof Player tp
                     && (tp.getWorld() != bl.getWorld() || tp.getLocation().distanceSquared(bl) > chase * chase
                         || homeHere && tp.getLocation().distanceSquared(a.home) > (leash + 6) * (leash + 6))) mob.setTarget(null);
-            Player target = nearest(a.entity, Math.min(30, chase + 6));
+            Player target = nearest(a.entity, chase);
             if (target == null) continue;
             if (homeHere && target.getLocation().distanceSquared(a.home) > (leash + 6) * (leash + 6)) continue;   // 등장 위치에서 너무 먼 사람은 노리지 않음
             if (a.entity instanceof Mob mob && (mob.getTarget() == null || !(mob.getTarget() instanceof Player))) mob.setTarget(target);
@@ -292,6 +298,13 @@ public class BossManager {
             case "field_deep_warden" -> Color.fromRGB(0x1FC8C8);
             default -> Color.fromRGB(0xFF5050);
         };
+    }
+
+    /** 점 p 에서 from + dir * [0, len] 선분까지의 수평 거리 */
+    private static double distToLine(Location from, Vector dir, double len, Location p) {
+        Vector v = p.toVector().subtract(from.toVector()).setY(0);
+        double t = Math.max(0, Math.min(len, v.dot(dir)));
+        return v.subtract(dir.clone().multiply(t)).length();
     }
 
     private void later(long ticks, Runnable r) {
@@ -434,6 +447,125 @@ public class BossManager {
         Particle tp = themeParticle(a.def.id);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (k.type) {
+            // ---------------------------------------------------------- v5.5.0 새 패턴 (필드 보스 등)
+            case "CHARGE" -> {   // 돌진: 대상 쪽으로 붉은 띠가 차오른 뒤 띠를 따라 돌진, 띠 안에 있으면 피해 + 튕겨 나감
+                if (target == null) return;
+                Location from = b.getLocation();
+                Vector dir = target.getLocation().toVector().subtract(from.toVector()).setY(0);
+                if (dir.lengthSquared() < 0.01) dir = from.getDirection().setY(0);
+                dir.normalize();
+                double len = Math.max(8, k.radius * 2.5), width = 3.2;
+                Vector fd = dir.clone();
+                telegraphLine(from, fd, len, width, 20, red);
+                w.playSound(from, Sound.ENTITY_RAVAGER_ROAR, 1.4f, 0.9f);
+                later(20, () -> {
+                    if (!b.isValid()) return;
+                    b.setVelocity(fd.clone().multiply(Math.min(3.2, len / 5.0)).setY(0.25));
+                    w.playSound(b.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.6f, 0.6f);
+                    Set<UUID> once = new HashSet<>();
+                    for (Player p : playersNear(from, len + 2)) {
+                        if (distToLine(from, fd, len, p.getLocation()) > width / 2 + 0.4 || !once.add(p.getUniqueId())) continue;
+                        plugin.combat().mobSkillDamage(b, p, dmg);
+                        p.setVelocity(fd.clone().multiply(0.6).add(new Vector(0, 0.7, 0)));
+                    }
+                    for (double d = 0; d <= len; d += 1.5) w.spawnParticle(tp, from.clone().add(fd.clone().multiply(d)).add(0, 0.5, 0), 3, 0.4, 0.3, 0.4, 0.02);
+                });
+            }
+            case "NOVA" -> {   // 파동: 보스 주변으로 고리 3개가 차례로 퍼짐 — 고리 사이 틈에 서거나 고리를 뛰어넘어 피함
+                Location o = b.getLocation();
+                double[] rings = {k.radius * 0.45, k.radius * 0.8, k.radius * 1.15};
+                charge(b, 14, c);
+                for (int i = 0; i < rings.length; i++) {
+                    double rr = rings[i];
+                    long at = 18L + i * 10L;
+                    later(at - 12, () -> { dustCircle(o, rr, red, 1.6f); dustCircle(o, rr - 1.1, Vfx2.light(red, 0.4), 1.1f); dustCircle(o, rr + 1.1, Vfx2.light(red, 0.4), 1.1f); });
+                    later(at, () -> {
+                        kr.rpgcraft.util.Vfx.ring(o, rr, c);
+                        w.spawnParticle(tp, o, (int) (rr * 5), rr * 0.7, 0.2, rr * 0.7, 0.03);
+                        w.playSound(o, Sound.ENTITY_WARDEN_SONIC_BOOM, 0.8f, 1.4f);
+                        for (Player p : playersNear(o, rr + 1.3)) {
+                            double dd = p.getLocation().distance(o);
+                            if (Math.abs(dd - rr) <= 1.3 && p.isOnGround()) plugin.combat().mobSkillDamage(b, p, dmg * 0.7);
+                        }
+                    });
+                }
+            }
+            case "ERUPTION" -> {   // 분출: 주변 모든 사람 발밑에 원이 생기고 잠시 뒤 땅이 솟구침 (각성 시 한 번 더, 따라다님)
+                int waves = Math.max(1, k.amount) + (aw ? 1 : 0);
+                for (int wv = 0; wv < waves; wv++) {
+                    later(wv * 26L, () -> {
+                        if (!b.isValid()) return;
+                        for (Player p : playersNear(b.getLocation(), 22)) {
+                            Location at = p.getLocation().clone();
+                            double rr = Math.max(2.2, k.radius * 0.5);
+                            telegraph(at, rr, 22, red);
+                            markTarget(p, 18, red);
+                            later(22, () -> {
+                                w.spawnParticle(Particle.EXPLOSION_LARGE, at, 2, 0.5, 0.2, 0.5, 0);
+                                w.spawnParticle(tp, at, 25, rr * 0.4, 1.2, rr * 0.4, 0.05);
+                                kr.rpgcraft.util.Vfx.beam(at, at.clone().add(0, 5, 0), 0.9, c);
+                                w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1.2f);
+                                for (Player q : playersNear(at, rr)) {
+                                    plugin.combat().mobSkillDamage(b, q, dmg * 0.8);
+                                    q.setVelocity(new Vector(0, 0.95, 0));
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            case "CROSS" -> {   // 십자 베기: 보스를 중심으로 십자(각성: 팔방) 띠가 차오른 뒤 한꺼번에 폭발
+                Location o = b.getLocation();
+                double len = Math.max(8, k.radius * 2);
+                List<Vector> dirs = new ArrayList<>(List.of(new Vector(1, 0, 0), new Vector(-1, 0, 0), new Vector(0, 0, 1), new Vector(0, 0, -1)));
+                if (aw) for (int[] d : new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}) dirs.add(new Vector(d[0], 0, d[1]).normalize());
+                double rot = ThreadLocalRandom.current().nextBoolean() ? 0 : Math.PI / 4;   // 가끔 X자
+                for (Vector d : dirs) d.rotateAroundY(rot);
+                for (Vector d : dirs) telegraphLine(o, d, len, 2.6, 22, red);
+                charge(b, 20, c);
+                later(22, () -> {
+                    Set<UUID> once = new HashSet<>();
+                    for (Vector d : dirs) {
+                        for (double t = 0; t <= len; t += 1.2) kr.rpgcraft.util.Vfx.burst(o.clone().add(d.clone().multiply(t)).add(0, 0.6, 0), 0.9, c);
+                        for (Player p : playersNear(o, len + 1)) if (distToLine(o, d, len, p.getLocation()) <= 1.7 && once.add(p.getUniqueId())) plugin.combat().mobSkillDamage(b, p, dmg);
+                    }
+                    w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 0.6f);
+                    w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 1.4f);
+                });
+            }
+            case "FROST_FIELD" -> {   // 서리 장판: 대상 자리에 큰 원이 생겨 5초 동안 안에 있으면 계속 피해 + 느려짐
+                if (target == null) return;
+                Location at = target.getLocation().clone();
+                double rr = Math.max(3, k.radius);
+                telegraph(at, rr, 16, Color.fromRGB(0x9FD8FF));
+                for (int t = 0; t < 5; t++) {
+                    later(16L + t * 20L, () -> {
+                        dustCircle(at, rr, Color.fromRGB(0x9FD8FF), 1.5f);
+                        w.spawnParticle(Particle.SNOWFLAKE, at.clone().add(0, 0.4, 0), (int) (rr * 8), rr * 0.6, 0.3, rr * 0.6, 0.01);
+                        for (Player p : playersNear(at, rr)) {
+                            plugin.combat().mobSkillDamage(b, p, dmg * 0.3);
+                            p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOW, 30, 1));
+                        }
+                    });
+                }
+                w.playSound(at, Sound.BLOCK_GLASS_BREAK, 1.2f, 0.5f);
+            }
+            case "ROAR" -> {   // 포효: 짧게 기를 모은 뒤 주변을 밀쳐내고 잠시 약화
+                double rr = Math.max(4, k.radius);
+                Location o = b.getLocation();
+                telegraph(o, rr, 14, red);
+                w.playSound(o, Sound.ENTITY_RAVAGER_ROAR, 2f, 0.6f);
+                later(14, () -> {
+                    if (!b.isValid()) return;
+                    w.playSound(b.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.6f, 0.8f);
+                    kr.rpgcraft.util.Fx.shockwave(plugin, b.getLocation(), (int) rr, c);
+                    for (Player p : playersNear(b.getLocation(), rr)) {
+                        plugin.combat().mobSkillDamage(b, p, dmg * 0.6);
+                        p.setVelocity(p.getLocation().toVector().subtract(b.getLocation().toVector()).setY(0).normalize().multiply(1.3).setY(0.5));
+                        p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.WEAKNESS, 60, 0));
+                    }
+                });
+            }
             case "SLAM" -> {   // 대지 분쇄: 붉은 원이 차오르는 동안 보스가 높이 뛰어올랐다가 내려찍음 → 크레이터 + 바깥으로 번지는 여진 (각성: 두 번째 더 넓게)
                 for (int rep = 0; rep < (aw ? 2 : 1); rep++) {
                     double R = k.radius * (1 + rep * 0.4);
@@ -548,7 +680,8 @@ public class BossManager {
                         m.getPersistentDataContainer().set(Keys.MINION, PersistentDataType.STRING, a.def.id);
                         m.setRemoveWhenFarAway(true);
                         plugin.mobs().initCustom(m, lv, plugin.mobs().hpFor(lv), plugin.mobs().damageFor(lv), Math.min(40, lv * 0.2),
-                                plugin.mobs().expFor(lv), lv * 100L, k.name == null ? MobManager.korean(ft) : k.name);
+                                (long) (plugin.mobs().expFor(lv) * plugin.getConfig().getDouble("bosses.minion-exp-mult", 0.4)),   // v5.5.0: 보스 부하 경험치 40%
+                                lv * 100L, k.name == null ? MobManager.korean(ft) : k.name);
                         if (!k.ai) m.setAI(false);
                         if (m instanceof Mob mob) mob.setTarget(target);
                     });
@@ -884,6 +1017,9 @@ public class BossManager {
         double r = Math.max(1.4, b.getWidth() * 0.9);
         int pts = 6 + a.phase * 3;
         a.aura += 0.5;
+        // 잔상 제거 (v5.5.0): 발밑 가루 고리는 1초쯤 남아서 움직이면 자국이 줄줄이 생겼음 → 가만히 있을 때만
+        if (b.getVelocity().setY(0).lengthSquared() > 0.0025 || (a.lastAura != null && a.lastAura.getWorld() == o.getWorld() && a.lastAura.distanceSquared(o) > 0.04)) pts = 0;
+        a.lastAura = o.clone();
         for (int i = 0; i < pts; i++) {
             double ang = a.aura + Math.PI * 2 * i / pts;
             b.getWorld().spawnParticle(Particle.REDSTONE, o.clone().add(Math.cos(ang) * r, 0.15, Math.sin(ang) * r), 1, 0, 0, 0, 0,
@@ -995,7 +1131,10 @@ public class BossManager {
         }
         for (Map.Entry<UUID, Double> en : expShare.entrySet()) {
             Player p = Bukkit.getPlayer(en.getKey());
-            if (p != null) plugin.levels().addExp(p, bossExp(d) * en.getValue());
+            if (p != null) {
+                plugin.levels().addExp(p, bossExp(d) * en.getValue());
+                plugin.passives().track(p, "boss_kills", 1);   // 주간 의뢰: 보스 처치 (v5.5.0)
+            }
         }
         int rank = 0;
         for (Map.Entry<UUID, Double> en : ranking) {

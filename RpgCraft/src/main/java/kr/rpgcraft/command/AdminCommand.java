@@ -51,6 +51,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
         Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
+        Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록)");
         Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
@@ -684,6 +685,15 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         var wm = plugin.wars();
         String sub = a.length > 1 ? a[1] : "list";
         switch (sub) {
+            case "build" -> {   // /rpg관리 castle build <1|2|3> <id> : 내 자리에 대형 공성 성 (성벽 · 신호기 자동 등록, v5.5.0)
+                if (a.length < 4) {
+                    Text.msg(p, "&e/rpg관리 castle build <1|2|3> <id> &7- 1 왕성 · 2 흑요 요새 · 3 백악 성채 (내 자리가 성 한가운데)");
+                    return;
+                }
+                String err = new kr.rpgcraft.war.SiegeCastleBuilder(plugin).start(p, Text.parseInt(a[2], 0), a[3], p.getLocation().getBlock().getLocation());
+                if (err != null) Text.msg(p, "&c" + err);
+                return;
+            }
             case "list" -> {
                 for (Castle c : wm.castles())
                     Text.msg(p, "&e" + c.id + " &f" + c.name + " &7소유 " + c.owner + " 성벽 " + c.walls.size() + " 신호기 " + (c.beacon == null ? "없음" : Locs.block(c.beacon)));
@@ -842,8 +852,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case "npc" -> plugin.shops().all().forEach(sh -> out.add(sh.id));
             case "castle" -> {
-                if (a.length == 2) out.addAll(List.of("create", "pos1", "pos2", "wall", "beacon", "spawn", "owner", "delete", "list", "restore"));
-                if (a.length == 3) plugin.wars().castles().forEach(ca -> out.add(ca.id));
+                if (a.length == 2) out.addAll(List.of("build", "create", "pos1", "pos2", "wall", "beacon", "spawn", "owner", "delete", "list", "restore"));
+                if (a.length == 3 && a[1].equals("build")) out.addAll(List.of("1", "2", "3"));
+                else if (a.length == 3) plugin.wars().castles().forEach(ca -> out.add(ca.id));
+                if (a.length == 4 && a[1].equals("build")) out.add("castle_" + (plugin.wars().castles().size() + 1));
             }
             case "ruin" -> {
                 if (a.length == 2) out.addAll(List.of("build", "themes", "tp", "create", "start", "end", "adv", "limit", "passive", "first", "delete", "list"));

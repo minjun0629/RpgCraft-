@@ -101,6 +101,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.CycleManager cycle;
     private kr.rpgcraft.mob.MonsterTierManager tiers;
     private kr.rpgcraft.world.DungeonManager dungeons;
+    private kr.rpgcraft.world.BgmManager bgm;
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
@@ -186,12 +187,13 @@ public final class RpgCraft extends JavaPlugin {
         command("auction", auction);
         hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
         getServer().getPluginManager().registerEvents(hiddenQuests, this);
-        new kr.rpgcraft.world.BgmManager(this);
+        bgm = new kr.rpgcraft.world.BgmManager(this);
         command("guide", guide);
         command("ruins", ruins);   // /유적 : 유적 위치 안내 (v5.4.29)
         duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
         Bukkit.getPluginManager().registerEvents(duels, this);
         command("duel", duels);
+        Bukkit.getPluginManager().registerEvents(new kr.rpgcraft.feature.ProtectionManager(this), this);   // 서버 목록 아이콘 · 봇 방어 · 엑스레이 의심 알림 (v5.5.0)
         casino = new kr.rpgcraft.world.CasinoManager(this);
         command("party", party);
         if (getCommand("party") != null) getCommand("party").setTabCompleter(party);
@@ -273,8 +275,13 @@ public final class RpgCraft extends JavaPlugin {
         if (getConfig().getInt("enhance.max-normal", 15) == 10) getConfig().set("enhance.max-normal", 15);
         if (Math.abs(getConfig().getDouble("spirit-summon.drop-chance", 0.0003) - 0.0008) < 1e-9) getConfig().set("spirit-summon.drop-chance", 0.0003);
         if (!getConfig().contains("spirit-summon.balrog-chance")) { getConfig().set("spirit-summon.balrog-chance", 0.00005); getConfig().set("spirit-summon.balrog-min-level", 120); }
+        for (String[] e : new String[][]{{"bgm.boss", "boss"}, {"bgm.dungeon", "dungeon"}, {"bgm.wave", "battle"}})   // 예전 배경음 설정 → bgm.fallback.* (v5.5.0)
+            if (getConfig().isString(e[0])) { getConfig().set("bgm.fallback." + e[1], getConfig().getString(e[0])); getConfig().set(e[0], null); }
+        if (getConfig().contains("bgm.loop-seconds")) { getConfig().set("bgm.fallback-seconds", getConfig().getInt("bgm.loop-seconds")); getConfig().set("bgm.loop-seconds", null); }
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
         if (Math.abs(getConfig().getDouble("weapon-skills.bolt-range", 14) - 18) < 1e-9) getConfig().set("weapon-skills.bolt-range", 14);   // 지팡이 평타 18 → 14칸 (v5.4.29)
+        if (Math.abs(getConfig().getDouble("bosses.chase-radius", 48) - 24) < 1e-9) getConfig().set("bosses.chase-radius", 48);   // 보스 추격 24 → 48칸 (v5.5.0)
+        if (Math.abs(getConfig().getDouble("bosses.leash-radius", 0) - 28) < 1e-9) getConfig().set("bosses.leash-radius", 0);    // 제자리 복귀 끔 (v5.5.0)
         if (getConfig().getLong("weapon-skills.bolt-cooldown-ms", 1100) == 900) getConfig().set("weapon-skills.bolt-cooldown-ms", 1100);   // 지팡이 평타 0.9 → 1.1초 (v5.4.38)
         if (Math.abs(getConfig().getDouble("boss.exp-even-share", 0.75) - 0.5) < 1e-9) getConfig().set("boss.exp-even-share", 0.75);   // 보스 경험치 더 고르게 (v5.4.0)
         if (Math.abs(getConfig().getDouble("boss.exp-max-share", 0.4) - 0.5) < 1e-9) getConfig().set("boss.exp-max-share", 0.4);
@@ -440,6 +447,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.CycleManager cycle() { return cycle; }
     public kr.rpgcraft.mob.MonsterTierManager tiers() { return tiers; }
     public kr.rpgcraft.world.DungeonManager dungeons() { return dungeons; }
+    public kr.rpgcraft.world.BgmManager bgm() { return bgm; }
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }

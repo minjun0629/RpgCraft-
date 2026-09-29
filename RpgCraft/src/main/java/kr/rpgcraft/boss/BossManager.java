@@ -1113,7 +1113,7 @@ public class BossManager {
     /** v5.6.0 경직: 잠시 멈춰 서서 공격도 이동도 못 함 (머리 위에 별이 돎) — 이때가 공격 기회 */
     private void stagger(Active a) {
         LivingEntity b = a.entity;
-        int ticks = (int) Math.round(plugin.getConfig().getInt("bosses.stagger-ticks", 24) * TIER_STAGGER[tier(a) - 1]);   // v5.7.0: 높은 보스일수록 짧게
+        int ticks = (int) Math.round(plugin.getConfig().getInt("bosses.stagger-ticks", 0) * TIER_STAGGER[tier(a) - 1]);   // v5.7.0: 높은 보스일수록 짧게
         if (b == null || !b.isValid() || b.isDead() || ticks <= 0) return;
         a.staggerUntil = System.currentTimeMillis() + ticks * 50L;
         if (b instanceof Mob mob) { mob.setTarget(null); b.setAI(false); }
@@ -1315,7 +1315,7 @@ public class BossManager {
                             a.ultUntil = 0;
                             BossFx.boom(b.getLocation(), 6, mat);
                             w.playSound(b.getLocation(), Sound.BLOCK_GLASS_BREAK, 2f, 0.5f);
-                            for (Player p : a.bar.getPlayers()) p.sendTitle(Text.c("&a&l보호막 파괴!"), Text.c("&f보스가 크게 흔들립니다"), 0, 30, 8);
+                            for (Player p : a.bar.getPlayers()) p.sendTitle(Text.c("&a&l보호막 파괴!"), Text.c("&f파멸의 주문을 막아냈습니다"), 0, 30, 8);
                             b.setAI(true);
                             a.staggerUntil = 0;
                             stagger(a);

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.7.3
+- **보스 경직 삭제**: 기술을 쓴 직후 보스가 멈춰 서던 경직(머리 위 별)을 없앴습니다. 보스는 기술 뒤에도 쉬지 않고 움직이고 공격합니다. (기존 서버 설정도 자동으로 0. 다시 켜려면 `bosses.stagger-ticks` 에 틱 수)
+
 ## v5.7.2
 - 이벤트 코인 상점에서 **「특별」 줄(룬 변경권 · 보스 상자 · 토템 뽑기권 · 스탯/직업 초기화권)을 없앴습니다.** 이제 소모품 · 성장 재료 · 강화·잠재 3줄입니다. (기존 서버의 event-shop.yml 은 event-shop.old.yml 로 보관하고 자동 교체)
 

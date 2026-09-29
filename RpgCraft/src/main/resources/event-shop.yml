@@ -1,0 +1,57 @@
+# ============================================================
+#  이벤트 상점 (v5.6.0) — /이벤트 상점
+#  세부 상점마다 쓰는 코인(coin: MOLE · BRICK · MINE · CARD)이 다릅니다.
+#  items: item = 아이템 ID (/rpg관리 items 로 확인), amount = 개수, price = 코인 가격, limit = 한 사람이 살 수 있는 횟수 (0 = 무제한)
+#  세부 상점을 더 만들려면 아래처럼 블록을 하나 더 추가하면 됩니다 (최대 4개 표시).
+# ============================================================
+mole:
+  name: "두더지 상점"
+  coin: MOLE
+  icon: BROWN_WOOL
+  items:
+    - {item: potion_2, amount: 5, price: 3}
+    - {item: crystal_low, amount: 5, price: 3}
+    - {item: scroll_exp, amount: 1, price: 4}
+    - {item: rune_low, amount: 1, price: 6}
+    - {item: crystal_mid, amount: 2, price: 8}
+    - {item: ticket_rune, amount: 1, price: 8}
+    - {item: ticket_rate10, amount: 1, price: 25, limit: 5}
+
+brick:
+  name: "벽돌 상점"
+  coin: BRICK
+  icon: BRICKS
+  items:
+    - {item: potion_3, amount: 3, price: 4}
+    - {item: scroll_atk, amount: 1, price: 4}
+    - {item: scroll_def, amount: 1, price: 4}
+    - {item: crystal_mid, amount: 3, price: 10}
+    - {item: rune_mid, amount: 1, price: 15}
+    - {item: cube_red, amount: 1, price: 20}
+    - {item: ticket_protect, amount: 1, price: 40, limit: 3}
+
+mine:
+  name: "지뢰 상점"
+  coin: MINE
+  icon: TNT
+  items:
+    - {item: potion_3, amount: 5, price: 5}
+    - {item: scroll_speed, amount: 1, price: 4}
+    - {item: crystal_high, amount: 1, price: 12}
+    - {item: rune_mid, amount: 1, price: 15}
+    - {item: potential_scroll, amount: 1, price: 18}
+    - {item: ticket_stat_reset, amount: 1, price: 30, limit: 2}
+    - {item: ticket_protect, amount: 1, price: 40, limit: 3}
+
+card:
+  name: "그림 상점"
+  coin: CARD
+  icon: PAINTING
+  items:
+    - {item: potion_4, amount: 2, price: 6}
+    - {item: scroll_exp, amount: 2, price: 7}
+    - {item: crystal_high, amount: 2, price: 20}
+    - {item: boss_chest, amount: 1, price: 35}
+    - {item: rune_high, amount: 1, price: 40, limit: 2}
+    - {item: ticket_totem, amount: 1, price: 45, limit: 2}
+    - {item: cube_master, amount: 1, price: 60, limit: 2}

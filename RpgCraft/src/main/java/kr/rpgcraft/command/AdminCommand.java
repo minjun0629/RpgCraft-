@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -51,6 +51,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
         Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
+        Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7- 주식 가격 직접 지정");
+        Text.msg(s, "&e/rpg관리 coin <플레이어> <mole|brick|mine|card> <수> &7- 미니게임 코인 지급 (음수면 회수)");
         Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록)");
         Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
@@ -174,6 +176,22 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     Text.msg(s, "회복 완료");
                 }
                 case "auction" -> auction(s, a);
+                case "coin", "코인" -> {   // /rpg관리 coin <플레이어> <종류> <수> (v5.6.0)
+                    if (a.length < 4) { Text.msg(s, "&e/rpg관리 coin <플레이어> <mole|brick|mine|card> <수>"); return true; }
+                    Player t = Bukkit.getPlayerExact(a[1]);
+                    if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
+                    long n;
+                    try { n = Long.parseLong(a[3]); } catch (NumberFormatException ex) { Text.msg(s, "&c수는 숫자로 적어 주세요."); return true; }
+                    Text.msg(s, plugin.minigames().giveCoins(t, a[2], n) ? "&a" + t.getName() + " 에게 " + a[2] + " 코인 " + n + "개" : "&c코인 종류: mole, brick, mine, card");
+                    return true;
+                }
+                case "stock", "주식" -> {   // /rpg관리 stock <종목> <가격> (v5.6.0)
+                    if (a.length < 3) { Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7종목: " + String.join(", ", kr.rpgcraft.economy.StockManager.STOCKS.stream().map(kr.rpgcraft.economy.StockManager.Stock::id).toList())); return true; }
+                    double v;
+                    try { v = Double.parseDouble(a[2]); } catch (NumberFormatException ex) { Text.msg(s, "&c가격은 숫자로 적어 주세요."); return true; }
+                    Text.msg(s, plugin.stocks().setPrice(a[1], v) ? "&a" + a[1] + " 가격을 " + Text.money(Math.round(plugin.stocks().price(a[1]))) + "(으)로 정했습니다." : "&c없는 종목입니다.");
+                    return true;
+                }
                 case "enhance", "강화" -> {   // /rpg관리 enhance <수치> [플레이어] : 손에 든 장비의 강화 수치를 바로 정함 (v5.4.39)
                     if (a.length < 2) { Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정 (0 ~ 최대 강화)"); return true; }
                     Player t = a.length > 2 ? Text.player(a[2]) : s instanceof Player pp ? pp : null;
@@ -839,6 +857,13 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     out.add(bid);
                     out.add(Text.strip(Text.c(plugin.bosses().def(bid).name)).replace(' ', '_'));
                 }
+            }
+            case "stock" -> {
+                if (a.length == 2) for (var st : kr.rpgcraft.economy.StockManager.STOCKS) out.add(st.id());
+            }
+            case "coin" -> {
+                if (a.length == 2) Bukkit.getOnlinePlayers().forEach(pl -> out.add(pl.getName()));
+                if (a.length == 3) out.addAll(List.of("mole", "brick", "mine", "card"));
             }
             case "enhance" -> {
                 if (a.length == 2) out.addAll(List.of("0", "5", "8", "10", "12", "15"));

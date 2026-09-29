@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "rpgcraft:item/minigame/mg_face_2"
+  }
+}

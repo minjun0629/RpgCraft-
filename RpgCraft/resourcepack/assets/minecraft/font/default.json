@@ -135,7 +135,7 @@
       "type": "bitmap",
       "file": "rpgcraft:gui/quest.png",
       "ascent": 13,
-      "height": 168,
+      "height": 204,
       "chars": [
         ""
       ]
@@ -144,7 +144,7 @@
       "type": "bitmap",
       "file": "rpgcraft:gui/settings.png",
       "ascent": 13,
-      "height": 168,
+      "height": 186,
       "chars": [
         ""
       ]
@@ -156,6 +156,78 @@
       "height": 222,
       "chars": [
         ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/event.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/mole.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/breakout.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/mines.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/memory.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/stock.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/eshop.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/eshop_sub.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
       ]
     },
     {

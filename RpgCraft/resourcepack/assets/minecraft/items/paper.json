@@ -430,6 +430,377 @@
           "type": "minecraft:model",
           "model": "rpgcraft:boss/field_frost_lich"
         }
+      },
+      {
+        "threshold": 12000,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_hole"
+        }
+      },
+      {
+        "threshold": 12001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_mole"
+        }
+      },
+      {
+        "threshold": 12002,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_mole_hit"
+        }
+      },
+      {
+        "threshold": 12003,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_mole_gold"
+        }
+      },
+      {
+        "threshold": 12004,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_bomb"
+        }
+      },
+      {
+        "threshold": 12005,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_boom"
+        }
+      },
+      {
+        "threshold": 12010,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_red"
+        }
+      },
+      {
+        "threshold": 12011,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_orange"
+        }
+      },
+      {
+        "threshold": 12012,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_yellow"
+        }
+      },
+      {
+        "threshold": 12013,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_green"
+        }
+      },
+      {
+        "threshold": 12014,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_blue"
+        }
+      },
+      {
+        "threshold": 12015,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_purple"
+        }
+      },
+      {
+        "threshold": 12016,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_steel"
+        }
+      },
+      {
+        "threshold": 12017,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_brick_cracked"
+        }
+      },
+      {
+        "threshold": 12018,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_ball"
+        }
+      },
+      {
+        "threshold": 12019,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_paddle_l"
+        }
+      },
+      {
+        "threshold": 12020,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_paddle_m"
+        }
+      },
+      {
+        "threshold": 12021,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_paddle_r"
+        }
+      },
+      {
+        "threshold": 12030,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_tile"
+        }
+      },
+      {
+        "threshold": 12031,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_tile_open"
+        }
+      },
+      {
+        "threshold": 12032,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_1"
+        }
+      },
+      {
+        "threshold": 12033,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_2"
+        }
+      },
+      {
+        "threshold": 12034,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_3"
+        }
+      },
+      {
+        "threshold": 12035,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_4"
+        }
+      },
+      {
+        "threshold": 12036,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_5"
+        }
+      },
+      {
+        "threshold": 12037,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_6"
+        }
+      },
+      {
+        "threshold": 12038,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_7"
+        }
+      },
+      {
+        "threshold": 12039,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_num_8"
+        }
+      },
+      {
+        "threshold": 12040,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_flag"
+        }
+      },
+      {
+        "threshold": 12041,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_mine"
+        }
+      },
+      {
+        "threshold": 12042,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_mine_boom"
+        }
+      },
+      {
+        "threshold": 12050,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_card_back"
+        }
+      },
+      {
+        "threshold": 12051,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_0"
+        }
+      },
+      {
+        "threshold": 12052,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_1"
+        }
+      },
+      {
+        "threshold": 12053,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_2"
+        }
+      },
+      {
+        "threshold": 12054,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_3"
+        }
+      },
+      {
+        "threshold": 12055,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_4"
+        }
+      },
+      {
+        "threshold": 12056,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_5"
+        }
+      },
+      {
+        "threshold": 12057,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_6"
+        }
+      },
+      {
+        "threshold": 12058,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_7"
+        }
+      },
+      {
+        "threshold": 12059,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_8"
+        }
+      },
+      {
+        "threshold": 12060,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_9"
+        }
+      },
+      {
+        "threshold": 12061,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_10"
+        }
+      },
+      {
+        "threshold": 12062,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_11"
+        }
+      },
+      {
+        "threshold": 12063,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_12"
+        }
+      },
+      {
+        "threshold": 12064,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_face_13"
+        }
+      },
+      {
+        "threshold": 12070,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_coin_mole"
+        }
+      },
+      {
+        "threshold": 12071,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_coin_brick"
+        }
+      },
+      {
+        "threshold": 12072,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_coin_mine"
+        }
+      },
+      {
+        "threshold": 12073,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_coin_card"
+        }
+      },
+      {
+        "threshold": 12080,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_easy"
+        }
+      },
+      {
+        "threshold": 12081,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_normal"
+        }
+      },
+      {
+        "threshold": 12082,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/minigame/mg_hard"
+        }
       }
     ],
     "fallback": {

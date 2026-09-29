@@ -136,6 +136,13 @@ public final class ItemData {
         return t == null ? 0 : t.value;
     }
 
+    /** v5.6.0: 낚은 물고기의 무게 판매가 배율 (물고기가 아니면 1) */
+    public static double fishMult(ItemStack it) {
+        PersistentDataContainer c = pdc(it);
+        if (c == null || !c.has(Keys.FISH_MULT, PersistentDataType.DOUBLE)) return 1;
+        return c.get(Keys.FISH_MULT, PersistentDataType.DOUBLE);
+    }
+
     public static boolean enhanceable(ItemStack it) {
         ItemTemplate t = template(it);
         return t != null && t.category.isEquipment() && t.enhanceable;

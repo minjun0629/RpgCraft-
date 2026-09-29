@@ -562,6 +562,10 @@ def main():
     import vfx
     for cmd, model in vfx.write(PACK, NS, lambda p, o: write_json(p, o)):
         overrides.setdefault("leather_horse_armor", []).append((cmd, model))
+    # 미니게임 아이콘 (PAPER CustomModelData 12000+, v5.6.0)
+    import minigame_art
+    for cmd, model in minigame_art.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
+        overrides.setdefault("paper", []).append((cmd, model))
     # 보스 3D 모델 (PAPER CustomModelData 9000+)
     for cmd, model in boss_models.write(PACK, NS, lambda p, o: write_json(p, o, compact=True)):
         overrides.setdefault("paper", []).append((cmd, model))

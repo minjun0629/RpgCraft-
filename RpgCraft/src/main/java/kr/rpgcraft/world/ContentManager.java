@@ -547,17 +547,24 @@ public class ContentManager implements Listener {
                 return;
             }
         }
-        Location at = p.getLocation().add(p.getLocation().getDirection().setY(0).normalize().multiply("spirit_summon".equals(sid) ? 12 : 5));
+        if (plugin.altar().building(bossId)) {   // v5.6.0: 제단이 올라가는 중이면 한 번 더 못 씀
+            Text.msg(p, "&c이미 소환 제단이 올라가고 있습니다.");
+            return;
+        }
+        Location at = p.getLocation().add(p.getLocation().getDirection().setY(0).normalize().multiply("spirit_summon".equals(sid) ? 12 : 8));
         at.setY(p.getWorld().getHighestBlockYAt(at, org.bukkit.HeightMap.MOTION_BLOCKING_NO_LEAVES) + 1);
-        boolean ok;
-        if (bossId.equals("vengeful_spirit")) {   // 원혼은 월드보스: 저주받은 묘역 전장과 함께 등장
-            Location ground = at.getBlock().getLocation();
-            ok = plugin.worldBoss().start("vengeful_spirit", ground);
-        } else ok = plugin.bosses().spawn(bossId, at) != null;
-        if (!ok) { Text.msg(p, "&c소환할 수 없습니다."); return; }
-        it.setAmount(it.getAmount() - 1);
-        p.getWorld().strikeLightningEffect(at);
-        p.getWorld().playSound(at, Sound.ENTITY_WITHER_SPAWN, 1f, 0.6f);
+        ItemStack one = it.clone();
+        one.setAmount(1);
+        it.setAmount(it.getAmount() - 1);   // 제단을 세우는 순간 소모 (실패하면 돌려줌)
+        Location ground = at.getBlock().getLocation();
+        Text.announce(Text.PREFIX + Text.c("&e" + p.getName() + "&f님이 " + (bossId.equals("balrog") ? "&6&l발록" : "&b&l몬스터의 원혼") + "&f을(를) 부르는 제단을 세웁니다... &7(10초)"));
+        plugin.altar().raise(bossId, ground, p, () -> bossId.equals("vengeful_spirit")
+                        ? plugin.worldBoss().start("vengeful_spirit", ground)   // 원혼은 월드보스: 저주받은 묘역 전장과 함께 등장
+                        : plugin.bosses().spawn(bossId, ground.clone().add(0.5, 0, 0.5)) != null,
+                () -> {
+                    Text.msg(p, "&c소환에 실패해 아이템을 돌려드렸습니다.");
+                    if (p.isOnline()) for (ItemStack l : p.getInventory().addItem(one).values()) p.getWorld().dropItemNaturally(p.getLocation(), l);
+                });
     }
 
     @EventHandler(priority = EventPriority.HIGH)

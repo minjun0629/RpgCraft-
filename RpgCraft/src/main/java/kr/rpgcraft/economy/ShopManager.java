@@ -208,9 +208,11 @@ public class ShopManager implements Listener {
             return;
         }
         int sold = 0;
+        long money = 0;
         for (ItemStack it : p.getInventory().getStorageContents()) {
             if (!ItemData.is(it, e.id()) || ItemData.enh(it) > 0) continue;
             int n = all ? it.getAmount() : Math.min(1 - sold, it.getAmount());
+            money += Math.max(1, Math.round(sellPrice(e) * ItemData.fishMult(it))) * n;   // v5.6.0: 물고기는 무게에 따라 값이 다름
             it.setAmount(it.getAmount() - n);
             sold += n;
             if (!all && sold >= 1) break;
@@ -219,9 +221,9 @@ public class ShopManager implements Listener {
             Text.msg(p, "&c판매할 아이템이 없습니다. (강화된 장비는 판매 불가)");
             return;
         }
-        plugin.economy().give(p, sellPrice(e) * sold);
+        plugin.economy().give(p, money);
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 0.8f);
-        Text.actionBar(p, "&e판매: " + plugin.items().get(e.id()).name + " x" + sold + " &7(+" + Text.money(sellPrice(e) * sold) + ")");
+        Text.actionBar(p, "&e판매: " + plugin.items().get(e.id()).name + " x" + sold + " &7(+" + Text.money(money) + ")");
     }
 
     // ------------------------------------------------------------------ NPC
@@ -317,7 +319,7 @@ public class ShopManager implements Listener {
                     ItemStack it = inv[i];
                     Entry en = sellable.get(ItemData.id(it));
                     if (en == null || ItemData.enh(it) > 0) continue;   // 강화한 장비는 보호
-                    total += sellPrice(en) * it.getAmount();
+                    total += Math.max(1, Math.round(sellPrice(en) * ItemData.fishMult(it))) * it.getAmount();
                     count += it.getAmount();
                     p.getInventory().setItem(i, null);
                 }

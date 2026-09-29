@@ -390,6 +390,7 @@ bosses:
   crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
   chase-radius: 48           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기
   leash-radius: 0            # 등장 위치에서 이만큼 넘게 끌려가면 제자리로 돌아감 (0 = 끔, 기본 끔)
+  stagger-ticks: 24         # 기술이 터진 직후 보스 경직 시간 (틱, 20 = 1초). 0 = 경직 없음
   minion-exp-mult: 0.4       # 보스가 소환한 부하 몬스터의 경험치 배율 (1 = 같은 레벨 일반 몬스터와 같음)
   spawn-safe-radius: 300     # 월드 스폰에서 이 거리(칸) 안에는 필드 보스 · 바다 보스 · 월드보스 · 토벌전 보스가 나오지 않음 (0 = 제한 없음, 관리자 소환 · 던전 제외)
 
@@ -486,11 +487,30 @@ casino:
   max-bet: 100000
   daily-limit: 500000        # 하루 베팅 한도
 
+minigames:                  # 이벤트 광장 /이벤트 (v5.6.0)
+  daily-clears: 20           # 게임마다 하루에 코인을 받을 수 있는 성공 횟수
+  reward:                    # 성공 코인 [쉬움, 보통, 어려움]
+    mole: [1, 3, 6]
+    breakout: [1, 3, 6]
+    mines: [1, 3, 6]
+    memory: [1, 3, 6]
+
+stocks:                     # 주식 시장 /주식 (v5.6.0)
+  enabled: true
+  update-seconds: 60         # 가격이 바뀌는 간격
+  fee: 0.005                 # 사고팔 때 수수료 (0.5%)
+  news-chance: 0.06          # 가격이 바뀔 때마다 뉴스(한 종목 8~25% 급등락)가 뜰 확률
+  max-shares: 100000         # 한 종목 최대 보유 주 수
+
 fishing:
   enabled: true
   money: 300
   hits: 3                    # 미니게임에서 이 횟수만큼 성공해야 낚임
   treasure-chance: 0.008     # 낚시 「가라앉은 보물 상자」 확률 (보물 지도는 나오지 않음)
+  input-cooldown-ms: 250     # 우클릭이 두 번 들어가는 것 방지
+  exp-early-pct: 0.03        # 낚시 경험치: Lv.1 에서 다음 레벨 필요량의 3% (약 30마리에 1레벨)
+  exp-fade-level: 40         # 이 레벨로 갈수록 줄어듦
+  exp-min-pct: 0.002         # 그 뒤로는 0.2% (거의 없음)
 
 day-night:
   blood-moon-chance: 0.15

@@ -33,6 +33,7 @@ public class BossManager {
         double aura;                // 주변 기운 회전 각도
         Location home;              // 등장 위치 — 여기서 너무 멀어지면 되돌아감 (v5.4.24)
         Location lastAura;          // 직전 기운 위치 (움직이는 중인지 판단)
+        long staggerUntil;          // v5.6.0: 기술을 쓴 직후 경직 (이때가 공격 기회)
     }
 
     private final RpgCraft plugin;
@@ -59,6 +60,10 @@ public class BossManager {
                     if (!k.startsWith("field_") || !cur.contains(k + ".skills")) continue;
                     String cs = String.valueOf(cur.get(k + ".skills"));
                     if (!cs.matches("(?s).*(CHARGE|NOVA|ERUPTION|CROSS|FROST_FIELD|ROAR).*")) { cur.set(k + ".skills", def.get(k + ".skills")); added = true; }
+                }
+                for (String k : def.getKeys(false)) {   // v5.6.0: 보스 컨셉 패턴 개편 — 기본 파일의 patterns 번호가 더 크면 기술 목록을 새로 받음
+                    int want = def.getInt(k + ".patterns", 0);
+                    if (want > 0 && cur.getInt(k + ".patterns", 0) < want) { cur.set(k + ".skills", def.get(k + ".skills")); cur.set(k + ".patterns", want); added = true; }
                 }
                 if (added) cur.save(f);
             }
@@ -232,6 +237,7 @@ public class BossManager {
                 a.nextSignature = now + (aw ? 11_000 : 17_000) + ThreadLocalRandom.current().nextInt(4000);
                 if (a.nextSignature > 0 && a.next.size() > 0) signature(a, target, s);
             }
+            if (now < a.staggerUntil) continue;   // 경직 중에는 기술을 쓰지 않음
             for (int i = 0; i < a.def.skills.size(); i++) {
                 if (now < a.next.getOrDefault(i, 0L)) continue;
                 BossDefinition.Skill k = a.def.skills.get(i);
@@ -441,12 +447,280 @@ public class BossManager {
         LivingEntity b = a.entity;
         World w = b.getWorld();
         Color c = theme(a.def.id);
-        Color red = Color.fromRGB(0xFF2A2A);
+        Color red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
         boolean aw = s.awakened;
         double dmg = s.damage * k.power;
+        long fireAt = windup(k, aw);
+        if (fireAt > 0) later(fireAt, () -> stagger(a));   // v5.6.0: 선딜(예고)이 끝나 기술이 터진 직후 잠시 경직
         Particle tp = themeParticle(a.def.id);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (k.type) {
+            // ---------------------------------------------------------- v5.6.0 컨셉 패턴 — 그냥 달려서는 못 피하고, 보고 판단해야 하는 기믹
+            case "VOLLEY", "FIREBALL" -> {   // 직선 일제 사격: 탄도(띠)가 먼저 그려진 뒤 그 띠를 따라 곧게 날아감 (유도 없음) — 띠 사이 틈에 서면 안전
+                if (target == null) return;
+                int n = Math.max(1, k.amount) + (aw ? 2 : 0);
+                Vector base = target.getLocation().toVector().subtract(b.getLocation().toVector()).setY(0);
+                if (base.lengthSquared() < 0.01) base = b.getLocation().getDirection().setY(0);
+                base.normalize();
+                double spread = n <= 1 ? 0 : Math.toRadians(Math.min(80, 15 * (n - 1)));
+                int wind = 16;
+                charge(b, wind, c);
+                for (int i = 0; i < n; i++) {
+                    Vector d = base.clone().rotateAroundY(n <= 1 ? 0 : -spread / 2 + spread * i / (n - 1));
+                    telegraphLine(b.getLocation(), d, 22, 1.5, wind, red);
+                    shootStraight(a, d, k.speed, 22, dmg, 1.3, wind + i * 2L, c, tp);
+                }
+                later(wind, () -> w.playSound(b.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.4f, 0.6f));
+            }
+            case "BACKSTEP_VOLLEY" -> {   // 백스텝 사격: 뒤로 크게 물러난 뒤 부채꼴로 화살 — 화살 띠 사이의 틈으로 들어가야 함
+                if (target == null) return;
+                Vector away = b.getLocation().toVector().subtract(target.getLocation().toVector()).setY(0);
+                if (away.lengthSquared() < 0.01) away = new Vector(1, 0, 0);
+                away.normalize();
+                b.setVelocity(away.multiply(1.5).setY(0.55));
+                w.spawnParticle(Particle.CLOUD, b.getLocation(), 12, 0.4, 0.1, 0.4, 0.05);
+                w.playSound(b.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 1.5f);
+                int n = Math.max(3, k.amount) + (aw ? 2 : 0);
+                later(12, () -> {
+                    if (!b.isValid() || !target.isOnline() || target.getWorld() != b.getWorld()) return;
+                    Vector base = target.getLocation().toVector().subtract(b.getLocation().toVector()).setY(0);
+                    if (base.lengthSquared() < 0.01) return;
+                    base.normalize();
+                    double spread = Math.toRadians(13 * (n - 1));
+                    for (int i = 0; i < n; i++) {
+                        Vector d = base.clone().rotateAroundY(-spread / 2 + spread * i / (n - 1));
+                        telegraphLine(b.getLocation(), d, 24, 1.3, 16, red);
+                        shootStraight(a, d, Math.max(0.9, k.speed), 24, dmg, 1.1, 16 + (i % 2) * 4L, c, Particle.CRIT);
+                    }
+                    w.playSound(b.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.4f, 0.7f);
+                });
+            }
+            case "CHECKER" -> {   // 바둑판 폭발: 반씩 두 번 터짐 — 첫 폭발이 끝난 칸으로 옮겨 서야 함
+                Location o = b.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
+                double cell = 3;
+                int half = (int) Math.ceil(Math.max(6, k.radius) / cell);
+                for (int wv = 0; wv < 2; wv++) {
+                    int par = wv;
+                    long at = 26 + wv * 26L;
+                    List<Location> cells = new ArrayList<>();
+                    for (int i = -half; i <= half; i++) for (int j = -half; j <= half; j++) if (((i + j) & 1) == par) cells.add(o.clone().add(i * cell, 0, j * cell));
+                    later(at - 26, () -> { for (Location cl : cells) telegraphSquare(cl, cell / 2 - 0.15, 26, red); });
+                    later(at, () -> {
+                        if (!b.isValid()) return;
+                        for (Location cl : cells) {
+                            w.spawnParticle(tp, cl.clone().add(0, 0.5, 0), 4, 0.6, 0.3, 0.6, 0.03);
+                            if (ThreadLocalRandom.current().nextInt(3) == 0) w.spawnParticle(Particle.EXPLOSION_LARGE, cl.clone().add(0, 0.5, 0), 1);
+                        }
+                        Set<UUID> once = new HashSet<>();
+                        for (Player p : playersNear(o, (half + 1) * cell * 1.5)) {
+                            int ci = (int) Math.round((p.getLocation().getX() - o.getX()) / cell), cj = (int) Math.round((p.getLocation().getZ() - o.getZ()) / cell);
+                            if (Math.abs(ci) > half || Math.abs(cj) > half || ((ci + cj) & 1) != par || !once.add(p.getUniqueId())) continue;
+                            plugin.combat().mobSkillDamage(b, p, dmg);
+                        }
+                        w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 1.1f);
+                    });
+                }
+                announce(a, "&c바둑판 폭발! &7먼저 터진 칸으로 옮겨 서세요");
+            }
+            case "SAFE_ZONE" -> {   // 안전지대: 넓은 범위 전체가 터지고 초록 원 안만 안전 — 원을 찾아 들어가야 함
+                Location o = b.getLocation();
+                double R = Math.max(12, k.radius), sr = 2.6;
+                int n = Math.max(1, k.amount), wind = aw ? 32 : 40;
+                List<Location> safes = new ArrayList<>();
+                for (int i = 0; i < n; i++) {
+                    double ang = ThreadLocalRandom.current().nextDouble(Math.PI * 2), d = R * (0.45 + ThreadLocalRandom.current().nextDouble(0.35));
+                    safes.add(o.clone().add(Math.cos(ang) * d, 0, Math.sin(ang) * d));
+                }
+                telegraph(o, R, wind, red);
+                for (int t = 0; t <= wind; t += 3) later(t, () -> { for (Location sf : safes) { dustCircle(sf, sr, green, 1.8f); w.spawnParticle(Particle.VILLAGER_HAPPY, sf.clone().add(0, 0.5, 0), 3, 1, 0.2, 1, 0); } });
+                for (Location sf : safes) kr.rpgcraft.util.Vfx.beam(sf, sf.clone().add(0, 10, 0), 1.1, green);
+                charge(b, wind, c);
+                later(wind, () -> {
+                    if (!b.isValid()) return;
+                    kr.rpgcraft.util.Vfx.ring(o, R, wv(c));
+                    for (int q = 0; q < 6; q++) {
+                        Location at = o.clone().add(ThreadLocalRandom.current().nextDouble(-R, R), 0, ThreadLocalRandom.current().nextDouble(-R, R));
+                        later(q, () -> { kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), 4, c); w.spawnParticle(Particle.EXPLOSION_LARGE, at, 1); });
+                    }
+                    w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
+                    for (Player p : playersNear(o, R)) {
+                        boolean ok = false;
+                        for (Location sf : safes) if (p.getLocation().distanceSquared(sf) <= (sr + 0.4) * (sr + 0.4)) { ok = true; break; }
+                        if (!ok) plugin.combat().mobSkillDamage(b, p, dmg * 1.3);
+                    }
+                });
+                announce(a, "&a초록 원 안으로! &7나머지는 전부 터집니다");
+            }
+            case "DONUT" -> {   // 안팎 교대: 안쪽 원 → 바깥 고리 (또는 반대로) 연달아 터짐 — 나갔다가 다시 들어와야 함
+                Location o = b.getLocation();
+                double r = Math.max(3.5, k.radius * 0.45), R = Math.max(10, k.radius * 1.4);
+                boolean innerFirst = ThreadLocalRandom.current().nextBoolean();
+                for (int st = 0; st < 2; st++) {
+                    boolean inner = (st == 0) == innerFirst;
+                    long at = 26 + st * 22L;
+                    int dur = st == 0 ? 26 : 22;
+                    later(at - dur, () -> { if (inner) telegraph(o, r, dur, red); else telegraphRing(o, r, R, dur, red); });
+                    later(at, () -> {
+                        if (!b.isValid()) return;
+                        if (inner) { kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), r * 1.4, c); w.spawnParticle(Particle.EXPLOSION_LARGE, o, 3, r * 0.4, 0.2, r * 0.4); }
+                        else for (double rr = r + 1; rr <= R; rr += 2) kr.rpgcraft.util.Vfx.ring(o, rr, rr % 4 < 2 ? c : Color.WHITE);
+                        w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, inner ? 1.2f : 0.7f);
+                        for (Player p : playersNear(o, R)) {
+                            double d = Math.hypot(p.getLocation().getX() - o.getX(), p.getLocation().getZ() - o.getZ());
+                            if (inner ? d <= r + 0.3 : d > r - 0.3) plugin.combat().mobSkillDamage(b, p, dmg);
+                        }
+                    });
+                }
+                announce(a, innerFirst ? "&c안쪽 → 바깥 순서! &7밖으로 나갔다가 곧바로 보스 곁으로" : "&c바깥 → 안쪽 순서! &7보스 곁에 붙었다가 곧바로 밖으로");
+            }
+            case "SWEEP" -> {   // 회전 베기: 보스를 축으로 긴 띠가 한 바퀴 돎 — 시작 방향과 도는 방향이 먼저 보임, 보스 발밑 초록 원은 안전
+                Location o = b.getLocation();
+                double L = Math.max(10, k.radius * 1.8), safeR = 2.6;
+                double start = target == null ? 0 : Math.atan2(target.getLocation().getZ() - o.getZ(), target.getLocation().getX() - o.getX());
+                int sgn = ThreadLocalRandom.current().nextBoolean() ? 1 : -1, wind = 22, spin = aw ? 30 : 40;
+                telegraphLine(o, new Vector(Math.cos(start), 0, Math.sin(start)), L, 2.2, wind, red);
+                for (int t = 0; t <= wind; t += 4) later(t, () -> {   // 도는 방향 화살표 (시작 띠 옆으로 번지는 점선)
+                    for (int q = 1; q <= 4; q++) {
+                        double ang = start + sgn * q * 0.12;
+                        dustAt(o.clone().add(Math.cos(ang) * L * 0.8, 0.2, Math.sin(ang) * L * 0.8), Vfx2.light(red, q * 0.15), 1.4f);
+                    }
+                });
+                for (int t = 0; t <= wind + spin; t += 4) later(t, () -> dustCircle(o, safeR, green, 1.5f));
+                Set<UUID> once = new HashSet<>();
+                for (int t = 0; t <= spin; t += 2) {
+                    int tt = t;
+                    later(wind + t, () -> {
+                        if (!b.isValid()) return;
+                        double ang = start + sgn * Math.PI * 2 * tt / spin;
+                        Vector dv = new Vector(Math.cos(ang), 0, Math.sin(ang));
+                        kr.rpgcraft.util.Vfx.beam(o.clone().add(dv.clone().multiply(safeR)).add(0, 1, 0), o.clone().add(dv.clone().multiply(L)).add(0, 1, 0), 1.6, c);
+                        if (tt % 6 == 0) w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 0.6f + tt * 0.01f);
+                        for (Player p : playersNear(o, L + 1)) {
+                            double d = Math.hypot(p.getLocation().getX() - o.getX(), p.getLocation().getZ() - o.getZ());
+                            if (d > safeR && distToLine(o, dv, L, p.getLocation()) <= 1.4 && once.add(p.getUniqueId())) {
+                                plugin.combat().mobSkillDamage(b, p, dmg);
+                                p.setVelocity(new Vector(-dv.getZ() * sgn, 0, dv.getX() * sgn).multiply(0.9).setY(0.4));
+                            }
+                        }
+                    });
+                }
+                announce(a, "&c회전 베기! &7보스 발밑 초록 원으로 파고들거나 띠보다 앞서 도세요");
+            }
+            case "WAVE_WALL" -> {   // 해일 벽: 넓은 벽이 밀려옴 — 초록으로 빛나는 틈으로만 통과할 수 있음
+                if (target == null) return;
+                Location o = b.getLocation();
+                Vector d = target.getLocation().toVector().subtract(o.toVector()).setY(0);
+                if (d.lengthSquared() < 0.01) d = new Vector(1, 0, 0);
+                Vector fd = d.normalize(), side = new Vector(-fd.getZ(), 0, fd.getX());
+                double W = 13, gapHalf = 1.7, gap = ThreadLocalRandom.current().nextDouble(-W + 3, W - 3), travel = 30, speed = 0.7;
+                Location start = o.clone().subtract(fd.clone().multiply(3));
+                int wind = 24;
+                for (int t = 0; t <= wind; t += 4) later(t, () -> {
+                    for (double s2 = -W; s2 <= W; s2 += 0.8) {
+                        boolean inGap = Math.abs(s2 - gap) <= gapHalf;
+                        dustAt(start.clone().add(side.clone().multiply(s2)).add(0, 0.3, 0), inGap ? green : red, 1.5f);
+                        if (inGap) for (double f = 2; f < travel; f += 3) dustAt(start.clone().add(side.clone().multiply(s2)).add(fd.clone().multiply(f)).add(0, 0.15, 0), green, 1.0f);
+                    }
+                });
+                w.playSound(o, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.2f, 0.6f);
+                Set<UUID> once = new HashSet<>();
+                int steps = (int) (travel / speed);
+                for (int t = 0; t <= steps; t += 2) {
+                    int tt = t;
+                    later(wind + t, () -> {
+                        if (!b.isValid()) return;
+                        Location front = start.clone().add(fd.clone().multiply(tt * speed));
+                        for (double s2 = -W; s2 <= W; s2 += 1.2) {
+                            if (Math.abs(s2 - gap) <= gapHalf) continue;
+                            Location pt = front.clone().add(side.clone().multiply(s2));
+                            w.spawnParticle(tp, pt.clone().add(0, 1, 0), 2, 0.2, 0.8, 0.2, 0.02);
+                            if (tt % 4 == 0) dustAt(pt.clone().add(0, 2.2, 0), c, 1.8f);
+                        }
+                        for (Player p : playersNear(front, W + 2)) {
+                            Vector rel = p.getLocation().toVector().subtract(front.toVector()).setY(0);
+                            double along = rel.dot(fd), lat = rel.dot(side);
+                            if (Math.abs(along) > 1.0 || Math.abs(lat) > W || Math.abs(lat - gap) <= gapHalf || !once.add(p.getUniqueId())) continue;
+                            plugin.combat().mobSkillDamage(b, p, dmg);
+                            p.setVelocity(fd.clone().multiply(1.4).setY(0.5));
+                        }
+                    });
+                }
+                announce(a, "&b밀려오는 벽! &7초록 틈을 찾아 통과하세요");
+            }
+            case "GUST" -> {   // 힘껏 밀기: 보스 앞 부채꼴 돌풍 — 부채꼴 밖(옆 · 뒤)으로 피해야 함, 맞으면 멀리 날아감
+                if (target == null) return;
+                Location o = b.getLocation();
+                Vector f = target.getLocation().toVector().subtract(o.toVector()).setY(0);
+                if (f.lengthSquared() < 0.01) f = new Vector(1, 0, 0);
+                Vector fd = f.normalize();
+                double R = Math.max(10, k.radius), half = 50;
+                int wind = 22;
+                telegraphCone(o, fd, R, half, wind, red);
+                charge(b, wind, c);
+                w.playSound(o, Sound.ENTITY_PHANTOM_FLAP, 1.6f, 0.6f);
+                later(wind, () -> {
+                    if (!b.isValid()) return;
+                    for (int q = 0; q < 12; q++) {
+                        Vector dv = fd.clone().rotateAroundY(Math.toRadians(-half + 2 * half * q / 11.0));
+                        for (double dd = 1; dd < R; dd += 1.5) w.spawnParticle(Particle.CLOUD, o.clone().add(dv.clone().multiply(dd)).add(0, 1, 0), 1, 0.1, 0.2, 0.1, 0.25);
+                    }
+                    w.playSound(o, Sound.ENTITY_ENDER_DRAGON_FLAP, 2f, 0.5f);
+                    for (Player p : playersNear(o, R)) {
+                        Vector v = p.getLocation().toVector().subtract(o.toVector()).setY(0);
+                        if (v.lengthSquared() < 0.01) v = fd.clone();
+                        if (Math.toDegrees(v.angle(fd)) > half) continue;
+                        plugin.combat().mobSkillDamage(b, p, dmg * 0.8);
+                        p.setVelocity(v.normalize().multiply(2.6).setY(0.7));
+                    }
+                });
+                announce(a, "&b돌풍! &7보스 옆이나 뒤로 돌아가세요");
+            }
+            case "FRONT_BACK" -> {   // 앞뒤 베기: 앞 반원 → 뒤 반원 차례로 터짐 — 먼저 뒤로 돌았다가 곧바로 앞으로
+                if (target == null) return;
+                Location o = b.getLocation();
+                Vector f = target.getLocation().toVector().subtract(o.toVector()).setY(0);
+                if (f.lengthSquared() < 0.01) f = new Vector(1, 0, 0);
+                Vector fd = f.normalize();
+                double R = Math.max(7, k.radius);
+                boolean frontFirst = ThreadLocalRandom.current().nextInt(3) > 0;
+                for (int st = 0; st < 2; st++) {
+                    Vector dir = (st == 0) == frontFirst ? fd.clone() : fd.clone().multiply(-1);
+                    int dur = st == 0 ? 24 : 18;
+                    long at = 24 + st * 18L;
+                    later(at - dur, () -> telegraphCone(o, dir, R, 90, dur, red));
+                    later(at, () -> {
+                        if (!b.isValid()) return;
+                        kr.rpgcraft.util.Vfx.slash(o.clone().add(dir.clone().multiply(R * 0.5)).add(0, 1, 0), dir, R, 0, c);
+                        kr.rpgcraft.util.Vfx.slash(o.clone().add(dir.clone().multiply(R * 0.5)).add(0, 1.2, 0), dir, R * 0.8, 20, Color.WHITE);
+                        w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.8f, 0.5f);
+                        for (Player p : playersNear(o, R)) {
+                            Vector v = p.getLocation().toVector().subtract(o.toVector()).setY(0);
+                            if (v.dot(dir) >= -0.3) plugin.combat().mobSkillDamage(b, p, dmg);
+                        }
+                    });
+                }
+                announce(a, frontFirst ? "&c앞 → 뒤! &7보스 뒤로 돌았다가 다시 앞으로" : "&c뒤 → 앞! &7보스 앞에 있다가 뒤로");
+            }
+            case "SPREAD" -> {   // 낙뢰 표식: 모두의 자리에 낙뢰 표식 → 그 자리에 떨어짐. 겹치면 피해도 겹침 — 흩어지고 자리에서 벗어나기
+                double rr = Math.max(3, k.radius * 0.5);
+                int wind = 30;
+                List<Location> spots = new ArrayList<>();
+                for (Player p : playersNear(b.getLocation(), 26)) {
+                    Location at = p.getLocation().clone();
+                    spots.add(at);
+                    markTarget(p, 16, red);
+                    telegraph(at, rr, wind, red);
+                }
+                later(wind, () -> {
+                    if (!b.isValid()) return;
+                    for (Location at : spots) {
+                        at.getWorld().strikeLightningEffect(at);
+                        kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), rr * 1.2, c);
+                        hurt(b, playersNear(at, rr), dmg * 0.8, null);   // 여러 표식이 겹친 곳은 여러 번 맞음
+                    }
+                });
+                announce(a, "&e낙뢰 표식! &7서로 흩어지고 표식에서 벗어나세요");
+            }
             // ---------------------------------------------------------- v5.5.0 새 패턴 (필드 보스 등)
             case "CHARGE" -> {   // 돌진: 대상 쪽으로 붉은 띠가 차오른 뒤 띠를 따라 돌진, 띠 안에 있으면 피해 + 튕겨 나감
                 if (target == null) return;
@@ -687,48 +961,6 @@ public class BossManager {
                     });
                 }
             }
-            case "FIREBALL" -> {   // 마탄 일제 사격: 기를 모은 뒤 부채꼴로 발사, 꼬리를 남기며 살짝 유도 → 폭발
-                int n = Math.max(1, k.amount) + (aw ? 2 : 0);
-                charge(b, 12, c);
-                later(12, () -> w.playSound(b.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.4f, 0.6f));
-                for (int i = 0; i < n; i++) {
-                    double spread = (i - (n - 1) / 2.0) * 0.25;
-                    new org.bukkit.scheduler.BukkitRunnable() {
-                        Location pos;
-                        Vector v;
-                        int t;
-
-                        @Override
-                        public void run() {
-                            if (!b.isValid() || ++t > 60) { cancel(); return; }
-                            if (pos == null) {
-                                pos = b.getEyeLocation().add(0, 1, 0);
-                                Vector dir = target.getEyeLocation().toVector().subtract(pos.toVector()).normalize();
-                                v = new Vector(dir.getX() * Math.cos(spread) - dir.getZ() * Math.sin(spread), dir.getY(), dir.getX() * Math.sin(spread) + dir.getZ() * Math.cos(spread)).multiply(0.8);
-                                kr.rpgcraft.util.Vfx.burst(pos, 2, Color.WHITE);
-                            }
-                            if (target.isOnline() && target.getWorld().equals(pos.getWorld())) {   // 살짝 유도
-                                Vector want = target.getEyeLocation().toVector().subtract(pos.toVector()).normalize().multiply(0.8);
-                                v = v.multiply(0.92).add(want.multiply(0.08));
-                            }
-                            pos.add(v);
-                            if (t % 2 == 0) kr.rpgcraft.util.Vfx.burst(pos, 1.5, c);
-                            w.spawnParticle(Particle.FLAME, pos, 3, 0.12, 0.12, 0.12, 0.01);
-                            w.spawnParticle(tp, pos, 2, 0.1, 0.1, 0.1, 0.01);
-                            dustAt(pos.clone().subtract(v.clone().multiply(0.6)), c, 1.6f);
-                            boolean hit = !pos.getBlock().isPassable();
-                            for (Player p : playersNear(pos, 1.4)) { hit = true; break; }
-                            if (!hit) return;
-                            cancel();
-                            kr.rpgcraft.util.Vfx.burst(pos, 3.4, c);
-                            kr.rpgcraft.util.Vfx.ring(pos.clone().add(0, -1, 0), 2.6, Color.WHITE);
-                            w.spawnParticle(Particle.EXPLOSION_LARGE, pos, 1);
-                            w.playSound(pos, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 1.3f);
-                            hurt(b, playersNear(pos, 2.6), dmg, null);
-                        }
-                    }.runTaskTimer(plugin, 12L + i * 3L, 1L);
-                }
-            }
             case "PULL" -> {   // 심연의 소용돌이: 중심에 위험 원이 차오르는 동안 나선으로 빨아들임 → 한가운데서 내파 (밖으로 버텨서 벗어나야 함)
                 Location o = b.getLocation();
                 telegraph(o, 4, 24, red);
@@ -796,6 +1028,130 @@ public class BossManager {
         }
     }
 
+    /** v5.6.0: 기술 예고(선딜)가 끝나 실제로 터지는 시점 (틱) — 이 뒤에 경직 */
+    private static long windup(BossDefinition.Skill k, boolean aw) {
+        return switch (k.type) {
+            case "CHARGE" -> 30;
+            case "NOVA" -> 38;
+            case "ERUPTION" -> 22 + 26L * (Math.max(1, k.amount) + (aw ? 1 : 0) - 1);
+            case "CROSS" -> 22;
+            case "FROST_FIELD", "VOLLEY", "FIREBALL" -> 16;
+            case "ROAR", "SUMMON" -> 14;
+            case "SLAM" -> aw ? 48 : 18;
+            case "METEOR", "PULL", "WAVE_WALL" -> 24;
+            case "BLINK" -> aw ? 34 : 12;
+            case "BACKSTEP_VOLLEY" -> 32;
+            case "CHECKER" -> 52;
+            case "SAFE_ZONE" -> aw ? 32 : 40;
+            case "DONUT" -> 48;
+            case "SWEEP" -> 22 + (aw ? 30 : 40);
+            case "GUST" -> 22;
+            case "FRONT_BACK" -> 42;
+            case "SPREAD" -> 30;
+            default -> 0;
+        };
+    }
+
+    /** v5.6.0 경직: 잠시 멈춰 서서 공격도 이동도 못 함 (머리 위에 별이 돎) — 이때가 공격 기회 */
+    private void stagger(Active a) {
+        LivingEntity b = a.entity;
+        int ticks = plugin.getConfig().getInt("bosses.stagger-ticks", 24);
+        if (b == null || !b.isValid() || b.isDead() || ticks <= 0) return;
+        a.staggerUntil = System.currentTimeMillis() + ticks * 50L;
+        if (b instanceof Mob mob) { mob.setTarget(null); b.setAI(false); }
+        b.getWorld().playSound(b.getLocation(), Sound.ENTITY_IRON_GOLEM_DAMAGE, 1.2f, 0.6f);
+        for (int t = 0; t < ticks; t += 3) {
+            int tt = t;
+            later(t, () -> {
+                if (!b.isValid()) return;
+                Location h = b.getLocation().add(0, b.getHeight() + 0.5, 0);
+                for (int i = 0; i < 5; i++) {
+                    double ang = tt * 0.35 + i * Math.PI * 2 / 5;
+                    dustAt(h.clone().add(Math.cos(ang) * 0.9, 0, Math.sin(ang) * 0.9), Color.fromRGB(0xFFE14A), 1.3f);
+                }
+            });
+        }
+        for (Player p : a.bar.getPlayers()) if (p.getLocation().distanceSquared(b.getLocation()) < 30 * 30) Text.actionBar(p, "&e&l✦ 보스 경직! &7지금이 공격 기회");
+        later(ticks, () -> { if (b.isValid() && System.currentTimeMillis() >= a.staggerUntil - 60) b.setAI(true); });
+    }
+
+    /** v5.6.0: 곧게 날아가는 투사체 (유도 없음). 처음 맞은 사람에게 터짐 */
+    private void shootStraight(Active a, Vector dir, double speed, double range, double dmg, double hitR, long delay, Color c, Particle tp) {
+        LivingEntity b = a.entity;
+        Vector v = dir.clone().setY(0).normalize().multiply(Math.max(0.2, speed));
+        new org.bukkit.scheduler.BukkitRunnable() {
+            Location pos;
+            double gone;
+
+            @Override
+            public void run() {
+                if (!b.isValid()) { cancel(); return; }
+                if (pos == null) { pos = b.getLocation().add(0, 1.3, 0); kr.rpgcraft.util.Vfx.burst(pos, 1.6, Color.WHITE); }
+                pos.add(v);
+                gone += v.length();
+                if (gone > range) { cancel(); return; }
+                w().spawnParticle(tp, pos, 2, 0.08, 0.08, 0.08, 0.01);
+                dustAt(pos, c, 1.7f);
+                dustAt(pos.clone().subtract(v.clone().multiply(0.5)), Vfx2.light(c, 0.4), 1.2f);
+                boolean hit = !pos.getBlock().isPassable();
+                Player who = null;
+                for (Player p : playersNear(pos, hitR)) { who = p; break; }
+                if (!hit && who == null) return;
+                cancel();
+                kr.rpgcraft.util.Vfx.burst(pos, 2.2, c);
+                w().playSound(pos, Sound.ENTITY_GENERIC_EXPLODE, 0.7f, 1.5f);
+                if (who != null) plugin.combat().mobSkillDamage(b, who, dmg);
+            }
+
+            private World w() { return pos.getWorld(); }
+        }.runTaskTimer(plugin, delay, 1L);
+    }
+
+    /** 사각 칸 예고 (바둑판 패턴) */
+    private void telegraphSquare(Location c, double h, int ticks, Color col) {
+        for (int t = 0; t <= ticks; t += 4) {
+            int tt = t;
+            later(t, () -> {
+                double f = Math.max(0.15, tt / (double) ticks) * h;
+                for (double s = -h; s <= h; s += 0.75) {
+                    dustAt(c.clone().add(s, 0.12, -h), col, 1.1f); dustAt(c.clone().add(s, 0.12, h), col, 1.1f);
+                    dustAt(c.clone().add(-h, 0.12, s), col, 1.1f); dustAt(c.clone().add(h, 0.12, s), col, 1.1f);
+                }
+                if (tt % 8 == 0) for (double s = -f; s <= f; s += 0.9) { dustAt(c.clone().add(s, 0.1, -f), Vfx2.light(col, 0.35), 0.9f); dustAt(c.clone().add(s, 0.1, f), Vfx2.light(col, 0.35), 0.9f); }
+            });
+        }
+    }
+
+    /** 고리 모양 예고 (안쪽 r 은 안전, r~R 이 위험) */
+    private void telegraphRing(Location o, double r, double R, int ticks, Color col) {
+        for (int t = 0; t <= ticks; t += 2) {
+            int tt = t;
+            later(t, () -> {
+                if (tt % 4 == 0) { dustCircle(o, R, col, 1.6f); dustCircle(o, r, col, 1.6f); }
+                double f = Math.max(0.08, tt / (double) ticks);
+                dustCircle(o, R - (R - r) * f, Vfx2.light(col, 0.35), 1.2f);
+            });
+        }
+    }
+
+    /** 부채꼴 예고 (half = 반각, 도) */
+    private void telegraphCone(Location o, Vector dir, double R, double half, int ticks, Color col) {
+        Vector d = dir.clone().setY(0).normalize();
+        for (int t = 0; t <= ticks; t += 2) {
+            int tt = t;
+            later(t, () -> {
+                double f = Math.max(0.1, tt / (double) ticks);
+                for (double ang = -half; ang <= half; ang += Math.max(4, 240 / R / 2)) {
+                    Vector dv = d.clone().rotateAroundY(Math.toRadians(ang));
+                    if (tt % 4 == 0) dustAt(o.clone().add(dv.clone().multiply(R)).add(0, 0.12, 0), col, 1.5f);
+                    dustAt(o.clone().add(dv.clone().multiply(R * f)).add(0, 0.12, 0), Vfx2.light(col, 0.35), 1.1f);
+                }
+                if (tt % 4 == 0) for (double s = 0; s <= R; s += 0.8)
+                    for (double side : new double[]{-half, half}) dustAt(o.clone().add(d.clone().rotateAroundY(Math.toRadians(side)).multiply(s)).add(0, 0.12, 0), col, 1.3f);
+            });
+        }
+    }
+
     private static Color wv(Color c) {
         return Color.fromRGB(Math.min(255, c.getRed() + 60), Math.min(255, c.getGreen() + 60), Math.min(255, c.getBlue() + 60));
     }
@@ -811,6 +1167,8 @@ public class BossManager {
         Particle tp = themeParticle(a.def.id);
         int pick = ThreadLocalRandom.current().nextInt(6);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
+        long[] sigWind = {22, 30, 46, 10, 60, 40};
+        later(sigWind[pick], () -> stagger(a));   // v5.6.0: 대형 패턴도 끝나면 경직
         switch (pick) {
             case 0 -> {   // 십자 광선: 붉은 띠가 차오른 뒤 네 방향 광선 (각성: 8방향)
                 int dirs = s.awakened ? 8 : 4;

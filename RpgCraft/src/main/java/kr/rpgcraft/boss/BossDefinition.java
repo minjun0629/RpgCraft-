@@ -12,7 +12,7 @@ public class BossDefinition {
     public static class Skill {
         public String type;
         public int interval = 10, amount = 1, level;
-        public double radius = 5, power = 1;
+        public double radius = 5, power = 1, speed = 0.7;   // speed: 투사체 속도 (칸/틱)
         public String entity, name;
         public boolean ai = true;
     }
@@ -62,6 +62,7 @@ public class BossDefinition {
             k.radius = num(m.get("radius"), 5).doubleValue();
             k.power = num(m.get("power"), 1).doubleValue();
             k.amount = num(m.get("amount"), 1).intValue();
+            k.speed = num(m.get("speed"), 0.7).doubleValue();
             k.level = num(m.get("level"), 0).intValue();
             k.entity = m.get("entity") == null ? null : String.valueOf(m.get("entity"));
             k.name = m.get("name") == null ? null : String.valueOf(m.get("name"));

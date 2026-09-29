@@ -102,6 +102,9 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.mob.MonsterTierManager tiers;
     private kr.rpgcraft.world.DungeonManager dungeons;
     private kr.rpgcraft.world.BgmManager bgm;
+    private kr.rpgcraft.world.SummonAltar altar;
+    private kr.rpgcraft.economy.StockManager stocks;
+    private kr.rpgcraft.minigame.MiniGameManager minigames;
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
@@ -188,8 +191,13 @@ public final class RpgCraft extends JavaPlugin {
         hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
         getServer().getPluginManager().registerEvents(hiddenQuests, this);
         bgm = new kr.rpgcraft.world.BgmManager(this);
+        altar = new kr.rpgcraft.world.SummonAltar(this);
         command("guide", guide);
         command("ruins", ruins);   // /유적 : 유적 위치 안내 (v5.4.29)
+        stocks = new kr.rpgcraft.economy.StockManager(this);
+        command("stock", stocks);   // /주식 (v5.6.0)
+        minigames = new kr.rpgcraft.minigame.MiniGameManager(this);
+        command("event", minigames);   // /이벤트 : 미니게임 · 이벤트 상점 (v5.6.0)
         duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
         Bukkit.getPluginManager().registerEvents(duels, this);
         command("duel", duels);
@@ -241,6 +249,7 @@ public final class RpgCraft extends JavaPlugin {
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
         if (bossModels != null) bossModels.shutdown();
+        if (altar != null) altar.shutdown();
         if (events != null) events.shutdown();
         if (trades != null) trades.shutdown();
         if (protection != null) protection.restoreAll();
@@ -448,6 +457,9 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.mob.MonsterTierManager tiers() { return tiers; }
     public kr.rpgcraft.world.DungeonManager dungeons() { return dungeons; }
     public kr.rpgcraft.world.BgmManager bgm() { return bgm; }
+    public kr.rpgcraft.world.SummonAltar altar() { return altar; }
+    public kr.rpgcraft.economy.StockManager stocks() { return stocks; }
+    public kr.rpgcraft.minigame.MiniGameManager minigames() { return minigames; }
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }

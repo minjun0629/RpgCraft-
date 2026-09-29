@@ -49,11 +49,16 @@ public class MiniGameManager implements CommandExecutor {
         File f = new File(plugin.getDataFolder(), "event-shop.yml");
         if (!f.exists()) plugin.saveResource("event-shop.yml", false);
         YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
+        if (y.getInt("version", 1) < 2) {   // v5.7.0: 코인별 상점(두더지 · 벽돌 · 지뢰 · 그림) → 품목 종류별 상점. 예전 파일은 event-shop.old.yml 로 보관
+            f.renameTo(new File(plugin.getDataFolder(), "event-shop.old.yml"));
+            plugin.saveResource("event-shop.yml", true);
+            y = YamlConfiguration.loadConfiguration(f);
+            plugin.getLogger().info("이벤트 상점을 이벤트 코인 통합 상점으로 바꿨습니다 (예전 파일: event-shop.old.yml)");
+        }
         for (String id : y.getKeys(false)) {
             ConfigurationSection s = y.getConfigurationSection(id);
             if (s == null) continue;
-            Coin c = Coin.of(s.getString("coin", ""));
-            if (c == null) { plugin.getLogger().warning("event-shop.yml: " + id + " 의 coin 이 올바르지 않습니다"); continue; }
+            Coin c = Coin.EVENT;   // 모든 상점이 이벤트 코인
             Material icon = Material.matchMaterial(s.getString("icon", "CHEST"));
             List<Offer> offers = new ArrayList<>();
             for (Map<?, ?> m : s.getMapList("items")) {
@@ -202,13 +207,20 @@ public class MiniGameManager implements CommandExecutor {
     // ------------------------------------------------------------------ 이벤트 상점
     private class ShopMain extends Gui {
         ShopMain(Player p) {
-            super(6, "&8이벤트 상점", "eshop");
+            super(6, "&8이벤트 상점 &7- 이벤트 코인", "eshop");
             PlayerData d = plugin.data().get(p);
             int[] at = {19, 21, 23, 25};
             for (int i = 0; i < shops.size() && i < at.length; i++) {
                 SubShop s = shops.get(i);
-                set(at[i], Gui.button(s.icon(), "&e&l" + s.name(), "&7품목 " + s.offers().size() + "개",
-                        "", "&f보유 " + s.coin().color + s.coin().get(d) + "개", "&e▶ 클릭"), e -> new ShopSub(p, s).open(p));
+                List<String> lore = new ArrayList<>();
+                for (Offer o : s.offers()) {   // 품목 미리보기
+                    var t = plugin.items().get(o.item());
+                    lore.add("&8· &f" + (t == null ? o.item() : t.name) + (o.amount() > 1 ? " x" + o.amount() : "") + " &e" + o.price());
+                }
+                lore.add("");
+                lore.add("&f보유 &e" + Coin.EVENT.get(d) + " 이벤트 코인");
+                lore.add("&e▶ 클릭");
+                set(at[i], Gui.button(s.icon(), "&e&l" + s.name(), lore.toArray(new String[0])), e -> new ShopSub(p, s).open(p));
             }
             set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&6&l내 이벤트 코인 &f" + Coin.EVENT.get(d) + "개", "&7미니게임 4종에서 모은 코인", "&7모든 세부 상점에서 함께 사용"));
             set(49, Gui.button(Material.NOTE_BLOCK, "&a미니게임 하러 가기", "&e▶ 클릭"), e -> new Hub(p).open(p));

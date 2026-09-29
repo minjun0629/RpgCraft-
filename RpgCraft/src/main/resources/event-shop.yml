@@ -1,57 +1,50 @@
 # ============================================================
-#  이벤트 상점 (v5.6.0) — /이벤트 상점
-#  모든 세부 상점은 이벤트 코인 하나로 삽니다 (v5.6.4 통합, coin 값은 EVENT).
-#  items: item = 아이템 ID (/rpg관리 items 로 확인), amount = 개수, price = 코인 가격, limit = 한 사람이 살 수 있는 횟수 (0 = 무제한)
-#  세부 상점을 더 만들려면 아래처럼 블록을 하나 더 추가하면 됩니다 (최대 4개 표시).
+#  이벤트 상점 (v5.7.0) — /이벤트 상점
+#  모든 품목을 이벤트 코인 하나로 삽니다 (미니게임 4종 성공 보상). 세부 상점은 품목 종류별로 나뉩니다.
+#  items: item = 아이템 ID (/rpg관리 items 로 확인), amount = 개수, price = 이벤트 코인 가격, limit = 한 사람이 살 수 있는 횟수 (0 = 무제한)
+#  세부 상점을 더 만들려면 아래처럼 블록을 하나 더 추가하면 됩니다 (최대 4개 표시). icon = 상점 아이콘 재료
 # ============================================================
-mole:
-  name: "두더지 상점"
-  coin: EVENT
-  icon: BROWN_WOOL
+version: 2
+
+consume:
+  name: "소모품 상점"
+  icon: POTION
   items:
     - {item: potion_2, amount: 5, price: 3}
-    - {item: crystal_low, amount: 5, price: 3}
-    - {item: scroll_exp, amount: 1, price: 4}
-    - {item: rune_low, amount: 1, price: 6}
-    - {item: crystal_mid, amount: 2, price: 8}
-    - {item: ticket_rune, amount: 1, price: 8}
-    - {item: ticket_rate10, amount: 1, price: 25, limit: 5}
-
-brick:
-  name: "벽돌 상점"
-  coin: EVENT
-  icon: BRICKS
-  items:
     - {item: potion_3, amount: 3, price: 4}
+    - {item: potion_4, amount: 2, price: 6}
     - {item: scroll_atk, amount: 1, price: 4}
     - {item: scroll_def, amount: 1, price: 4}
-    - {item: crystal_mid, amount: 3, price: 10}
-    - {item: rune_mid, amount: 1, price: 15}
-    - {item: cube_red, amount: 1, price: 20}
-    - {item: ticket_protect, amount: 1, price: 40, limit: 3}
-
-mine:
-  name: "지뢰 상점"
-  coin: EVENT
-  icon: TNT
-  items:
-    - {item: potion_3, amount: 5, price: 5}
     - {item: scroll_speed, amount: 1, price: 4}
-    - {item: crystal_high, amount: 1, price: 12}
-    - {item: rune_mid, amount: 1, price: 15}
-    - {item: potential_scroll, amount: 1, price: 18}
-    - {item: ticket_stat_reset, amount: 1, price: 30, limit: 2}
-    - {item: ticket_protect, amount: 1, price: 40, limit: 3}
+    - {item: scroll_exp, amount: 1, price: 5}
 
-card:
-  name: "그림 상점"
-  coin: EVENT
-  icon: PAINTING
+growth:
+  name: "성장 재료 상점"
+  icon: AMETHYST_SHARD
   items:
-    - {item: potion_4, amount: 2, price: 6}
-    - {item: scroll_exp, amount: 2, price: 7}
-    - {item: crystal_high, amount: 2, price: 20}
-    - {item: boss_chest, amount: 1, price: 35}
+    - {item: crystal_low, amount: 5, price: 3}
+    - {item: crystal_mid, amount: 3, price: 8}
+    - {item: crystal_high, amount: 1, price: 12}
+    - {item: rune_low, amount: 1, price: 6}
+    - {item: rune_mid, amount: 1, price: 15}
     - {item: rune_high, amount: 1, price: 40, limit: 2}
-    - {item: ticket_totem, amount: 1, price: 45, limit: 2}
+
+enhance:
+  name: "강화 · 잠재 상점"
+  icon: ANVIL
+  items:
+    - {item: ticket_rate10, amount: 1, price: 25, limit: 5}
+    - {item: ticket_protect, amount: 1, price: 40, limit: 3}
+    - {item: potential_scroll, amount: 1, price: 18}
+    - {item: cube_red, amount: 1, price: 20}
     - {item: cube_master, amount: 1, price: 60, limit: 2}
+
+special:
+  name: "특별 상점"
+  icon: NETHER_STAR
+  items:
+    - {item: ticket_rune, amount: 1, price: 8}
+    - {item: boss_chest, amount: 1, price: 35}
+    - {item: ticket_totem, amount: 1, price: 45, limit: 2}
+    - {item: ticket_stat_reset, amount: 1, price: 30, limit: 2}
+    - {item: ticket_job_reset, amount: 1, price: 30, limit: 2}

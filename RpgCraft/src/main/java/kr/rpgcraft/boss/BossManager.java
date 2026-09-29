@@ -34,6 +34,8 @@ public class BossManager {
         Location home;              // 등장 위치 — 여기서 너무 멀어지면 되돌아감 (v5.4.24)
         Location lastAura;          // 직전 기운 위치 (움직이는 중인지 판단)
         long staggerUntil;          // v5.6.0: 기술을 쓴 직후 경직 (이때가 공격 기회)
+        long ultUntil, nextUlt;     // v5.7.0: 궁극기 진행 중 · 다음 주기 궁극기
+        final Set<Integer> ultDone = new HashSet<>();   // 이미 쓴 체력 구간 궁극기 (%)
     }
 
     private final RpgCraft plugin;
@@ -43,6 +45,7 @@ public class BossManager {
     public BossManager(RpgCraft plugin) {
         this.plugin = plugin;
         load();
+        BossFx.init(plugin);
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 10L, 10L);
     }
 
@@ -232,18 +235,20 @@ public class BossManager {
                 Text.announce(Text.PREFIX + Text.c("&7" + a.def.name + "&7이(가) 사라졌습니다..."));
                 continue;
             }
-            if (a.def.level >= plugin.getConfig().getInt("bosses.signature-min-level", 80) && now >= a.nextSignature) {
+            if (a.def.level >= plugin.getConfig().getInt("bosses.signature-min-level", 80) && now >= a.nextSignature && now >= a.ultUntil) {
                 boolean aw = s.awakened;
                 a.nextSignature = now + (aw ? 11_000 : 17_000) + ThreadLocalRandom.current().nextInt(4000);
                 if (a.nextSignature > 0 && a.next.size() > 0) signature(a, target, s);
             }
-            if (now < a.staggerUntil) continue;   // 경직 중에는 기술을 쓰지 않음
+            if (now >= a.ultUntil) ultimateCheck(a, s, frac, target, now);   // v5.7.0 고레벨 보스 궁극기 (체력 구간 · 주기)
+            if (now < a.staggerUntil || now < a.ultUntil) continue;   // 경직 · 궁극기 중에는 다른 기술을 쓰지 않음
             for (int i = 0; i < a.def.skills.size(); i++) {
                 if (now < a.next.getOrDefault(i, 0L)) continue;
                 BossDefinition.Skill k = a.def.skills.get(i);
                 int crowd = Math.max(1, near.size());
                 double faster = (1 + plugin.getConfig().getDouble("bosses.crowd-skill-speed", 0.25) * (crowd - 1))   // 여럿이면 기술 간격 단축
-                        * (a.phase == 3 ? 1.45 : a.phase == 2 ? 1.2 : 1.0);                                          // 분노 · 광폭 단계는 더 자주
+                        * (a.phase == 3 ? 1.45 : a.phase == 2 ? 1.2 : 1.0)                                           // 분노 · 광폭 단계는 더 자주
+                        * TIER_SPEED[tier(a) - 1];                                                                   // v5.7.0: 레벨이 높은 보스일수록 더 자주
                 a.next.put(i, now + (long) (k.interval * 1000L / faster));
                 if (crowd >= 3 && ThreadLocalRandom.current().nextDouble() < 0.35) {   // 3명 이상이면 다른 사람에게도 같은 기술
                     Player second = null;
@@ -256,6 +261,10 @@ public class BossManager {
                 // 예고(차오르는 위험 지역 · 표식)는 각 기술이 직접 그린다
                 Player tg = target;
                 Bukkit.getScheduler().runTaskLater(plugin, () -> { if (a.entity.isValid() && !a.entity.isDead()) cast(a, k, tg, s); }, 8L);   // 예고 짧게 (명중률↑)
+                if (tier(a) >= 4 && ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("bosses.tier4-double-cast", 0.25)) {   // v5.7.0: 최상위 보스는 기술 두 개를 겹쳐 씀
+                    BossDefinition.Skill k2 = otherSkill(a, k);
+                    if (k2 != null) Bukkit.getScheduler().runTaskLater(plugin, () -> { if (a.entity.isValid() && !a.entity.isDead()) cast(a, k2, tg, s, 1); }, 14L);
+                }
             }
         }
     }
@@ -358,7 +367,16 @@ public class BossManager {
      * 바닥 위험 지역 (레이드 예고): 테두리가 표시되고 가운데부터 붉게 차오르다가 가득 차는 순간 발동.
      * 판정은 호출한 쪽에서 ticks 뒤에 한다 (여기는 연출만).
      */
+    /** 예고판 색 → 반투명 유리 (초록 = 안전, 하늘 = 서리, 나머지 = 위험) */
+    private static Material glass(Color c) {
+        if (c.asRGB() == 0x5AFF7A) return BossFx.SAFE;   // 안전지대 초록
+        if (c.getBlue() > 200 && c.getRed() < 190) return Material.LIGHT_BLUE_STAINED_GLASS;
+        if (c.getRed() > 200 && c.getGreen() > 120) return BossFx.ORANGE;
+        return BossFx.RED;
+    }
+
     private void telegraph(Location c, double r, int ticks, Color col) {
+        BossFx.disc(c, r, ticks, glass(col), col);   // v5.7.0 빛나는 바닥 예고판
         Location o = c.clone();
         for (int t = 0; t <= ticks; t += 2) {
             int tt = t;
@@ -377,6 +395,7 @@ public class BossManager {
 
     /** 직선 위험 지역: 폭 width 의 띠가 뿌리부터 끝까지 차오름 */
     private void telegraphLine(Location from, Vector dir, double len, double width, int ticks, Color col) {
+        BossFx.rect(from, dir, len, width, ticks, glass(col), col);
         Vector d = dir.clone().setY(0).normalize(), side = new Vector(-d.getZ(), 0, d.getX()).multiply(width / 2);
         Location o = from.clone();
         for (int t = 0; t <= ticks; t += 2) {
@@ -444,14 +463,30 @@ public class BossManager {
 
     // =================================================================== 보스 기술 (레이드 패턴)
     private void cast(Active a, BossDefinition.Skill k, Player target, MobManager.MobState s) {
+        cast(a, k, target, s, 0);
+    }
+
+    /** depth: 연계(콤보)로 이어진 횟수 — 연계 중에는 경직 없이 다음 기술로 넘어가고, 마지막 기술 뒤에만 경직 */
+    private void cast(Active a, BossDefinition.Skill k, Player target, MobManager.MobState s, int depth) {
         LivingEntity b = a.entity;
         World w = b.getWorld();
         Color c = theme(a.def.id);
         Color red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
+        Material mat = BossFx.theme(a.def.id);   // v5.7.0 파편 · 지진 블록
         boolean aw = s.awakened;
         double dmg = s.damage * k.power;
         long fireAt = windup(k, aw);
-        if (fireAt > 0) later(fireAt, () -> stagger(a));   // v5.6.0: 선딜(예고)이 끝나 기술이 터진 직후 잠시 경직
+        int tr = tier(a);
+        double combo = COMBO[tr - 1] * (depth == 0 ? 1 : 0.6) * (a.phase == 3 ? 1.3 : 1);
+        BossDefinition.Skill next = fireAt > 0 && depth < (tr >= 4 ? 2 : 1) && !"SUMMON".equals(k.type)
+                && ThreadLocalRandom.current().nextDouble() < combo ? otherSkill(a, k) : null;
+        if (next != null) {   // v5.7.0 연계: 앞 기술이 터지자마자 다른 기술로 이어짐 (경직 없음)
+            later(fireAt + 4, () -> {
+                if (!b.isValid() || b.isDead() || target == null || !target.isOnline()) { stagger(a); return; }
+                for (Player p : a.bar.getPlayers()) Text.actionBar(p, "&c&l⚡ 연계! &f" + skillLabel(next.type));
+                cast(a, next, target, s, depth + 1);
+            });
+        } else if (fireAt > 0) later(fireAt, () -> stagger(a));   // v5.6.0: 선딜(예고)이 끝나 기술이 터진 직후 잠시 경직
         Particle tp = themeParticle(a.def.id);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (k.type) {
@@ -508,6 +543,7 @@ public class BossManager {
                     later(at, () -> {
                         if (!b.isValid()) return;
                         for (Location cl : cells) {
+                            BossFx.debris(cl, 2, mat, 0.9);
                             w.spawnParticle(tp, cl.clone().add(0, 0.5, 0), 4, 0.6, 0.3, 0.6, 0.03);
                             if (ThreadLocalRandom.current().nextInt(3) == 0) w.spawnParticle(Particle.EXPLOSION_LARGE, cl.clone().add(0, 0.5, 0), 1);
                         }
@@ -534,10 +570,12 @@ public class BossManager {
                 telegraph(o, R, wind, red);
                 for (int t = 0; t <= wind; t += 3) later(t, () -> { for (Location sf : safes) { dustCircle(sf, sr, green, 1.8f); w.spawnParticle(Particle.VILLAGER_HAPPY, sf.clone().add(0, 0.5, 0), 3, 1, 0.2, 1, 0); } });
                 for (Location sf : safes) kr.rpgcraft.util.Vfx.beam(sf, sf.clone().add(0, 10, 0), 1.1, green);
+                for (Location sf : safes) BossFx.disc(sf, sr, wind, BossFx.SAFE, green);
                 charge(b, wind, c);
                 later(wind, () -> {
                     if (!b.isValid()) return;
                     kr.rpgcraft.util.Vfx.ring(o, R, wv(c));
+                    BossFx.boom(o, Math.min(R, 14), mat);
                     for (int q = 0; q < 6; q++) {
                         Location at = o.clone().add(ThreadLocalRandom.current().nextDouble(-R, R), 0, ThreadLocalRandom.current().nextDouble(-R, R));
                         later(q, () -> { kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), 4, c); w.spawnParticle(Particle.EXPLOSION_LARGE, at, 1); });
@@ -565,6 +603,8 @@ public class BossManager {
                         if (inner) { kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), r * 1.4, c); w.spawnParticle(Particle.EXPLOSION_LARGE, o, 3, r * 0.4, 0.2, r * 0.4); }
                         else for (double rr = r + 1; rr <= R; rr += 2) kr.rpgcraft.util.Vfx.ring(o, rr, rr % 4 < 2 ? c : Color.WHITE);
                         w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, inner ? 1.2f : 0.7f);
+                        if (inner) BossFx.boom(o, r, mat);
+                        else { BossFx.quake(o, R, mat); BossFx.debris(o, 14, mat, R * 0.45); }
                         for (Player p : playersNear(o, R)) {
                             double d = Math.hypot(p.getLocation().getX() - o.getX(), p.getLocation().getZ() - o.getZ());
                             if (inner ? d <= r + 0.3 : d > r - 0.3) plugin.combat().mobSkillDamage(b, p, dmg);
@@ -586,6 +626,7 @@ public class BossManager {
                     }
                 });
                 for (int t = 0; t <= wind + spin; t += 4) later(t, () -> dustCircle(o, safeR, green, 1.5f));
+                BossFx.disc(o, safeR, wind + spin, BossFx.SAFE, green);
                 Set<UUID> once = new HashSet<>();
                 for (int t = 0; t <= spin; t += 2) {
                     int tt = t;
@@ -595,6 +636,7 @@ public class BossManager {
                         Vector dv = new Vector(Math.cos(ang), 0, Math.sin(ang));
                         kr.rpgcraft.util.Vfx.beam(o.clone().add(dv.clone().multiply(safeR)).add(0, 1, 0), o.clone().add(dv.clone().multiply(L)).add(0, 1, 0), 1.6, c);
                         if (tt % 6 == 0) w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 0.6f + tt * 0.01f);
+                        if (tt % 4 == 0) BossFx.debris(o.clone().add(dv.clone().multiply(L * 0.75)), 2, mat, 1.1);
                         for (Player p : playersNear(o, L + 1)) {
                             double d = Math.hypot(p.getLocation().getX() - o.getX(), p.getLocation().getZ() - o.getZ());
                             if (d > safeR && distToLine(o, dv, L, p.getLocation()) <= 1.4 && once.add(p.getUniqueId())) {
@@ -625,6 +667,8 @@ public class BossManager {
                 w.playSound(o, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.2f, 0.6f);
                 Set<UUID> once = new HashSet<>();
                 int steps = (int) (travel / speed);
+                BossFx.wall(start, fd, W, gap, gapHalf, travel, steps, wind, mat);   // 실제로 밀려오는 벽 (틈 포함)
+                BossFx.rect(start.clone().add(side.clone().multiply(gap)).subtract(fd.clone().multiply(0.5)), fd, travel, gapHalf * 2, wind, BossFx.SAFE, green);
                 for (int t = 0; t <= steps; t += 2) {
                     int tt = t;
                     later(wind + t, () -> {
@@ -665,6 +709,7 @@ public class BossManager {
                         for (double dd = 1; dd < R; dd += 1.5) w.spawnParticle(Particle.CLOUD, o.clone().add(dv.clone().multiply(dd)).add(0, 1, 0), 1, 0.1, 0.2, 0.1, 0.25);
                     }
                     w.playSound(o, Sound.ENTITY_ENDER_DRAGON_FLAP, 2f, 0.5f);
+                    BossFx.debris(o.clone().add(fd.clone().multiply(3)), 12, mat, R * 0.4);
                     for (Player p : playersNear(o, R)) {
                         Vector v = p.getLocation().toVector().subtract(o.toVector()).setY(0);
                         if (v.lengthSquared() < 0.01) v = fd.clone();
@@ -693,6 +738,7 @@ public class BossManager {
                         kr.rpgcraft.util.Vfx.slash(o.clone().add(dir.clone().multiply(R * 0.5)).add(0, 1, 0), dir, R, 0, c);
                         kr.rpgcraft.util.Vfx.slash(o.clone().add(dir.clone().multiply(R * 0.5)).add(0, 1.2, 0), dir, R * 0.8, 20, Color.WHITE);
                         w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.8f, 0.5f);
+                        BossFx.quake(o.clone().add(dir.clone().multiply(R * 0.5)), R * 0.5, mat);
                         for (Player p : playersNear(o, R)) {
                             Vector v = p.getLocation().toVector().subtract(o.toVector()).setY(0);
                             if (v.dot(dir) >= -0.3) plugin.combat().mobSkillDamage(b, p, dmg);
@@ -715,6 +761,7 @@ public class BossManager {
                     if (!b.isValid()) return;
                     for (Location at : spots) {
                         at.getWorld().strikeLightningEffect(at);
+                        BossFx.pillar(at, rr * 0.5, 5, mat);
                         kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), rr * 1.2, c);
                         hurt(b, playersNear(at, rr), dmg * 0.8, null);   // 여러 표식이 겹친 곳은 여러 번 맞음
                     }
@@ -743,6 +790,7 @@ public class BossManager {
                         p.setVelocity(fd.clone().multiply(0.6).add(new Vector(0, 0.7, 0)));
                     }
                     for (double d = 0; d <= len; d += 1.5) w.spawnParticle(tp, from.clone().add(fd.clone().multiply(d)).add(0, 0.5, 0), 3, 0.4, 0.3, 0.4, 0.02);
+                    for (double d = 2; d <= len; d += 3) { double dd = d; later((long) (d / 3), () -> BossFx.debris(from.clone().add(fd.clone().multiply(dd)), 3, mat, 1.3)); }
                 });
             }
             case "NOVA" -> {   // 파동: 보스 주변으로 고리 3개가 차례로 퍼짐 — 고리 사이 틈에 서거나 고리를 뛰어넘어 피함
@@ -755,6 +803,8 @@ public class BossManager {
                     later(at - 12, () -> { dustCircle(o, rr, red, 1.6f); dustCircle(o, rr - 1.1, Vfx2.light(red, 0.4), 1.1f); dustCircle(o, rr + 1.1, Vfx2.light(red, 0.4), 1.1f); });
                     later(at, () -> {
                         kr.rpgcraft.util.Vfx.ring(o, rr, c);
+                        BossFx.ring(o, Math.max(0, rr - 1.2), rr + 1.2, 3, BossFx.ORANGE, c);
+                        BossFx.debris(o, 8, mat, rr * 0.5);
                         w.spawnParticle(tp, o, (int) (rr * 5), rr * 0.7, 0.2, rr * 0.7, 0.03);
                         w.playSound(o, Sound.ENTITY_WARDEN_SONIC_BOOM, 0.8f, 1.4f);
                         for (Player p : playersNear(o, rr + 1.3)) {
@@ -776,6 +826,7 @@ public class BossManager {
                             markTarget(p, 18, red);
                             later(22, () -> {
                                 w.spawnParticle(Particle.EXPLOSION_LARGE, at, 2, 0.5, 0.2, 0.5, 0);
+                                BossFx.pillar(at, rr * 0.6, 4.5, mat);
                                 w.spawnParticle(tp, at, 25, rr * 0.4, 1.2, rr * 0.4, 0.05);
                                 kr.rpgcraft.util.Vfx.beam(at, at.clone().add(0, 5, 0), 0.9, c);
                                 w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1.2f);
@@ -801,6 +852,7 @@ public class BossManager {
                     Set<UUID> once = new HashSet<>();
                     for (Vector d : dirs) {
                         for (double t = 0; t <= len; t += 1.2) kr.rpgcraft.util.Vfx.burst(o.clone().add(d.clone().multiply(t)).add(0, 0.6, 0), 0.9, c);
+                        for (double t = 2; t <= len; t += 4) BossFx.debris(o.clone().add(d.clone().multiply(t)), 3, mat, 1.1);
                         for (Player p : playersNear(o, len + 1)) if (distToLine(o, d, len, p.getLocation()) <= 1.7 && once.add(p.getUniqueId())) plugin.combat().mobSkillDamage(b, p, dmg);
                     }
                     w.playSound(o, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 0.6f);
@@ -857,6 +909,7 @@ public class BossManager {
                         w.spawnParticle(Particle.FLASH, o.clone().add(0, 0.5, 0), 1);
                         w.spawnParticle(Particle.EXPLOSION_HUGE, o, 1);
                         kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 1, 0), R * 0.7, Color.WHITE);
+                        BossFx.boom(o, R, mat);
                         for (int wv = 1; wv <= 4; wv++) {   // 여진 4겹 (안쪽 → 바깥)
                             double rr = R * wv / 4;
                             later(wv * 2L, () -> {
@@ -891,6 +944,7 @@ public class BossManager {
                 for (int i = 0; i < n; i++) {
                     Location at = targets.get(i).getLocation().clone();
                     telegraph(at, k.radius, 24, red);
+                    BossFx.meteor(at, 2 + k.radius * 0.25, 24, mat);
                     for (int f = 0; f < 8; f++) {   // 떨어지는 유성 (꼬리)
                         int ff = f;
                         later(12 + f * 1.5 > 23 ? 23 : 12 + (long) (f * 1.5), () -> {
@@ -911,6 +965,8 @@ public class BossManager {
                         w.spawnParticle(Particle.EXPLOSION_HUGE, at, 1);
                         w.spawnParticle(Particle.LAVA, at, 20, k.radius * 0.5, 0.3, k.radius * 0.5, 0.1);
                         scorch(at, k.radius * 0.7, a.def.id);
+                        BossFx.quake(at, k.radius * 1.2, mat);
+                        BossFx.debris(at, 12, mat, 2.5);
                         w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
                         w.playSound(at, Sound.ITEM_TRIDENT_THUNDER, 1f, 0.6f);
                         hurt(b, playersNear(at, k.radius * 1.25), dmg, null);
@@ -988,6 +1044,7 @@ public class BossManager {
                     kr.rpgcraft.util.Vfx.ring(o, 5, wv(c));
                     w.spawnParticle(Particle.FLASH, o.clone().add(0, 1, 0), 1);
                     w.spawnParticle(Particle.SONIC_BOOM, o.clone().add(0, 1, 0), 1);
+                    BossFx.boom(o, 5, mat);
                     w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 1.6f, 0.7f);
                     hurt(b, playersNear(o, 4), dmg, null);
                 });
@@ -1012,6 +1069,7 @@ public class BossManager {
                         }
                         kr.rpgcraft.util.Vfx.beam(from.clone().add(0, 1, 0), behind.clone().add(0, 1, 0), 1.6, c);
                         b.teleport(behind);
+                        BossFx.debris(behind, 6, mat, 1.4);
                         Vector f = target.getLocation().toVector().subtract(behind.toVector()).setY(0);
                         if (f.lengthSquared() < 0.01) f = new Vector(1, 0, 0);
                         kr.rpgcraft.util.Vfx.slash(target.getLocation().add(0, 1, 0), f, 4.5, 45, c);
@@ -1055,7 +1113,7 @@ public class BossManager {
     /** v5.6.0 경직: 잠시 멈춰 서서 공격도 이동도 못 함 (머리 위에 별이 돎) — 이때가 공격 기회 */
     private void stagger(Active a) {
         LivingEntity b = a.entity;
-        int ticks = plugin.getConfig().getInt("bosses.stagger-ticks", 24);
+        int ticks = (int) Math.round(plugin.getConfig().getInt("bosses.stagger-ticks", 24) * TIER_STAGGER[tier(a) - 1]);   // v5.7.0: 높은 보스일수록 짧게
         if (b == null || !b.isValid() || b.isDead() || ticks <= 0) return;
         a.staggerUntil = System.currentTimeMillis() + ticks * 50L;
         if (b instanceof Mob mob) { mob.setTarget(null); b.setAI(false); }
@@ -1109,6 +1167,7 @@ public class BossManager {
 
     /** 사각 칸 예고 (바둑판 패턴) */
     private void telegraphSquare(Location c, double h, int ticks, Color col) {
+        BossFx.square(c, h, ticks, glass(col));
         for (int t = 0; t <= ticks; t += 4) {
             int tt = t;
             later(t, () -> {
@@ -1124,6 +1183,7 @@ public class BossManager {
 
     /** 고리 모양 예고 (안쪽 r 은 안전, r~R 이 위험) */
     private void telegraphRing(Location o, double r, double R, int ticks, Color col) {
+        BossFx.ring(o, r, R, ticks, glass(col), col);
         for (int t = 0; t <= ticks; t += 2) {
             int tt = t;
             later(t, () -> {
@@ -1136,6 +1196,7 @@ public class BossManager {
 
     /** 부채꼴 예고 (half = 반각, 도) */
     private void telegraphCone(Location o, Vector dir, double R, double half, int ticks, Color col) {
+        BossFx.cone(o, dir, R, half, ticks, glass(col), col);
         Vector d = dir.clone().setY(0).normalize();
         for (int t = 0; t <= ticks; t += 2) {
             int tt = t;
@@ -1152,6 +1213,246 @@ public class BossManager {
         }
     }
 
+    // =================================================================== v5.7.0 보스 등급 (레벨이 높을수록 어렵게)
+    /** 등급 1: Lv.40 미만 · 2: 80 미만 · 3: 140 미만 · 4: 그 이상. 월드 보스는 한 등급 위 */
+    public int tier(Active a) {
+        int lv = a.def.level;
+        int t = lv < 40 ? 1 : lv < 80 ? 2 : lv < 140 ? 3 : 4;
+        if (kr.rpgcraft.world.WorldBossManager.isWorldBoss(a.def.id)) t++;
+        return Math.max(1, Math.min(4, t));
+    }
+
+    private static final double[] TIER_SPEED = {0.85, 1.0, 1.18, 1.38};   // 기술 빈도
+    private static final double[] TIER_STAGGER = {1.5, 1.0, 0.7, 0.5};    // 경직 길이
+    private static final double[] COMBO = {0.0, 0.15, 0.35, 0.55};         // 연계 확률
+
+    /** 이 기술과 다른 기술 하나 (소환 제외) */
+    private BossDefinition.Skill otherSkill(Active a, BossDefinition.Skill not) {
+        List<BossDefinition.Skill> pool = new ArrayList<>();
+        for (BossDefinition.Skill x : a.def.skills) if (!x.type.equals(not.type) && !"SUMMON".equals(x.type)) pool.add(x);
+        return pool.isEmpty() ? null : pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+    }
+
+    private static String skillLabel(String type) {
+        return switch (type) {
+            case "SLAM" -> "대지 강타"; case "METEOR" -> "낙하 폭발"; case "PULL" -> "소용돌이"; case "BLINK" -> "그림자 습격";
+            case "CHARGE" -> "돌진"; case "NOVA" -> "파동"; case "ERUPTION" -> "분출"; case "CROSS" -> "십자 베기"; case "FROST_FIELD" -> "서리 장판";
+            case "ROAR" -> "포효"; case "VOLLEY", "FIREBALL" -> "일제 사격"; case "BACKSTEP_VOLLEY" -> "백스텝 사격"; case "CHECKER" -> "바둑판 폭발";
+            case "SAFE_ZONE" -> "안전지대"; case "DONUT" -> "안팎 교대"; case "SWEEP" -> "회전 베기"; case "WAVE_WALL" -> "밀려오는 벽";
+            case "GUST" -> "힘껏 밀기"; case "FRONT_BACK" -> "앞뒤 베기"; case "SPREAD" -> "낙뢰 표식";
+            default -> type;
+        };
+    }
+
+    /** 궁극기 발동 조건: 등급 3 은 체력 50%, 등급 4 는 75 · 45 · 15% + 50초마다 */
+    private void ultimateCheck(Active a, MobManager.MobState s, double frac, Player target, long now) {
+        int tr = tier(a);
+        if (tr < 3 || !plugin.getConfig().getBoolean("bosses.ultimates", true)) return;
+        int[] th = tr >= 4 ? new int[]{75, 45, 15} : new int[]{50};
+        Integer hit = null;
+        for (int t : th) if (frac * 100 <= t && !a.ultDone.contains(t)) { hit = t; break; }
+        if (hit != null) a.ultDone.add(hit);
+        else if (!(tr >= 4 && a.nextUlt > 0 && now >= a.nextUlt)) {
+            if (tr >= 4 && a.nextUlt == 0) a.nextUlt = now + 50_000;
+            return;
+        }
+        if (tr >= 4) a.nextUlt = now + 50_000;
+        ultimate(a, s, target);
+    }
+
+    private static final String[] ULTS = {"DOOM", "COLLAPSE", "LASERS", "STORM"};
+
+    /** 궁극기 4종 — 보스마다 순서가 다르게 돌아가며 사용 */
+    private void ultimate(Active a, MobManager.MobState s, Player target) {
+        LivingEntity b = a.entity;
+        if (b == null || !b.isValid()) return;
+        int first = Math.abs(a.def.id.hashCode()) % ULTS.length;
+        String kind = ULTS[(first + a.ultDone.size() + (a.nextUlt > 0 ? (int) (a.nextUlt / 50_000 % 4) : 0)) % ULTS.length];
+        Color c = theme(a.def.id), red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
+        Material mat = BossFx.theme(a.def.id);
+        World w = b.getWorld();
+        Location o = b.getLocation();
+        Particle tp = themeParticle(a.def.id);
+        double dmg = s.damage * 2.0;
+        int dur = switch (kind) { case "DOOM" -> 170; case "COLLAPSE" -> 140; case "LASERS" -> 150; default -> 140; };
+        a.ultUntil = System.currentTimeMillis() + dur * 50L;
+        if (b instanceof Mob mob) { mob.setTarget(null); b.setAI(false); }   // 궁극기 동안 제자리
+        later(dur, () -> { if (b.isValid() && System.currentTimeMillis() >= a.staggerUntil) b.setAI(true); });
+        String name = switch (kind) { case "DOOM" -> "파멸의 주문"; case "COLLAPSE" -> "대붕괴"; case "LASERS" -> "심판의 광선"; default -> "운석 폭풍"; };
+        String hint = switch (kind) { case "DOOM" -> "8초 안에 보호막을 부수세요! 못 부수면 전멸"; case "COLLAPSE" -> "무너지는 땅을 따라 이미 무너진 곳으로";
+            case "LASERS" -> "도는 광선 사이 틈을 따라 움직이세요"; default -> "초록 안전지대를 따라 옮겨 다니세요"; };
+        for (Player p : a.bar.getPlayers()) {
+            p.sendTitle(Text.c("&4&l☠ " + name + " ☠"), Text.c("&c" + hint), 5, 50, 10);
+            p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.2f, 0.6f);
+        }
+        kr.rpgcraft.util.Fx.helix(plugin, b, 5, 2.2, 40, c, Color.BLACK);
+        BossFx.pillar(o, 1.6, 7, mat);
+        switch (kind) {
+            case "DOOM" -> {   // DPS 체크: 8초 동안 정해진 만큼 때려 보호막을 깨야 함
+                int ch = 160;
+                double need = s.maxHp * (tier(a) >= 4 ? 0.09 : 0.06) * (1 + 0.3 * Math.max(0, a.bar.getPlayers().size() - 1));
+                double[] startHp = {plugin.mobs().state(b) == null ? s.hp : plugin.mobs().state(b).hp};
+                boolean[] broken = {false};
+                BossFx.disc(o, 24, ch, BossFx.RED, red);
+                for (int t = 0; t <= ch; t += 5) {
+                    int tt = t;
+                    later(t, () -> {
+                        if (!b.isValid() || broken[0]) return;
+                        MobManager.MobState st = plugin.mobs().state(b);
+                        double done = st == null ? 0 : Math.max(0, startHp[0] - st.hp);
+                        double f = Math.min(1, done / need);
+                        Location h = b.getLocation().add(0, b.getHeight() * 0.6, 0);
+                        for (int i = 0; i < 14; i++) {   // 보호막 구체
+                            double ang = tt * 0.2 + i * Math.PI / 7, y = Math.sin(tt * 0.1 + i) * 1.4;
+                            dustAt(h.clone().add(Math.cos(ang) * 2.4, y, Math.sin(ang) * 2.4), f < 1 ? Color.fromRGB(0x8A2AFF) : Color.WHITE, 1.8f);
+                        }
+                        kr.rpgcraft.util.Vfx.beam(b.getLocation(), b.getLocation().add(0, 14, 0), 1.2 + tt / 80.0, Color.fromRGB(0x5A0A8A));
+                        int bars = (int) Math.round(f * 20);
+                        for (Player p : a.bar.getPlayers())
+                            Text.actionBar(p, "&5&l파멸의 주문 &f[" + "&d■".repeat(bars) + "&8" + "■".repeat(20 - bars) + "&f] &e" + (int) (f * 100) + "% &7- " + String.format("%.1f", (ch - tt) / 20.0) + "초");
+                        if (f >= 1) {
+                            broken[0] = true;
+                            a.ultUntil = 0;
+                            BossFx.boom(b.getLocation(), 6, mat);
+                            w.playSound(b.getLocation(), Sound.BLOCK_GLASS_BREAK, 2f, 0.5f);
+                            for (Player p : a.bar.getPlayers()) p.sendTitle(Text.c("&a&l보호막 파괴!"), Text.c("&f보스가 크게 흔들립니다"), 0, 30, 8);
+                            b.setAI(true);
+                            a.staggerUntil = 0;
+                            stagger(a);
+                            later(20, () -> stagger(a));   // 두 배로 긴 경직
+                        }
+                    });
+                }
+                later(ch, () -> {
+                    if (!b.isValid() || broken[0]) return;
+                    Location at = b.getLocation();
+                    for (int r = 3; r <= 24; r += 3) { int rr = r; later(r / 3, () -> { kr.rpgcraft.util.Vfx.ring(at, rr, rr % 6 == 0 ? c : Color.fromRGB(0x5A0A8A)); BossFx.debris(at, 6, mat, rr * 0.4); }); }
+                    BossFx.boom(at, 16, mat);
+                    w.playSound(at, Sound.ENTITY_WARDEN_SONIC_BOOM, 2f, 0.5f);
+                    for (Player p : playersNear(at, 30)) {
+                        plugin.combat().mobSkillDamage(b, p, dmg * 2.5);
+                        p.setVelocity(p.getLocation().toVector().subtract(at.toVector()).setY(0).normalize().multiply(1.6).setY(0.8));
+                    }
+                    for (Player p : a.bar.getPlayers()) p.sendTitle(Text.c("&4&l파멸"), Text.c("&c보호막을 깨지 못했습니다"), 0, 30, 8);
+                });
+            }
+            case "COLLAPSE" -> {   // 대붕괴: 땅이 나선을 그리며 한 칸씩 무너짐 — 이미 무너진 칸 뒤를 따라가야 함
+                double cell = 4, R = 18;
+                double base = ThreadLocalRandom.current().nextDouble(Math.PI * 2);
+                int sgn = ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
+                List<double[]> cells = new ArrayList<>();
+                for (double x = -R; x <= R; x += cell) for (double z = -R; z <= R; z += cell) {
+                    double d = Math.hypot(x, z);
+                    if (d > R + 1) continue;
+                    double ang = (Math.atan2(z, x) - base) * sgn;
+                    ang = ((ang % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+                    cells.add(new double[]{x, z, ang + d / R * 0.6});   // 각도 순서 + 바깥은 살짝 늦게 → 나선
+                }
+                cells.sort(Comparator.comparingDouble(v -> v[2]));
+                int step = 2, warn = 18;
+                for (int i = 0; i < cells.size(); i++) {
+                    double[] cl = cells.get(i);
+                    Location at = o.clone().add(cl[0], 0, cl[1]);
+                    long t0 = 20 + (long) i * step;
+                    later(t0 - warn, () -> telegraphSquare(at, cell / 2 - 0.1, warn, red));
+                    later(t0, () -> {
+                        if (!b.isValid()) return;
+                        BossFx.quake(at, cell * 0.5, mat);
+                        w.spawnParticle(Particle.EXPLOSION_LARGE, at.clone().add(0, 0.5, 0), 1);
+                        if (ThreadLocalRandom.current().nextInt(4) == 0) w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 0.8f);
+                        for (Player p : playersNear(at, cell)) {
+                            Location pl = p.getLocation();
+                            if (Math.abs(pl.getX() - at.getX()) <= cell / 2 && Math.abs(pl.getZ() - at.getZ()) <= cell / 2) {
+                                plugin.combat().mobSkillDamage(b, p, dmg * 0.9);
+                                p.setVelocity(new Vector(0, 0.9, 0));
+                            }
+                        }
+                    });
+                }
+            }
+            case "LASERS" -> {   // 심판의 광선: 보스에게서 뻗은 광선들이 천천히 돌고(최상위는 도중에 방향을 바꿈), 주기적으로 파동
+                int n = tier(a) >= 4 ? 4 : 3;
+                double L = 22, start = ThreadLocalRandom.current().nextDouble(Math.PI * 2);
+                int sgn = ThreadLocalRandom.current().nextBoolean() ? 1 : -1, warn = 24, spin = 120;
+                for (int i = 0; i < n; i++) telegraphLine(o, new Vector(Math.cos(start + i * Math.PI * 2 / n), 0, Math.sin(start + i * Math.PI * 2 / n)), L, 2.4, warn, red);
+                BossFx.disc(o, 2.2, warn + spin, BossFx.SAFE, green);
+                Map<UUID, Long> hitAt = new HashMap<>();
+                for (int t = 0; t <= spin; t += 2) {
+                    int tt = t;
+                    later(warn + t, () -> {
+                        if (!b.isValid()) return;
+                        double prog = tier(a) >= 4 && tt > spin / 2 ? (spin - tt) : tt;   // 최상위: 절반쯤에서 반대로
+                        double rot = start + sgn * Math.PI * prog / spin;
+                        for (int i = 0; i < n; i++) {
+                            double ang = rot + i * Math.PI * 2 / n;
+                            Vector dv = new Vector(Math.cos(ang), 0, Math.sin(ang));
+                            Location from = o.clone().add(dv.clone().multiply(2.2)).add(0, 1, 0), to = o.clone().add(dv.clone().multiply(L)).add(0, 1, 0);
+                            kr.rpgcraft.util.Vfx.beam(from, to, 1.8, c);
+                            if (tt % 4 == 0) kr.rpgcraft.util.Vfx.beam(from, to, 0.7, Color.WHITE);
+                            if (tt % 8 == 0) BossFx.debris(o.clone().add(dv.clone().multiply(L * 0.8)), 2, mat, 1.2);
+                            for (Player p : playersNear(o, L + 1)) {
+                                double d = Math.hypot(p.getLocation().getX() - o.getX(), p.getLocation().getZ() - o.getZ());
+                                if (d <= 2.2 || distToLine(o, dv, L, p.getLocation()) > 1.4) continue;
+                                long last = hitAt.getOrDefault(p.getUniqueId(), 0L);
+                                if (System.currentTimeMillis() - last < 600) continue;
+                                hitAt.put(p.getUniqueId(), System.currentTimeMillis());
+                                plugin.combat().mobSkillDamage(b, p, dmg * 0.6);
+                            }
+                        }
+                        if (tt % 10 == 0) w.playSound(o, Sound.BLOCK_BEACON_AMBIENT, 1.5f, 1.6f);
+                    });
+                }
+                if (tier(a) >= 4) for (int pulse = 1; pulse <= 3; pulse++) {   // 파동: 광선 사이를 달리다 점프로 넘기
+                    long at = warn + pulse * 36L;
+                    later(at - 12, () -> telegraphRing(o, 2.2, L, 12, Color.fromRGB(0xFF9A1A)));
+                    for (int r = 3; r <= (int) L; r += 2) {
+                        int rr = r;
+                        later(at + r / 2, () -> {
+                            kr.rpgcraft.util.Vfx.ring(o, rr, Color.fromRGB(0xFF9A1A));
+                            for (Player p : playersNear(o, rr + 1)) {
+                                double d = Math.hypot(p.getLocation().getX() - o.getX(), p.getLocation().getZ() - o.getZ());
+                                if (Math.abs(d - rr) <= 1 && p.isOnGround()) plugin.combat().mobSkillDamage(b, p, dmg * 0.4);
+                            }
+                        });
+                    }
+                }
+            }
+            default -> {   // 운석 폭풍: 4번 몰아치는 운석 — 매번 안전지대(초록)가 옮겨 가고, 다음 자리가 주황으로 미리 보임
+                double R = 18, sr = 3.2;
+                List<Location> safes = new ArrayList<>();
+                for (int i = 0; i < 4; i++) {
+                    double ang = ThreadLocalRandom.current().nextDouble(Math.PI * 2), d = ThreadLocalRandom.current().nextDouble(5, 12);
+                    safes.add(o.clone().add(Math.cos(ang) * d, 0, Math.sin(ang) * d));
+                }
+                for (int wv = 0; wv < 4; wv++) {
+                    int ww = wv;
+                    long at = 34 + wv * 30L;
+                    Location safe = safes.get(wv);
+                    later(at - 34, () -> {
+                        telegraph(o, R, 34, red);
+                        BossFx.disc(safe, sr, 34, BossFx.SAFE, green);
+                        kr.rpgcraft.util.Vfx.beam(safe, safe.clone().add(0, 12, 0), 1.3, green);
+                        if (ww + 1 < safes.size()) BossFx.disc(safes.get(ww + 1), sr, 34, BossFx.ORANGE, Color.fromRGB(0xFF9A1A));   // 다음 자리 미리보기
+                        for (int m = 0; m < 6; m++) {
+                            Location mt = o.clone().add(ThreadLocalRandom.current().nextDouble(-R, R), 0, ThreadLocalRandom.current().nextDouble(-R, R));
+                            if (mt.distanceSquared(safe) < sr * sr * 2) continue;
+                            BossFx.meteor(mt, 1.6 + ThreadLocalRandom.current().nextDouble(1.4), 30, mat);
+                        }
+                    });
+                    later(at, () -> {
+                        if (!b.isValid()) return;
+                        BossFx.boom(o, 12, mat);
+                        w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
+                        for (Player p : playersNear(o, R)) {
+                            if (p.getLocation().distanceSquared(safe) <= (sr + 0.4) * (sr + 0.4)) continue;
+                            plugin.combat().mobSkillDamage(b, p, dmg * 0.9);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
     private static Color wv(Color c) {
         return Color.fromRGB(Math.min(255, c.getRed() + 60), Math.min(255, c.getGreen() + 60), Math.min(255, c.getBlue() + 60));
     }
@@ -1165,6 +1466,7 @@ public class BossManager {
         double dmg = s.damage * 1.6;
         Location o = b.getLocation();
         Particle tp = themeParticle(a.def.id);
+        Material mat = BossFx.theme(a.def.id);
         int pick = ThreadLocalRandom.current().nextInt(6);
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         long[] sigWind = {22, 30, 46, 10, 60, 40};
@@ -1207,6 +1509,7 @@ public class BossManager {
                 double safe = 4, outer = 16;
                 telegraph(o, outer, 30, red);
                 for (int t = 0; t <= 30; t += 4) later(t, () -> dustCircle(o, safe, green, 1.8f));
+                BossFx.disc(o, safe, 30, BossFx.SAFE, green);
                 charge(b, 30, c);
                 w.playSound(o, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.6f, 0.6f);
                 later(30, () -> {
@@ -1216,6 +1519,8 @@ public class BossManager {
                         later((long) ((r - safe) / 3), () -> { kr.rpgcraft.util.Vfx.ring(o, rr, c); kr.rpgcraft.util.Vfx.ring(o, rr - 0.8, Color.WHITE); w.spawnParticle(tp, o, 20, rr * 0.6, 0.3, rr * 0.6, 0.05); });
                     }
                     for (Player p : playersNear(o, outer)) if (p.getLocation().distance(o) > safe) plugin.combat().mobSkillDamage(b, p, dmg * 1.2);
+                    BossFx.quake(o, outer, mat);
+                    BossFx.debris(o, 20, mat, 5);
                     kr.rpgcraft.util.Vfx.burst(o.clone().add(0, 2, 0), 9, c);
                     w.spawnParticle(Particle.EXPLOSION_HUGE, o, 3, 5, 0.5, 5);
                     w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
@@ -1230,12 +1535,13 @@ public class BossManager {
                     if (i < 3 && target.isOnline()) at = target.getLocation().clone().add(ThreadLocalRandom.current().nextDouble(-2, 2), 0, ThreadLocalRandom.current().nextDouble(-2, 2));
                     Location fat = at;
                     long delay = i * 3L;
-                    later(delay, () -> telegraph(fat, 3, 16, red));
+                    later(delay, () -> { telegraph(fat, 3, 16, red); BossFx.meteor(fat, 1.8, 16, mat); });
                     later(delay + 16, () -> {
                         if (!b.isValid()) return;
                         kr.rpgcraft.util.Vfx.beam(fat.clone().add(-3, 18, -2), fat, 1.8, c);
                         kr.rpgcraft.util.Vfx.burst(fat.clone().add(0, 0.8, 0), 3.6, c);
                         w.spawnParticle(Particle.LAVA, fat, 8, 1, 0.2, 1, 0.1);
+                        BossFx.quake(fat, 3, mat);
                         w.spawnParticle(Particle.EXPLOSION_LARGE, fat, 1);
                         w.playSound(fat, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.9f);
                         hurt(b, playersNear(fat, 3), dmg * 0.7, null);
@@ -1284,6 +1590,7 @@ public class BossManager {
                         if (!b.isValid() || !p.isOnline()) return;
                         Location at = p.getLocation();
                         kr.rpgcraft.util.Vfx.beam(at.clone().add(0, 20, 0), at, 2.4, c);
+                        BossFx.pillar(at, R * 0.4, 6, mat);
                         kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), R * 1.3, c);
                         kr.rpgcraft.util.Vfx.ring(at, R, Color.WHITE);
                         w.spawnParticle(Particle.FLASH, at.clone().add(0, 1, 0), 1);
@@ -1304,6 +1611,7 @@ public class BossManager {
                 telegraph(o, R, 40, red);
                 for (int t = 0; t <= 40; t += 3) later(t, () -> { for (Location sf : safes) { dustCircle(sf, 3, green, 1.8f); w.spawnParticle(Particle.VILLAGER_HAPPY, sf.clone().add(0, 0.5, 0), 3, 1, 0.2, 1, 0); } });
                 for (Location sf : safes) kr.rpgcraft.util.Vfx.beam(sf, sf.clone().add(0, 12, 0), 1.2, green);
+                for (Location sf : safes) BossFx.disc(sf, 3, 40, BossFx.SAFE, green);
                 charge(b, 40, c);
                 w.playSound(o, Sound.ENTITY_WITHER_SPAWN, 1f, 0.8f);
                 later(40, () -> {
@@ -1313,6 +1621,7 @@ public class BossManager {
                         later(k2, () -> { kr.rpgcraft.util.Vfx.burst(at.clone().add(0, 1, 0), 5, c); w.spawnParticle(Particle.EXPLOSION_HUGE, at, 1); });
                     }
                     kr.rpgcraft.util.Vfx.ring(o, R, wv(c));
+                    BossFx.boom(o, 14, mat);
                     w.playSound(o, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.4f);
                     for (Player p : playersNear(o, R)) {
                         boolean ok = false;

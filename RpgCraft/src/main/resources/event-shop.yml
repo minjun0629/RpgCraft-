@@ -1,11 +1,11 @@
 # ============================================================
-#  미니게임 코인 상점 (v5.7.1) — /미니게임 상점  (v5.9.8: 가격 약 2.5배)
+#  미니게임 코인 상점 (v5.7.1) — /미니게임 상점  (v5.9.8: 가격 약 2.5배 · v5.9.9: 상급 룬 판매 중지, 중요 아이템 약 2배 더)
 #  상점은 하나이고, 모든 품목을 미니게임 코인으로 삽니다 (미니게임 4종 성공 보상).
 #  아래 블록 하나가 상점 창의 한 줄입니다 (최대 4줄 · 한 줄에 최대 7개) — v5.7.2: 「특별」 줄 제거. name 은 줄 맨 왼쪽에 표시되는 종류 이름.
 #  items: item = 아이템 ID (/rpg관리 items 로 확인), amount = 개수, price = 미니게임 코인 가격, limit = 한 사람이 살 수 있는 횟수 (0 = 무제한)
 #  icon = 줄 이름 칸의 아이콘 재료
 # ============================================================
-version: 4
+version: 5
 
 consume:
   name: "소모품"
@@ -25,17 +25,16 @@ growth:
   items:
     - {item: crystal_low, amount: 5, price: 8}
     - {item: crystal_mid, amount: 3, price: 20}
-    - {item: crystal_high, amount: 1, price: 30}
+    - {item: crystal_high, amount: 1, price: 60}
     - {item: rune_low, amount: 1, price: 15}
-    - {item: rune_mid, amount: 1, price: 38}
-    - {item: rune_high, amount: 1, price: 100, limit: 2}
+    - {item: rune_mid, amount: 1, price: 70}
 
 enhance:
   name: "강화 · 잠재"
   icon: ANVIL
   items:
-    - {item: ticket_rate10, amount: 1, price: 62, limit: 5}
-    - {item: ticket_protect, amount: 1, price: 100, limit: 3}
-    - {item: potential_scroll, amount: 1, price: 45}
-    - {item: cube_red, amount: 1, price: 50}
-    - {item: cube_master, amount: 1, price: 150, limit: 2}
+    - {item: ticket_rate10, amount: 1, price: 140, limit: 5}
+    - {item: ticket_protect, amount: 1, price: 220, limit: 3}
+    - {item: potential_scroll, amount: 1, price: 90}
+    - {item: cube_red, amount: 1, price: 100}
+    - {item: cube_master, amount: 1, price: 320, limit: 2}

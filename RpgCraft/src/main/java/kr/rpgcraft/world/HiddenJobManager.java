@@ -232,7 +232,12 @@ public class HiddenJobManager implements Listener {
                 for (String n : t.need()) lore.add((meets(p, d, n) ? " &a✔ " : " &c✘ ") + label(n));
                 lore.add("");
                 if (d.counter("hj_issued_" + t.line() + t.tier()) > 0) lore.add("&e히든 전직서를 들고 우클릭하면 승급");
-                else lore.add("&8조건을 갖추고 이 단계의 이름 없는 자를 찾아가라…");
+                else {
+                    lore.add("&8조건을 갖추고 이 단계의 이름 없는 자를 찾아가라…");
+                    boolean all = true;
+                    for (String n : t.need()) all &= meets(p, d, n);
+                    lore.addAll(hint(p, t, all));
+                }
             } else { m = Material.BLACK_STAINED_GLASS_PANE; name = "&8???"; lore.clear(); lore.add("&8아직 보이지 않는 길"); }
             g.set(slots[t.tier() - 1], Gui.button(m, name, lore.toArray(new String[0])), null);
         }
@@ -242,6 +247,37 @@ public class HiddenJobManager implements Listener {
                 "&7다음 단계는 직업창이 아니라 맵 먼 곳의", "&7이름 없는 자에게서 받은 전직서로 오른다."), null);
         g.fill(0, 35);
         g.open(p);
+    }
+
+    /**
+     * v5.10.19 다음 단계 NPC 의 좌표 힌트. 정확한 자리 대신 사람마다 다르게 흔든 대략의 좌표 (±150칸),
+     * 조건을 모두 갖추면 더 가까운 힌트 (±40칸) + 스폰에서의 방향 · 거리
+     */
+    private List<String> hint(Player p, Tier t, boolean close) {
+        List<String> out = new java.util.ArrayList<>();
+        String xz = data.getString("placed." + t.line() + t.tier());
+        if (xz == null) { out.add("&8(아직 이 자는 세상에 나타나지 않았다)"); return out; }
+        String[] v = xz.split(",");
+        int x, z;
+        try { x = Integer.parseInt(v[0].trim()); z = Integer.parseInt(v[1].trim()); } catch (Exception ex) { return out; }
+        int err = close ? 40 : 150;
+        Random r = new Random((p.getUniqueId().toString() + t.line() + t.tier() + close).hashCode());
+        int hx = x + r.nextInt(-err, err + 1), hz = z + r.nextInt(-err, err + 1);
+        int step = close ? 10 : 50;
+        hx = Math.round(hx / (float) step) * step;
+        hz = Math.round(hz / (float) step) * step;
+        Location sp = Bukkit.getWorlds().get(0).getSpawnLocation();
+        double dx = x - sp.getX(), dz = z - sp.getZ();
+        String[] dirs = {"남", "남서", "서", "북서", "북", "북동", "동", "남동"};   // 마인크래프트: +Z 남쪽, +X 동쪽
+        int oct = (int) Math.round(Math.toDegrees(Math.atan2(-dx, dz)) / 45.0);
+        String dir = dirs[Math.floorMod(oct, 8)];
+        int dist = (int) Math.round(Math.hypot(dx, dz) / 100.0) * 100;
+        out.add("");
+        out.add("&d좌표 힌트 " + (close ? "&a(가까운 힌트)" : "&7(대략)"));
+        out.add(" &fX ≈ " + String.format("%,d", hx) + " &7· &fZ ≈ " + String.format("%,d", hz) + " &8(±" + err + "칸)");
+        out.add(" &7스폰에서 &f" + dir + "쪽 &7약 &f" + String.format("%,d", dist) + "칸");
+        if (!close) out.add(" &8조건을 모두 갖추면 더 정확한 힌트가 보인다");
+        return out;
     }
 
     private String label(String need) {

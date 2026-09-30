@@ -1010,7 +1010,7 @@ public class BossManager {
                         m.getPersistentDataContainer().set(Keys.MINION, PersistentDataType.STRING, a.def.id);
                         m.setRemoveWhenFarAway(true);
                         plugin.mobs().initCustom(m, lv, plugin.mobs().hpFor(lv), plugin.mobs().damageFor(lv), Math.min(40, lv * 0.2),
-                                (long) (plugin.mobs().expFor(lv) * plugin.getConfig().getDouble("bosses.minion-exp-mult", 0.4)),   // v5.5.0: 보스 부하 경험치 40%
+                                (long) (plugin.mobs().expFor(lv) * plugin.getConfig().getDouble("bosses.minion-exp-mult", 0.05)),   // v5.9.6: 보스 부하 경험치 40% → 5% (보스 레벨 기준이라 많이 줬음)
                                 lv * 100L, k.name == null ? MobManager.korean(ft) : k.name);
                         if (!k.ai) m.setAI(false);
                         if (m instanceof Mob mob) mob.setTarget(target);

@@ -614,7 +614,7 @@ public class CustomMobManager implements Listener {
                     Entity m = w.spawnEntity(at, type);
                     if (m instanceof LivingEntity ml2) {
                         MobManager mm = plugin.mobs();
-                        mm.initCustom(ml2, lv, mm.hpFor(lv) * 0.4, mm.damageFor(lv) * 0.6, 0, mm.expFor(lv) / 4, 0, "소환된 " + MobManager.korean(type));
+                        mm.initCustom(ml2, lv, mm.hpFor(lv) * 0.4, mm.damageFor(lv) * 0.6, 0, (long) (mm.expFor(lv) * plugin.getConfig().getDouble("mobs.summon-exp-mult", 0.1)), 0, "소환된 " + MobManager.korean(type));
                         if (m instanceof Mob mob) mob.setTarget(t);
                     }
                     w.spawnParticle(Particle.SMOKE_LARGE, at.add(0, 0.5, 0), 10, 0.3, 0.5, 0.3, 0.02);

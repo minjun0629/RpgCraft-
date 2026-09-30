@@ -272,6 +272,26 @@ public class WeaponSkillManager implements Listener {
         strong(p, k);
     }
 
+    /**
+     * v5.10.3: 몬스터 · 보스를 조준한 채 우클릭해도 무기 스킬 (전에는 게임이 "엔티티 우클릭" 으로 처리해 스킬이 안 나가고 팔만 휘둘렀음).
+     * 상점 · 의뢰 NPC 같은 적이 아닌 대상은 그대로.
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInteractEntity(org.bukkit.event.player.PlayerInteractEntityEvent e) {
+        if (e.getHand() != EquipmentSlot.HAND || !plugin.getConfig().getBoolean("weapon-skills.enabled", true)) return;
+        Player p = e.getPlayer();
+        org.bukkit.entity.Entity en = e.getRightClicked();
+        LivingEntity target = plugin.bossModels() != null ? plugin.bossModels().resolve(en) : (en instanceof LivingEntity le ? le : null);
+        if (target == null || target instanceof Player || plugin.combat().isNpc(target) || !plugin.combat().isEnemy(p, target)) return;
+        Kind k = kind(p);
+        if (k == null) return;
+        ItemTemplate t = ItemData.template(p.getInventory().getItemInMainHand());
+        e.setCancelled(true);
+        if (p.isSneaking() && gradeAtLeast(p, kr.rpgcraft.item.Grade.RARE) && t.skill == null && k != Kind.SHIELD) { extra(p, k, false); return; }
+        if (k != Kind.BOW && ((t.skill != null && p.isSneaking()) || (k == Kind.SHIELD && p.isSneaking()))) return;
+        strong(p, k);
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onBowShoot(EntityShootBowEvent e) {
         if (e.getEntity() instanceof Player p && ItemData.id(e.getBow()) != null && plugin.getConfig().getBoolean("weapon-skills.enabled", true)) {

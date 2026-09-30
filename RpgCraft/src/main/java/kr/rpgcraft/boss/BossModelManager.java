@@ -163,7 +163,7 @@ public class BossModelManager implements Listener {
     }
 
     private void attachHitbox(LivingEntity boss, float scale) {
-        if (!plugin.getConfig().getBoolean("boss-models.hitbox", true)) return;
+        if (!plugin.getConfig().getBoolean("boss-models.hitbox", false)) return;
         double mult = plugin.getConfig().getDouble("boss-models.hitbox-mult", 1.0);
         float h = (float) (scale * mult), wdt = (float) (scale * 0.75 * mult);
         if (h <= boss.getHeight() + 0.2 && wdt <= boss.getWidth() + 0.2) return;   // 원래 몸이 더 크면 필요 없음

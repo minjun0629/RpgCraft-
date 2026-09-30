@@ -432,6 +432,18 @@ public class MobModelManager implements Listener {
         attackPose(e.getEntity());
     }
 
+    /** v5.9.4: 물약 · 화염구 · 삼지창 던지기도 공격 자세 (전에는 가만히 서서 던지는 것처럼 보였음) */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onThrow(org.bukkit.event.entity.ProjectileLaunchEvent e) {
+        if (e.getEntity().getShooter() instanceof LivingEntity le) attackPose(le);
+    }
+
+    /** 주문 (소환사 · 흑마법사의 송곳니 · 소환) 도 공격 자세 */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSpell(org.bukkit.event.entity.EntitySpellCastEvent e) {
+        if (e.getEntity() instanceof LivingEntity le) attackPose(le);
+    }
+
     /** 모델을 쓴 몹은 투구를 치웠으므로 햇빛에 타지 않게 (원래 투구를 쓴 몬스터가 많음) */
     @EventHandler(ignoreCancelled = true)
     public void onSun(EntityCombustEvent e) {

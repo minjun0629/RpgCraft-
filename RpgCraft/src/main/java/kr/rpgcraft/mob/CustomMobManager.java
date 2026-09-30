@@ -268,6 +268,15 @@ public class CustomMobManager implements Listener {
                     default -> { }
                 }
             }
+            // v5.9.4: 원거리 몹은 무기가 없으면 아예 공격을 못 함 (약탈자는 쇠뇌가 없으면 맞아도 쫓아오기만 했음) → 손이 비었으면 기본 무기
+            boolean noHand = d.equipment.keySet().stream().noneMatch(k -> k.equalsIgnoreCase("hand"));
+            ItemStack ranged = null;
+            if (noHand && d.type == EntityType.PILLAGER) ranged = new ItemStack(Material.CROSSBOW);
+            else if (noHand && (d.type == EntityType.SKELETON || d.type == EntityType.STRAY) && (d.name.contains("궁") || d.name.contains("명사수"))) ranged = new ItemStack(Material.BOW);
+            if (ranged != null) {
+                eq.setItemInMainHand(ranged);
+                eq.setItemInMainHandDropChance(0);
+            }
         }
         AttributeInstance sp = le.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
         if (sp != null && d.speed != 1) sp.setBaseValue(sp.getDefaultValue() * d.speed);

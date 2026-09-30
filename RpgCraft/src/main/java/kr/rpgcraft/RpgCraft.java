@@ -298,6 +298,7 @@ public final class RpgCraft extends JavaPlugin {
         if (getConfig().getInt("vfx.max-active", 48) == 70) getConfig().set("vfx.max-active", 48);
         if (Math.abs(getConfig().getDouble("bosses.tier4-double-cast", 0.1) - 0.25) < 1e-9) getConfig().set("bosses.tier4-double-cast", 0.1);   // v5.9.7 예전 기본값 → 0.1
         if (Math.abs(getConfig().getDouble("bosses.minion-exp-mult", 0.05) - 0.4) < 1e-9) getConfig().set("bosses.minion-exp-mult", 0.05);   // v5.9.6 예전 기본값(40%) → 5%
+        if (Math.abs(getConfig().getDouble("bosses.max-fly-height", 8) - 4) < 1e-9) getConfig().set("bosses.max-fly-height", 8);   // v5.10.8 공중에서 아래로 기술을 쓰므로 4 → 8
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
         if (Math.abs(getConfig().getDouble("weapon-skills.bolt-range", 14) - 18) < 1e-9) getConfig().set("weapon-skills.bolt-range", 14);   // 지팡이 평타 18 → 14칸 (v5.4.29)
         if (Math.abs(getConfig().getDouble("bosses.chase-radius", 48) - 24) < 1e-9) getConfig().set("bosses.chase-radius", 48);   // 보스 추격 24 → 48칸 (v5.5.0)

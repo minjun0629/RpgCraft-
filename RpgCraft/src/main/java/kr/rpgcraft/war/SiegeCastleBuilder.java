@@ -251,6 +251,17 @@ public class SiegeCastleBuilder {
         World w = at.getWorld();
         int ox = at.getBlockX(), oy = at.getBlockY(), oz = at.getBlockZ();
         if (oy + 60 > w.getMaxHeight()) return "너무 높은 곳입니다. 조금 낮은 땅에서 해 주세요.";
+        // v5.10.12 월드 스폰 근처에는 성을 지을 수 없음 (성벽 끝까지 포함해 war.castle-spawn-safe-radius 칸 밖)
+        int safe = plugin.getConfig().getInt("war.castle-spawn-safe-radius", 300);
+        if (safe > 0) {
+            int half = 0;
+            for (Op o : ops) half = Math.max(half, Math.max(Math.abs(o.x), Math.abs(o.z)));
+            Location sp = w.getSpawnLocation();
+            double d = Math.hypot(ox - sp.getX(), oz - sp.getZ());
+            if (d - half * Math.sqrt(2) < safe)
+                return "스폰 근처 " + safe + "칸 안에는 성을 지을 수 없습니다. &7(여기서 스폰까지 " + (int) d + "칸, 성 반지름 " + half + "칸 → 스폰에서 "
+                        + (int) Math.ceil(safe + half * Math.sqrt(2)) + "칸 이상 떨어진 곳에서)";
+        }
         int perTick = Math.max(2000, plugin.getConfig().getInt("war.castle-build-blocks-per-tick", 20000));
         // v5.10.10 짓기 전 부지를 기록해 둠 (길드가 사라지거나 철거 명령을 쓰면 원래 땅으로 되돌림)
         int rr = 0, top = 0;

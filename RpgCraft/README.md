@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.12
+- **스폰 근처 성 설치 금지**: 월드 스폰 300칸 안(성 끝자락 포함)에는 `castle build` 불가 (`war.castle-spawn-safe-radius`).
+
 ## v5.10.11
 - **군단원 언데드화**: 네크로맨서 군단원은 창백한 회녹색 · 영혼빛 눈의 언데드 색 모델 + 발밑 영혼불 (리소스팩 변경). 외부 팩 확인에 실패하면 몬스터 모델을 끄던 것 → 확실히 다른 팩일 때만 끔.
 

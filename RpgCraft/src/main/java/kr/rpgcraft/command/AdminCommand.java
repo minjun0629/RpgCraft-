@@ -53,7 +53,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
         Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7- 주식 가격 직접 지정");
         Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 미니게임 코인 지급 (음수면 회수)");
-        Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록)");
+        Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록, 스폰 300칸 안은 불가)");
         Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");

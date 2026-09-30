@@ -193,6 +193,7 @@ war:
   prepare-seconds: 600
   duration-seconds: 1200
   walls-required: 3          # [위키] 성벽 3개 파괴 후 신호기 파괴 시 승리 (0 = 전부)
+  castle-spawn-safe-radius: 300   # v5.10.12 월드 스폰에서 이 거리(칸) 안에는 castle build 로 성을 지을 수 없음 (성 끝자락 포함, 0 = 제한 없음)
   castle-wall-hp-large: 60000   # /rpg관리 castle build 로 지은 대형 성의 성벽 구간 체력
   castle-build-blocks-per-tick: 20000   # 대형 성을 지을 때 한 틱에 놓는 블록 수 (낮출수록 천천히 · 렉 적게)
   wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)

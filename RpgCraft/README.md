@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.7.4
+- 미니게임 **같은 그림 찾기 어려움** 제한 시간 150초 → **100초** (14쌍).
+
 ## v5.7.3
 - **보스 경직 삭제**: 기술을 쓴 직후 보스가 멈춰 서던 경직(머리 위 별)을 없앴습니다. 보스는 기술 뒤에도 쉬지 않고 움직이고 공격합니다. (기존 서버 설정도 자동으로 0. 다시 켜려면 `bosses.stagger-ticks` 에 틱 수)
 

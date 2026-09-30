@@ -30,7 +30,7 @@ public final class FxBudget {
     /** 연출 want 개를 띄워도 되는지: 허락된 개수(0~want)를 돌려주고 그만큼 센다. 다 쓰면 done() 으로 돌려놓기 */
     public static int grant(int want) {
         if (want <= 0) return 0;
-        int perTick = cfg("vfx.max-new-per-tick", 18), maxActive = cfg("vfx.max-active", 70);
+        int perTick = cfg("vfx.max-new-per-tick", 12), maxActive = cfg("vfx.max-active", 48);
         int n = Math.max(0, Math.min(want, Math.min(perTick - spent, maxActive - active)));
         spent += n;
         active += n;

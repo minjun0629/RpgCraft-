@@ -215,7 +215,7 @@ public class MobModelManager implements Listener {
         Location at = le.getLocation().clone();
         at.setYaw(0);
         at.setPitch(0);
-        float view = (float) plugin.getConfig().getDouble("mob-models.view-range", 1.0);
+        float view = (float) plugin.getConfig().getDouble("mob-models.view-range", 0.6);
         for (Part p : def.parts()) {
             ItemStack it = new ItemStack(Material.PAPER);
             ItemMeta m = it.getItemMeta();
@@ -226,10 +226,7 @@ public class MobModelManager implements Listener {
                 x.setItemStack(it);
                 x.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.NONE);
                 x.setPersistent(false);
-                if (body) {
-                    x.setShadowRadius(0.45f * scale);
-                    x.setShadowStrength(0.5f);
-                }
+                x.setShadowRadius(0);   // v5.10.2 프레임: 몬스터 모델 그림자 없음
                 x.setViewRange(view);
                 x.setTransformation(new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(0.01f), new Quaternionf()));   // 등장 전에는 작게
                 x.getPersistentDataContainer().set(modelKey, PersistentDataType.BYTE, (byte) 1);
@@ -332,7 +329,7 @@ public class MobModelManager implements Listener {
             if (tick < r.nextAt) continue;
             double dist = nearest(mob, far);
             if (dist > far) { r.nextAt = tick + 10; continue; }
-            int step = dist < 24 ? 2 : 4;
+            int step = dist < 16 ? 2 : 4;   // v5.10.2: 16블록 밖은 절반 빈도
             r.nextAt = tick + step;
             animate(mob, r, ds, step);
         }

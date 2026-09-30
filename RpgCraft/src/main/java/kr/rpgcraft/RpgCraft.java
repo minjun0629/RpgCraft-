@@ -292,6 +292,9 @@ public final class RpgCraft extends JavaPlugin {
         if (!getConfig().contains("minigames.coins-unified", true)) { getConfig().set("minigames.daily-plays-scope", "total"); getConfig().set("minigames.coins-unified", true); }   // 미니게임 4종 합쳐 하루 5판 — 한 번만 (v5.6.4)
         if (!getConfig().contains("server-list.show-ip", true)) { getConfig().set("server-list.auto-address", false); getConfig().set("server-list.show-ip", false); }   // 서버 목록에 IP 표시 끔 — 한 번만 (v5.6.4)
         if (getConfig().getInt("bosses.stagger-ticks", 0) == 24) getConfig().set("bosses.stagger-ticks", 0);   // 보스 경직 없앰 (v5.7.3)
+        if (Math.abs(getConfig().getDouble("mob-models.view-range", 0.6) - 1.0) < 1e-9) getConfig().set("mob-models.view-range", 0.6);   // v5.10.2 프레임
+        if (getConfig().getInt("vfx.max-new-per-tick", 12) == 18) getConfig().set("vfx.max-new-per-tick", 12);
+        if (getConfig().getInt("vfx.max-active", 48) == 70) getConfig().set("vfx.max-active", 48);
         if (Math.abs(getConfig().getDouble("bosses.tier4-double-cast", 0.1) - 0.25) < 1e-9) getConfig().set("bosses.tier4-double-cast", 0.1);   // v5.9.7 예전 기본값 → 0.1
         if (Math.abs(getConfig().getDouble("bosses.minion-exp-mult", 0.05) - 0.4) < 1e-9) getConfig().set("bosses.minion-exp-mult", 0.05);   // v5.9.6 예전 기본값(40%) → 5%
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);

@@ -12,7 +12,7 @@ import voxel_lib as VL
 from voxel_lib import (Grid, emit, figure, armor, robe, cape, hair, wings, crown, halo, staff, sword, hammer, spear,
                        quad, bow, axe, scythe, tentacle, floaters, hx, tex, rnd, add, sub, mul, lerp, norm)
 
-MOB_VS = 0.8
+MOB_VS = 1.0   # v5.10.2 프레임: 0.8 → 1.0 (요소 약 40% 감소)
 CMD_BASE = 9100
 
 

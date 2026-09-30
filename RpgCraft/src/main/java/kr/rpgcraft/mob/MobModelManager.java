@@ -77,6 +77,77 @@ public class MobModelManager implements Listener {
         load();
         Bukkit.getScheduler().runTaskTimer(plugin, this::follow, 1L, 1L);
         Bukkit.getScheduler().runTaskTimer(plugin, this::scan, 40L, 100L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::wander, 30L, 20L);
+    }
+
+    // ------------------------------------------------------------------ v5.10.0 배회
+    // 게임은 무언가를 태운 몹이 혼자 돌아다니지 않게 한다 (말에 사람이 탔을 때처럼) → 모델을 태운 몬스터가 제자리에만 서 있었음.
+    // 노리는 대상이 없을 때 가끔 근처 아무 곳으로 걸어가게 한다 (Paper 길찾기, 없으면 직접 밀기).
+    private static java.lang.reflect.Method getPf, moveLoc;
+    private static boolean pfTried;
+
+    private static void reflectPf(Mob m) {
+        if (pfTried) return;
+        pfTried = true;
+        try {
+            getPf = m.getClass().getMethod("getPathfinder");
+            moveLoc = getPf.getReturnType().getMethod("moveTo", Location.class, double.class);
+        } catch (Throwable ignored) {
+            getPf = null;
+        }
+    }
+
+    private void wander() {
+        if (rigs.isEmpty() || !plugin.getConfig().getBoolean("mob-models.wander", true)) return;
+        java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+        for (UUID id : new ArrayList<>(rigs.keySet())) {
+            if (!(Bukkit.getEntity(id) instanceof Mob m) || !m.isValid() || m.isDead() || !m.isOnGround()) continue;
+            if (m.getTarget() != null && m.getTarget().isValid()) continue;   // 싸우는 중이면 게임 AI 가 쫓아감
+            if (m instanceof Slime || rnd.nextDouble() > 0.22) continue;
+            if (nearest(m, 48) > 48) continue;
+            Location l = m.getLocation();
+            double a = rnd.nextDouble(Math.PI * 2), dist = rnd.nextDouble(3, 8);
+            Location dest = standable(l.clone().add(Math.cos(a) * dist, 0, Math.sin(a) * dist));
+            if (dest == null) continue;
+            reflectPf(m);
+            if (getPf != null) {
+                try {
+                    moveLoc.invoke(getPf.invoke(m), dest, 1.0);
+                    continue;
+                } catch (Throwable ignored) {
+                }
+            }
+            nudge(m, dest);
+        }
+    }
+
+    /** 그 근처(위아래 2칸)에서 발 디딜 수 있는 자리 */
+    private static Location standable(Location at) {
+        org.bukkit.block.Block b = at.getBlock();
+        for (int dy = 2; dy >= -2; dy--) {
+            org.bukkit.block.Block feet = b.getRelative(0, dy, 0);
+            if (feet.isPassable() && feet.getRelative(0, 1, 0).isPassable() && feet.getRelative(0, -1, 0).getType().isSolid() && !feet.isLiquid())
+                return feet.getLocation().add(0.5, 0, 0.5);
+        }
+        return null;
+    }
+
+    /** 길찾기가 없는 서버: 몇 틱 동안 그쪽으로 살살 밀어 걷게 함 (막히면 뜀) */
+    private void nudge(Mob m, Location dest) {
+        int[] n = {0};
+        Bukkit.getScheduler().runTaskTimer(plugin, task -> {
+            if (++n[0] > 30 || !m.isValid() || m.isDead() || (m.getTarget() != null && m.getTarget().isValid())) { task.cancel(); return; }
+            Location l = m.getLocation();
+            org.bukkit.util.Vector d = dest.toVector().subtract(l.toVector()).setY(0);
+            if (d.lengthSquared() < 0.5) { task.cancel(); return; }
+            d.normalize();
+            m.setRotation((float) Math.toDegrees(Math.atan2(-d.getX(), d.getZ())), 0);
+            double vy = m.getVelocity().getY();
+            boolean blocked = !l.clone().add(d).getBlock().isPassable();
+            if (m.isOnGround() && blocked) vy = 0.42;
+            org.bukkit.util.Vector v = d.multiply(0.17);
+            m.setVelocity(new org.bukkit.util.Vector(v.getX(), vy, v.getZ()));
+        }, 1L, 1L);
     }
 
     private void load() {

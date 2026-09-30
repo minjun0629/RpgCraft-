@@ -314,6 +314,19 @@ public class CustomMobManager implements Listener {
         for (Entity en : e.getEntities()) if (en instanceof LivingEntity le) reattach(le);
     }
 
+    // ------------------------------------------------------------------ 맞으면 반격 (v5.10.0)
+    /** 플레이어에게 맞은 커스텀 몬스터는 그 플레이어를 확실히 노림 (게임 AI 가 반격 대상을 못 잡는 경우가 있었음) */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onStruck(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Mob m) || !alive.containsKey(m.getUniqueId())) return;
+        Entity src = e.getDamager() instanceof Projectile pr && pr.getShooter() instanceof Entity sh ? sh : e.getDamager();
+        if (!(src instanceof Player p) || p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR) return;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (m.isValid() && !m.isDead() && p.isOnline() && p.getWorld().equals(m.getWorld()) && (m.getTarget() == null || !m.getTarget().isValid() || m.getTarget().isDead()))
+                m.setTarget(p);
+        });
+    }
+
     // ------------------------------------------------------------------ 공격 시 상태이상
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHit(EntityDamageByEntityEvent e) {

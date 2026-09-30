@@ -187,14 +187,18 @@ def flyer(g, body, wing, belly, eye, span=18.0, tail=True, head_kind="beak", pri
         g.box((6.6, 8.2, 14.8), (9.4, 8.8, 15.8), "2a0a0a", pri + 1)
         for x in (6.9, 7.7, 8.5, 9.1):
             g.dot(x, 8.4, 15.8, "f0f0f0", pri + 2, 0.4)
+    g.kind = "flyer"
     for sx in (-1, 1):
         root = (8 + sx * 1.6, 9.6, 5)
         elbow = (8 + sx * span * 0.45, 12, 4)
         tip = (8 + sx * span, 10.5, 0)
-        g.tube([root, elbow, tip], [0.8, 0.6, 0.2], hx(body, 0.8), pri + 1, smooth=True)
-        g.triangle(root, elbow, (8 + sx * 2, 9, -2), lambda p, w: wing, pri, scallop=0.0)
-        g.triangle(elbow, tip, (8 + sx * span * 0.6, 9, -4), lambda p, w: rim if (rim and w < 0.12) else wing, pri, scallop=0.15)
-        g.triangle(elbow, (8 + sx * span * 0.6, 9, -4), (8 + sx * 2, 9, -2), wing, pri)
+        wname = "wing_l" if sx < 0 else "wing_r"   # v5.9.1 날갯짓
+        g.rig[wname] = root
+        with g.parting(wname):
+            g.tube([root, elbow, tip], [0.8, 0.6, 0.2], hx(body, 0.8), pri + 1, smooth=True)
+            g.triangle(root, elbow, (8 + sx * 2, 9, -2), lambda p, w: wing, pri, scallop=0.0)
+            g.triangle(elbow, tip, (8 + sx * span * 0.6, 9, -4), lambda p, w: rim if (rim and w < 0.12) else wing, pri, scallop=0.15)
+            g.triangle(elbow, (8 + sx * span * 0.6, 9, -4), (8 + sx * 2, 9, -2), wing, pri)
     if tail:
         g.triangle((8, 8, -6), (5, 7.8, -11), (11, 7.8, -11), wing, pri, scallop=0.2)
     return hc
@@ -267,8 +271,9 @@ def rotten_farmer(g):
     for k in range(4):
         g.dot(8 + (k - 1.5) * 1.3, 21.5, 11.4, "3a4a2a", 9, 0.5)   # 썩은 자국
     top = add(B.hand_r, (0, 10, 1.2))
-    g.tube([add(B.hand_r, (0, -6, -0.8)), top], [0.35, 0.35], "6a4a2a", 6)
-    g.slab(top, add(top, (0, -0.6, 3.2)), (0.5, 0, 0), 0.4, "8a8f96", 7)   # 괭이
+    with g.parting("arm_r"):
+        g.tube([add(B.hand_r, (0, -6, -0.8)), top], [0.35, 0.35], "6a4a2a", 6)
+        g.slab(top, add(top, (0, -0.6, 3.2)), (0.5, 0, 0), 0.4, "8a8f96", 7)   # 괭이
 
 
 def bandit(g, cloak, mask, trim, scarf=None, quiver=True):
@@ -332,8 +337,9 @@ def witch_(g, hat, robe_c, skin, glow, moss=False):
     g.dot(B.head[0] + 0.6, B.head[1] - 0.8, B.head[2] + 3.0, hx(skin, 0.7), 9, 0.5)
     wide_hat(g, B, hat, glow, brim=5.4, pointed=True)
     hand = B.hand_r   # 물약 병
-    g.sphere(add(hand, (0, 1.4, 0.6)), 1.1, lambda x, y, z, d: glow if y < hand[1] + 1.6 else "d8f0f8", 7)
-    g.box(add(hand, (-0.35, 2.4, 0.25)), add(hand, (0.35, 3.2, 0.95)), "8a6a3a", 7)
+    with g.parting("arm_r"):
+        g.sphere(add(hand, (0, 1.4, 0.6)), 1.1, lambda x, y, z, d: glow if y < hand[1] + 1.6 else "d8f0f8", 7)
+        g.box(add(hand, (-0.35, 2.4, 0.25)), add(hand, (0.35, 3.2, 0.95)), "8a6a3a", 7)
     if moss:
         for k in range(8):
             a = k * 0.8
@@ -367,7 +373,8 @@ def mummy_(g, band, band2, eye, big=1.0, dual=False, hood_c=None, gold=None):
     if dual:
         for sx in (-1, 1):
             hand = B.hand_r if sx == 1 else B.hand_l
-            g.tube([hand, add(hand, (sx * 0.8, 3.2, 1.8)), add(hand, (sx * 2.0, 5.4, 1.4))], [0.5, 0.4, 0.1], "d8d0c0", 7, smooth=True)
+            with g.parting("arm_r" if sx == 1 else "arm_l"):
+                g.tube([hand, add(hand, (sx * 0.8, 3.2, 1.8)), add(hand, (sx * 2.0, 5.4, 1.4))], [0.5, 0.4, 0.1], "d8d0c0", 7, smooth=True)
     return B
 
 
@@ -408,8 +415,9 @@ def drowned_pirate(g):
         g.tube([p, add(p, (0.4, -2.4, 0.2))], [0.35, 0.2], "3a7a3a", 6)
     g.ellipsoid((8, 11.9, 8), (3.4, 0.7, 2.45), "c8a030", 5, inner=0.7)
     pts = [add(B.hand_r, (0, 1, 0.3)), add(B.hand_r, (0.2, 4.4, 1.6)), add(B.hand_r, (1.2, 7.4, 1.4))]   # 커틀러스
-    g.tube(pts, [0.7, 0.6, 0.15], "c8ccd2", 7, smooth=True, squash=(0.6, 1))
-    g.slab(add(B.hand_r, (0, 0.6, 0.2)), add(B.hand_r, (0, 1.0, 0.3)), (2.0, 0, 0), 0.4, "c8a030", 8)
+    with g.parting("arm_r"):
+        g.tube(pts, [0.7, 0.6, 0.15], "c8ccd2", 7, smooth=True, squash=(0.6, 1))
+        g.slab(add(B.hand_r, (0, 0.6, 0.2)), add(B.hand_r, (0, 1.0, 0.3)), (2.0, 0, 0), 0.4, "c8a030", 8)
 
 
 def frost_wraith(g):
@@ -574,7 +582,8 @@ def caster_(g, robe_c, trim, glow, skin="c8b0a0", orc=False, hood_c=None, bolt=F
             q = add(p, ((0.8 if k % 2 == 0 else -0.8), 1.1, 0))
             g.tube([p, q], [0.35, 0.25], glow, 7)
             p = q
-    g.sphere(add(B.hand_l, (0, 1.2, 0.8)), 0.9, lambda x, y, z, d: "ffffff" if d < 0.3 else glow, 7)   # 손의 마력 구
+    with g.parting("arm_l"):
+        g.sphere(add(B.hand_l, (0, 1.2, 0.8)), 0.9, lambda x, y, z, d: "ffffff" if d < 0.3 else glow, 7)   # 손의 마력 구
     return B
 
 
@@ -604,9 +613,10 @@ def moss_troll(g):
         p = (8 + (rnd(k, 3) - 0.5) * 11, 14 + rnd(k, 4) * 14, 5.5 + rnd(k, 5) * 5)
         g.ellipsoid(p, (1.1, 0.6, 1.0), MOSS, 5)
     hand = B.hand_r   # 통나무 몽둥이
-    g.tube([add(hand, (0, -2, -0.6)), add(hand, (0, 10, 2.6))], [0.8, 1.6], lambda x, y, z, d, f: tex("6a4a2a", x, y, z, 0.15), 6)
-    for k in range(3):
-        g.cone(add(hand, (0, 6 + k * 1.6, 1.8)), add(hand, ((k - 1) * 1.6, 7 + k * 1.6, 3.4)), 0.4, 0.1, "8a8f96", 7)
+    with g.parting("arm_r"):
+        g.tube([add(hand, (0, -2, -0.6)), add(hand, (0, 10, 2.6))], [0.8, 1.6], lambda x, y, z, d, f: tex("6a4a2a", x, y, z, 0.15), 6)
+        for k in range(3):
+            g.cone(add(hand, (0, 6 + k * 1.6, 1.8)), add(hand, ((k - 1) * 1.6, 7 + k * 1.6, 3.4)), 0.4, 0.1, "8a8f96", 7)
 
 
 def wild_golem(g):
@@ -775,9 +785,10 @@ def ember_imp(g):
     wings(g, B, "5a1a10", "a8200e", rim="ff7a1f", span=9, rise=6, kind="bat")
     g.tube([(8, 8, 6), (8, 5, 2), (9, 4, -1), (11, 5, -2)], [0.5, 0.4, 0.3, 0.2], SKIN, 4, smooth=True)
     g.cone((11, 5, -2), (12.4, 6, -2.6), 0.6, 0.05, "ff7a1f", 5)
-    g.tube([B.hand_r, add(B.hand_r, (0, 8, 1.2))], [0.3, 0.3], "3a2a1a", 6)   # 삼지 쇠스랑
-    for k in (-1, 0, 1):
-        g.cone(add(B.hand_r, (k * 0.8, 8, 1.2)), add(B.hand_r, (k * 0.9, 10, 1.4)), 0.3, 0.05, "ff7a1f", 7)
+    with g.parting("arm_r"):
+        g.tube([B.hand_r, add(B.hand_r, (0, 8, 1.2))], [0.3, 0.3], "3a2a1a", 6)   # 삼지 쇠스랑
+        for k in (-1, 0, 1):
+            g.cone(add(B.hand_r, (k * 0.8, 8, 1.2)), add(B.hand_r, (k * 0.9, 10, 1.4)), 0.3, 0.05, "ff7a1f", 7)
 
 
 def inferno_lord(g):
@@ -852,7 +863,8 @@ def storm_harpy(g):
         for t in range(3):
             a = (t - 1) * 0.6
             b = (8 + sx * 2.0, 0.8, 8.8)
-            g.tube([b, add(b, (math.sin(a) * 1.8, -0.2, math.cos(a) * 1.8))], [0.4, 0.15], "e0b030", 7)
+            with g.parting("leg_r" if sx == 1 else "leg_l"):
+                g.tube([b, add(b, (math.sin(a) * 1.8, -0.2, math.cos(a) * 1.8))], [0.4, 0.15], "e0b030", 7)
 
 
 # ================================================================== 그림자 · 공포
@@ -913,57 +925,121 @@ SIZE = {"night_hunter": 2.2, "void_phantom": 2.6, "storm_herald": 2.6, "storm_ha
         "sand_scorpion": 1.4, "venom_spider": 1.5, "nightmare_spider": 1.3, "void_hound": 1.3, "ember_imp": 0.9}
 
 
+PART_ORDER = ["body", "head", "arm_l", "arm_r", "leg_l", "leg_r", "leg_fl", "leg_fr", "leg_bl", "leg_br", "wing_l", "wing_r"]
+
+
+def _assign(g):
+    """따로 표시하지 않은 복셀을 부위에 붙임: 머리 근처(투구 · 두건 · 모자 · 왕관) → 머리, 손 근처(물약 · 구슬) → 그 팔"""
+    B = getattr(g, "body", None)
+    if getattr(g, "kind", None) != "biped" or B is None:
+        return
+    hx_, hy, hz = B.head
+    rx, ry, rz = B.head_r
+    neck_y = g.rig["head"][1]
+    for k, v in list(g.cells.items()):
+        if v[2] is not None:
+            continue
+        x, y, z = (k[0] + 0.5) * VL.VS, (k[1] + 0.5) * VL.VS, (k[2] + 0.5) * VL.VS
+        if y > neck_y + 0.3 and ((x - hx_) / (rx + 3.2)) ** 2 + ((y - hy) / (ry + 3.6)) ** 2 + ((z - hz) / (rz + 3.2)) ** 2 <= 1:
+            g.cells[k] = (v[0], v[1], "head")
+            continue
+        for (h, name) in g.hands:
+            if math.dist(h, (x, y, z)) < 2.0:
+                g.cells[k] = (v[0], v[1], name)
+                break
+
+
 def build_one(bid):
-    """모델 하나를 만들어 (요소 목록, 팔레트, 실제 키) 로"""
+    """모델 하나를 부위별로 만들어 ({부위: 요소 목록}, 팔레트, 실제 키, {부위: 관절 중심}) 로.
+    부위 모델은 관절 중심이 (8,8,8) 에 오게 옮겨 두고, 관절 중심 좌표(발 y=0 · 가운데 x=z=8 기준)를 따로 돌려 준다."""
     import boss_models as bm
     old = VL.VS
     VL.VS = MOB_VS
     try:
         g = Grid()
         BUILDERS[bid](g)
+        _assign(g)
+        present = {v[2] for v in g.cells.values()}
+        parts = ["body"] + [p for p in PART_ORDER[1:] if p in present and p in g.rig]
+        for k, v in list(g.cells.items()):   # 관절 정보가 없는 부위는 몸통으로
+            if v[2] is not None and v[2] not in parts:
+                g.cells[k] = (v[0], v[1], None)
         pal = bm.Palette()
-        m = bm.Model(pal)
         bm.CLAMP_AT_BUILD[0] = False
-        emit(g, m)
+        models = {}
+        for p in parts:
+            m = bm.Model(pal)
+            emit(g, m, part=None if p == "body" else p)
+            models[p] = m.els
     finally:
         VL.VS = old
         bm.CLAMP_AT_BUILD[0] = True
-    xs = [c for e in m.els for c in (e["from"][0], e["to"][0])]
-    ys = [c for e in m.els for c in (e["from"][1], e["to"][1])]
-    zs = [c for e in m.els for c in (e["from"][2], e["to"][2])]
+    alls = [e for els in models.values() for e in els]
+    xs = [c for e in alls for c in (e["from"][0], e["to"][0])]
+    ys = [c for e in alls for c in (e["from"][1], e["to"][1])]
+    zs = [c for e in alls for c in (e["from"][2], e["to"][2])]
     y0, h = min(ys), max(ys) - min(ys)
     half = max(max(abs(v - 8) for v in xs), max(abs(v - 8) for v in zs))
     f = min(16.0 / h, 23.5 / half)
-    for e in m.els:
-        for key in ("from", "to"):
-            v = e[key]
-            e[key] = [round(8 + (v[0] - 8) * f, 4), round((v[1] - y0) * f, 4), round(8 + (v[2] - 8) * f, 4)]
-        e.pop("_col", None)
-        e.pop("_edge", None)
-    return m.els, pal, round(h * f, 3)
+    piv = {"body": (8.0, y0, 8.0)}
+    for p in parts[1:]:
+        piv[p] = g.rig[p]
+    for p, els in models.items():   # 관절 중심에서 너무 멀면 (±24 넘으면) 전체를 더 줄임
+        P = piv[p]
+        for e in els:
+            for key in ("from", "to"):
+                for i in range(3):
+                    dev = abs(e[key][i] - P[i])
+                    if dev > 0:
+                        f = min(f, 23.8 / dev)
+    norm_piv = {p: (8 + (P[0] - 8) * f, (P[1] - y0) * f, 8 + (P[2] - 8) * f) for p, P in piv.items()}
+    for p, els in models.items():
+        n = norm_piv[p]
+        for e in els:
+            for key in ("from", "to"):
+                v = e[key]
+                e[key] = [round(8 + (v[0] - 8) * f - (n[0] - 8), 4), round((v[1] - y0) * f - (n[1] - 8), 4), round(8 + (v[2] - 8) * f - (n[2] - 8), 4)]
+            e.pop("_col", None)
+            e.pop("_edge", None)
+    return models, pal, round(h * f, 3), {p: tuple(round(c, 3) for c in n) for p, n in norm_piv.items()}, getattr(g, "kind", "solid")
 
 
 def write(pack_dir, ns, write_json, plugin_res=None):
-    """모델 · 텍스처를 쓰고 [(cmd, 모델 이름)] 반환. plugin_res 가 있으면 mob-models.yml (번호 · 키 · 배율)도 씀"""
+    """모델 · 텍스처를 쓰고 [(cmd, 모델 이름)] 반환. plugin_res 가 있으면 mob-models.yml (부위별 번호 · 관절 · 키 · 배율)도 씀"""
     import boss_models as bm
     tex_dir = os.path.join(pack_dir, "assets", ns, "textures", "item", "mob")
     os.makedirs(tex_dir, exist_ok=True)
     out, rows = [], []
-    for i, bid in enumerate(ORDER):
-        els, pal, h = build_one(bid)
+    cmd = CMD_BASE
+    for bid in ORDER:
+        models, pal, h, piv, kind = build_one(bid)
         if len(pal.colors) > 256:
             raise SystemExit("몬스터 팔레트 색이 256 개를 넘음: %s" % bid)
         pal.image().save(os.path.join(tex_dir, bid + ".png"))
-        model = {"credit": "RpgCraft mob model", "texture_size": [16, 16],
-                 "textures": {"0": ns + ":item/mob/" + bid, "particle": ns + ":item/mob/" + bid},
-                 "elements": els, "display": bm._display(1)}
-        write_json(os.path.join(pack_dir, "assets", ns, "models", "mob", bid + ".json"), model)
-        out.append((CMD_BASE + i, ns + ":mob/" + bid))
-        rows.append((bid, CMD_BASE + i, h, SIZE.get(bid, 1.0), len(els)))
+        prow = []
+        for p, els in models.items():
+            name = bid if p == "body" else bid + "_" + p
+            for e in els:
+                if any(c < -16 or c > 32 for c in e["from"] + e["to"]):
+                    raise SystemExit("몬스터 모델이 -16~32 를 넘음: %s" % name)
+            model = {"credit": "RpgCraft mob model", "texture_size": [16, 16],
+                     "textures": {"0": ns + ":item/mob/" + bid, "particle": ns + ":item/mob/" + bid},
+                     "elements": els, "display": bm._display(1)}
+            write_json(os.path.join(pack_dir, "assets", ns, "models", "mob", name + ".json"), model)
+            out.append((cmd, ns + ":mob/" + name))
+            prow.append((p, cmd, piv[p], len(els)))
+            cmd += 1
+        rows.append((bid, kind, h, SIZE.get(bid, 1.0), prow))
     if plugin_res:
-        lines = ["# 자동 생성 (tools/mob_models.py) — 일반 몬스터 3D 모델 번호 · 모델 키(1블록=16) · 표시 배율", "models:"]
-        for bid, cmd, h, sz, n in rows:
-            lines.append("  %s: {cmd: %d, height: %s, size: %s}   # 요소 %d" % (bid, cmd, h, sz, n))
+        lines = ["# 자동 생성 (tools/mob_models.py) — 일반 몬스터 3D 모델", "# parts: 부위 → [CustomModelData, 관절 x, y, z] (모델 좌표: 발 y=0, 가운데 x=z=8, 1블록=16)", "models:"]
+        for bid, kind, h, sz, prow in rows:
+            lines.append("  %s:   # 요소 %d" % (bid, sum(n for *_, n in prow)))
+            lines.append("    rig: %s" % kind)
+            lines.append("    height: %s" % h)
+            lines.append("    size: %s" % sz)
+            lines.append("    parts:")
+            for p, c, P, n in prow:
+                lines.append("      %s: [%d, %s, %s, %s]" % (p, c, P[0], P[1], P[2]))
         with open(os.path.join(plugin_res, "mob-models.yml"), "w", encoding="utf-8") as fh:
             fh.write("\n".join(lines) + "\n")
     return out

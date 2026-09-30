@@ -456,6 +456,7 @@ public class CustomMobManager implements Listener {
     /** 범위 기술은 쓰기 전에 빨간 범위를 먼저 보여 준다 (피할 시간 0.6초) */
     private boolean telegraph(LivingEntity le, Player t, Ability a) {
         Color red = Color.fromRGB(0xFF2A2A);
+        if (plugin.mobModels() != null) plugin.mobModels().attackPose(le);   // v5.9.1 모델: 기술을 쓸 때 무기를 들어 올렸다 내려찍음
         switch (a.type) {
             case "SLAM", "FROST", "POISON_CLOUD" -> kr.rpgcraft.util.Vfx.ring(le.getLocation(), Math.max(2, a.radius), red);
             case "LEAP", "METEOR" -> kr.rpgcraft.util.Vfx.ring(t.getLocation(), Math.max(2, a.radius), red);

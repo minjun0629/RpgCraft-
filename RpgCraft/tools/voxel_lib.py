@@ -91,7 +91,10 @@ def _call(colf, *a):
 # ------------------------------------------------------------------ 복셀 모음
 class Grid:
     def __init__(self):
-        self.cells = {}
+        self.cells = {}      # (i,j,k) -> (우선순위, 색, 부위)
+        self.part = None     # v5.9.1 지금 그리는 부위 (몬스터 관절 애니메이션: head · arm_l · leg_r · wing_l …, None = 몸통)
+        self.rig = {}        # 부위 → 관절 중심 (돌리는 점)
+        self.hands = []      # (손 위치, 팔 부위) — 무기를 그 팔에 붙이기
 
     def put(self, x, y, z, col, pri=1):
         if not col:
@@ -99,7 +102,29 @@ class Grid:
         k = (math.floor(x / VS), math.floor(y / VS), math.floor(z / VS))
         cur = self.cells.get(k)
         if cur is None or pri >= cur[0]:
-            self.cells[k] = (pri, col)
+            self.cells[k] = (pri, col, self.part)
+
+    def parting(self, name):
+        """with g.parting("arm_r"): … — 그 안에서 그린 복셀은 그 부위"""
+        g = self
+
+        class _P:
+            def __enter__(self_):
+                self_.prev = g.part
+                g.part = name
+
+            def __exit__(self_, *a):
+                g.part = self_.prev
+        return _P()
+
+    def hand_part(self, p, reach=3.2):
+        """p 가 어느 손 근처면 그 팔 부위, 아니면 지금 부위"""
+        best, bd = self.part, reach
+        for (h, name) in self.hands:
+            dd = math.dist(h, p)
+            if dd < bd:
+                best, bd = name, dd
+        return best
 
     def dot(self, x, y, z, col, pri=1, s=0.9):
         """눈 · 보석 같은 작은 점 (복셀 크기와 상관없이 일정한 크기)"""
@@ -262,26 +287,70 @@ def _quantize(colors, limit=250):
     return {k: table[c] for k, c in colors.items()}
 
 
-def emit(g, m):
-    solid = g.cells
+_ALL = object()
+
+
+def _final_colors(g):
+    """모든 복셀의 최종 색 (음영 + 256색 이하로 정리) — 부위로 나눠 그릴 때 공통 팔레트"""
+    allc = g.cells
+    whole = set(allc)
+    out = {}
+    R = max(2, int(round(1.5 / VS)))
+    occ = _occupancy(whole, R) if SHADE else {}
+    tot = (2 * R + 1) ** 3
+    for k, v in allc.items():
+        col = v[1]
+        if SHADE:
+            i, j, l = k
+            f = 1 + (0.5 - occ.get(k, 0) / tot) * 1.2
+            if (i, j + 1, l) not in whole:
+                f += 0.08
+            elif (i, j - 1, l) not in whole and j > 1:
+                f -= 0.1
+            f = round(max(0.6, min(1.2, f)) / 0.08) * 0.08
+            col = _shade(col, f)
+        out[k] = col
+    return _quantize(out)
+
+
+def emit(g, m, part=_ALL):
+    """part 를 주면 그 부위 복셀만 (가림 · 면 제거도 그 부위 안에서만 — 따로 움직여도 구멍이 안 보이게). 음영은 전체 기준"""
+    allc = g.cells
+    if part is _ALL:
+        solid = allc
+    else:
+        solid = {k: v for k, v in allc.items() if (v[2] if len(v) > 2 else None) == part}
     filled = set(solid)
     visible = {}
-    for k, (pri, col) in solid.items():
+    for k, v in solid.items():
         i, j, l = k
         if all(n in filled for n in ((i + 1, j, l), (i - 1, j, l), (i, j + 1, l), (i, j - 1, l), (i, j, l + 1), (i, j, l - 1))):
             continue
-        visible[k] = col
-    if SHADE:
+        visible[k] = v[1]
+    if part is not _ALL:   # 부위로 나눌 때는 음영 · 색 정리를 전체 기준으로 한 번만 (부위들이 한 팔레트를 나눠 씀)
+        final = getattr(g, "_final", None)
+        if final is None:
+            final = _final_colors(g)
+            g._final = final
+        visible = {k: final[k] for k in visible}
+    elif SHADE:
         R = max(2, int(round(1.5 / VS)))
-        occ = _occupancy(filled, R)
+        occ = getattr(g, "_occ", None)
+        if occ is None:
+            occ = _occupancy(set(allc), R)
+            try:
+                g._occ = occ
+            except AttributeError:
+                pass
+        whole = set(allc)
         tot = (2 * R + 1) ** 3
         for k, col in visible.items():
             i, j, l = k
             o = occ.get(k, 0) / tot
             f = 1 + (0.5 - o) * 1.2                      # 튀어나온 곳 밝게 · 오목한 곳 어둡게
-            if (i, j + 1, l) not in filled:
+            if (i, j + 1, l) not in whole:
                 f += 0.08                                  # 위에서 비치는 빛
-            elif (i, j - 1, l) not in filled and j > 1:
+            elif (i, j - 1, l) not in whole and j > 1:
                 f -= 0.1                                   # 아랫면 그늘
             f = max(0.6, min(1.2, f))
             f = round(f / 0.08) * 0.08
@@ -351,11 +420,15 @@ def figure(g, s=1.0, w=1.0, skin="e8c4a0", top="555566", legs="444455", boots=No
     if not robe:
         for sx in (-1, 1):
             hip, knee, ank, toe = (cx + sx * 1.8 * w, Y(10.4), cz), (cx + sx * 2.0 * w, Y(5.8), cz + 0.3), (cx + sx * 2.0 * w, Y(1.4), cz - 0.1), (cx + sx * 2.0 * w, Y(0.6), cz + 1.5)
+            leg = "leg_l" if sx < 0 else "leg_r"
+            g.rig[leg] = hip
+            prev_part, g.part = g.part, leg
             g.tube([hip, knee], [1.75 * w * bulk, 1.25 * w * bulk], lambda x, y, z, d, f: tex(legs, x, y, z), pri)
             g.tube([knee, ank], [1.25 * w * bulk, 0.95 * w * bulk], lambda x, y, z, d, f: tex(legs, x, y, z), pri)
             g.ellipsoid(add(knee, (0, 0.2, 0.5)), (1.2 * w, 1.0, 0.9), lambda x, y, z, d: tex(hx(legs, 1.15), x, y, z), pri)
             g.tube([ank, toe], [1.05 * w, 0.9 * w], lambda x, y, z, d, f: tex(boots, x, y, z), pri + 1, squash=(1.1, 1))
             g.box((ank[0] - 1.1 * w, 0, cz - 1.4), (ank[0] + 1.1 * w, Y(0.7), cz + 2.6), lambda x, y, z: hx(boots, 0.8), pri + 1)
+            g.part = prev_part
     # 골반 · 몸통 · 가슴
     g.ellipsoid((cx, Y(11.0), cz), (3.0 * w * bulk, Y(1.9), 2.1 * bulk), lambda x, y, z, d: tex(legs, x, y, z), pri)
     g.ellipsoid((cx, Y(14.6), cz), (3.2 * w * bulk, Y(3.4), 2.2 * bulk), lambda x, y, z, d: tex(top, x, y, z), pri)
@@ -364,6 +437,9 @@ def figure(g, s=1.0, w=1.0, skin="e8c4a0", top="555566", legs="444455", boots=No
     g.tube([(cx, Y(19.4), cz), (cx, Y(21.2), cz + 0.2)], [1.15 * w, 1.05 * w], lambda x, y, z, d, f: skin, pri)
     B.head = (cx, Y(23.0), cz + 0.3)
     B.head_r = (2.45 * s, 2.75 * s, 2.55 * s)
+    g.rig["head"] = (cx, Y(20.4), cz + 0.2)
+    g.kind, g.body = "biped", B
+    prev_part, g.part = g.part, "head"
     if head:
         g.ellipsoid(B.head, B.head_r, lambda x, y, z, d: tex(skin, x, y, z, 0.05), pri)
         g.ellipsoid((cx, Y(21.9), cz + 1.4), (1.7 * s, 1.2 * s, 1.7 * s), lambda x, y, z, d: skin, pri)   # 턱
@@ -378,9 +454,12 @@ def figure(g, s=1.0, w=1.0, skin="e8c4a0", top="555566", legs="444455", boots=No
             g.box((cx - 0.3, Y(22.3), fz), (cx + 0.3, Y(23.3), fz + 0.45), hx(skin, 0.9), pri + 4)               # 코
             g.box((cx - 0.3, Y(22.25), fz + 0.1), (cx + 0.3, Y(22.5), fz + 0.5), hx(skin, 0.75), pri + 4)
             g.box((cx - 0.75, Y(21.75), fz - 0.4), (cx + 0.75, Y(22.0), fz + 0.1), hx(skin, 0.6), pri + 4)     # 입
+    g.part = prev_part
     B.head_top = (cx, Y(23.0) + 2.75 * s, cz + 0.3)
     # 팔
     for sx in (-1, 1):
+        arm = "arm_l" if sx < 0 else "arm_r"
+        prev_part, g.part = g.part, arm
         weapon = (sx == 1) == (weapon_arm == "right") and reach
         sh = (cx + sx * 4.3 * w * bulk, Y(19.0), cz)
         el = (cx + sx * 5.3 * w * bulk, Y(15.0), cz + (1.2 if weapon else 0.4))
@@ -390,6 +469,9 @@ def figure(g, s=1.0, w=1.0, skin="e8c4a0", top="555566", legs="444455", boots=No
         g.tube([el, wr], [1.1 * w * bulk, 0.9 * w * bulk], lambda x, y, z, d, f: tex(arms, x, y, z), pri)
         hand = add(wr, (0, -0.2, 0.4 if weapon else 0))
         g.ellipsoid(hand, (0.95 * w, 1.05, 0.95), lambda x, y, z, d: hands, pri + 1)
+        g.part = prev_part
+        g.rig[arm] = sh
+        g.hands.append((hand, arm))
         if sx == 1:
             B.hand_r, B.shoulder_r, B.elbow_r = hand, sh, el
         else:
@@ -464,15 +546,18 @@ def armor(g, B, plate, trim, gem=None, pri=4, spikes=0, belt=True, greaves=True,
             g.cone(base, add(base, (sx * 0.9, 2.2 - t * 0.4, -0.3)), 0.55, 0.12, lambda x, y, z, f: trim if f > 0.6 else hx(plate, 0.7), pri + 3)
         el = B.elbow_r if sx == 1 else B.elbow_l
         hand = B.hand_r if sx == 1 else B.hand_l
+        prev_part, g.part = g.part, ("arm_l" if sx < 0 else "arm_r")
         g.tube([lerp(el, hand, 0.25), lerp(el, hand, 0.85)], [1.35 * w, 1.2 * w],
                lambda x, y, z, d, f: trim if f > 0.85 or f < 0.1 or abs(f - 0.47) < 0.05 else metal(plate, 0.2 + f * 0.6, x, y, z), pri)   # 팔 보호대
         g.ellipsoid(el, (1.3 * w, 1.1, 1.3), lambda x, y, z, d: trim if d > 0.7 else metal(plate, 0.3, x, y, z), pri + 1)   # 팔꿈치 판
+        g.part = "leg_l" if sx < 0 else "leg_r"
         if greaves and hasattr(B, "hip"):
             kx = cx + sx * 2.0 * w
             g.tube([(kx, 5.6 * s, cz + 0.6), (kx, 1.8 * s, cz + 0.4)], [1.45 * w, 1.2 * w],
                    lambda x, y, z, d, f: trim if f < 0.08 or f > 0.95 else metal(plate, f * 0.8, x, y, z), pri, squash=(1, 1.05))
             g.ellipsoid((kx, 5.9 * s, cz + 1.3), (1.2 * w, 1.0, 0.9), lambda x, y, z, d: gem if (gem and d < 0.3) else trim, pri + 1)
             g.ellipsoid((kx, 8.6 * s, cz + 0.2), (1.9 * w, 1.6, 2.0), lambda x, y, z, d: metal(plate, 0.5, x, y, z) if y > 7.6 * s else None, pri, inner=0.6)   # 허벅지 판
+        g.part = prev_part
     if belt:
         g.ellipsoid((cx, 11.9 * s, cz), (3.4 * w, 0.75, 2.45), lambda x, y, z, d: trim, pri + 1, inner=0.7)
         g.ellipsoid((cx, 11.9 * s, cz + 2.5), (1.0, 0.85, 0.45), lambda x, y, z, d: "ffffff" if (gem and d < 0.15) else (gem or hx(trim, 1.2)), pri + 2)
@@ -563,6 +648,9 @@ def wings(g, B, c1, c2, rim=None, pri=1, span=17.0, rise=11.0, feathers=6, kind=
     """등 뒤로 펼친 날개. kind: feather(깃털 · 천사) · bat(막 · 악마) · shard(조각 · 얼음/공허)"""
     for sx in (-1, 1):
         root = (8 + sx * 1.6, 18.8 * B.s, B.back_z - 0.4)
+        wing = "wing_l" if sx < 0 else "wing_r"   # v5.9.1 날갯짓
+        g.rig[wing] = root
+        prev_part, g.part = g.part, wing
         elbow = (8 + sx * span * 0.45, 18.8 * B.s + rise * 0.55, B.back_z - 2.6)
         tip = (8 + sx * span, 18.8 * B.s + rise, B.back_z - 4.4)
         g.tube([root, elbow, tip], [0.9, 0.7, 0.35], lambda x, y, z, d, f: hx(c1, 0.8), pri + 1, smooth=True)
@@ -592,6 +680,7 @@ def wings(g, B, c1, c2, rim=None, pri=1, span=17.0, rise=11.0, feathers=6, kind=
                     L = len0 * (0.55 + 0.6 * t)
                     end = add(base, (sx * 1.6 * t, -L, -0.6))
                     g.slab(base, end, (sx * 1.3, 0, 0.1), 0.45, lambda x, y, z, u, v, c=c: hx(c, 0.7) if abs(v) < 0.12 else (hx(c, 1.12) if abs(v) < 0.4 else hx(c, 1.0 - 0.25 * u)), pri + row)
+        g.part = prev_part
 
 
 def crown(g, center, r, col, gem=None, spikes=6, height=2.2, pri=6, tilt=0.0):
@@ -621,7 +710,7 @@ def halo(g, center, r, col, glow="ffffff", pri=6):
 
 
 # ------------------------------------------------------------------ 무기
-def staff(g, hand, top_y, wood, head_col, orb=None, pri=5, lean=0.25):
+def _staff_impl(g, hand, top_y, wood, head_col, orb=None, pri=5, lean=0.25):
     bottom = (hand[0], 0.4, hand[2] - lean * hand[1])
     top = (hand[0], top_y, hand[2] + lean * (top_y - hand[1]))
     g.tube([bottom, top], [0.38, 0.32], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
@@ -637,7 +726,7 @@ def staff(g, hand, top_y, wood, head_col, orb=None, pri=5, lean=0.25):
     return top
 
 
-def sword(g, hand, length, blade, edge, guard, pri=5, width=1.3, tilt=(0, 1, 0.35)):
+def _sword_impl(g, hand, length, blade, edge, guard, pri=5, width=1.3, tilt=(0, 1, 0.35)):
     d = norm(tilt)
     tip = add(hand, mul(d, length))
     base = add(hand, mul(d, 1.0))
@@ -659,7 +748,7 @@ def sword(g, hand, length, blade, edge, guard, pri=5, width=1.3, tilt=(0, 1, 0.3
     return tip
 
 
-def hammer(g, hand, handle_len, head_size, wood, metal, trim, pri=5):
+def _hammer_impl(g, hand, handle_len, head_size, wood, metal, trim, pri=5):
     top = add(hand, (0, handle_len * 0.7, 1.2))
     bot = add(hand, (0, -handle_len * 0.3, -0.5))
     g.tube([bot, top], [0.42, 0.4], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
@@ -672,7 +761,7 @@ def hammer(g, hand, handle_len, head_size, wood, metal, trim, pri=5):
     return top
 
 
-def spear(g, hand, length, shaft, head, pri=5, prongs=1):
+def _spear_impl(g, hand, length, shaft, head, pri=5, prongs=1):
     bot = add(hand, (0, -length * 0.35, -1.0))
     top = add(hand, (0, length * 0.65, 1.8))
     g.tube([bot, top], [0.35, 0.3], lambda x, y, z, d, f: tex(shaft, x, y, z, 0.1), pri)
@@ -702,14 +791,18 @@ def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2,
     g.ellipsoid((8, cy + H * 0.1, z0 + L * 0.68), (W / 2 + 0.6, H / 2 + 0.6, L * 0.38), lambda x, y, z, d: tex(belly if y < cy - H * 0.3 else fur, x, y, z), pri)
     g.ellipsoid((8, cy + H * 0.45, zf - L * 0.25), (W / 2 * 0.9 * hump, H * 0.42 * hump, L * 0.24), lambda x, y, z, d: tex(fur2, x, y, z), pri)   # 어깨 혹
     B.legs = []
+    g.kind, g.body = "quad", B
     for zz, front in ((z0 + L * 0.2, False), (zf - L * 0.18, True)):
         for sx in (-1, 1):
             top = (8 + sx * (W / 2 - 1.6), cy, zz)
             knee = (8 + sx * (W / 2 - 1.4), leg * 0.5, zz + (0.8 if front else -0.8))
             foot = (8 + sx * (W / 2 - 1.4), 0.9, zz + 0.3)
-            g.tube([top, knee], [leg_r * 1.25, leg_r], lambda x, y, z, d, f: tex(fur2, x, y, z), pri)
-            g.tube([knee, foot], [leg_r, leg_r * 0.9], lambda x, y, z, d, f: tex(fur2, x, y, z), pri)
-            g.ellipsoid((foot[0], 0.7, foot[2] + 0.4), (leg_r * 1.05, 0.75, leg_r * 1.2), lambda x, y, z, d: hoof, pri + 1)
+            leg_name = "leg_" + ("f" if front else "b") + ("l" if sx < 0 else "r")   # v5.9.1 다리마다 따로 움직임
+            g.rig[leg_name] = top
+            with g.parting(leg_name):   # 몸 속에 묻히는 윗부분은 몸통이 차지하도록 우선순위를 한 단계 낮춤
+                g.tube([top, knee], [leg_r * 1.25, leg_r], lambda x, y, z, d, f: tex(fur2, x, y, z), pri - 1)
+                g.tube([knee, foot], [leg_r, leg_r * 0.9], lambda x, y, z, d, f: tex(fur2, x, y, z), pri - 1)
+                g.ellipsoid((foot[0], 0.7, foot[2] + 0.4), (leg_r * 1.05, 0.75, leg_r * 1.2), lambda x, y, z, d: hoof, pri + 1)
             B.legs.append(foot)
     B.front_z = zf
     B.back_y = leg + H
@@ -720,7 +813,7 @@ def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2,
     return B
 
 
-def bow(g, hand, height, wood, string, pri=6, bend=2.4):
+def _bow_impl(g, hand, height, wood, string, pri=6, bend=2.4):
     """세로로 쥔 긴 활 (휜 몸 + 시위)"""
     top = add(hand, (0, height / 2, 0))
     bot = add(hand, (0, -height / 2, 0))
@@ -731,7 +824,7 @@ def bow(g, hand, height, wood, string, pri=6, bend=2.4):
         g.sphere(add(p, (0, 0, -0.6)), 0.5, string, pri + 1)
 
 
-def axe(g, hand, handle_len, wood, blade, edge, pri=6, size=3.4, double=True):
+def _axe_impl(g, hand, handle_len, wood, blade, edge, pri=6, size=3.4, double=True):
     top = add(hand, (0, handle_len * 0.7, 0.8))
     bot = add(hand, (0, -handle_len * 0.3, -0.4))
     g.tube([bot, top], [0.4, 0.38], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
@@ -742,7 +835,7 @@ def axe(g, hand, handle_len, wood, blade, edge, pri=6, size=3.4, double=True):
     return top
 
 
-def scythe(g, hand, handle_len, wood, blade, edge, pri=6, reach=8.0):
+def _scythe_impl(g, hand, handle_len, wood, blade, edge, pri=6, reach=8.0):
     top = add(hand, (0, handle_len * 0.7, 0.8))
     bot = add(hand, (0, -handle_len * 0.3, -0.4))
     g.tube([bot, top], [0.4, 0.36], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
@@ -769,3 +862,38 @@ def tentacle(g, pts, r0, r1, col, col2, sucker, pri=3):
 def floaters(g, pts, col, core="ffffff", r=0.8, pri=6):
     for p in pts:
         g.sphere(p, r, lambda x, y, z, d: core if d < 0.25 else col, pri)
+
+
+def staff(g, hand, top_y, wood, head_col, orb=None, pri=5, lean=0.25):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _staff_impl(g, hand, top_y, wood, head_col, orb, pri, lean)
+
+
+def sword(g, hand, length, blade, edge, guard, pri=5, width=1.3, tilt=(0, 1, 0.35)):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _sword_impl(g, hand, length, blade, edge, guard, pri, width, tilt)
+
+
+def hammer(g, hand, handle_len, head_size, wood, metal, trim, pri=5):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _hammer_impl(g, hand, handle_len, head_size, wood, metal, trim, pri)
+
+
+def spear(g, hand, length, shaft, head, pri=5, prongs=1):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _spear_impl(g, hand, length, shaft, head, pri, prongs)
+
+
+def bow(g, hand, height, wood, string, pri=6, bend=2.4):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _bow_impl(g, hand, height, wood, string, pri, bend)
+
+
+def axe(g, hand, handle_len, wood, blade, edge, pri=6, size=3.4, double=True):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _axe_impl(g, hand, handle_len, wood, blade, edge, pri, size, double)
+
+
+def scythe(g, hand, handle_len, wood, blade, edge, pri=6, reach=8.0):
+    with g.parting(g.hand_part(hand)):   # v5.9.1 무기는 쥔 팔과 함께 움직임
+        return _scythe_impl(g, hand, handle_len, wood, blade, edge, pri, reach)

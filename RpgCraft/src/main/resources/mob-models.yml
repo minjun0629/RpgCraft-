@@ -1,70 +1,654 @@
-# 자동 생성 (tools/mob_models.py) — 일반 몬스터 3D 모델 번호 · 모델 키(1블록=16) · 표시 배율
+# 자동 생성 (tools/mob_models.py) — 일반 몬스터 3D 모델
+# parts: 부위 → [CustomModelData, 관절 x, y, z] (모델 좌표: 발 y=0, 가운데 x=z=8, 1블록=16)
 models:
-  jelly_slime: {cmd: 9100, height: 16.0, size: 1.0}   # 요소 560
-  goblin: {cmd: 9101, height: 16.0, size: 1.0}   # 요소 453
-  rotten_farmer: {cmd: 9102, height: 16.0, size: 1.0}   # 요소 586
-  forest_bandit: {cmd: 9103, height: 16.0, size: 1.0}   # 요소 817
-  silverfish_swarm: {cmd: 9104, height: 8.174, size: 2.6}   # 요소 490
-  venom_spider: {cmd: 9105, height: 16.0, size: 1.5}   # 요소 446
-  skeleton_captain: {cmd: 9106, height: 16.0, size: 1.0}   # 요소 527
-  bomber: {cmd: 9107, height: 16.0, size: 1.0}   # 요소 613
-  swamp_hag: {cmd: 9108, height: 16.0, size: 1.0}   # 요소 908
-  mummy: {cmd: 9109, height: 16.0, size: 1.0}   # 요소 508
-  sand_scorpion: {cmd: 9110, height: 16.0, size: 1.4}   # 요소 580
-  drowned_pirate: {cmd: 9111, height: 16.0, size: 1.0}   # 요소 579
-  frost_wraith: {cmd: 9112, height: 16.0, size: 1.0}   # 요소 611
-  orc_warrior: {cmd: 9113, height: 16.0, size: 1.0}   # 요소 807
-  soul_wisp: {cmd: 9114, height: 16.0, size: 1.0}   # 요소 67
-  orc_shaman: {cmd: 9115, height: 16.0, size: 1.0}   # 요소 880
-  ember_spirit: {cmd: 9116, height: 16.0, size: 1.0}   # 요소 333
-  magma_brute: {cmd: 9117, height: 16.0, size: 1.0}   # 요소 832
-  night_hunter: {cmd: 9118, height: 8.812, size: 2.2}   # 요소 455
-  plague_boar: {cmd: 9119, height: 16.0, size: 1.0}   # 요소 1195
-  nether_hog: {cmd: 9120, height: 16.0, size: 1.0}   # 요소 1212
-  piglin_berserker: {cmd: 9121, height: 16.0, size: 1.0}   # 요소 838
-  bone_knight: {cmd: 9122, height: 16.0, size: 1.0}   # 요소 965
-  shadow_stalker: {cmd: 9123, height: 16.0, size: 1.0}   # 요소 683
-  dune_colossus: {cmd: 9124, height: 16.0, size: 1.0}   # 요소 1071
-  war_beast: {cmd: 9125, height: 16.0, size: 1.0}   # 요소 1785
-  lich: {cmd: 9126, height: 16.0, size: 1.0}   # 요소 787
-  corrupted_knight: {cmd: 9127, height: 16.0, size: 1.0}   # 요소 1143
-  end_crawler: {cmd: 9128, height: 9.4, size: 2.2}   # 요소 248
-  void_phantom: {cmd: 9129, height: 8.135, size: 2.6}   # 요소 477
-  void_knight: {cmd: 9130, height: 16.0, size: 1.0}   # 요소 1026
-  star_golem: {cmd: 9131, height: 16.0, size: 1.0}   # 요소 1754
-  abyss_caster: {cmd: 9132, height: 16.0, size: 1.0}   # 요소 903
-  frost_titan: {cmd: 9133, height: 16.0, size: 1.0}   # 요소 1260
-  inferno_lord: {cmd: 9134, height: 16.0, size: 1.0}   # 요소 637
-  dread_rider: {cmd: 9135, height: 16.0, size: 1.0}   # 요소 936
-  nightmare_spider: {cmd: 9136, height: 16.0, size: 1.3}   # 요소 1013
-  storm_herald: {cmd: 9137, height: 8.704, size: 2.6}   # 요소 462
-  ancient_lich: {cmd: 9138, height: 16.0, size: 1.0}   # 요소 834
-  world_eater: {cmd: 9139, height: 16.0, size: 1.0}   # 요소 2116
-  fallen_seraph: {cmd: 9140, height: 16.0, size: 2.2}   # 요소 1473
-  abyss_king: {cmd: 9141, height: 16.0, size: 1.0}   # 요소 1281
-  day_bandit: {cmd: 9142, height: 16.0, size: 1.0}   # 요소 811
-  day_raider: {cmd: 9143, height: 16.0, size: 1.0}   # 요소 735
-  day_mercenary: {cmd: 9144, height: 16.0, size: 1.0}   # 요소 861
-  day_warlock: {cmd: 9145, height: 16.0, size: 1.0}   # 요소 891
-  day_knight: {cmd: 9146, height: 16.0, size: 1.0}   # 요소 1139
-  treasure_guardian: {cmd: 9147, height: 16.0, size: 1.0}   # 요소 973
-  wild_golem: {cmd: 9148, height: 16.0, size: 1.0}   # 요소 1479
-  moss_troll: {cmd: 9149, height: 16.0, size: 1.0}   # 요소 1526
-  bog_witch: {cmd: 9150, height: 16.0, size: 1.0}   # 요소 909
-  crypt_knight: {cmd: 9151, height: 16.0, size: 1.0}   # 요소 960
-  ember_imp: {cmd: 9152, height: 16.0, size: 0.9}   # 요소 397
-  sand_stalker: {cmd: 9153, height: 16.0, size: 1.0}   # 요소 604
-  void_hound: {cmd: 9154, height: 16.0, size: 1.3}   # 요소 605
-  storm_harpy: {cmd: 9155, height: 16.0, size: 3.0}   # 요소 1000
-  thorn_sprite: {cmd: 9156, height: 16.0, size: 1.3}   # 요소 470
-  bone_marksman: {cmd: 9157, height: 16.0, size: 1.0}   # 요소 358
-  mire_slime: {cmd: 9158, height: 16.0, size: 1.0}   # 요소 582
-  frost_archer: {cmd: 9159, height: 16.0, size: 1.0}   # 요소 319
-  sand_wraith: {cmd: 9160, height: 16.0, size: 1.0}   # 요소 848
-  canyon_raider: {cmd: 9161, height: 16.0, size: 1.0}   # 요소 824
-  cave_brute: {cmd: 9162, height: 16.0, size: 1.0}   # 요소 1237
-  storm_caller: {cmd: 9163, height: 16.0, size: 1.0}   # 요소 919
-  magma_sentinel: {cmd: 9164, height: 16.0, size: 1.0}   # 요소 414
-  deep_horror: {cmd: 9165, height: 16.0, size: 1.0}   # 요소 486
-  grave_knight: {cmd: 9166, height: 16.0, size: 1.0}   # 요소 1152
-  ancient_ravager: {cmd: 9167, height: 16.0, size: 1.0}   # 요소 1998
+  jelly_slime:   # 요소 560
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9100, 8.0, 0.0, 8.0]
+  goblin:   # 요소 499
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9101, 8.0, 0.0, 8.0]
+      head: [9102, 8.0, 12.39, 8.16]
+      arm_l: [9103, 4.207, 11.584, 8.0]
+      arm_r: [9104, 11.793, 11.584, 8.0]
+      leg_l: [9105, 6.488, 6.63, 8.0]
+      leg_r: [9106, 9.512, 6.63, 8.0]
+  rotten_farmer:   # 요소 626
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9107, 8.0, 0.0, 8.0]
+      head: [9108, 8.0, 12.0, 8.118]
+      arm_l: [9109, 5.471, 11.176, 8.0]
+      arm_r: [9110, 10.529, 11.176, 8.0]
+      leg_l: [9111, 6.941, 6.118, 8.0]
+      leg_r: [9112, 9.059, 6.118, 8.0]
+  forest_bandit:   # 요소 860
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9113, 8.0, 0.0, 8.0]
+      head: [9114, 8.0, 12.0, 8.118]
+      arm_l: [9115, 5.471, 11.176, 8.0]
+      arm_r: [9116, 10.529, 11.176, 8.0]
+      leg_l: [9117, 6.941, 6.118, 8.0]
+      leg_r: [9118, 9.059, 6.118, 8.0]
+  silverfish_swarm:   # 요소 490
+    rig: solid
+    height: 8.174
+    size: 2.6
+    parts:
+      body: [9119, 8.0, 0.0, 8.0]
+  venom_spider:   # 요소 446
+    rig: solid
+    height: 16.0
+    size: 1.5
+    parts:
+      body: [9120, 8.0, 0.0, 8.0]
+  skeleton_captain:   # 요소 543
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9121, 8.0, 0.0, 8.0]
+      head: [9122, 8.0, 11.333, 8.111]
+      arm_l: [9123, 6.785, 10.556, 8.0]
+      arm_r: [9124, 9.215, 10.556, 8.0]
+      leg_l: [9125, 7.18, 5.778, 8.0]
+      leg_r: [9126, 8.82, 5.778, 8.0]
+  bomber:   # 요소 613
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9127, 8.0, 0.0, 8.0]
+  swamp_hag:   # 요소 937
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9128, 8.0, 0.0, 8.0]
+      head: [9129, 8.0, 10.2, 8.105]
+      arm_l: [9130, 5.85, 9.5, 8.0]
+      arm_r: [9131, 10.15, 9.5, 8.0]
+  mummy:   # 요소 560
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9132, 8.0, 0.0, 8.0]
+      head: [9133, 8.0, 12.75, 8.125]
+      arm_l: [9134, 5.312, 11.875, 8.0]
+      arm_r: [9135, 10.688, 11.875, 8.0]
+      leg_l: [9136, 6.875, 6.5, 8.0]
+      leg_r: [9137, 9.125, 6.5, 8.0]
+  sand_scorpion:   # 요소 580
+    rig: solid
+    height: 16.0
+    size: 1.4
+    parts:
+      body: [9138, 8.0, 0.0, 8.0]
+  drowned_pirate:   # 요소 612
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9139, 8.0, 0.0, 8.0]
+      head: [9140, 8.0, 11.657, 8.114]
+      arm_l: [9141, 5.543, 10.857, 8.0]
+      arm_r: [9142, 10.457, 10.857, 8.0]
+      leg_l: [9143, 6.971, 5.943, 8.0]
+      leg_r: [9144, 9.029, 5.943, 8.0]
+  frost_wraith:   # 요소 655
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9145, 8.0, 0.0, 8.0]
+      head: [9146, 8.0, 12.0, 8.118]
+      arm_l: [9147, 6.714, 11.176, 8.0]
+      arm_r: [9148, 9.286, 11.176, 8.0]
+  orc_warrior:   # 요소 912
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9149, 8.0, 0.0, 8.0]
+      head: [9150, 8.0, 12.6, 8.118]
+      arm_l: [9151, 4.509, 11.735, 8.0]
+      arm_r: [9152, 11.491, 11.735, 8.0]
+      leg_l: [9153, 6.729, 6.424, 8.0]
+      leg_r: [9154, 9.271, 6.424, 8.0]
+  soul_wisp:   # 요소 67
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9155, 8.0, 0.0, 8.0]
+  orc_shaman:   # 요소 919
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9156, 8.0, 0.0, 8.0]
+      head: [9157, 8.0, 11.027, 8.108]
+      arm_l: [9158, 5.792, 10.27, 8.0]
+      arm_r: [9159, 10.208, 10.27, 8.0]
+  ember_spirit:   # 요소 333
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9160, 8.0, 0.0, 8.0]
+  magma_brute:   # 요소 832
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9161, 8.0, 0.0, 8.0]
+  night_hunter:   # 요소 522
+    rig: flyer
+    height: 8.812
+    size: 2.2
+    parts:
+      body: [9162, 8.0, 0.0, 8.0]
+      wing_l: [9163, 6.042, 4.896, 4.328]
+      wing_r: [9164, 9.958, 4.896, 4.328]
+  plague_boar:   # 요소 1288
+    rig: quad
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9165, 8.0, 0.0, 8.0]
+      leg_fl: [9166, 5.28, 8.24, 9.408]
+      leg_fr: [9167, 10.72, 8.24, 9.408]
+      leg_bl: [9168, 5.28, 8.24, 0.48]
+      leg_br: [9169, 10.72, 8.24, 0.48]
+  nether_hog:   # 요소 1307
+    rig: quad
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9170, 8.0, 0.0, 8.0]
+      leg_fl: [9171, 5.28, 8.24, 9.408]
+      leg_fr: [9172, 10.72, 8.24, 9.408]
+      leg_bl: [9173, 5.28, 8.24, 0.48]
+      leg_br: [9174, 10.72, 8.24, 0.48]
+  piglin_berserker:   # 요소 950
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9175, 8.0, 0.0, 8.0]
+      head: [9176, 8.0, 12.697, 8.114]
+      arm_l: [9177, 4.314, 11.857, 8.0]
+      arm_r: [9178, 11.686, 11.857, 8.0]
+      leg_l: [9179, 6.714, 6.697, 8.0]
+      leg_r: [9180, 9.286, 6.697, 8.0]
+  bone_knight:   # 요소 969
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9181, 8.0, 0.0, 8.0]
+      head: [9182, 8.0, 12.6, 8.118]
+      arm_l: [9183, 6.51, 11.735, 8.0]
+      arm_r: [9184, 9.49, 11.735, 8.0]
+      leg_l: [9185, 6.994, 6.424, 8.0]
+      leg_r: [9186, 9.006, 6.424, 8.0]
+  shadow_stalker:   # 요소 702
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9187, 8.0, 0.0, 8.0]
+      head: [9188, 8.0, 12.75, 8.083]
+      arm_l: [9189, 7.185, 11.875, 8.0]
+      arm_r: [9190, 8.815, 11.875, 8.0]
+      leg_l: [9191, 7.475, 6.5, 8.0]
+      leg_r: [9192, 8.525, 6.5, 8.0]
+  dune_colossus:   # 요소 1215
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9193, 8.0, 0.0, 8.0]
+      head: [9194, 8.0, 12.518, 8.091]
+      arm_l: [9195, 5.326, 11.659, 8.0]
+      arm_r: [9196, 10.674, 11.659, 8.0]
+      leg_l: [9197, 7.018, 6.382, 8.0]
+      leg_r: [9198, 8.982, 6.382, 8.0]
+  war_beast:   # 요소 1984
+    rig: quad
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9199, 8.0, 0.0, 8.0]
+      leg_fl: [9200, 5.4, 9.533, 9.6]
+      leg_fr: [9201, 10.6, 9.533, 9.6]
+      leg_bl: [9202, 5.4, 9.533, 1.333]
+      leg_br: [9203, 10.6, 9.533, 1.333]
+  lich:   # 요소 857
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9204, 8.0, 0.0, 8.0]
+      head: [9205, 8.0, 11.333, 8.111]
+      arm_l: [9206, 6.785, 10.556, 8.0]
+      arm_r: [9207, 9.215, 10.556, 8.0]
+  corrupted_knight:   # 요소 1246
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9208, 8.0, 0.0, 8.0]
+      head: [9209, 8.0, 10.985, 8.103]
+      arm_l: [9210, 5.453, 10.231, 8.0]
+      arm_r: [9211, 10.547, 10.231, 8.0]
+      leg_l: [9212, 6.985, 5.6, 8.0]
+      leg_r: [9213, 9.015, 5.6, 8.0]
+  end_crawler:   # 요소 248
+    rig: solid
+    height: 9.4
+    size: 2.2
+    parts:
+      body: [9214, 8.0, 0.0, 8.0]
+  void_phantom:   # 요소 544
+    rig: flyer
+    height: 8.135
+    size: 2.6
+    parts:
+      body: [9215, 8.0, 0.0, 8.0]
+      wing_l: [9216, 6.192, 4.519, 4.611]
+      wing_r: [9217, 9.808, 4.519, 4.611]
+  void_knight:   # 요소 1087
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9218, 8.0, 0.0, 8.0]
+      head: [9219, 8.0, 10.985, 8.103]
+      arm_l: [9220, 6.701, 10.231, 8.0]
+      arm_r: [9221, 9.299, 10.231, 8.0]
+      leg_l: [9222, 7.123, 5.6, 8.0]
+      leg_r: [9223, 8.877, 5.6, 8.0]
+  star_golem:   # 요소 1954
+    rig: quad
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9224, 8.0, 0.0, 8.0]
+      leg_fl: [9225, 5.771, 8.171, 9.371]
+      leg_fr: [9226, 10.229, 8.171, 9.371]
+      leg_bl: [9227, 5.771, 8.171, 2.286]
+      leg_br: [9228, 10.229, 8.171, 2.286]
+  abyss_caster:   # 요소 957
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9229, 8.0, 0.0, 8.0]
+      head: [9230, 8.0, 11.027, 8.108]
+      arm_l: [9231, 5.792, 10.27, 8.0]
+      arm_r: [9232, 10.208, 10.27, 8.0]
+  frost_titan:   # 요소 1429
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9233, 8.0, 0.0, 8.0]
+      head: [9234, 8.0, 12.629, 8.095]
+      arm_l: [9235, 4.806, 11.762, 8.0]
+      arm_r: [9236, 11.194, 11.762, 8.0]
+      leg_l: [9237, 6.886, 6.438, 8.0]
+      leg_r: [9238, 9.114, 6.438, 8.0]
+  inferno_lord:   # 요소 637
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9239, 8.0, 0.0, 8.0]
+  dread_rider:   # 요소 999
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9240, 8.0, 0.0, 8.0]
+      head: [9241, 8.0, 10.2, 8.095]
+      arm_l: [9242, 6.794, 9.5, 8.0]
+      arm_r: [9243, 9.206, 9.5, 8.0]
+      leg_l: [9244, 7.186, 5.2, 8.0]
+      leg_r: [9245, 8.814, 5.2, 8.0]
+  nightmare_spider:   # 요소 1013
+    rig: solid
+    height: 16.0
+    size: 1.3
+    parts:
+      body: [9246, 8.0, 0.0, 8.0]
+  storm_herald:   # 요소 525
+    rig: flyer
+    height: 8.704
+    size: 2.6
+    parts:
+      body: [9247, 8.0, 0.0, 8.0]
+      wing_l: [9248, 6.259, 4.352, 4.736]
+      wing_r: [9249, 9.741, 4.352, 4.736]
+  ancient_lich:   # 요소 876
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9250, 8.0, 0.0, 8.0]
+      head: [9251, 8.0, 11.508, 8.103]
+      arm_l: [9252, 6.879, 10.718, 8.0]
+      arm_r: [9253, 9.121, 10.718, 8.0]
+  world_eater:   # 요소 2396
+    rig: quad
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9254, 8.0, 0.0, 8.0]
+      leg_fl: [9255, 5.658, 8.658, 9.6]
+      leg_fr: [9256, 10.342, 8.658, 9.6]
+      leg_bl: [9257, 5.658, 8.658, 2.421]
+      leg_br: [9258, 10.342, 8.658, 2.421]
+  fallen_seraph:   # 요소 1533
+    rig: biped
+    height: 16.0
+    size: 2.2
+    parts:
+      body: [9259, 8.0, 0.0, 8.0]
+      head: [9260, 8.0, 10.946, 8.098]
+      arm_l: [9261, 6.007, 10.195, 8.0]
+      arm_r: [9262, 9.993, 10.195, 8.0]
+      wing_l: [9263, 7.22, 10.088, 6.537]
+      wing_r: [9264, 8.78, 10.088, 6.537]
+  abyss_king:   # 요소 1359
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9265, 8.0, 0.0, 8.0]
+      head: [9266, 8.0, 10.948, 8.089]
+      arm_l: [9267, 6.706, 10.197, 8.0]
+      arm_r: [9268, 9.294, 10.197, 8.0]
+      leg_l: [9269, 7.126, 5.581, 8.0]
+      leg_r: [9270, 8.874, 5.581, 8.0]
+  day_bandit:   # 요소 854
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9271, 8.0, 0.0, 8.0]
+      head: [9272, 8.0, 12.0, 8.118]
+      arm_l: [9273, 5.471, 11.176, 8.0]
+      arm_r: [9274, 10.529, 11.176, 8.0]
+      leg_l: [9275, 6.941, 6.118, 8.0]
+      leg_r: [9276, 9.059, 6.118, 8.0]
+  day_raider:   # 요소 819
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9277, 8.0, 0.0, 8.0]
+      head: [9278, 8.0, 12.364, 8.121]
+      arm_l: [9279, 4.847, 11.515, 8.0]
+      arm_r: [9280, 11.153, 11.515, 8.0]
+      leg_l: [9281, 6.8, 6.303, 8.0]
+      leg_r: [9282, 9.2, 6.303, 8.0]
+  day_mercenary:   # 요소 981
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9283, 8.0, 0.0, 8.0]
+      head: [9284, 8.0, 12.364, 8.121]
+      arm_l: [9285, 4.847, 11.515, 8.0]
+      arm_r: [9286, 11.153, 11.515, 8.0]
+      leg_l: [9287, 6.8, 6.303, 8.0]
+      leg_r: [9288, 9.2, 6.303, 8.0]
+  day_warlock:   # 요소 945
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9289, 8.0, 0.0, 8.0]
+      head: [9290, 8.0, 11.027, 8.108]
+      arm_l: [9291, 5.792, 10.27, 8.0]
+      arm_r: [9292, 10.208, 10.27, 8.0]
+  day_knight:   # 요소 1251
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9293, 8.0, 0.0, 8.0]
+      head: [9294, 8.0, 11.578, 8.108]
+      arm_l: [9295, 5.315, 10.784, 8.0]
+      arm_r: [9296, 10.685, 10.784, 8.0]
+      leg_l: [9297, 6.93, 5.903, 8.0]
+      leg_r: [9298, 9.07, 5.903, 8.0]
+  treasure_guardian:   # 요소 1017
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9299, 8.0, 0.0, 8.0]
+      head: [9300, 8.0, 12.6, 8.118]
+      arm_l: [9301, 6.51, 11.735, 8.0]
+      arm_r: [9302, 9.49, 11.735, 8.0]
+      leg_l: [9303, 6.994, 6.424, 8.0]
+      leg_r: [9304, 9.006, 6.424, 8.0]
+  wild_golem:   # 요소 1775
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9305, 8.0, 0.0, 8.0]
+      head: [9306, 8.0, 12.707, 8.093]
+      arm_l: [9307, 3.8, 11.86, 8.0]
+      arm_r: [9308, 12.2, 11.86, 8.0]
+      leg_l: [9309, 6.744, 6.66, 8.0]
+      leg_r: [9310, 9.256, 6.66, 8.0]
+  moss_troll:   # 요소 1743
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9311, 8.0, 0.0, 8.0]
+      head: [9312, 8.0, 12.707, 8.093]
+      arm_l: [9313, 3.95, 11.86, 8.0]
+      arm_r: [9314, 12.05, 11.86, 8.0]
+      leg_l: [9315, 6.744, 6.66, 8.0]
+      leg_r: [9316, 9.256, 6.66, 8.0]
+  bog_witch:   # 요소 938
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9317, 8.0, 0.0, 8.0]
+      head: [9318, 8.0, 10.2, 8.105]
+      arm_l: [9319, 5.85, 9.5, 8.0]
+      arm_r: [9320, 10.15, 9.5, 8.0]
+  crypt_knight:   # 요소 1019
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9321, 8.0, 0.0, 8.0]
+      head: [9322, 8.0, 12.6, 8.118]
+      arm_l: [9323, 6.51, 11.735, 8.0]
+      arm_r: [9324, 9.49, 11.735, 8.0]
+      leg_l: [9325, 6.994, 6.424, 8.0]
+      leg_r: [9326, 9.006, 6.424, 8.0]
+  ember_imp:   # 요소 419
+    rig: biped
+    height: 16.0
+    size: 0.9
+    parts:
+      body: [9327, 8.0, 0.0, 8.0]
+      head: [9328, 8.0, 10.985, 8.154]
+      arm_l: [9329, 5.172, 10.231, 8.0]
+      arm_r: [9330, 10.828, 10.231, 8.0]
+      leg_l: [9331, 6.685, 5.6, 8.0]
+      leg_r: [9332, 9.315, 5.6, 8.0]
+      wing_l: [9333, 6.769, 10.123, 5.892]
+      wing_r: [9334, 9.231, 10.123, 5.892]
+  sand_stalker:   # 요소 666
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9335, 8.0, 0.0, 8.0]
+      head: [9336, 8.0, 12.0, 8.118]
+      arm_l: [9337, 5.471, 11.176, 8.0]
+      arm_r: [9338, 10.529, 11.176, 8.0]
+      leg_l: [9339, 6.941, 6.118, 8.0]
+      leg_r: [9340, 9.059, 6.118, 8.0]
+  void_hound:   # 요소 625
+    rig: quad
+    height: 16.0
+    size: 1.3
+    parts:
+      body: [9341, 8.0, 0.0, 8.0]
+      leg_fl: [9342, 6.0, 8.421, 8.505]
+      leg_fr: [9343, 10.0, 8.421, 8.505]
+      leg_bl: [9344, 6.0, 8.421, -0.632]
+      leg_br: [9345, 10.0, 8.421, -0.632]
+  storm_harpy:   # 요소 1039
+    rig: biped
+    height: 16.0
+    size: 3.0
+    parts:
+      body: [9346, 8.0, 0.0, 8.0]
+      head: [9347, 8.0, 10.8, 8.118]
+      arm_l: [9348, 5.724, 10.059, 8.0]
+      arm_r: [9349, 10.276, 10.059, 8.0]
+      leg_l: [9350, 7.047, 5.506, 8.0]
+      leg_r: [9351, 8.953, 5.506, 8.0]
+      wing_l: [9352, 7.059, 9.953, 6.235]
+      wing_r: [9353, 8.941, 9.953, 6.235]
+  thorn_sprite:   # 요소 491
+    rig: biped
+    height: 16.0
+    size: 1.3
+    parts:
+      body: [9354, 8.0, 0.0, 8.0]
+      head: [9355, 8.0, 11.657, 8.19]
+      arm_l: [9356, 4.519, 10.857, 8.0]
+      arm_r: [9357, 11.481, 10.857, 8.0]
+      wing_l: [9358, 6.476, 10.743, 5.143]
+      wing_r: [9359, 9.524, 10.743, 5.143]
+  bone_marksman:   # 요소 383
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9360, 8.0, 0.0, 8.0]
+      head: [9361, 8.0, 12.0, 8.118]
+      arm_l: [9362, 6.714, 11.176, 8.0]
+      arm_r: [9363, 9.286, 11.176, 8.0]
+      leg_l: [9364, 7.132, 6.118, 8.0]
+      leg_r: [9365, 8.868, 6.118, 8.0]
+  mire_slime:   # 요소 582
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9366, 8.0, 0.0, 8.0]
+  frost_archer:   # 요소 351
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9367, 8.0, 0.0, 8.0]
+      head: [9368, 8.0, 12.0, 8.118]
+      arm_l: [9369, 6.714, 11.176, 8.0]
+      arm_r: [9370, 9.286, 11.176, 8.0]
+      leg_l: [9371, 7.132, 6.118, 8.0]
+      leg_r: [9372, 8.868, 6.118, 8.0]
+  sand_wraith:   # 요소 894
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9373, 8.0, 0.0, 8.0]
+      head: [9374, 8.0, 10.6, 8.1]
+      arm_l: [9375, 5.85, 9.9, 8.0]
+      arm_r: [9376, 10.15, 9.9, 8.0]
+  canyon_raider:   # 요소 868
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9377, 8.0, 0.0, 8.0]
+      head: [9378, 8.0, 12.0, 8.118]
+      arm_l: [9379, 5.471, 11.176, 8.0]
+      arm_r: [9380, 10.529, 11.176, 8.0]
+      leg_l: [9381, 6.941, 6.118, 8.0]
+      leg_r: [9382, 9.059, 6.118, 8.0]
+  cave_brute:   # 요소 1419
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9383, 8.0, 0.0, 8.0]
+      head: [9384, 8.0, 12.441, 8.103]
+      arm_l: [9385, 3.843, 11.615, 8.0]
+      arm_r: [9386, 12.157, 11.615, 8.0]
+      leg_l: [9387, 6.662, 6.544, 8.0]
+      leg_r: [9388, 9.338, 6.544, 8.0]
+  storm_caller:   # 요소 975
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9389, 8.0, 0.0, 8.0]
+      head: [9390, 8.0, 9.488, 8.093]
+      arm_l: [9391, 6.1, 8.837, 8.0]
+      arm_r: [9392, 9.9, 8.837, 8.0]
+  magma_sentinel:   # 요소 414
+    rig: solid
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9393, 8.0, 0.0, 8.0]
+  deep_horror:   # 요소 509
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9394, 8.0, 0.0, 8.0]
+      head: [9395, 8.0, 12.587, 8.085]
+      arm_l: [9396, 6.902, 11.723, 8.0]
+      arm_r: [9397, 9.098, 11.723, 8.0]
+      leg_l: [9398, 7.387, 6.417, 8.0]
+      leg_r: [9399, 8.613, 6.417, 8.0]
+  grave_knight:   # 요소 1211
+    rig: biped
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9400, 8.0, 0.0, 8.0]
+      head: [9401, 8.0, 12.083, 8.103]
+      arm_l: [9402, 6.571, 11.254, 8.0]
+      arm_r: [9403, 9.429, 11.254, 8.0]
+      leg_l: [9404, 7.035, 6.16, 8.0]
+      leg_r: [9405, 8.965, 6.16, 8.0]
+  ancient_ravager:   # 요소 2239
+    rig: quad
+    height: 16.0
+    size: 1.0
+    parts:
+      body: [9406, 8.0, 0.0, 8.0]
+      leg_fl: [9407, 5.391, 9.359, 9.7]
+      leg_fr: [9408, 10.609, 9.359, 9.7]
+      leg_bl: [9409, 5.391, 9.359, 1.562]
+      leg_br: [9410, 10.609, 9.359, 1.562]

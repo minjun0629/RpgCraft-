@@ -788,22 +788,32 @@ def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2,
     z0 = 8 - L / 2 - shift
     zf = z0 + L
     cy = leg + H / 2
-    g.ellipsoid((8, cy, z0 + L * 0.3), (W / 2, H / 2, L * 0.36), lambda x, y, z, d: tex(belly if y < cy - H * 0.3 else fur, x, y, z), pri)
+    g.ellipsoid((8, cy, z0 + L * 0.32), (W / 2, H / 2, L * 0.32), lambda x, y, z, d: tex(belly if y < cy - H * 0.3 else fur, x, y, z), pri)   # v5.10.6: 엉덩이가 뒷다리 뒤로 덜 튀어나오게
     g.ellipsoid((8, cy + H * 0.1, z0 + L * 0.68), (W / 2 + 0.6, H / 2 + 0.6, L * 0.38), lambda x, y, z, d: tex(belly if y < cy - H * 0.3 else fur, x, y, z), pri)
     g.ellipsoid((8, cy + H * 0.45, zf - L * 0.25), (W / 2 * 0.9 * hump, H * 0.42 * hump, L * 0.24), lambda x, y, z, d: tex(fur2, x, y, z), pri)   # 어깨 혹
     B.legs = []
     g.kind, g.body = "quad", B
-    for zz, front in ((z0 + L * 0.2, False), (zf - L * 0.18, True)):
+    # v5.10.6: 뒷다리를 엉덩이 바로 아래로 (전에는 몸 중간쯤이라 엉덩이가 길게 튀어나와 보였음) + 두꺼운 허벅지 · 뒤로 꺾이는 발목
+    for zz, front in ((z0 + L * 0.13, False), (zf - L * 0.16, True)):
         for sx in (-1, 1):
-            top = (8 + sx * (W / 2 - 1.6), cy, zz)
-            knee = (8 + sx * (W / 2 - 1.4), leg * 0.5, zz + (0.8 if front else -0.8))
-            foot = (8 + sx * (W / 2 - 1.4), 0.9, zz + 0.3)
+            x = 8 + sx * (W / 2 - 1.5)
+            top = (x, cy, zz)
+            foot = (x, 0.9, zz + (0.3 if front else 0.6))
             leg_name = "leg_" + ("f" if front else "b") + ("l" if sx < 0 else "r")   # v5.9.1 다리마다 따로 움직임
             g.rig[leg_name] = top
             with g.parting(leg_name):   # 몸 속에 묻히는 윗부분은 몸통이 차지하도록 우선순위를 한 단계 낮춤
-                g.tube([top, knee], [leg_r * 1.25, leg_r], lambda x, y, z, d, f: tex(fur2, x, y, z), pri - 1)
-                g.tube([knee, foot], [leg_r, leg_r * 0.9], lambda x, y, z, d, f: tex(fur2, x, y, z), pri - 1)
-                g.ellipsoid((foot[0], 0.7, foot[2] + 0.4), (leg_r * 1.05, 0.75, leg_r * 1.2), lambda x, y, z, d: hoof, pri + 1)
+                if front:   # 앞다리: 거의 곧게, 무릎이 살짝 앞으로
+                    knee = (x, leg * 0.5, zz + 0.5)
+                    g.tube([top, knee], [leg_r * 1.25, leg_r], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)
+                    g.tube([knee, foot], [leg_r, leg_r * 0.9], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)
+                else:       # 뒷다리: 허벅지(앞으로) → 발목(뒤로 꺾임) → 발
+                    knee = (x, leg * 0.62, zz + 1.2)
+                    hock = (x, leg * 0.3, zz - 0.8)
+                    g.ellipsoid((x, cy - H * 0.1, zz + 0.4), (leg_r * 1.5, H * 0.35, leg_r * 1.9), lambda x_, y, z, d: tex(fur2, x_, y, z), pri - 1)   # 허벅지
+                    g.tube([top, knee], [leg_r * 1.45, leg_r * 1.1], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)
+                    g.tube([knee, hock], [leg_r * 1.1, leg_r * 0.85], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)
+                    g.tube([hock, foot], [leg_r * 0.85, leg_r * 0.9], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)
+                g.ellipsoid((foot[0], 0.7, foot[2] + 0.4), (leg_r * 1.05, 0.75, leg_r * 1.2), lambda x_, y, z, d: hoof, pri + 1)
             B.legs.append(foot)
     B.front_z = zf
     B.back_y = leg + H

@@ -57,6 +57,9 @@ public class BossModelManager implements Listener {
     private final RpgCraft plugin;
     private final Map<UUID, UUID> displays = new HashMap<>();
     private final Map<UUID, Float> scales = new HashMap<>();
+    /** v5.9.3 보스 → 체력 이름표 (게임이 모델을 태운 몹의 이름표를 그리지 않음) */
+    private final Map<UUID, UUID> names = new HashMap<>();
+    private final Map<UUID, String> ids = new HashMap<>();
     /** 보스 → 모델 크기의 판정 상자 (Interaction). 1.20.1 은 몹 크기를 못 바꾸므로 이걸로 대신 맞게 한다 */
     private final Map<UUID, UUID> hitboxes = new HashMap<>();
     private final Map<UUID, UUID> hitboxOwner = new HashMap<>();
@@ -137,6 +140,8 @@ public class BossModelManager implements Listener {
         if (boss.getEquipment() != null) boss.getEquipment().clear();
         displays.put(boss.getUniqueId(), d.getUniqueId());
         scales.put(boss.getUniqueId(), scale);
+        ids.put(boss.getUniqueId(), id);
+        names.put(boss.getUniqueId(), kr.rpgcraft.util.NameTag.spawn(boss).getUniqueId());
         attachHitbox(boss, scale);
     }
 
@@ -154,6 +159,26 @@ public class BossModelManager implements Listener {
         });
         hitboxes.put(boss.getUniqueId(), box.getUniqueId());
         hitboxOwner.put(box.getUniqueId(), boss.getUniqueId());
+    }
+
+    /** 모델 꼭대기 높이 (블록) — 모델마다 대략 (사람형은 왕관 · 날개까지) */
+    private static float top(String id, float s) {
+        if (id == null) return s * 1.9f;
+        return switch (id) {
+            case "megalodon" -> s * 1.1f;
+            case "kraken" -> s * 1.6f;
+            case "primordial_dragon" -> s * 1.7f;
+            case "field_boar_king", "field_frost_bear", "field_ravager" -> s * 1.25f;
+            case "bungbung", "volcano_giant" -> s * 1.9f;
+            default -> s * 1.95f;
+        };
+    }
+
+    private void removeName(UUID boss) {
+        ids.remove(boss);
+        UUID t = names.remove(boss);
+        Entity e = t == null ? null : Bukkit.getEntity(t);
+        if (e != null) e.remove();
     }
 
     private void removeHitbox(UUID boss) {
@@ -201,6 +226,7 @@ public class BossModelManager implements Listener {
                 scales.remove(en.getKey());
                 poses.remove(en.getKey());
                 removeHitbox(en.getKey());
+                removeName(en.getKey());
                 it.remove();
                 continue;
             }
@@ -216,6 +242,13 @@ public class BossModelManager implements Listener {
                 else removeHitbox(en.getKey());
             }
             if (tick % 2 == 0 && d instanceof ItemDisplay id) animate(boss, id, en.getKey());
+            if (tick % 5 == 0) {   // 체력 이름표
+                UUID tid = names.get(en.getKey());
+                if (tid != null && Bukkit.getEntity(tid) instanceof TextDisplay td && td.isValid()) {
+                    float s = scales.getOrDefault(en.getKey(), 2f);
+                    kr.rpgcraft.util.NameTag.update(boss, td, top(ids.get(en.getKey()), s), Math.max(1.2f, Math.min(3f, s * 0.45f)));
+                } else names.put(en.getKey(), kr.rpgcraft.util.NameTag.spawn(boss).getUniqueId());
+            }
         }
     }
 
@@ -280,7 +313,14 @@ public class BossModelManager implements Listener {
         UUID did = displays.get(boss.getUniqueId());
         Entity d = did == null ? null : Bukkit.getEntity(did);
         if (d != null) boss.removePassenger(d);
+        UUID tid = names.get(boss.getUniqueId());   // 체력 이름표도 내려야 순간이동됨
+        Entity tag = tid == null ? null : Bukkit.getEntity(tid);
+        if (tag != null) boss.removePassenger(tag);
         boss.teleport(to);
+        if (tag != null && tag.isValid()) {
+            tag.teleport(new Location(to.getWorld(), to.getX(), to.getY(), to.getZ(), 0, 0));
+            Bukkit.getScheduler().runTaskLater(plugin, () -> { if (tag.isValid() && boss.isValid()) boss.addPassenger(tag); }, 1L);
+        }
         if (d != null && d.isValid()) {
             d.teleport(new Location(to.getWorld(), to.getX(), to.getY(), to.getZ(), 0, 0));
             Bukkit.getScheduler().runTaskLater(plugin, () -> { if (d.isValid() && boss.isValid()) boss.addPassenger(d); }, 1L);
@@ -309,6 +349,7 @@ public class BossModelManager implements Listener {
         scales.remove(e.getEntity().getUniqueId());
         poses.remove(e.getEntity().getUniqueId());
         removeHitbox(e.getEntity().getUniqueId());
+        removeName(e.getEntity().getUniqueId());
         if (did != null) {
             Entity d = Bukkit.getEntity(did);
             if (d != null) d.remove();
@@ -322,5 +363,6 @@ public class BossModelManager implements Listener {
         }
         displays.clear();
         for (UUID boss : new ArrayList<>(hitboxes.keySet())) removeHitbox(boss);
+        for (UUID boss : new ArrayList<>(names.keySet())) removeName(boss);
     }
 }

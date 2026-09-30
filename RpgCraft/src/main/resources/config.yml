@@ -560,7 +560,8 @@ boss-models:                # 보스 3D 모델 (리소스팩)
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로
   hitbox: true               # 모델 크기에 맞는 판정 상자 (큰 보스를 모델 어디를 때려도 맞음)
   hitbox-mult: 1.0           # 판정 상자 크기 배율
-  scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}
+  scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}  (여기 적은 보스는 size-mult 를 곱하지 않음)
+  size-mult: 1.15            # 모든 보스 모델 크기 배율 (v5.8.0 1.15 = 15% 크게, 판정 상자도 같이)
 
 vfx:
   enabled: true              # 스킬 이펙트를 리소스팩 모델로 한 번에 번쩍 (잔상 없음). false: 기존 입자

@@ -103,7 +103,9 @@ public class BossModelManager implements Listener {
     }
 
     public void attach(LivingEntity boss, String id) {
-        float scale = (float) plugin.getConfig().getDouble("boss-models.scale." + id, SCALE.getOrDefault(id, 1.8f));
+        boolean custom = plugin.getConfig().contains("boss-models.scale." + id);
+        float scale = (float) (plugin.getConfig().getDouble("boss-models.scale." + id, SCALE.getOrDefault(id, 1.8f))
+                * (custom ? 1 : plugin.getConfig().getDouble("boss-models.size-mult", 1.15)));   // v5.8.0 더 크고 웅장하게 (판정 상자도 같이 커짐)
         ItemStack it = new ItemStack(Material.PAPER);
         ItemMeta m = it.getItemMeta();
         m.setCustomModelData(9000 + ORDER.indexOf(id));

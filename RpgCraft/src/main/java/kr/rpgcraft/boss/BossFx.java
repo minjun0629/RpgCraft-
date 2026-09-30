@@ -10,6 +10,8 @@ import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import kr.rpgcraft.util.FxBudget;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -27,6 +29,7 @@ public final class BossFx {
 
     public static void init(Plugin p) {
         plugin = p;
+        FxBudget.start(p);
         for (World w : Bukkit.getWorlds())   // 서버가 도중에 꺼져 남은 조각 치우기
             for (BlockDisplay d : w.getEntitiesByClass(BlockDisplay.class))
                 if (((Entity) d).getPersistentDataContainer().has(KEY, org.bukkit.persistence.PersistentDataType.BYTE)) d.remove();
@@ -101,7 +104,7 @@ public final class BossFx {
     }
 
     private static void removeLater(BlockDisplay d, int ticks) {
-        later(ticks, () -> { if (d.isValid()) d.remove(); });
+        later(ticks, () -> { FxBudget.done(1); if (d.isValid()) d.remove(); });
     }
 
     private static final Vector3f CENTER_FLAT = new Vector3f(0.5f, 0f, 0.5f), ROOT_LINE = new Vector3f(0.5f, 0f, 0f), BOTTOM = new Vector3f(0.5f, 0f, 0.5f);
@@ -115,8 +118,9 @@ public final class BossFx {
     public static void disc(Location c, double r, int ticks, Material m, Color glow) {
         if (!on() || r <= 0) return;
         float a = (float) (r * 2 * 0.8);
-        for (int k = 0; k < 3; k++) {
-            float yaw = (float) Math.toRadians(k * 30);
+        FxBudget.force(2);
+        for (int k = 0; k < 2; k++) {   // v5.9.3 렉 줄이기: 3장 → 2장 (45° 겹친 8각 별)
+            float yaw = (float) Math.toRadians(k * 45);
             BlockDisplay d = spawn(c, m, tf(0.05f, 0.04f, 0.05f, yaw, CENTER_FLAT, 0.02f), k == 0, glow);
             animate(d, tf(a, 0.04f, a, yaw, CENTER_FLAT, 0.02f), ticks);
             removeLater(d, ticks + 4);
@@ -129,6 +133,7 @@ public final class BossFx {
         Vector d0 = dir.clone().setY(0);
         if (d0.lengthSquared() < 1e-6) return;
         float yaw = yawOf(d0.normalize());
+        FxBudget.force(1);
         BlockDisplay d = spawn(from, m, tf((float) width, 0.04f, 0.05f, yaw, ROOT_LINE, 0.03f), true, glow);
         animate(d, tf((float) width, 0.04f, (float) len, yaw, ROOT_LINE, 0.03f), ticks);
         removeLater(d, ticks + 4);
@@ -137,6 +142,7 @@ public final class BossFx {
     /** 사각 칸 (바둑판) */
     public static void square(Location c, double half, int ticks, Material m) {
         if (!on()) return;
+        FxBudget.force(1);
         BlockDisplay d = spawn(c, m, tf(0.05f, 0.04f, 0.05f, 0, CENTER_FLAT, 0.02f), false, null);
         animate(d, tf((float) (half * 2), 0.04f, (float) (half * 2), 0, CENTER_FLAT, 0.02f), ticks);
         removeLater(d, ticks + 4);
@@ -145,14 +151,15 @@ public final class BossFx {
     /** 고리: 안쪽 r 은 비워 둔 채 r~R 을 16조각으로 */
     public static void ring(Location o, double r, double R, int ticks, Material m, Color glow) {
         if (!on() || R <= r) return;
-        int n = 16;
+        int n = 12;   // v5.9.3: 16 → 12 조각
+        FxBudget.force(n);
         double mid = (r + R) / 2, seg = 2 * Math.PI * mid / n * 1.12;
         for (int i = 0; i < n; i++) {
             double ang = i * Math.PI * 2 / n;
             Vector out = new Vector(Math.cos(ang), 0, Math.sin(ang));
             Location at = o.clone().add(out.clone().multiply(r));
             float yaw = yawOf(out);
-            BlockDisplay d = spawn(at, m, tf((float) seg, 0.04f, 0.05f, yaw, ROOT_LINE, 0.02f), i % 4 == 0, glow);
+            BlockDisplay d = spawn(at, m, tf((float) seg, 0.04f, 0.05f, yaw, ROOT_LINE, 0.02f), i % 6 == 0, glow);   // 빛나는 테두리는 두 조각만 (외곽선 효과가 무거움)
             animate(d, tf((float) seg, 0.04f, (float) (R - r), yaw, ROOT_LINE, 0.02f), ticks);
             removeLater(d, ticks + 4);
         }
@@ -161,7 +168,8 @@ public final class BossFx {
     /** 부채꼴: 가는 띠 여러 장을 부채처럼 */
     public static void cone(Location o, Vector dir, double R, double halfDeg, int ticks, Material m, Color glow) {
         if (!on()) return;
-        int n = Math.max(3, (int) Math.ceil(halfDeg * 2 / 12));
+        int n = Math.max(3, (int) Math.ceil(halfDeg * 2 / 18));   // v5.9.3: 12° → 18° 마다 한 장
+        FxBudget.force(n);
         double step = Math.toRadians(halfDeg * 2 / n);
         double w = 2 * R * Math.tan(step / 2) * 1.05;
         for (int i = 0; i < n; i++) {
@@ -178,7 +186,7 @@ public final class BossFx {
     public static void quake(Location c, double r, Material block) {
         if (!on()) return;
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
-        int n = (int) Math.min(36, 6 + r * 4);
+        int n = FxBudget.grant((int) Math.min(12, 4 + r * 1.2));   // v5.9.3: 최대 36 → 12, 여유가 없으면 더 적게
         for (int i = 0; i < n; i++) {
             double ang = rnd.nextDouble(Math.PI * 2), rr = r * Math.sqrt(rnd.nextDouble(0.08, 1));
             Location at = c.clone().add(Math.cos(ang) * rr, 0, Math.sin(ang) * rr);
@@ -189,7 +197,7 @@ public final class BossFx {
                 animate(d, tf(s, s * 0.9f, s, yaw + 0.4f, BOTTOM, (float) rnd.nextDouble(0.3, 0.9)), 4);
                 later(8, () -> animate(d, tf(s * 0.2f, s * 0.2f, s * 0.2f, yaw + 0.8f, BOTTOM, -0.3f), 14));
                 removeLater(d, 26);
-                at.getWorld().spawnParticle(Particle.BLOCK_CRACK, at.clone().add(0, 0.3, 0), 6, 0.3, 0.2, 0.3, 0, block.createBlockData());
+                at.getWorld().spawnParticle(Particle.BLOCK_CRACK, at.clone().add(0, 0.3, 0), 2, 0.3, 0.2, 0.3, 0, block.createBlockData());
             });
         }
     }
@@ -198,7 +206,8 @@ public final class BossFx {
     public static void debris(Location c, int n, Material block, double power) {
         if (!on()) return;
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
-        for (int i = 0; i < Math.min(24, n); i++) {
+        int cnt = FxBudget.grant(Math.min(8, n / 2 + 1));   // v5.9.3: 최대 24 → 8
+        for (int i = 0; i < cnt; i++) {
             double ang = rnd.nextDouble(Math.PI * 2), dist = power * rnd.nextDouble(0.6, 1.4);
             float s = (float) rnd.nextDouble(0.25, 0.6), yaw = (float) rnd.nextDouble(Math.PI * 2);
             float dx = (float) (Math.cos(ang) * dist), dz = (float) (Math.sin(ang) * dist), up = (float) (power * rnd.nextDouble(0.5, 1.0));
@@ -224,17 +233,18 @@ public final class BossFx {
     /** 땅에서 솟는 기둥 (분출) */
     public static void pillar(Location c, double radius, double height, Material block) {
         if (!on()) return;
+        if (FxBudget.grant(1) == 0) return;
         float w = (float) (radius * 1.3);
         BlockDisplay d = spawn(c, block, tf(w, 0.05f, w, 0.3f, BOTTOM, -0.2f), false, null);
         animate(d, tf(w, (float) height, w, 0.3f, BOTTOM, -0.2f), 4);
         later(12, () -> animate(d, tf(w * 0.4f, 0.05f, w * 0.4f, 0.3f, BOTTOM, -0.4f), 10));
         removeLater(d, 24);
-        debris(c.clone().add(0, height * 0.6, 0), 8, block, 1.6);
+        debris(c.clone().add(0, height * 0.6, 0), 4, block, 1.6);
     }
 
     /** 하늘에서 떨어지는 거대 운석 (fall 틱 동안 낙하, 도착하면 사라짐) */
     public static void meteor(Location target, double size, int fall, Material block) {
-        if (!on() || fall <= 1) return;
+        if (!on() || fall <= 1 || FxBudget.grant(1) == 0) return;
         float s = (float) size;
         Location top = target.clone().add(-4, 22, -2);
         BlockDisplay d = spawn(top, block, tf(s, s, s, 0.6f, new Vector3f(0.5f, 0.5f, 0.5f), 0), true, Color.fromRGB(0xFF6A1F));
@@ -245,13 +255,13 @@ public final class BossFx {
             Transformation t = tf(s, s, s, 3.2f, new Vector3f(0.5f, 0.5f, 0.5f), 0);
             d.setTransformation(new Transformation(new Vector3f(t.getTranslation()).add(4, -22 + s * 0.4f, 2), t.getLeftRotation(), t.getScale(), t.getRightRotation()));
         });
-        for (int t = 2; t < fall; t += 2) {
+        for (int t = 2; t < fall; t += 4) {   // v5.9.3: 불꼬리 입자 절반
             int tt = t;
             later(t, () -> {   // 불꼬리
                 double k = tt / (double) fall;
                 Location at = top.clone().add(4 * k, -22 * k + s * 0.4, 2 * k);
-                at.getWorld().spawnParticle(Particle.FLAME, at, 10, s * 0.3, s * 0.3, s * 0.3, 0.02);
-                at.getWorld().spawnParticle(Particle.SMOKE_LARGE, at, 4, s * 0.2, s * 0.2, s * 0.2, 0.01);
+                at.getWorld().spawnParticle(Particle.FLAME, at, 6, s * 0.3, s * 0.3, s * 0.3, 0.02);
+                at.getWorld().spawnParticle(Particle.SMOKE_LARGE, at, 2, s * 0.2, s * 0.2, s * 0.2, 0.01);
             });
         }
         removeLater(d, fall + 1);
@@ -267,6 +277,7 @@ public final class BossFx {
         for (double[] sg : segs) {
             double len = sg[1] - sg[0];
             if (len <= 0.2) continue;
+            FxBudget.force(1);
             Location root = start.clone().add(side.clone().multiply(sg[0]));
             BlockDisplay d = spawn(root, block, tf(0.8f, 0.1f, (float) len, yaw, ROOT_LINE, 0f), false, null);
             later(Math.max(0, delay - 6), () -> animate(d, tf(0.8f, 3.2f, (float) len, yaw, ROOT_LINE, 0f), 6));   // 솟아오름
@@ -289,7 +300,7 @@ public final class BossFx {
         w.spawnParticle(Particle.FLASH, c.clone().add(0, 1, 0), 2);
         w.spawnParticle(Particle.EXPLOSION_HUGE, c, Math.max(1, (int) (r / 4)), r * 0.3, 0.3, r * 0.3);
         quake(c, r, block);
-        debris(c, (int) (r * 2), block, Math.min(5, 1.2 + r * 0.25));
+        debris(c, (int) Math.min(12, r), block, Math.min(5, 1.2 + r * 0.25));
         for (org.bukkit.entity.Player p : w.getPlayers())
             if (p.getLocation().distanceSquared(c) < (r + 16) * (r + 16)) p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 0.55f);
     }

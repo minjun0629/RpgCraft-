@@ -73,6 +73,7 @@ public final class Vfx {
     private static void spawn(Location at0, int cmd, Color c, Quaternionf rot0, Vector3f sc0, Vector3f sc1, int life, boolean billboard) {
         RpgCraft pl = RpgCraft.get();
         if (pl == null || at0.getWorld() == null) return;
+        if (FxBudget.grant(1) == 0) return;   // v5.9.3 렉 줄이기: 한꺼번에 너무 많으면 겹 연출을 건너뜀
         // (방향 보정 1) 엔티티 자체의 yaw/pitch 를 0 으로 — 위치를 눈 위치에서 복사하면 시선 방향 회전이 한 번 더 들어가 어긋났음
         Location at = at0.clone();
         at.setYaw(0);
@@ -97,7 +98,7 @@ public final class Vfx {
             d.setInterpolationDuration(Math.max(1, life - 1));
             d.setTransformation(new Transformation(new Vector3f(), rot, sc1, new Quaternionf()));
         });
-        Bukkit.getScheduler().runTaskLater(pl, d::remove, life);
+        Bukkit.getScheduler().runTaskLater(pl, () -> { FxBudget.done(1); d.remove(); }, life);
     }
 
     private static Quaternionf orient(Vector dir, double rollDeg) {
@@ -142,7 +143,7 @@ public final class Vfx {
         spawn(c.clone().add(0, 0.1, 0), WAVE, dark(col, 0.1), new Quaternionf(), (float) (r * 0.4), (float) (r * 2.1), 1f, 4, false);
         later(1, () -> spawn(c.clone().add(0, 0.2, 0), RING, white(col, 0.7), new Quaternionf(), (float) (r * 0.4), (float) (r * 1.9), 1f, 4, false));
         // 가장자리 먼지 · 흙먼지
-        int n = (int) Math.max(8, Math.min(28, r * 5));
+        int n = (int) Math.max(6, Math.min(12, r * 2));   // v5.9.3: 28 → 12
         for (int i = 0; i < n; i++) {
             double a = Math.PI * 2 * i / n;
             Location e = c.clone().add(Math.cos(a) * r, 0.25, Math.sin(a) * r);
@@ -170,7 +171,7 @@ public final class Vfx {
         Vector u = d.clone().normalize();
         Vector a = Math.abs(u.getY()) > 0.9 ? new Vector(1, 0, 0) : new Vector(0, 1, 0);
         Vector p1 = u.getCrossProduct(a).normalize(), p2 = u.getCrossProduct(p1).normalize();
-        int steps = (int) Math.min(40, len * 3);
+        int steps = (int) Math.min(14, len * 1.2);   // v5.9.3: 40 → 14
         for (int i = 0; i <= steps; i++) {
             double t = i / (double) Math.max(1, steps), ang = t * Math.PI * 2 * Math.max(1, len / 3);
             Location pnt = from.clone().add(d.clone().multiply(t)).add(p1.clone().multiply(Math.cos(ang) * w * 0.45)).add(p2.clone().multiply(Math.sin(ang) * w * 0.45));

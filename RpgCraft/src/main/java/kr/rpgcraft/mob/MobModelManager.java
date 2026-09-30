@@ -51,7 +51,8 @@ public class MobModelManager implements Listener {
     private static final class Rig {
         final Def def;
         final List<UUID> ids = new ArrayList<>();
-        float k, yaw = Float.NaN, speed, headYaw;
+        UUID nameId;   // v5.9.3 체력 이름표 (게임이 모델을 태운 몹의 이름표를 그리지 않음)
+        float k, h, yaw = Float.NaN, speed, headYaw;
         double phase, lastX, lastZ;
         int attack = -1, hurt = -1, age, nextAt;
         final int seed;
@@ -139,6 +140,7 @@ public class MobModelManager implements Listener {
         float scale = (float) (le.getHeight() * mult * def.size() * plugin.getConfig().getDouble("mob-models.size-mult", 1.0));
         Rig r = new Rig(def, le.getUniqueId().hashCode());
         r.k = scale * 16f / def.height();
+        r.h = scale;
         Location at = le.getLocation().clone();
         at.setYaw(0);
         at.setPitch(0);
@@ -166,6 +168,10 @@ public class MobModelManager implements Listener {
             r.ids.add(d.getUniqueId());
             owned.add(d.getUniqueId());
         }
+        TextDisplay tag = kr.rpgcraft.util.NameTag.spawn(le);
+        tag.getPersistentDataContainer().set(modelKey, PersistentDataType.BYTE, (byte) 1);
+        r.nameId = tag.getUniqueId();
+        owned.add(r.nameId);
         le.setInvisible(true);
         hideGear(le);
         rigs.put(le.getUniqueId(), r);
@@ -196,12 +202,21 @@ public class MobModelManager implements Listener {
     }
 
     private void removeRig(UUID mob, Rig r) {
+        removeName(r);
         for (UUID id : r.ids) {
             owned.remove(id);
             Entity d = Bukkit.getEntity(id);
             if (d != null) d.remove();
         }
         rigs.remove(mob);
+    }
+
+    private void removeName(Rig r) {
+        if (r.nameId == null) return;
+        owned.remove(r.nameId);
+        Entity t = Bukkit.getEntity(r.nameId);
+        if (t != null) t.remove();
+        r.nameId = null;
     }
 
     private void follow() {
@@ -232,6 +247,16 @@ public class MobModelManager implements Listener {
                     d.teleport(new Location(l.getWorld(), l.getX(), l.getY(), l.getZ(), 0, 0));
                     mob.addPassenger(d);
                 }
+            }
+            if ((tick + (r.seed & 3)) % 4 == 0) {   // 체력 이름표: 내용 · 높이 맞추기 (없어졌으면 다시 띄움)
+                Entity te = r.nameId == null ? null : Bukkit.getEntity(r.nameId);
+                if (!(te instanceof TextDisplay td) || !td.isValid()) {
+                    if (r.nameId != null) owned.remove(r.nameId);
+                    TextDisplay nt = kr.rpgcraft.util.NameTag.spawn(mob);
+                    nt.getPersistentDataContainer().set(modelKey, PersistentDataType.BYTE, (byte) 1);
+                    r.nameId = nt.getUniqueId();
+                    owned.add(r.nameId);
+                } else kr.rpgcraft.util.NameTag.update(mob, td, r.h);
             }
             if (tick < r.nextAt) continue;
             double dist = nearest(mob, far);
@@ -373,9 +398,13 @@ public class MobModelManager implements Listener {
     public boolean teleport(LivingEntity mob, Location to) {
         Rig r = rigs.get(mob.getUniqueId());
         List<Entity> ds = new ArrayList<>();
-        if (r != null) for (UUID id : r.ids) {
-            Entity d = Bukkit.getEntity(id);
-            if (d != null) { mob.removePassenger(d); ds.add(d); }
+        if (r != null) {
+            List<UUID> all = new ArrayList<>(r.ids);
+            if (r.nameId != null) all.add(r.nameId);   // 체력 이름표도 함께 내림
+            for (UUID id : all) {
+                Entity d = Bukkit.getEntity(id);
+                if (d != null) { mob.removePassenger(d); ds.add(d); }
+            }
         }
         boolean ok = mob.teleport(to);
         for (Entity d : ds) {
@@ -418,6 +447,7 @@ public class MobModelManager implements Listener {
         LivingEntity mob = e.getEntity();
         Rig r = rigs.remove(mob.getUniqueId());
         if (r == null) return;
+        removeName(r);
         Location l = mob.getLocation();
         List<ItemDisplay> ds = new ArrayList<>();
         List<Transformation> base = new ArrayList<>();

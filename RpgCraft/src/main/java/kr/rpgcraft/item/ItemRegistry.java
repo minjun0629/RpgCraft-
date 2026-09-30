@@ -350,6 +350,12 @@ public class ItemRegistry {
             reg(new ItemTemplate("hammer_" + hp[i], "[길드 성벽] 성벽 수리 망치 (" + String.format("%,d", hp[i]) + ")", Material.STONE_AXE, Category.HAMMER)
                     .value(hp[i]).price(hpPrice[i], -1).model(400 + i).desc("성벽 근처에서 쉬프트 10초 유지 시 성벽 회복"));
 
+        // v5.10.14 성벽 설치권: 우리 길드 성 안에서 우클릭 두 번 → 바라보는 방향에 성벽을 세우고 체력 있는 성벽으로 등록
+        reg(new ItemTemplate("wall_small", "[길드 성벽] 성벽 설치권 (소형)", Material.PAPER, Category.TICKET).grade(Grade.UNIQUE).price(2000000, -1).model(12)
+                .desc("우리 길드 성 안에서 우클릭 → 설치 자리 미리보기", "한 번 더 우클릭하면 설치 (너비 7 · 높이 5 · 두께 2)", "성벽 체력 30,000 · 전쟁 중에는 설치 불가"));
+        reg(new ItemTemplate("wall_large", "[길드 성벽] 성벽 설치권 (대형)", Material.PAPER, Category.TICKET).grade(Grade.LEGEND).price(5000000, -1).model(12)
+                .desc("우리 길드 성 안에서 우클릭 → 설치 자리 미리보기", "한 번 더 우클릭하면 설치 (너비 11 · 높이 7 · 두께 3)", "성벽 체력 60,000 · 전쟁 중에는 설치 불가"));
+
         reg(new ItemTemplate("rune_low", "하급룬", Material.FIREWORK_STAR, Category.RUNE).tier(1).model(600).desc("/룬 에서 장착"));
         reg(new ItemTemplate("rune_mid", "중급룬", Material.FIREWORK_STAR, Category.RUNE).tier(2).grade(Grade.RARE).glow().model(601).desc("/룬 에서 장착"));
         reg(new ItemTemplate("rune_high", "상급룬", Material.FIREWORK_STAR, Category.RUNE).tier(3).grade(Grade.UNIQUE).glow().model(602).desc("/룬 에서 장착"));

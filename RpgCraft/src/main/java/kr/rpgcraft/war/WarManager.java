@@ -122,6 +122,98 @@ public class WarManager {
         return null;
     }
 
+    // ------------------------------------------------------------------ v5.10.14 성벽 설치권 (전쟁 상점)
+    private record WallPlan(String castle, Location min, Location max, long at) {}
+    private final Map<UUID, WallPlan> wallPlans = new HashMap<>();
+
+    /** 우클릭 1번: 설치 자리 미리보기 / 5초 안에 같은 자리에서 한 번 더: 설치 */
+    public void useWallTicket(Player p, ItemStack it, boolean large) {
+        Guild g = plugin.guilds().of(p.getUniqueId());
+        if (g == null) { Text.actionBar(p, "&c길드에 가입해야 쓸 수 있습니다."); return; }
+        Castle c = castleArea(p.getLocation(), 0);
+        if (c == null || !g.name.equals(c.owner)) { Text.actionBar(p, "&c우리 길드가 차지한 성 안에서만 성벽을 세울 수 있습니다."); return; }
+        if (wars.containsKey(c.id)) { Text.actionBar(p, "&c공성전 중에는 성벽을 세울 수 없습니다."); return; }
+        int max = plugin.getConfig().getInt("war.guild-walls-max", 6);
+        long mine = c.walls.stream().filter(x -> x.id.startsWith("guild")).count();
+        if (mine >= max) { Text.actionBar(p, "&c이 성에는 성벽을 " + max + "개까지만 더 세울 수 있습니다."); return; }
+        int wd = large ? 11 : 7, h = large ? 7 : 5, t = large ? 3 : 2;
+        // 바라보는 방향(동서남북)으로 3칸 앞에, 그 방향을 가로막는 벽
+        float yaw = (p.getLocation().getYaw() % 360 + 360) % 360;
+        boolean alongX = (yaw >= 315 || yaw < 45) || (yaw >= 135 && yaw < 225);   // 남 · 북을 보면 벽은 동서로 길게
+        int fx = alongX ? 0 : (yaw < 135 ? -1 : 1), fz = alongX ? (yaw >= 135 && yaw < 225 ? -1 : 1) : 0;
+        Location base = p.getLocation().getBlock().getLocation().add(fx * 3, 0, fz * 3);
+        int x1, x2, z1, z2;
+        if (alongX) { x1 = base.getBlockX() - wd / 2; x2 = x1 + wd - 1; z1 = fz > 0 ? base.getBlockZ() : base.getBlockZ() - t + 1; z2 = z1 + t - 1; }
+        else { z1 = base.getBlockZ() - wd / 2; z2 = z1 + wd - 1; x1 = fx > 0 ? base.getBlockX() : base.getBlockX() - t + 1; x2 = x1 + t - 1; }
+        World w = p.getWorld();
+        int y1 = base.getBlockY(), y2 = y1 + h - 1;
+        Location min = new Location(w, x1, y1, z1), max2 = new Location(w, x2, y2, z2);
+        // 자리 확인: 모두 성 안 · 빈 공간(풀 · 꽃 정도는 괜찮음) · 다른 성벽 · 신호기와 겹치지 않음 · 사람이 서 있지 않음
+        String bad = null;
+        for (int x = x1; x <= x2 && bad == null; x++)
+            for (int z = z1; z <= z2 && bad == null; z++) {
+                if (castleArea(new Location(w, x, y1, z), 0) != c) { bad = "성 밖으로 나갑니다"; break; }
+                for (int y = y1; y <= y2; y++) {
+                    Block b = w.getBlockAt(x, y, z);
+                    if (!b.isPassable() || b.isLiquid()) { bad = "막힌 곳이 있습니다 (" + x + ", " + y + ", " + z + ")"; break; }
+                    if (castleAt(b.getLocation()) != null) { bad = "다른 성벽 · 신호기와 겹칩니다"; break; }
+                }
+            }
+        if (bad == null)
+            for (Player o : w.getPlayers()) {
+                Location l = o.getLocation();
+                if (l.getBlockX() >= x1 && l.getBlockX() <= x2 && l.getBlockZ() >= z1 && l.getBlockZ() <= z2 && l.getBlockY() >= y1 - 1 && l.getBlockY() <= y2) { bad = "설치 자리에 사람이 있습니다"; break; }
+            }
+        outline(min, max2, bad == null ? Color.fromRGB(0x5AFF7A) : Color.fromRGB(0xFF3A3A));
+        if (bad != null) { Text.actionBar(p, "&c여기에는 세울 수 없습니다: " + bad); wallPlans.remove(p.getUniqueId()); return; }
+        {
+            WallPlan prev = wallPlans.get(p.getUniqueId());
+            long now = System.currentTimeMillis();
+            if (prev == null || now - prev.at() > 5000 || !prev.castle().equals(c.id) || !prev.min().equals(min) || !prev.max().equals(max2)) {
+                wallPlans.put(p.getUniqueId(), new WallPlan(c.id, min, max2, now));
+                Text.actionBar(p, "&a초록 테두리 자리에 성벽을 세웁니다. &e5초 안에 한 번 더 우클릭 &7(자리를 옮기면 다시 미리보기)");
+                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.4f);
+                return;
+            }
+        }
+        wallPlans.remove(p.getUniqueId());
+        it.setAmount(it.getAmount() - 1);
+        // 성벽 쌓기: 석재 벽돌 몸통 · 이끼/금 간 벽돌 섞기 · 맨 윗줄은 톱니 난간
+        java.util.concurrent.ThreadLocalRandom r = java.util.concurrent.ThreadLocalRandom.current();
+        for (int x = x1; x <= x2; x++)
+            for (int z = z1; z <= z2; z++)
+                for (int y = y1; y <= y2; y++) {
+                    int along = alongX ? x - x1 : z - z1;
+                    Material m;
+                    if (y == y2) m = along % 2 == 0 ? Material.STONE_BRICKS : Material.AIR;
+                    else if (y == y1) m = Material.CHISELED_STONE_BRICKS;
+                    else { double q = r.nextDouble(); m = q < 0.12 ? Material.MOSSY_STONE_BRICKS : q < 0.24 ? Material.CRACKED_STONE_BRICKS : Material.STONE_BRICKS; }
+                    w.getBlockAt(x, y, z).setType(m, false);
+                }
+        int n = 1;
+        while (true) { String cand = "guild" + n; if (c.walls.stream().noneMatch(x -> x.id.equals(cand))) break; n++; }
+        double hp = large ? plugin.getConfig().getDouble("war.guild-wall-hp-large", 60000) : plugin.getConfig().getDouble("war.guild-wall-hp-small", 30000);
+        addWall(c, "guild" + n, min, new Location(w, x2, y2 - 1, z2), hp);   // 톱니 윗줄 사이 빈칸은 성벽 범위에서 뺌
+        Location mid = min.clone().add((x2 - x1) / 2.0 + 0.5, h / 2.0, (z2 - z1) / 2.0 + 0.5);
+        w.spawnParticle(Particle.BLOCK_CRACK, mid, 60, (x2 - x1) / 2.0, h / 2.0, (z2 - z1) / 2.0, Material.STONE_BRICKS.createBlockData());
+        w.playSound(mid, Sound.BLOCK_ANVIL_LAND, 1f, 0.6f);
+        Text.msg(p, "&a" + c.name + "에 성벽 &eguild" + n + " &a을(를) 세웠습니다. &7(체력 " + Text.num(hp) + " · 이 성의 길드 성벽 " + (mine + 1) + "/" + max + ")");
+    }
+
+    private void outline(Location min, Location max, Color col) {
+        World w = min.getWorld();
+        Particle.DustOptions o = new Particle.DustOptions(col, 1.2f);
+        double x1 = min.getBlockX(), y1 = min.getBlockY(), z1 = min.getBlockZ(), x2 = max.getBlockX() + 1, y2 = max.getBlockY() + 1, z2 = max.getBlockZ() + 1;
+        for (int k = 0; k < 4; k++) {
+            long delay = k * 20L;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                for (double x = x1; x <= x2; x += 0.5) for (double[] yz : new double[][]{{y1, z1}, {y1, z2}, {y2, z1}, {y2, z2}}) w.spawnParticle(Particle.REDSTONE, new Location(w, x, yz[0], yz[1]), 1, 0, 0, 0, 0, o);
+                for (double z = z1; z <= z2; z += 0.5) for (double[] xy : new double[][]{{x1, y1}, {x2, y1}, {x1, y2}, {x2, y2}}) w.spawnParticle(Particle.REDSTONE, new Location(w, xy[0], xy[1], z), 1, 0, 0, 0, 0, o);
+                for (double y = y1; y <= y2; y += 0.5) for (double[] xz : new double[][]{{x1, z1}, {x1, z2}, {x2, z1}, {x2, z2}}) w.spawnParticle(Particle.REDSTONE, new Location(w, xz[0], y, xz[1]), 1, 0, 0, 0, 0, o);
+            }, delay);
+        }
+    }
+
     /** 성 안에서는 몬스터가 나오지 않음 (설정 war.no-mob-spawn) */
     public boolean noMobs(Location l) {
         return plugin.getConfig().getBoolean("war.no-mob-spawn", true) && castleArea(l, plugin.getConfig().getInt("war.no-mob-margin", 4)) != null;

@@ -21,11 +21,11 @@ import java.time.ZoneId;
 import java.util.*;
 
 /**
- * 이벤트 광장 (v5.6.0) — /이벤트
+ * 미니게임 광장 (v5.6.0) — /미니게임
  *  - 미니게임 4종 (두더지 잡기 · 벽돌깨기 · 지뢰찾기 · 같은 그림 찾기), 난이도 쉬움 · 보통 · 어려움
- *  - 성공하면 이벤트 코인 (아이템이 아닌 디지털 재화, counters: coin_event — v5.6.4 에서 하나로 통합)
+ *  - 성공하면 미니게임 코인 (아이템이 아닌 디지털 재화, counters: coin_event — v5.6.4 에서 하나로 통합)
  *  - 하루에 할 수 있는 판 수 제한 (minigames.daily-plays, 기본 4종 합쳐 5판 — 시작할 때 1판 차감, 도중에 닫아도 차감) (v5.6.4)
- *  - 이벤트 상점: 상점 목록 → 세부 상점 (plugins/RpgCraft/event-shop.yml 로 품목 · 가격 · 구매 제한을 바꿀 수 있음)
+ *  - 미니게임 상점: 상점 목록 → 세부 상점 (plugins/RpgCraft/event-shop.yml 로 품목 · 가격 · 구매 제한을 바꿀 수 있음)
  */
 public class MiniGameManager implements CommandExecutor {
     public record Offer(String item, int amount, long price, int limit) {}
@@ -53,12 +53,12 @@ public class MiniGameManager implements CommandExecutor {
             f.renameTo(new File(plugin.getDataFolder(), "event-shop.old.yml"));
             plugin.saveResource("event-shop.yml", true);
             y = YamlConfiguration.loadConfiguration(f);
-            plugin.getLogger().info("이벤트 상점을 이벤트 코인 통합 상점으로 바꿨습니다 (예전 파일: event-shop.old.yml)");
+            plugin.getLogger().info("미니게임 상점을 미니게임 코인 통합 상점으로 바꿨습니다 (예전 파일: event-shop.old.yml)");
         }
         for (String id : y.getKeys(false)) {
             ConfigurationSection s = y.getConfigurationSection(id);
             if (s == null) continue;
-            Coin c = Coin.EVENT;   // 모든 상점이 이벤트 코인
+            Coin c = Coin.EVENT;   // 모든 상점이 미니게임 코인
             Material icon = Material.matchMaterial(s.getString("icon", "CHEST"));
             List<Offer> offers = new ArrayList<>();
             for (Map<?, ?> m : s.getMapList("items")) {
@@ -124,7 +124,7 @@ public class MiniGameManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player p)) return true;
-        if (args.length > 0 && (args[0].equals("상점") || args[0].equalsIgnoreCase("shop"))) { new EventShop(p).open(p); return true; }
+        if (label.endsWith("미니게임상점") || args.length > 0 && (args[0].equals("상점") || args[0].equalsIgnoreCase("shop"))) { new EventShop(p).open(p); return true; }   // v5.8.5 /미니게임상점 은 바로 상점
         new Hub(p).open(p);
         return true;
     }
@@ -135,7 +135,7 @@ public class MiniGameManager implements CommandExecutor {
 
     private class Hub extends Gui {
         Hub(Player p) {
-            super(6, "&8이벤트 광장", "event");
+            super(6, "&8미니게임 광장", "event");
             PlayerData d = plugin.data().get(p);
             int[] top = {10, 12, 14, 16}, bottom = {28, 30, 32, 34};
             Game[] gs = Game.values();
@@ -147,14 +147,14 @@ public class MiniGameManager implements CommandExecutor {
                         left > 0 ? "&e▶ 클릭하여 난이도 선택" : "&c오늘은 더 할 수 없습니다 (자정에 초기화)"), e -> openDifficulty(p, g));
                 List<Integer> rw = plugin.getConfig().getIntegerList("minigames.reward." + g.key());
                 String rs = rw.size() >= 3 ? rw.get(0) + " / " + rw.get(1) + " / " + rw.get(2) : "1 / 3 / 6";
-                set(bottom[i], Icons.of(Coin.EVENT.icon, "&e성공 보상", "&7쉬움 / 보통 / 어려움", "&e이벤트 코인 " + rs + "개"));
+                set(bottom[i], Icons.of(Coin.EVENT.icon, "&e성공 보상", "&7쉬움 / 보통 / 어려움", "&e미니게임 코인 " + rs + "개"));
             }
-            set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&a&l이벤트 상점", "&7이벤트 코인으로 여러 보상을 살 수 있습니다",
-                    "&f보유 &e" + Coin.EVENT.get(d) + " 이벤트 코인", "", "&f오늘 남은 판 " + (playsLeft(d, Game.MOLE) > 0 ? "&e" : "&c") + playsLeft(d, Game.MOLE) + " &7/ " + dailyPlays()
+            set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&a&l미니게임 상점", "&7미니게임 코인으로 여러 보상을 살 수 있습니다",
+                    "&f보유 &e" + Coin.EVENT.get(d) + " 미니게임 코인", "", "&f오늘 남은 판 " + (playsLeft(d, Game.MOLE) > 0 ? "&e" : "&c") + playsLeft(d, Game.MOLE) + " &7/ " + dailyPlays()
                             + (total() ? " &8(4종 합계)" : ""), "&e▶ 클릭"), e -> new EventShop(p).open(p));
             set(49, Gui.button(Material.BOOK, "&f도움말", "&7각 게임은 쉬움 · 보통 · 어려움 3단계", "&7어려울수록 코인을 많이 줍니다",
                     "&7하루에 " + (total() ? "모든 게임 합쳐 " : "게임마다 ") + dailyPlays() + "판 (시작하면 1판 차감)",
-                    "&7이벤트 코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
+                    "&7미니게임 코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
             fill(0, 53);
         }
     }
@@ -204,11 +204,11 @@ public class MiniGameManager implements CommandExecutor {
         mg.begin();
     }
 
-    // ------------------------------------------------------------------ 이벤트 상점
-    /** v5.7.1: 이벤트 코인 상점 하나 — 모든 품목을 한 창에 (품목 종류마다 한 줄, 맨 왼쪽 칸에 종류 이름) */
+    // ------------------------------------------------------------------ 미니게임 상점
+    /** v5.7.1: 미니게임 코인 상점 하나 — 모든 품목을 한 창에 (품목 종류마다 한 줄, 맨 왼쪽 칸에 종류 이름) */
     private class EventShop extends Gui {
         EventShop(Player p) {
-            super(6, "&8이벤트 코인 상점", "eshop_sub");
+            super(6, "&8미니게임 코인 상점", "eshop_sub");
             PlayerData d = plugin.data().get(p);
             for (int row = 0; row < shops.size() && row < 4; row++) {
                 SubShop s = shops.get(row);
@@ -222,7 +222,7 @@ public class MiniGameManager implements CommandExecutor {
                     ItemMeta m = icon.getItemMeta();
                     List<String> lore = m.getLore() == null ? new ArrayList<>() : new ArrayList<>(m.getLore());
                     lore.add("");
-                    lore.add(Text.c("&f가격 &e" + o.price() + " 이벤트 코인"));
+                    lore.add(Text.c("&f가격 &e" + o.price() + " 미니게임 코인"));
                     String key = "eshop_" + s.id() + "_" + o.item();
                     int bought = (int) Math.round(d.counters.getOrDefault(key, 0.0));
                     if (o.limit() > 0) lore.add(Text.c("&7구매 제한 " + bought + " / " + o.limit()));
@@ -232,8 +232,8 @@ public class MiniGameManager implements CommandExecutor {
                     set(first + start + i, icon, e -> buy(p, s, o));
                 }
             }
-            set(49, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&e&l보유 이벤트 코인 &f" + Coin.EVENT.get(d) + "개",
-                    "&7미니게임 4종 성공 보상 (/이벤트)"));
+            set(49, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&e&l보유 미니게임 코인 &f" + Coin.EVENT.get(d) + "개",
+                    "&7미니게임 4종 성공 보상 (/미니게임)"));
             fill(0, 53);
         }
     }

@@ -469,7 +469,7 @@ public class PackManager implements Listener {
                 case "quest": return '\uE006';
                 case "settings": return '\uE007';
                 case "spirit": return '\uE008';
-                case "event": return '\uE009';      // v5.6.0 이벤트 광장 · 미니게임 · 주식
+                case "event": return '\uE009';      // v5.6.0 미니게임 광장 · 미니게임 · 주식
                 case "mole": return '\uE00A';
                 case "breakout": return '\uE00B';
                 case "mines": return '\uE00C';

@@ -197,7 +197,7 @@ public final class RpgCraft extends JavaPlugin {
         stocks = new kr.rpgcraft.economy.StockManager(this);
         command("stock", stocks);   // /주식 (v5.6.0)
         minigames = new kr.rpgcraft.minigame.MiniGameManager(this);
-        command("event", minigames);   // /이벤트 : 미니게임 · 이벤트 상점 (v5.6.0)
+        command("minigame", minigames);   // /미니게임 : 미니게임 · 미니게임 상점 (v5.6.0)
         duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
         Bukkit.getPluginManager().registerEvents(duels, this);
         command("duel", duels);

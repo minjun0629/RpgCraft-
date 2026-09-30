@@ -497,10 +497,10 @@ quests:                     # 의뢰 경험치 = 지금 레벨의 필요 경험�
   exp-weekly: 0.15           # 주간 의뢰 1개 (예전 1.0 = 레벨 하나)
   exp-npc: 0.02              # 마을 의뢰 NPC 1개 (예전 0.08)
 
-minigames:                  # 이벤트 광장 /이벤트 (v5.6.0)
+minigames:                  # 미니게임 광장 /미니게임 (v5.6.0)
   daily-plays: 5             # 하루에 할 수 있는 판 수 (시작할 때 1판 차감, 자정에 초기화)
   daily-plays-scope: total   # total = 4종 합쳐 5판 · per-game = 게임마다 5판
-  reward:                    # 성공 시 이벤트 코인 [쉬움, 보통, 어려움]
+  reward:                    # 성공 시 미니게임 코인 [쉬움, 보통, 어려움]
     mole: [1, 3, 6]
     breakout: [1, 3, 6]
     mines: [1, 3, 6]

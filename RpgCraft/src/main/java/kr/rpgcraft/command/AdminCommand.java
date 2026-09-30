@@ -52,7 +52,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
         Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
         Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7- 주식 가격 직접 지정");
-        Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 이벤트 코인 지급 (음수면 회수)");
+        Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 미니게임 코인 지급 (음수면 회수)");
         Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록)");
         Text.msg(s, "&e/rpg관리 ruin build [테마|random] [here|random] &7- 점프맵 유적 짓기 (테마: /rpg관리 ruin themes)");
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
@@ -177,13 +177,13 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 }
                 case "auction" -> auction(s, a);
                 case "coin", "코인" -> {   // /rpg관리 coin <플레이어> <종류> <수> (v5.6.0)
-                    if (a.length < 3) { Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 이벤트 코인"); return true; }
+                    if (a.length < 3) { Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 미니게임 코인"); return true; }
                     Player t = Bukkit.getPlayerExact(a[1]);
                     if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
                     long n;
                     try { n = Long.parseLong(a[a.length - 1]); } catch (NumberFormatException ex) { Text.msg(s, "&c수는 숫자로 적어 주세요."); return true; }   // 예전 형식(<종류> <수>)도 됨
                     plugin.minigames().giveCoins(t, "event", n);
-                    Text.msg(s, "&a" + t.getName() + " 에게 이벤트 코인 " + n + "개");
+                    Text.msg(s, "&a" + t.getName() + " 에게 미니게임 코인 " + n + "개");
                     return true;
                 }
                 case "stock", "주식" -> {   // /rpg관리 stock <종목> <가격> (v5.6.0)

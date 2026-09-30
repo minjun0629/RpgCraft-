@@ -355,7 +355,7 @@ public class NecromancyManager implements Listener, CommandExecutor {
         rename(w, m);
         if (plugin.mobModels() != null && md != null) {
             double h = typeHeight(md.type) * Math.max(1, Math.min(1.6, md.scale)) * cfg("model-scale", 0.9);
-            plugin.mobModels().attach(w, m.mob, h);
+            plugin.mobModels().attach(w, m.mob, h, true);   // v5.10.11 언데드 색 (원래 몬스터와 구분)
         }
         w.getWorld().spawnParticle(Particle.SOUL, at.clone().add(0, 0.5, 0), 20, 0.4, 0.6, 0.4, 0.03);
     }
@@ -525,6 +525,11 @@ public class NecromancyManager implements Listener, CommandExecutor {
                 if (Math.abs(newMax - m.maxHp) > 1) { m.hp = m.hp / Math.max(1, m.maxHp) * newMax; m.maxHp = newMax; }
                 if (tick % 4 == 0 && m.hp < m.maxHp) m.hp = Math.min(m.maxHp, m.hp + m.maxHp * 0.01);   // 2초마다 1% 회복
                 rename(w, m);
+                if (tick % 4 == 0) {   // v5.10.11 언데드 표시: 발밑 영혼불 (원래 몬스터와 구분)
+                    Location feet = w.getLocation().add(0, 0.1, 0);
+                    w.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, feet, 3, 0.3, 0.05, 0.3, 0.005);
+                    w.getWorld().spawnParticle(Particle.SOUL, feet.add(0, 0.6, 0), 1, 0.25, 0.4, 0.25, 0.01);
+                }
                 if (m.role == Role.WARRIOR || m.role == Role.TANK) {
                     LivingEntity t = w.getTarget();
                     if (t == null || !t.isValid() || t.isDead() || t.getLocation().distanceSquared(p.getLocation()) > 20 * 20) {

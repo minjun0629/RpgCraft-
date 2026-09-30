@@ -14,6 +14,25 @@ from voxel_lib import (Grid, emit, figure, armor, robe, cape, hair, wings, crown
 
 MOB_VS = 1.0   # v5.10.2 프레임: 0.8 → 1.0 (요소 약 40% 감소)
 CMD_BASE = 9100
+UNDEAD_BASE = 16000   # v5.10.11 네크로맨서 군단원용 언데드 색 변형 (같은 모델 · 텍스처만 다름)
+
+
+def undead_color(hexcol):
+    """언데드화: 채도를 빼고 창백한 회녹색으로 어둡게, 밝고 진한 색(눈 · 불꽃 · 보석)은 영혼빛 청록으로"""
+    import colorsys
+    h = hexcol.lstrip("#")
+    r, g, b = (int(h[k:k + 2], 16) / 255.0 for k in (0, 2, 4))
+    hh, ll, ss = colorsys.rgb_to_hls(r, g, b)
+    if max(r, g, b) > 0.78 and ss > 0.55 and ll > 0.35:   # 눈 · 빛나는 부분 → 영혼불
+        glow = 0.75 + 0.25 * ll
+        return "#%02x%02x%02x" % (int(90 * glow), int(240 * glow), int(255 * glow))
+    grey = 0.3 * r + 0.59 * g + 0.11 * b
+    mix = 0.72
+    r2, g2, b2 = (grey + (c - grey) * (1 - mix) for c in (r, g, b))
+    tint = (0.78, 0.95, 0.86)
+    dark = 0.82
+    out = [min(1.0, c * t * dark + 0.03) for c, t in zip((r2, g2, b2), tint)]
+    return "#%02x%02x%02x" % tuple(int(round(c * 255)) for c in out)
 
 
 # ================================================================== 공통 틀
@@ -1010,12 +1029,15 @@ def write(pack_dir, ns, write_json, plugin_res=None):
     tex_dir = os.path.join(pack_dir, "assets", ns, "textures", "item", "mob")
     os.makedirs(tex_dir, exist_ok=True)
     out, rows = [], []
-    cmd = CMD_BASE
+    cmd, ucmd = CMD_BASE, UNDEAD_BASE
     for bid in ORDER:
         models, pal, h, piv, kind = build_one(bid)
         if len(pal.colors) > 256:
             raise SystemExit("몬스터 팔레트 색이 256 개를 넘음: %s" % bid)
         pal.image().save(os.path.join(tex_dir, bid + ".png"))
+        upal = bm.Palette()
+        upal.colors = [undead_color(c) for c in pal.colors]
+        upal.image().save(os.path.join(tex_dir, bid + "_undead.png"))
         prow = []
         for p, els in models.items():
             name = bid if p == "body" else bid + "_" + p
@@ -1027,19 +1049,23 @@ def write(pack_dir, ns, write_json, plugin_res=None):
                      "elements": els, "display": bm._display(1)}
             write_json(os.path.join(pack_dir, "assets", ns, "models", "mob", name + ".json"), model)
             out.append((cmd, ns + ":mob/" + name))
-            prow.append((p, cmd, piv[p], len(els)))
+            umodel = dict(model, textures={"0": ns + ":item/mob/" + bid + "_undead", "particle": ns + ":item/mob/" + bid + "_undead"})
+            write_json(os.path.join(pack_dir, "assets", ns, "models", "mob", name + "_undead.json"), umodel)
+            out.append((ucmd, ns + ":mob/" + name + "_undead"))
+            prow.append((p, cmd, piv[p], len(els), ucmd))
             cmd += 1
+            ucmd += 1
         rows.append((bid, kind, h, SIZE.get(bid, 1.0), prow))
     if plugin_res:
-        lines = ["# 자동 생성 (tools/mob_models.py) — 일반 몬스터 3D 모델", "# parts: 부위 → [CustomModelData, 관절 x, y, z] (모델 좌표: 발 y=0, 가운데 x=z=8, 1블록=16)", "models:"]
+        lines = ["# 자동 생성 (tools/mob_models.py) — 일반 몬스터 3D 모델", "# parts: 부위 → [CustomModelData, 관절 x, y, z, 언데드 CustomModelData] (모델 좌표: 발 y=0, 가운데 x=z=8, 1블록=16)", "models:"]
         for bid, kind, h, sz, prow in rows:
-            lines.append("  %s:   # 요소 %d" % (bid, sum(n for *_, n in prow)))
+            lines.append("  %s:   # 요소 %d" % (bid, sum(x[3] for x in prow)))
             lines.append("    rig: %s" % kind)
             lines.append("    height: %s" % h)
             lines.append("    size: %s" % sz)
             lines.append("    parts:")
-            for p, c, P, n in prow:
-                lines.append("      %s: [%d, %s, %s, %s]" % (p, c, P[0], P[1], P[2]))
+            for p, c, P, n, u in prow:
+                lines.append("      %s: [%d, %s, %s, %s, %d]" % (p, c, P[0], P[1], P[2], u))
         with open(os.path.join(plugin_res, "mob-models.yml"), "w", encoding="utf-8") as fh:
             fh.write("\n".join(lines) + "\n")
     return out

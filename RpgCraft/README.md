@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.11
+- **군단원 언데드화**: 네크로맨서 군단원은 창백한 회녹색 · 영혼빛 눈의 언데드 색 모델 + 발밑 영혼불 (리소스팩 변경). 외부 팩 확인에 실패하면 몬스터 모델을 끄던 것 → 확실히 다른 팩일 때만 끔.
+
 ## v5.10.10
 - **공성 성 철거**: `/rpg관리 castle demolish <id>` 로 성을 허물고 짓기 전 땅으로 되돌림 (지을 때 부지를 기록). 길드가 해체되면 그 길드의 성도 자동 철거, 전체 초기화 때는 모든 성 철거 (`war.demolish-on-disband` · `war.demolish-on-reset`).
 

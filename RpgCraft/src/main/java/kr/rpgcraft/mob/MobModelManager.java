@@ -43,7 +43,7 @@ import java.util.*;
  * 가까운 몬스터는 2틱, 먼 몬스터는 4틱마다 (보간으로 부드럽게), 멀리 있으면 계산하지 않음.
  */
 public class MobModelManager implements Listener {
-    private record Part(String name, int cmd, float px, float py, float pz) { }
+    private record Part(String name, int cmd, float px, float py, float pz, int undead) { }   // undead: v5.10.11 언데드 색 변형 번호 (0 = 없음)
 
     private record Def(String rig, float height, float size, List<Part> parts) { }
 
@@ -166,7 +166,8 @@ public class MobModelManager implements Listener {
                 for (String pn : ps.getKeys(false)) {
                     List<?> v = ps.getList(pn);
                     if (v == null || v.size() < 4) continue;
-                    parts.add(new Part(pn, ((Number) v.get(0)).intValue(), ((Number) v.get(1)).floatValue(), ((Number) v.get(2)).floatValue(), ((Number) v.get(3)).floatValue()));
+                    parts.add(new Part(pn, ((Number) v.get(0)).intValue(), ((Number) v.get(1)).floatValue(), ((Number) v.get(2)).floatValue(), ((Number) v.get(3)).floatValue(),
+                            v.size() > 4 ? ((Number) v.get(4)).intValue() : 0));
                 }
                 defs.put(id, new Def(m.getString("rig", "solid"), (float) m.getDouble("height", 16), (float) m.getDouble("size", 1), parts));
             }
@@ -206,6 +207,11 @@ public class MobModelManager implements Listener {
 
     /** height > 0 이면 몹 키 대신 그 높이로 모델을 그림 (v5.10.9 네크로맨서 군단원: 늑대 몸에 원래 몬스터 크기의 모델) */
     public void attach(LivingEntity le, String id, double height) {
+        attach(le, id, height, false);
+    }
+
+    /** undead: 네크로맨서 군단원 — 창백한 회녹색 피부 · 영혼빛 눈의 언데드 색으로 (v5.10.11) */
+    public void attach(LivingEntity le, String id, double height, boolean undead) {
         if (!enabled() || le.isDead() || rigs.containsKey(le.getUniqueId())) return;
         for (Entity old : le.getPassengers())   // 혹시 남아 있던 예전 모델 조각은 치우고 새로 붙임 (겹침 방지)
             if (old instanceof ItemDisplay od && od.getPersistentDataContainer().has(modelKey, PersistentDataType.BYTE)) od.remove();
@@ -225,7 +231,7 @@ public class MobModelManager implements Listener {
         for (Part p : def.parts()) {
             ItemStack it = new ItemStack(Material.PAPER);
             ItemMeta m = it.getItemMeta();
-            m.setCustomModelData(p.cmd());
+            m.setCustomModelData(undead && p.undead() > 0 ? p.undead() : p.cmd());
             it.setItemMeta(m);
             boolean body = p.name().equals("body");
             ItemDisplay d = le.getWorld().spawn(at, ItemDisplay.class, x -> {

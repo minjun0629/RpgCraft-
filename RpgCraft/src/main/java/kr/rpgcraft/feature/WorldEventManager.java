@@ -208,6 +208,7 @@ public class WorldEventManager implements Listener {
             Location at = p.getLocation().add(Math.cos(a) * r, 0, Math.sin(a) * r);
             Block top = kr.rpgcraft.util.Locs.surface(p.getWorld(), at);
             if (top.isLiquid() || Math.abs(top.getY() - p.getLocation().getY()) > 8) continue;
+            if (plugin.wars() != null && plugin.wars().noMobs(top.getLocation())) continue;   // v5.10.13 성 안에는 웨이브 깃발 없음
             Block b = top.getRelative(0, 1, 0);
             Flag f = new Flag();
             f.loc = b.getLocation();

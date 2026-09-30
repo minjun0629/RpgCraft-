@@ -13,6 +13,14 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class WarListener implements Listener {
+    /** v5.10.13 성 안(부지 + 여유 4칸)에서는 몬스터가 자연적으로 생기지 않음 (자연 · 스포너 · 습격 · 순찰대 · 증원 등). 플러그인이 일부러 부르는 보스 등은 그대로 */
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onMobSpawn(org.bukkit.event.entity.CreatureSpawnEvent e) {
+        if (!(e.getEntity() instanceof org.bukkit.entity.Enemy)) return;
+        if (e.getSpawnReason() == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CUSTOM) return;
+        if (plugin.wars().noMobs(e.getLocation())) e.setCancelled(true);
+    }
+
     private final RpgCraft plugin;
 
     public WarListener(RpgCraft plugin) {

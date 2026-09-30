@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.13
+- **성 안 몬스터 스폰 금지**: 공성 성 부지(+4칸) 안에서는 몬스터가 생기지 않음 (웨이브 깃발 · 현상금 · 보물 수호자 · 필드 보스 포함). `war.no-mob-spawn` · `war.no-mob-margin`.
+
 ## v5.10.12
 - **스폰 근처 성 설치 금지**: 월드 스폰 300칸 안(성 끝자락 포함)에는 `castle build` 불가 (`war.castle-spawn-safe-radius`).
 

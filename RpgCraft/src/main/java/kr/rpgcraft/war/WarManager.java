@@ -92,6 +92,41 @@ public class WarManager {
         return null;
     }
 
+    /**
+     * v5.10.13 이 위치가 성 부지 안인지 (가로세로만 봄 — 성 안 땅 · 성벽 위 · 탑 꼭대기 모두).
+     * 자동으로 지은 성은 부지 반지름, 손으로 만든 성은 성벽 · 신호기를 감싸는 범위 + margin 칸
+     */
+    public Castle castleArea(Location l, int margin) {
+        if (l == null || l.getWorld() == null) return null;
+        for (Castle c : castles.values()) {
+            if (c.center != null && c.r > 0) {
+                if (!l.getWorld().equals(c.center.getWorld())) continue;
+                if (Math.abs(l.getBlockX() - c.center.getBlockX()) <= c.r + margin && Math.abs(l.getBlockZ() - c.center.getBlockZ()) <= c.r + margin) return c;
+                continue;
+            }
+            int x1 = Integer.MAX_VALUE, z1 = Integer.MAX_VALUE, x2 = Integer.MIN_VALUE, z2 = Integer.MIN_VALUE;
+            boolean any = false;
+            for (Castle.Wall w : c.walls) {
+                if (w.min == null || !l.getWorld().equals(w.min.getWorld())) continue;
+                any = true;
+                x1 = Math.min(x1, w.min.getBlockX()); z1 = Math.min(z1, w.min.getBlockZ());
+                x2 = Math.max(x2, w.max.getBlockX()); z2 = Math.max(z2, w.max.getBlockZ());
+            }
+            if (c.beacon != null && l.getWorld().equals(c.beacon.getWorld())) {
+                any = true;
+                x1 = Math.min(x1, c.beacon.getBlockX()); z1 = Math.min(z1, c.beacon.getBlockZ());
+                x2 = Math.max(x2, c.beacon.getBlockX()); z2 = Math.max(z2, c.beacon.getBlockZ());
+            }
+            if (any && l.getBlockX() >= x1 - margin && l.getBlockX() <= x2 + margin && l.getBlockZ() >= z1 - margin && l.getBlockZ() <= z2 + margin) return c;
+        }
+        return null;
+    }
+
+    /** 성 안에서는 몬스터가 나오지 않음 (설정 war.no-mob-spawn) */
+    public boolean noMobs(Location l) {
+        return plugin.getConfig().getBoolean("war.no-mob-spawn", true) && castleArea(l, plugin.getConfig().getInt("war.no-mob-margin", 4)) != null;
+    }
+
     // ------------------------------------------------------------------ 선포 / 진행
     public void declare(Player p, String castleId) {
         Guild g = plugin.guilds().of(p.getUniqueId());

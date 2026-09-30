@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.17
+- **히든 직업 전용 직업창**: 히든 직업이면 직업창 대신 단계 · 보너스 · 고유 효과 · 다음 단계 조건을 보여주는 「✦ 히든 직업 ✦」 창 (네크로맨서는 군단 바로가기).
+
 ## v5.10.16
 - **관리자: 오늘의 미니게임 횟수 초기화** `/rpg관리 mgreset <플레이어|all>`.
 

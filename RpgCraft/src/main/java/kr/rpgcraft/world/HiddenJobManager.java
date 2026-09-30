@@ -162,6 +162,83 @@ public class HiddenJobManager implements Listener {
         return count(p, kv[0]) >= n;
     }
 
+    // ------------------------------------------------------------------ v5.10.17 히든 직업 전용 직업창
+    private static final String[] LINE_NAME = {"망령의 길", "별의 길", "죽음의 길"};
+    private static final String[][] PERK = {
+            {"처치 시 흡혈", "처치 시 체력 5% 회복", "처치 시 체력 회복 + 영혼 폭발 (주변 적에게 피해)"},
+            {"치명타 · 이동 속도", "치명타 피해 · 회피", "치명타가 터지면 별똥별이 떨어짐"},
+            {"영혼으로 군단원 3기", "군단원 5기 · 군단 능력치 +20%", "군단원 8기 · 군단 능력치 +45%"}};
+    private static final String[][] SKILL = {{"영혼 수확", "영혼 수확", "명계 강림"}, {"유성 낙하", "유성 낙하", "천구 붕괴"}, {"시체 폭발", "시체 폭발", "죽음의 행진"}};
+
+    private static int lineIdx(String line) {
+        return line.equals("A") ? 0 : line.equals("B") ? 1 : 2;
+    }
+
+    private static String bonusLine(StatMap m) {
+        StringBuilder sb = new StringBuilder();
+        for (var en : m.entries()) {
+            if (sb.length() > 0) sb.append(" &8· ");
+            sb.append("&f").append(en.getKey().label).append(" &a+").append(Text.num(en.getValue())).append(en.getKey().pct ? "%" : "");
+        }
+        return sb.toString();
+    }
+
+    /** 히든 직업이면 일반 직업창 대신 이 창 (1 · 2 · 3단계 · 조건 · 효과 · 전용 기능) */
+    public void openJobWindow(Player p) {
+        PlayerData d = plugin.data().get(p);
+        Tier cur = of(d);
+        if (cur == null) return;
+        int li = lineIdx(cur.line());
+        Gui g = new Gui(4, "&5&l✦ 히든 직업 ✦") {
+        };
+        Material icon = li == 0 ? Material.WITHER_SKELETON_SKULL : li == 1 ? Material.NETHER_STAR : Material.SKELETON_SKULL;
+        List<String> head = new java.util.ArrayList<>();
+        head.add("&8" + LINE_NAME[li] + " · " + cur.tier() + "단계");
+        head.add("");
+        head.add("&d능력치 보너스");
+        head.add(" " + bonusLine(cur.bonus()));
+        head.add("");
+        head.add("&d고유 효과");
+        head.add(" &f" + PERK[li][cur.tier() - 1]);
+        head.add("");
+        head.add("&d직업 스킬 (Q)");
+        head.add(" &f" + SKILL[li][cur.tier() - 1] + (li == 2 ? " &7+ 군단 체력 25% 회복" : ""));
+        head.add("");
+        head.add("&8원래 직업(1 · 2 · 3차)의 능력은 쓰지 않는다.");
+        g.set(4, Gui.button(icon, "&5&l" + cur.label(), head.toArray(new String[0])), null);
+        int[] slots = {11, 13, 15};
+        for (Tier t : TIERS) {
+            if (!t.line().equals(cur.line())) continue;
+            List<String> lore = new java.util.ArrayList<>();
+            boolean done = t.tier() <= cur.tier(), next = t.tier() == cur.tier() + 1;
+            lore.add("&8" + t.tier() + "단계");
+            lore.add("");
+            lore.add("&7보너스: " + bonusLine(t.bonus()));
+            lore.add("&7효과: &f" + PERK[li][t.tier() - 1]);
+            lore.add("");
+            Material m;
+            String name;
+            if (t.tier() == cur.tier()) { m = Material.ENCHANTED_BOOK; name = "&d&l" + t.label() + " &a(현재)"; lore.add("&a▶ 지금 이 길을 걷고 있다"); }
+            else if (done) { m = Material.BOOK; name = "&7" + t.label() + " &8(지나온 길)"; lore.add("&8이미 지나온 단계"); }
+            else if (next) {
+                m = Material.WRITABLE_BOOK;
+                name = "&5&l" + t.label() + " &e(다음)";
+                lore.add("&d승급 조건");
+                for (String n : t.need()) lore.add((meets(p, d, n) ? " &a✔ " : " &c✘ ") + label(n));
+                lore.add("");
+                if (d.counter("hj_issued_" + t.line() + t.tier()) > 0) lore.add("&e히든 전직서를 들고 우클릭하면 승급");
+                else lore.add("&8조건을 갖추고 이 단계의 이름 없는 자를 찾아가라…");
+            } else { m = Material.BLACK_STAINED_GLASS_PANE; name = "&8???"; lore.clear(); lore.add("&8아직 보이지 않는 길"); }
+            g.set(slots[t.tier() - 1], Gui.button(m, name, lore.toArray(new String[0])), null);
+        }
+        if (li == 2 && plugin.necro() != null)
+            g.set(31, Gui.button(Material.SOUL_LANTERN, "&5&l☠ 사령 군단", "&7영혼으로 일으킨 군단원 관리 · 소환", "&e▶ 클릭 (/군단)"), e -> plugin.necro().open(p));
+        g.set(27, Gui.button(Material.PAPER, "&7히든 직업 안내", "&7히든 직업은 다른 직업으로 바꾸거나 초기화할 수 없다.",
+                "&7다음 단계는 직업창이 아니라 맵 먼 곳의", "&7이름 없는 자에게서 받은 전직서로 오른다."), null);
+        g.fill(0, 35);
+        g.open(p);
+    }
+
     private String label(String need) {
         String[] kv = need.split(":");
         return switch (kv[0]) {

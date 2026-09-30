@@ -412,6 +412,7 @@ public class JobManager {
 
     // ------------------------------------------------------------------ GUI
     public void open(Player p) {
+        if (hidden(plugin.data().get(p)) && plugin.hiddenJobs() != null) { plugin.hiddenJobs().openJobWindow(p); return; }   // v5.10.17 히든 직업 전용 직업창
         new JobGui(p).open(p);
     }
 

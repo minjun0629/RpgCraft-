@@ -64,7 +64,7 @@ def dwarf_king(g):
     # 룬 망치 (오른손) · 모루 방패 (왼손)
     top = hammer(g, B.hand_r, 16, 3.2, "6b4a2b", ARM, GOLD)
     for dz in (-1.9, 1.9):
-        g.box((top[0] - 3.3, top[1] - 0.4, top[2] + dz - 0.2), (top[0] + 3.3, top[1] + 0.4, top[2] + dz + 0.2), RUNE, 8)
+        g.box((top[0] - 2.35, top[1] - 0.4, top[2] + dz - 0.2), (top[0] + 2.35, top[1] + 0.4, top[2] + dz + 0.2), RUNE, 8)
     hl = B.hand_l
     g.slab(add(hl, (-1.2, 4.2, 0)), add(hl, (-1.2, -4.6, 0.4)), (0, 0, 6.2), 1.0, lambda x, y, z, u, v: GOLD if abs(v) > 0.85 or u < 0.06 or u > 0.94 else tex(ARM2, x, y, z), 6)
     g.ellipsoid(add(hl, (-1.9, 0, 0.2)), (0.4, 1.4, 1.4), lambda x, y, z, d: RUNE if d < 0.4 else GOLD, 7)

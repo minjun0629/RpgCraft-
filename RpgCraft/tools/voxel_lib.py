@@ -753,11 +753,12 @@ def _hammer_impl(g, hand, handle_len, head_size, wood, metal, trim, pri=5):
     bot = add(hand, (0, -handle_len * 0.3, -0.5))
     g.tube([bot, top], [0.42, 0.4], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
     h = head_size
-    g.box((top[0] - h, top[1] - h * 0.6, top[2] - h * 0.7), (top[0] + h, top[1] + h * 0.6, top[2] + h * 0.7),
-          lambda x, y, z: trim if abs(x - top[0]) > h - 0.6 or abs(y - top[1]) > h * 0.6 - 0.35 else tex(metal, x, y, z), pri + 1)
+    # v5.10.5: 망치 머리가 앞뒤로 길게 (내려찍는 면이 앞) — 전에는 옆으로 길었음
+    g.box((top[0] - h * 0.7, top[1] - h * 0.6, top[2] - h), (top[0] + h * 0.7, top[1] + h * 0.6, top[2] + h),
+          lambda x, y, z: trim if abs(z - top[2]) > h - 0.6 or abs(y - top[1]) > h * 0.6 - 0.35 else tex(metal, x, y, z), pri + 1)
     g.cone(add(top, (0, h * 0.6, 0)), add(top, (0, h * 0.6 + 1.6, 0.2)), 0.6, 0.1, trim, pri + 2)   # 위 가시
-    for sx in (-1, 1):
-        g.ellipsoid(add(top, (sx * (h + 0.2), 0, 0)), (0.35, h * 0.35, h * 0.45), trim, pri + 2)      # 옆면 징
+    for sz in (-1, 1):
+        g.ellipsoid(add(top, (0, 0, sz * (h + 0.2))), (h * 0.45, h * 0.35, 0.35), trim, pri + 2)      # 치는 면 징
     return top
 
 
@@ -828,9 +829,9 @@ def _axe_impl(g, hand, handle_len, wood, blade, edge, pri=6, size=3.4, double=Tr
     top = add(hand, (0, handle_len * 0.7, 0.8))
     bot = add(hand, (0, -handle_len * 0.3, -0.4))
     g.tube([bot, top], [0.4, 0.38], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
-    for sx in ((-1, 1) if double else (1,)):
-        c = add(top, (sx * 0.4, -size * 0.5, 0))
-        g.triangle(c, add(c, (sx * size * 1.2, size * 0.9, 0)), add(c, (sx * size * 1.2, -size * 0.9, 0)),
+    for sz in ((1, -1) if double else (1,)):   # v5.10.5: 날이 앞(내려찍는 방향)을 보게 — 전에는 옆을 봤음
+        c = add(top, (0, -size * 0.5, sz * 0.4))
+        g.triangle(c, add(c, (0, size * 0.9, sz * size * 1.2)), add(c, (0, -size * 0.9, sz * size * 1.2)),
                    lambda p, w: edge if w < 0.14 else tex(blade, *p, 0.08), pri + 1, thick=0.5)
     return top
 

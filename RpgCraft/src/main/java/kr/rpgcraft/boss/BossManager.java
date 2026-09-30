@@ -198,6 +198,7 @@ public class BossManager {
             a.bar.setTitle(barTitle(a, s, frac));
             a.bar.setProgress(frac);
             auraTick(a);
+            if (now >= a.staggerUntil) holdAltitude(a.entity);
             Location bl = a.entity.getLocation();
             Set<Player> near = new HashSet<>();
             for (Player p : bl.getWorld().getPlayers()) if (p.getLocation().distanceSquared(bl) < 64 * 64) near.add(p);
@@ -307,6 +308,39 @@ public class BossManager {
         g.setYaw(l.getYaw());
         g.setPitch(l.getPitch());
         return g;
+    }
+
+    /** v5.10.7 발밑 땅에서 몸까지 높이 (땅에 서 있거나 아래에 땅이 없으면 0) */
+    private static double airHeight(LivingEntity b) {
+        if (b.isOnGround()) return 0;
+        return Math.max(0, b.getLocation().getY() - ground(b).getY());
+    }
+
+    /** v5.10.7 공중에 뜬 보스는 기술을 쓰기 전에 발밑 땅으로 내려앉음 (공중에서 기술이 나가던 문제) */
+    private void land(LivingEntity b) {
+        if (airHeight(b) <= 1.2) return;
+        Location g = ground(b);
+        g.add(0, 0.05, 0);
+        b.getWorld().spawnParticle(Particle.CLOUD, b.getLocation().add(0, 0.5, 0), 10, 0.4, 0.4, 0.4, 0.02);
+        if (plugin.bossModels() != null) plugin.bossModels().teleportBoss(b, g); else b.teleport(g);
+        b.setVelocity(new Vector(0, 0, 0));
+        b.getWorld().spawnParticle(Particle.CLOUD, g, 16, 0.8, 0.1, 0.8, 0.04);
+        b.getWorld().playSound(g, Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 0.8f);
+    }
+
+    /** v5.10.7 나는 보스가 너무 높이 뜨지 않게: max-fly-height 칸 위로는 끌어내리고, 한참 높으면 바로 내려놓음 */
+    private void holdAltitude(LivingEntity b) {
+        double max = plugin.getConfig().getDouble("bosses.max-fly-height", 4);
+        if (max <= 0) return;
+        double h = airHeight(b);
+        if (h <= max) return;
+        if (h > max + 5) {
+            Location g = b.getLocation().subtract(0, h - max, 0);
+            if (plugin.bossModels() != null) plugin.bossModels().teleportBoss(b, g); else b.teleport(g);
+        } else {
+            Vector v = b.getVelocity();
+            b.setVelocity(new Vector(v.getX(), -Math.min(0.8, 0.25 + (h - max) * 0.12), v.getZ()));
+        }
     }
 
     private List<Player> playersNear(Location l, double r) {
@@ -515,6 +549,7 @@ public class BossManager {
             });
         } else if (fireAt > 0) later(fireAt, () -> stagger(a));   // v5.6.0: 선딜(예고)이 끝나 기술이 터진 직후 잠시 경직
         Particle tp = themeParticle(a.def.id);
+        if (!"SUMMON".equals(k.type)) land(b);   // v5.10.7: 공중이면 먼저 내려앉고 나서 기술
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (k.type) {
             // ---------------------------------------------------------- v5.6.0 컨셉 패턴 — 그냥 달려서는 못 피하고, 보고 판단해야 하는 기믹
@@ -539,7 +574,7 @@ public class BossManager {
                 Vector away = ground(b).toVector().subtract(target.getLocation().toVector()).setY(0);
                 if (away.lengthSquared() < 0.01) away = new Vector(1, 0, 0);
                 away.normalize();
-                b.setVelocity(away.multiply(1.5).setY(0.55));
+                b.setVelocity(away.multiply(1.5).setY(b.isOnGround() ? 0.55 : 0));
                 w.spawnParticle(Particle.CLOUD, ground(b), 12, 0.4, 0.1, 0.4, 0.05);
                 w.playSound(ground(b), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 1.5f);
                 int n = Math.max(3, k.amount) + (aw ? 2 : 0);
@@ -1171,7 +1206,7 @@ public class BossManager {
             @Override
             public void run() {
                 if (!b.isValid()) { cancel(); return; }
-                if (pos == null) { pos = b.getLocation().add(0, 1.3, 0); kr.rpgcraft.util.Vfx.burst(pos, 1.6, Color.WHITE); }
+                if (pos == null) { pos = ground(b).add(0, 1.3, 0); kr.rpgcraft.util.Vfx.burst(pos, 1.6, Color.WHITE); }   // v5.10.7: 공중에 떠 있어도 탄은 땅 높이에서
                 pos.add(v);
                 gone += v.length();
                 if (gone > range) { cancel(); return; }
@@ -1303,6 +1338,7 @@ public class BossManager {
         int first = Math.abs(a.def.id.hashCode()) % ULTS.length;
         String kind = ULTS[(first + a.ultDone.size() + (a.nextUlt > 0 ? (int) (a.nextUlt / 50_000 % 4) : 0)) % ULTS.length];
         Color c = theme(a.def.id), red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
+        land(b);   // v5.10.7
         Material mat = BossFx.theme(a.def.id);
         World w = b.getWorld();
         Location o = ground(b);
@@ -1498,6 +1534,7 @@ public class BossManager {
         Color c = theme(a.def.id);
         Color red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
         double dmg = s.damage * 1.6;
+        land(b);   // v5.10.7
         Location o = ground(b);
         Particle tp = themeParticle(a.def.id);
         Material mat = BossFx.theme(a.def.id);

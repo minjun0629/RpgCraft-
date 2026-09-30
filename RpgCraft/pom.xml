@@ -6,7 +6,7 @@
 
     <groupId>kr.rpgcraft</groupId>
     <artifactId>RpgCraft</artifactId>
-    <version>5.10.6</version>
+    <version>5.10.7</version>
     <packaging>jar</packaging>
 
     <properties>

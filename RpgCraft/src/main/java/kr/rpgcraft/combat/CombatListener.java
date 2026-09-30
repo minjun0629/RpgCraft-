@@ -57,12 +57,13 @@ public class CombatListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onMobInfight(org.bukkit.event.entity.EntityTargetLivingEntityEvent e) {
         if (!(e.getTarget() instanceof Player) && e.getTarget() != null && !(e.getEntity() instanceof Player)
-                && !(e.getEntity() instanceof org.bukkit.entity.Tameable t && t.isTamed())) e.setCancelled(true);
+                && !(e.getEntity() instanceof org.bukkit.entity.Tameable t && t.isTamed())
+                && !kr.rpgcraft.world.NecromancyManager.isMinion(e.getTarget())) e.setCancelled(true);   // v5.10.9 네크로맨서 군단원은 몬스터가 노릴 수 있음
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onMobHitMob(EntityDamageByEntityEvent e) {
-        if (e.getEntity() instanceof Player || !(e.getEntity() instanceof LivingEntity)) return;
+        if (e.getEntity() instanceof Player || !(e.getEntity() instanceof LivingEntity) || kr.rpgcraft.world.NecromancyManager.isMinion(e.getEntity())) return;
         Entity src = e.getDamager() instanceof Projectile pr && pr.getShooter() instanceof Entity sh ? sh : e.getDamager();
         if (src instanceof Player || src instanceof org.bukkit.entity.Tameable t && t.isTamed()) return;
         if (src instanceof LivingEntity) e.setCancelled(true);

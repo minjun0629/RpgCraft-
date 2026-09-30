@@ -177,6 +177,8 @@ public class JobManager {
         var hj = kr.rpgcraft.world.HiddenJobManager.of(d);
         if (hj != null) js = hj.line().equals("A")
                 ? new JobSkill(hj.tier() >= 3 ? "명계 강림" : "영혼 수확", kr.rpgcraft.feature.SkillBook.Shape.PULL, kr.rpgcraft.feature.SkillBook.Effect.DARK, 2.4 + hj.tier() * 0.5, 9 + hj.tier(), 11)
+                : hj.line().equals("C")
+                ? new JobSkill(hj.tier() >= 3 ? "죽음의 행진" : "시체 폭발", kr.rpgcraft.feature.SkillBook.Shape.CIRCLE, kr.rpgcraft.feature.SkillBook.Effect.DARK, 1.6 + hj.tier() * 0.4, 7 + hj.tier(), 12)   // v5.10.9 네크로맨서: 약한 대신 군단 회복
                 : new JobSkill(hj.tier() >= 3 ? "천구 붕괴" : "유성 낙하", kr.rpgcraft.feature.SkillBook.Shape.RAIN, kr.rpgcraft.feature.SkillBook.Effect.HOLY, 2.4 + hj.tier() * 0.5, 14 + hj.tier(), 11);
         if (js == null) return false;
         if (d.onCooldown("job_skill")) {
@@ -190,6 +192,7 @@ public class JobManager {
         double dmg = (bow ? d.stats.ranged : Math.max(d.stats.attack, d.stats.magic)) * js.power() * (1 + d.level / 300.0);
         d.cooldown("job_skill", (long) (js.cd() * 1000 * plugin.weaponSkills().cooldownMultPublic(p)));
         plugin.skillBook().cast(p, def, dmg, bow, false, (pl, le, amt) -> plugin.combat().dealSkillDamage(pl, le, amt, true));
+        if (hj != null && hj.line().equals("C") && plugin.necro() != null) plugin.necro().rally(p);
         Text.actionBar(p, "&6" + def.name());
         return true;
     }

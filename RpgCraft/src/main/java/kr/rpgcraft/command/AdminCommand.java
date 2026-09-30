@@ -303,6 +303,16 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
                     ap.openInventory(a[0].equals("inv") ? t.getInventory() : t.getEnderChest());
                 }
+                case "necro" -> {   // v5.10.9 네크로맨서 시험용: /rpg관리 necro <플레이어> <정수> [몬스터id 영혼수]
+                    if (a.length < 3) { Text.msg(s, "&e/rpg관리 necro <플레이어> <사령 정수> [커스텀몬스터id 영혼수]"); return true; }
+                    Player t = Bukkit.getPlayerExact(a[1]);
+                    if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
+                    long ess;
+                    int souls = 0;
+                    try { ess = Long.parseLong(a[2]); if (a.length > 4) souls = Integer.parseInt(a[4]); } catch (NumberFormatException ex) { Text.msg(s, "&c숫자를 넣어 주세요."); return true; }
+                    plugin.necro().grant(t, ess, a.length > 3 ? a[3] : null, souls);
+                    Text.msg(s, "&a" + t.getName() + " 에게 사령 정수 " + ess + (souls > 0 ? " · " + a[3] + " 영혼 " + souls : "") + " 지급");
+                }
                 case "hiddennpc" -> {
                     if (a.length > 1 && (a[1].equalsIgnoreCase("respawn") || a[1].equals("재배치"))) {   // 사라진 히든 NPC 다시 세우기
                         plugin.hiddenQuests().respawnMissing(s);

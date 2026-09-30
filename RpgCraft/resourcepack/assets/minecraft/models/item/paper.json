@@ -372,6 +372,1872 @@
     },
     {
       "predicate": {
+        "custom_model_data": 9100
+      },
+      "model": "rpgcraft:mob/jelly_slime"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9101
+      },
+      "model": "rpgcraft:mob/goblin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9102
+      },
+      "model": "rpgcraft:mob/goblin_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9103
+      },
+      "model": "rpgcraft:mob/goblin_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9104
+      },
+      "model": "rpgcraft:mob/goblin_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9105
+      },
+      "model": "rpgcraft:mob/goblin_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9106
+      },
+      "model": "rpgcraft:mob/goblin_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9107
+      },
+      "model": "rpgcraft:mob/rotten_farmer"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9108
+      },
+      "model": "rpgcraft:mob/rotten_farmer_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9109
+      },
+      "model": "rpgcraft:mob/rotten_farmer_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9110
+      },
+      "model": "rpgcraft:mob/rotten_farmer_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9111
+      },
+      "model": "rpgcraft:mob/rotten_farmer_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9112
+      },
+      "model": "rpgcraft:mob/rotten_farmer_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9113
+      },
+      "model": "rpgcraft:mob/forest_bandit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9114
+      },
+      "model": "rpgcraft:mob/forest_bandit_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9115
+      },
+      "model": "rpgcraft:mob/forest_bandit_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9116
+      },
+      "model": "rpgcraft:mob/forest_bandit_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9117
+      },
+      "model": "rpgcraft:mob/forest_bandit_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9118
+      },
+      "model": "rpgcraft:mob/forest_bandit_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9119
+      },
+      "model": "rpgcraft:mob/silverfish_swarm"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9120
+      },
+      "model": "rpgcraft:mob/venom_spider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9121
+      },
+      "model": "rpgcraft:mob/skeleton_captain"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9122
+      },
+      "model": "rpgcraft:mob/skeleton_captain_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9123
+      },
+      "model": "rpgcraft:mob/skeleton_captain_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9124
+      },
+      "model": "rpgcraft:mob/skeleton_captain_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9125
+      },
+      "model": "rpgcraft:mob/skeleton_captain_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9126
+      },
+      "model": "rpgcraft:mob/skeleton_captain_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9127
+      },
+      "model": "rpgcraft:mob/bomber"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9128
+      },
+      "model": "rpgcraft:mob/swamp_hag"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9129
+      },
+      "model": "rpgcraft:mob/swamp_hag_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9130
+      },
+      "model": "rpgcraft:mob/swamp_hag_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9131
+      },
+      "model": "rpgcraft:mob/swamp_hag_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9132
+      },
+      "model": "rpgcraft:mob/mummy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9133
+      },
+      "model": "rpgcraft:mob/mummy_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9134
+      },
+      "model": "rpgcraft:mob/mummy_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9135
+      },
+      "model": "rpgcraft:mob/mummy_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9136
+      },
+      "model": "rpgcraft:mob/mummy_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9137
+      },
+      "model": "rpgcraft:mob/mummy_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9138
+      },
+      "model": "rpgcraft:mob/sand_scorpion"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9139
+      },
+      "model": "rpgcraft:mob/drowned_pirate"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9140
+      },
+      "model": "rpgcraft:mob/drowned_pirate_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9141
+      },
+      "model": "rpgcraft:mob/drowned_pirate_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9142
+      },
+      "model": "rpgcraft:mob/drowned_pirate_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9143
+      },
+      "model": "rpgcraft:mob/drowned_pirate_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9144
+      },
+      "model": "rpgcraft:mob/drowned_pirate_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9145
+      },
+      "model": "rpgcraft:mob/frost_wraith"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9146
+      },
+      "model": "rpgcraft:mob/frost_wraith_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9147
+      },
+      "model": "rpgcraft:mob/frost_wraith_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9148
+      },
+      "model": "rpgcraft:mob/frost_wraith_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9149
+      },
+      "model": "rpgcraft:mob/orc_warrior"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9150
+      },
+      "model": "rpgcraft:mob/orc_warrior_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9151
+      },
+      "model": "rpgcraft:mob/orc_warrior_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9152
+      },
+      "model": "rpgcraft:mob/orc_warrior_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9153
+      },
+      "model": "rpgcraft:mob/orc_warrior_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9154
+      },
+      "model": "rpgcraft:mob/orc_warrior_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9155
+      },
+      "model": "rpgcraft:mob/soul_wisp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9156
+      },
+      "model": "rpgcraft:mob/orc_shaman"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9157
+      },
+      "model": "rpgcraft:mob/orc_shaman_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9158
+      },
+      "model": "rpgcraft:mob/orc_shaman_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9159
+      },
+      "model": "rpgcraft:mob/orc_shaman_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9160
+      },
+      "model": "rpgcraft:mob/ember_spirit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9161
+      },
+      "model": "rpgcraft:mob/magma_brute"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9162
+      },
+      "model": "rpgcraft:mob/night_hunter"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9163
+      },
+      "model": "rpgcraft:mob/night_hunter_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9164
+      },
+      "model": "rpgcraft:mob/night_hunter_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9165
+      },
+      "model": "rpgcraft:mob/plague_boar"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9166
+      },
+      "model": "rpgcraft:mob/plague_boar_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9167
+      },
+      "model": "rpgcraft:mob/plague_boar_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9168
+      },
+      "model": "rpgcraft:mob/plague_boar_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9169
+      },
+      "model": "rpgcraft:mob/plague_boar_leg_br"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9170
+      },
+      "model": "rpgcraft:mob/nether_hog"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9171
+      },
+      "model": "rpgcraft:mob/nether_hog_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9172
+      },
+      "model": "rpgcraft:mob/nether_hog_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9173
+      },
+      "model": "rpgcraft:mob/nether_hog_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9174
+      },
+      "model": "rpgcraft:mob/nether_hog_leg_br"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9175
+      },
+      "model": "rpgcraft:mob/piglin_berserker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9176
+      },
+      "model": "rpgcraft:mob/piglin_berserker_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9177
+      },
+      "model": "rpgcraft:mob/piglin_berserker_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9178
+      },
+      "model": "rpgcraft:mob/piglin_berserker_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9179
+      },
+      "model": "rpgcraft:mob/piglin_berserker_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9180
+      },
+      "model": "rpgcraft:mob/piglin_berserker_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9181
+      },
+      "model": "rpgcraft:mob/bone_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9182
+      },
+      "model": "rpgcraft:mob/bone_knight_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9183
+      },
+      "model": "rpgcraft:mob/bone_knight_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9184
+      },
+      "model": "rpgcraft:mob/bone_knight_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9185
+      },
+      "model": "rpgcraft:mob/bone_knight_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9186
+      },
+      "model": "rpgcraft:mob/bone_knight_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9187
+      },
+      "model": "rpgcraft:mob/shadow_stalker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9188
+      },
+      "model": "rpgcraft:mob/shadow_stalker_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9189
+      },
+      "model": "rpgcraft:mob/shadow_stalker_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9190
+      },
+      "model": "rpgcraft:mob/shadow_stalker_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9191
+      },
+      "model": "rpgcraft:mob/shadow_stalker_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9192
+      },
+      "model": "rpgcraft:mob/shadow_stalker_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9193
+      },
+      "model": "rpgcraft:mob/dune_colossus"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9194
+      },
+      "model": "rpgcraft:mob/dune_colossus_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9195
+      },
+      "model": "rpgcraft:mob/dune_colossus_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9196
+      },
+      "model": "rpgcraft:mob/dune_colossus_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9197
+      },
+      "model": "rpgcraft:mob/dune_colossus_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9198
+      },
+      "model": "rpgcraft:mob/dune_colossus_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9199
+      },
+      "model": "rpgcraft:mob/war_beast"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9200
+      },
+      "model": "rpgcraft:mob/war_beast_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9201
+      },
+      "model": "rpgcraft:mob/war_beast_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9202
+      },
+      "model": "rpgcraft:mob/war_beast_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9203
+      },
+      "model": "rpgcraft:mob/war_beast_leg_br"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9204
+      },
+      "model": "rpgcraft:mob/lich"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9205
+      },
+      "model": "rpgcraft:mob/lich_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9206
+      },
+      "model": "rpgcraft:mob/lich_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9207
+      },
+      "model": "rpgcraft:mob/lich_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9208
+      },
+      "model": "rpgcraft:mob/corrupted_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9209
+      },
+      "model": "rpgcraft:mob/corrupted_knight_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9210
+      },
+      "model": "rpgcraft:mob/corrupted_knight_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9211
+      },
+      "model": "rpgcraft:mob/corrupted_knight_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9212
+      },
+      "model": "rpgcraft:mob/corrupted_knight_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9213
+      },
+      "model": "rpgcraft:mob/corrupted_knight_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9214
+      },
+      "model": "rpgcraft:mob/end_crawler"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9215
+      },
+      "model": "rpgcraft:mob/void_phantom"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9216
+      },
+      "model": "rpgcraft:mob/void_phantom_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9217
+      },
+      "model": "rpgcraft:mob/void_phantom_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9218
+      },
+      "model": "rpgcraft:mob/void_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9219
+      },
+      "model": "rpgcraft:mob/void_knight_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9220
+      },
+      "model": "rpgcraft:mob/void_knight_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9221
+      },
+      "model": "rpgcraft:mob/void_knight_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9222
+      },
+      "model": "rpgcraft:mob/void_knight_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9223
+      },
+      "model": "rpgcraft:mob/void_knight_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9224
+      },
+      "model": "rpgcraft:mob/star_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9225
+      },
+      "model": "rpgcraft:mob/star_golem_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9226
+      },
+      "model": "rpgcraft:mob/star_golem_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9227
+      },
+      "model": "rpgcraft:mob/star_golem_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9228
+      },
+      "model": "rpgcraft:mob/star_golem_leg_br"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9229
+      },
+      "model": "rpgcraft:mob/abyss_caster"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9230
+      },
+      "model": "rpgcraft:mob/abyss_caster_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9231
+      },
+      "model": "rpgcraft:mob/abyss_caster_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9232
+      },
+      "model": "rpgcraft:mob/abyss_caster_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9233
+      },
+      "model": "rpgcraft:mob/frost_titan"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9234
+      },
+      "model": "rpgcraft:mob/frost_titan_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9235
+      },
+      "model": "rpgcraft:mob/frost_titan_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9236
+      },
+      "model": "rpgcraft:mob/frost_titan_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9237
+      },
+      "model": "rpgcraft:mob/frost_titan_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9238
+      },
+      "model": "rpgcraft:mob/frost_titan_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9239
+      },
+      "model": "rpgcraft:mob/inferno_lord"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9240
+      },
+      "model": "rpgcraft:mob/dread_rider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9241
+      },
+      "model": "rpgcraft:mob/dread_rider_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9242
+      },
+      "model": "rpgcraft:mob/dread_rider_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9243
+      },
+      "model": "rpgcraft:mob/dread_rider_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9244
+      },
+      "model": "rpgcraft:mob/dread_rider_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9245
+      },
+      "model": "rpgcraft:mob/dread_rider_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9246
+      },
+      "model": "rpgcraft:mob/nightmare_spider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9247
+      },
+      "model": "rpgcraft:mob/storm_herald"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9248
+      },
+      "model": "rpgcraft:mob/storm_herald_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9249
+      },
+      "model": "rpgcraft:mob/storm_herald_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9250
+      },
+      "model": "rpgcraft:mob/ancient_lich"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9251
+      },
+      "model": "rpgcraft:mob/ancient_lich_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9252
+      },
+      "model": "rpgcraft:mob/ancient_lich_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9253
+      },
+      "model": "rpgcraft:mob/ancient_lich_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9254
+      },
+      "model": "rpgcraft:mob/world_eater"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9255
+      },
+      "model": "rpgcraft:mob/world_eater_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9256
+      },
+      "model": "rpgcraft:mob/world_eater_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9257
+      },
+      "model": "rpgcraft:mob/world_eater_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9258
+      },
+      "model": "rpgcraft:mob/world_eater_leg_br"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9259
+      },
+      "model": "rpgcraft:mob/fallen_seraph"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9260
+      },
+      "model": "rpgcraft:mob/fallen_seraph_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9261
+      },
+      "model": "rpgcraft:mob/fallen_seraph_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9262
+      },
+      "model": "rpgcraft:mob/fallen_seraph_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9263
+      },
+      "model": "rpgcraft:mob/fallen_seraph_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9264
+      },
+      "model": "rpgcraft:mob/fallen_seraph_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9265
+      },
+      "model": "rpgcraft:mob/abyss_king"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9266
+      },
+      "model": "rpgcraft:mob/abyss_king_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9267
+      },
+      "model": "rpgcraft:mob/abyss_king_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9268
+      },
+      "model": "rpgcraft:mob/abyss_king_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9269
+      },
+      "model": "rpgcraft:mob/abyss_king_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9270
+      },
+      "model": "rpgcraft:mob/abyss_king_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9271
+      },
+      "model": "rpgcraft:mob/day_bandit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9272
+      },
+      "model": "rpgcraft:mob/day_bandit_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9273
+      },
+      "model": "rpgcraft:mob/day_bandit_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9274
+      },
+      "model": "rpgcraft:mob/day_bandit_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9275
+      },
+      "model": "rpgcraft:mob/day_bandit_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9276
+      },
+      "model": "rpgcraft:mob/day_bandit_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9277
+      },
+      "model": "rpgcraft:mob/day_raider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9278
+      },
+      "model": "rpgcraft:mob/day_raider_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9279
+      },
+      "model": "rpgcraft:mob/day_raider_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9280
+      },
+      "model": "rpgcraft:mob/day_raider_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9281
+      },
+      "model": "rpgcraft:mob/day_raider_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9282
+      },
+      "model": "rpgcraft:mob/day_raider_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9283
+      },
+      "model": "rpgcraft:mob/day_mercenary"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9284
+      },
+      "model": "rpgcraft:mob/day_mercenary_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9285
+      },
+      "model": "rpgcraft:mob/day_mercenary_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9286
+      },
+      "model": "rpgcraft:mob/day_mercenary_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9287
+      },
+      "model": "rpgcraft:mob/day_mercenary_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9288
+      },
+      "model": "rpgcraft:mob/day_mercenary_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9289
+      },
+      "model": "rpgcraft:mob/day_warlock"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9290
+      },
+      "model": "rpgcraft:mob/day_warlock_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9291
+      },
+      "model": "rpgcraft:mob/day_warlock_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9292
+      },
+      "model": "rpgcraft:mob/day_warlock_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9293
+      },
+      "model": "rpgcraft:mob/day_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9294
+      },
+      "model": "rpgcraft:mob/day_knight_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9295
+      },
+      "model": "rpgcraft:mob/day_knight_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9296
+      },
+      "model": "rpgcraft:mob/day_knight_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9297
+      },
+      "model": "rpgcraft:mob/day_knight_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9298
+      },
+      "model": "rpgcraft:mob/day_knight_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9299
+      },
+      "model": "rpgcraft:mob/treasure_guardian"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9300
+      },
+      "model": "rpgcraft:mob/treasure_guardian_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9301
+      },
+      "model": "rpgcraft:mob/treasure_guardian_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9302
+      },
+      "model": "rpgcraft:mob/treasure_guardian_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9303
+      },
+      "model": "rpgcraft:mob/treasure_guardian_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9304
+      },
+      "model": "rpgcraft:mob/treasure_guardian_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9305
+      },
+      "model": "rpgcraft:mob/wild_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9306
+      },
+      "model": "rpgcraft:mob/wild_golem_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9307
+      },
+      "model": "rpgcraft:mob/wild_golem_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9308
+      },
+      "model": "rpgcraft:mob/wild_golem_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9309
+      },
+      "model": "rpgcraft:mob/wild_golem_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9310
+      },
+      "model": "rpgcraft:mob/wild_golem_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9311
+      },
+      "model": "rpgcraft:mob/moss_troll"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9312
+      },
+      "model": "rpgcraft:mob/moss_troll_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9313
+      },
+      "model": "rpgcraft:mob/moss_troll_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9314
+      },
+      "model": "rpgcraft:mob/moss_troll_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9315
+      },
+      "model": "rpgcraft:mob/moss_troll_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9316
+      },
+      "model": "rpgcraft:mob/moss_troll_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9317
+      },
+      "model": "rpgcraft:mob/bog_witch"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9318
+      },
+      "model": "rpgcraft:mob/bog_witch_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9319
+      },
+      "model": "rpgcraft:mob/bog_witch_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9320
+      },
+      "model": "rpgcraft:mob/bog_witch_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9321
+      },
+      "model": "rpgcraft:mob/crypt_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9322
+      },
+      "model": "rpgcraft:mob/crypt_knight_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9323
+      },
+      "model": "rpgcraft:mob/crypt_knight_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9324
+      },
+      "model": "rpgcraft:mob/crypt_knight_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9325
+      },
+      "model": "rpgcraft:mob/crypt_knight_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9326
+      },
+      "model": "rpgcraft:mob/crypt_knight_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9327
+      },
+      "model": "rpgcraft:mob/ember_imp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9328
+      },
+      "model": "rpgcraft:mob/ember_imp_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9329
+      },
+      "model": "rpgcraft:mob/ember_imp_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9330
+      },
+      "model": "rpgcraft:mob/ember_imp_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9331
+      },
+      "model": "rpgcraft:mob/ember_imp_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9332
+      },
+      "model": "rpgcraft:mob/ember_imp_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9333
+      },
+      "model": "rpgcraft:mob/ember_imp_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9334
+      },
+      "model": "rpgcraft:mob/ember_imp_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9335
+      },
+      "model": "rpgcraft:mob/sand_stalker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9336
+      },
+      "model": "rpgcraft:mob/sand_stalker_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9337
+      },
+      "model": "rpgcraft:mob/sand_stalker_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9338
+      },
+      "model": "rpgcraft:mob/sand_stalker_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9339
+      },
+      "model": "rpgcraft:mob/sand_stalker_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9340
+      },
+      "model": "rpgcraft:mob/sand_stalker_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9341
+      },
+      "model": "rpgcraft:mob/void_hound"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9342
+      },
+      "model": "rpgcraft:mob/void_hound_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9343
+      },
+      "model": "rpgcraft:mob/void_hound_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9344
+      },
+      "model": "rpgcraft:mob/void_hound_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9345
+      },
+      "model": "rpgcraft:mob/void_hound_leg_br"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9346
+      },
+      "model": "rpgcraft:mob/storm_harpy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9347
+      },
+      "model": "rpgcraft:mob/storm_harpy_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9348
+      },
+      "model": "rpgcraft:mob/storm_harpy_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9349
+      },
+      "model": "rpgcraft:mob/storm_harpy_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9350
+      },
+      "model": "rpgcraft:mob/storm_harpy_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9351
+      },
+      "model": "rpgcraft:mob/storm_harpy_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9352
+      },
+      "model": "rpgcraft:mob/storm_harpy_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9353
+      },
+      "model": "rpgcraft:mob/storm_harpy_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9354
+      },
+      "model": "rpgcraft:mob/thorn_sprite"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9355
+      },
+      "model": "rpgcraft:mob/thorn_sprite_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9356
+      },
+      "model": "rpgcraft:mob/thorn_sprite_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9357
+      },
+      "model": "rpgcraft:mob/thorn_sprite_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9358
+      },
+      "model": "rpgcraft:mob/thorn_sprite_wing_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9359
+      },
+      "model": "rpgcraft:mob/thorn_sprite_wing_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9360
+      },
+      "model": "rpgcraft:mob/bone_marksman"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9361
+      },
+      "model": "rpgcraft:mob/bone_marksman_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9362
+      },
+      "model": "rpgcraft:mob/bone_marksman_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9363
+      },
+      "model": "rpgcraft:mob/bone_marksman_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9364
+      },
+      "model": "rpgcraft:mob/bone_marksman_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9365
+      },
+      "model": "rpgcraft:mob/bone_marksman_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9366
+      },
+      "model": "rpgcraft:mob/mire_slime"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9367
+      },
+      "model": "rpgcraft:mob/frost_archer"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9368
+      },
+      "model": "rpgcraft:mob/frost_archer_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9369
+      },
+      "model": "rpgcraft:mob/frost_archer_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9370
+      },
+      "model": "rpgcraft:mob/frost_archer_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9371
+      },
+      "model": "rpgcraft:mob/frost_archer_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9372
+      },
+      "model": "rpgcraft:mob/frost_archer_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9373
+      },
+      "model": "rpgcraft:mob/sand_wraith"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9374
+      },
+      "model": "rpgcraft:mob/sand_wraith_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9375
+      },
+      "model": "rpgcraft:mob/sand_wraith_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9376
+      },
+      "model": "rpgcraft:mob/sand_wraith_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9377
+      },
+      "model": "rpgcraft:mob/canyon_raider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9378
+      },
+      "model": "rpgcraft:mob/canyon_raider_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9379
+      },
+      "model": "rpgcraft:mob/canyon_raider_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9380
+      },
+      "model": "rpgcraft:mob/canyon_raider_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9381
+      },
+      "model": "rpgcraft:mob/canyon_raider_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9382
+      },
+      "model": "rpgcraft:mob/canyon_raider_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9383
+      },
+      "model": "rpgcraft:mob/cave_brute"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9384
+      },
+      "model": "rpgcraft:mob/cave_brute_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9385
+      },
+      "model": "rpgcraft:mob/cave_brute_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9386
+      },
+      "model": "rpgcraft:mob/cave_brute_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9387
+      },
+      "model": "rpgcraft:mob/cave_brute_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9388
+      },
+      "model": "rpgcraft:mob/cave_brute_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9389
+      },
+      "model": "rpgcraft:mob/storm_caller"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9390
+      },
+      "model": "rpgcraft:mob/storm_caller_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9391
+      },
+      "model": "rpgcraft:mob/storm_caller_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9392
+      },
+      "model": "rpgcraft:mob/storm_caller_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9393
+      },
+      "model": "rpgcraft:mob/magma_sentinel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9394
+      },
+      "model": "rpgcraft:mob/deep_horror"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9395
+      },
+      "model": "rpgcraft:mob/deep_horror_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9396
+      },
+      "model": "rpgcraft:mob/deep_horror_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9397
+      },
+      "model": "rpgcraft:mob/deep_horror_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9398
+      },
+      "model": "rpgcraft:mob/deep_horror_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9399
+      },
+      "model": "rpgcraft:mob/deep_horror_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9400
+      },
+      "model": "rpgcraft:mob/grave_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9401
+      },
+      "model": "rpgcraft:mob/grave_knight_head"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9402
+      },
+      "model": "rpgcraft:mob/grave_knight_arm_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9403
+      },
+      "model": "rpgcraft:mob/grave_knight_arm_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9404
+      },
+      "model": "rpgcraft:mob/grave_knight_leg_l"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9405
+      },
+      "model": "rpgcraft:mob/grave_knight_leg_r"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9406
+      },
+      "model": "rpgcraft:mob/ancient_ravager"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9407
+      },
+      "model": "rpgcraft:mob/ancient_ravager_leg_fl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9408
+      },
+      "model": "rpgcraft:mob/ancient_ravager_leg_fr"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9409
+      },
+      "model": "rpgcraft:mob/ancient_ravager_leg_bl"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9410
+      },
+      "model": "rpgcraft:mob/ancient_ravager_leg_br"
+    },
+    {
+      "predicate": {
         "custom_model_data": 12000
       },
       "model": "rpgcraft:item/minigame/mg_hole"
@@ -669,6 +2535,12 @@
         "custom_model_data": 12073
       },
       "model": "rpgcraft:item/minigame/mg_coin_card"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12074
+      },
+      "model": "rpgcraft:item/minigame/mg_coin_event"
     },
     {
       "predicate": {

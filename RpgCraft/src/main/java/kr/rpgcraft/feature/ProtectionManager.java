@@ -77,11 +77,19 @@ public class ProtectionManager implements Listener {
         }
     }
 
-    /** server-list.address → 비어 있으면 server.properties 의 server-ip → 그것도 없으면 자동 감지한 공인 IP (+ 기본이 아닌 포트) */
+    /**
+     * server-list.address 에 적은 도메인 (예: play.rpgcraft.kr).
+     * v5.6.4: 숫자 IP 는 보여 주지 않음 — 비어 있거나 IP 면 두 번째 줄은 소개 문구(motd-line2-no-address).
+     * auto-address: true 로 켜면 예전처럼 서버 IP 를 자동으로 표시.
+     */
     public String address() {
         String a = c().getString("server-list.address", "");
-        if (a != null && !a.isBlank()) return a.trim();
-        if (!c().getBoolean("server-list.auto-address", true)) return "";
+        if (a != null && !a.isBlank()) {
+            a = a.trim();
+            boolean ip = a.matches("[0-9.:\\[\\]]+") || a.matches("(?i)[0-9a-f:\\[\\]]+:[0-9a-f:\\[\\]]*");   // IPv4 · IPv6 (포트 포함)
+            return ip && !c().getBoolean("server-list.show-ip", false) ? "" : a;
+        }
+        if (!c().getBoolean("server-list.auto-address", false)) return "";
         String ip = Bukkit.getIp();
         if ((ip == null || ip.isBlank()) && plugin.pack() != null) ip = plugin.pack().publicIp();
         if (ip == null || ip.isBlank()) return "";

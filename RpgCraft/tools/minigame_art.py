@@ -235,7 +235,7 @@ def coin(col, glyph):
     d.ellipse([1, 0, 14, 13], fill=c)
     d.ellipse([3, 2, 12, 11], outline=_shade(c, 1.35))
     d.arc([1, 0, 14, 13], 200, 290, fill=_rgb("ffffff"))
-    gi = {"mole": mole, "brick": lambda: brick("e0402a"), "mine": lambda: mine(), "card": card_back}[glyph]()
+    gi = {"mole": mole, "brick": lambda: brick("e0402a"), "mine": lambda: mine(), "card": card_back, "star": lambda: face(3)}[glyph]()
     small = gi.resize((8, 8), Image.NEAREST)
     im.alpha_composite(small, (4, 3))
     return im
@@ -265,6 +265,7 @@ ICONS = [   # (이름, 번호, 그림)
 ] + [("mg_face_%d" % k, 51 + k, (lambda k=k: face(k))) for k in range(14)] + [
     ("mg_coin_mole", 70, lambda: coin("c8864a", "mole")), ("mg_coin_brick", 71, lambda: coin("e0602a", "brick")),
     ("mg_coin_mine", 72, lambda: coin("6a8ab0", "mine")), ("mg_coin_card", 73, lambda: coin("c83a6a", "card")),
+    ("mg_coin_event", 74, lambda: coin("f2c23a", "star")),   # v5.6.4 통합 이벤트 코인
     ("mg_easy", 80, lambda: medal("3ab84a", 1)), ("mg_normal", 81, lambda: medal("f2a01f", 2)), ("mg_hard", 82, lambda: medal("e02a2a", 3)),
 ]
 

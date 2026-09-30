@@ -56,6 +56,7 @@ class Model:
     def __init__(self, pal):
         self.pal = pal
         self.els = []
+        self.hero = None   # hero() 로 만든 인체면 치수 기억 (v5.8.0 세부 장식용)
 
     def box(self, x1, y1, z1, x2, y2, z2, col, rot=None, shade=True):
         """rot = (axis, angle, (ox, oy, oz))  angle ∈ {-45,-22.5,0,22.5,45}"""
@@ -67,7 +68,7 @@ class Model:
         if CLAMP_AT_BUILD[0]:
             f = [max(-16, min(32, c)) for c in f]
             t = [max(-16, min(32, c)) for c in t]
-        el = {"from": f, "to": t, "shade": shade,
+        el = {"from": f, "to": t, "shade": shade, "_col": col,
               "faces": {d: {"uv": uv, "texture": "#0"} for d in ("north", "south", "east", "west", "up", "down")}}
         if rot:
             el["rotation"] = {"axis": rot[0], "angle": rot[1], "origin": list(rot[2])}
@@ -172,6 +173,7 @@ def hero(m, skin, top, bottom, trim, accent, boots=None, w=1.0, h=1.0, robe=None
         m.sym(8 - 3.4 * w, 0, 10.6, 8 - 0.7, 0.9 * h, 11.4, boots)
     else:
         m.box(8 - 4.4 * w, 10.0 * h, 5.6, 8 + 4.4 * w, 10.4 * h, 10.4, accent)
+    m.hero = {"skin": skin, "top": top, "bottom": bottom, "trim": trim, "accent": accent, "w": w, "h": h, "robe": robe}
     return 19.6 * h, 25.0 * h
 
 
@@ -566,6 +568,20 @@ def volcano_giant(m):
         m.box(x, y, 12.0, x + 0.8, y + 5, 12.4, HOT)
     for (x, y, z) in [(-7, 26, 6), (22, 28, 10), (8, 38, 12)]:                           # 화산재 바위
         m.box(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1, DARK, rot=("y", 45, (x, y, z)))
+    # v5.8.0 웅장하게: 어깨 분화구(불기둥) · 몸 가득한 용암 맥 · 녹아내린 왕관 · 등의 바위 산맥
+    for sx in (-1.6, 17.6):
+        x0 = sx - 1.8
+        m.box(x0, 24.6, 5.4, x0 + 3.6, 26.4, 10.6, DARK)
+        m.box(x0 + 0.6, 26.4, 6.2, x0 + 3.0, 27.4, 9.8, LAVA)
+        m.box(x0 + 1.0, 27.4, 6.8, x0 + 2.6, 30.4, 9.2, FIRE)
+        m.box(x0 + 1.4, 30.4, 7.4, x0 + 2.2, 32.6, 8.6, HOT)
+    for (x0, y0, x1, y1) in [(1.4, 20.6, 4.2, 21.1), (11.8, 21.6, 14.6, 22.1), (3.2, 12.2, 3.7, 16.6), (12.4, 18.6, 12.9, 23.4), (5.2, 24.0, 10.8, 24.5)]:
+        m.box(x0, y0, 12.55, x1, y1, 12.85, LAVA)
+    for k, x in enumerate((4.6, 6.4, 8.0, 9.6, 11.4)):                                   # 녹아내린 왕관
+        hh = 1.6 + (1.2 if k == 2 else 0.6 if k in (1, 3) else 0)
+        m.box(x - 0.45, 29.6, 10.4, x + 0.45, 29.6 + hh, 11.2, HOT if k % 2 else LAVA)
+    for k, z in enumerate((4.6, 6.8, 9.0)):                                              # 등의 바위 산맥
+        m.box(3.0 + k, 24.0, 2.6 - k * 0.2, 13.0 - k, 26.6 + k, 4.2, ROCK2, rot=("x", 22.5, (8, 24, 3.4)))
 
 
 def void_apostle(m):
@@ -629,45 +645,11 @@ def thunder_god(m):
 
 
 def primordial_dragon(m):
-    """태초의 용 아스트라 — 비늘 판 몸통과 황금 배, 가시 등줄기, 긴 목과 뿔 머리(눈·이빨), 거대한 막 날개, 네 다리와 발톱, 긴 꼬리와 꼬리 가시"""
-    SCALE, SCALE2, BELLY, HORN, EYE, WING, WING2 = "3a1a4a", "4a2260", "c9a13b", "fff3b0", "ff3030", "5a2a7a", "7a3a9a"
-    m.box(2, 6, 0, 14, 14, 16, SCALE)                                                # 몸통
-    m.box(3, 5, 1, 13, 7, 15, BELLY)
-    for z in (2, 5, 8, 11, 14):                                                      # 배 비늘 줄
-        m.box(3.2, 4.9, z, 12.8, 5.1, z + 0.6, "a8822a")
-    for z in (1, 4, 7, 10, 13):                                                      # 등 가시
-        m.box(7.4, 14, z, 8.6, 16.4, z + 1.6, HORN, rot=("x", -22.5, (8, 14, z + 0.8)))
-    for (zz, fr) in [(2, True), (11, False)]:                                        # 네 다리 + 발톱
-        m.sym(2.6, 2, zz, 5.4, 8, zz + 3, SCALE2)
-        m.sym(2.4, 0, zz - 0.4, 5.6, 2, zz + 3.6, SCALE)
-        m.sym(2.6, 0, zz + 3.4, 3.2, 0.8, zz + 4.2, HORN)
-        m.sym(4.6, 0, zz + 3.4, 5.2, 0.8, zz + 4.2, HORN)
-    m.box(5.5, 11, 14, 10.5, 16, 22, SCALE2, rot=("x", -22.5, (8, 13, 15)))          # 긴 목
-    m.box(6.0, 15, 19, 10.0, 18.6, 24, SCALE, rot=("x", -22.5, (8, 16, 21)))
-    m.box(4.5, 17, 22, 11.5, 22, 29, SCALE2)                                          # 머리
-    m.box(5.5, 17, 28, 10.5, 19.4, 32, SCALE2)                                        # 주둥이
-    m.box(5.8, 16.4, 28.4, 10.2, 17.0, 31.6, SCALE)                                   # 아래턱
-    for x in (6.0, 7.2, 8.4, 9.6):                                                    # 이빨
-        m.box(x, 16.8, 31.2, x + 0.5, 17.6, 31.7, HORN)
-    m.box(5.0, 20.2, 28.9, 6.6, 21.0, 29.3, EYE)
-    m.box(9.4, 20.2, 28.9, 11.0, 21.0, 29.3, EYE)
-    m.sym(4.4, 21.6, 22.4, 5.6, 26.4, 23.6, HORN, rot=("x", 22.5, (5, 21.6, 23)))       # 뿔
-    m.sym(5.8, 22.0, 24.6, 6.6, 24.6, 25.4, HORN, rot=("x", 22.5, (6.2, 22, 25)))
-    for sgn in (-1, 1):                                                              # 막 날개
-        ox = 2 if sgn < 0 else 14
-        rz = 22.5 if sgn < 0 else -22.5
-        x0, x1 = (ox - 16, ox) if sgn < 0 else (ox, ox + 16)
-        m.box(x0, 15, 4, x1, 16, 5, SCALE, rot=("z", rz, (ox, 15.5, 4.5)))           # 날개 뼈
-        m.box(x0, 15.2, 5, x1, 15.8, 13, WING, rot=("z", rz, (ox, 15.5, 9)))          # 날개 막
-        for k in range(3):
-            fx = ox + sgn * (5 + k * 4.5)
-            m.box(fx - 0.4, 15, 5, fx + 0.4, 16, 13 - k, WING2, rot=("z", rz, (ox, 15.5, 9)))
-    m.box(6, 8, -8, 10, 11.4, 1, SCALE, rot=("x", 22.5, (8, 9.7, 0)))                # 꼬리
-    m.box(6.6, 5.4, -15, 9.4, 8.2, -7, SCALE2, rot=("x", 22.5, (8, 7, -8)))
-    m.box(7.0, 4.0, -16, 9.0, 6.0, -13, BELLY)
-    m.box(7.4, 6.0, -16, 8.6, 8.6, -14.2, HORN, rot=("x", -45, (8, 6, -15)))            # 꼬리 가시
-    for (x, y, z) in [(-8, 24, 8), (24, 20, 6), (8, 30, -6)]:                           # 별빛 조각
-        m.box(x - 0.6, y - 0.6, z - 0.6, x + 0.6, y + 0.6, z + 0.6, "fff3b0", rot=("y", 45, (x, y, z)))
+    """태초의 용 아스트라 — v5.8.2: 작은 정육면체 수천 개로 깎은 복셀 조각 (tools/voxel_dragon.py)"""
+    import voxel_dragon as vd
+    g = vd.Grid()
+    vd.build(g)
+    vd.emit(g, m)
 
 
 def vengeful_spirit(m):
@@ -1468,7 +1450,7 @@ BUILDERS = {"witch": witch, "elf_queen": elf_queen, "dwarf_king": dwarf_king, "h
 
 # ---------------------------------------------------------------- 위엄 (v5.1.1): 더 웅장한 보스
 DIVINE = {"elf_queen", "siphonia", "frost_queen", "thunder_god", "harpy_queen", "vengeful_spirit"}   # 빛나는 후광
-DARK_CROWN = {"witch", "kain", "void_apostle", "balrog", "desert_nightmare", "dwarf_king", "sea_gatekeeper"}   # 가시 왕관
+DARK_CROWN = {"kain", "void_apostle", "balrog"}   # 가시 왕관 (v5.8.0: 자기 왕관 · 모자가 있는 보스는 뺌)
 WINGED = {"elf_queen": "light", "siphonia": "light", "frost_queen": "light", "thunder_god": "light", "vengeful_spirit": "light",
           "void_apostle": "dark", "kain": "dark"}
 CAPED = {"witch": "2a1640", "dwarf_king": "8a1a1a", "sea_gatekeeper": "0f4a5a", "desert_nightmare": "7a4a10",
@@ -1495,7 +1477,7 @@ def majesty(m, bid, col):
         return
     sh = top * 0.74   # 어깨 높이
     # 3) 후광 / 가시 왕관 (머리 위에 떠 있음)
-    hy = top + 2.5
+    hy = top + (0.9 if bid in DARK_CROWN else 2.5)   # 가시 왕관은 머리에 얹듯 낮게
     if bid in DIVINE:   # 팔각 후광 고리 (바깥 테마색 + 안쪽 흰빛) + 빛살
         for (r, t, c, lift) in ((5.4, 0.8, col, 0), (4.5, 0.5, white, 0.1)):
             L = r * 0.83
@@ -1621,6 +1603,94 @@ def epic(m, bid, col, core, lift=1.2):
     sigil(m, 8, sy, back - 4.2, min(10.5, top * 0.5), col)
 
 
+# ---------------------------------------------------------------- v5.8.0 웅장함: 갑옷 세부 · 판 테두리 · 떠도는 유물
+def _hex(c, k):
+    c = c.lstrip("#")
+    return "%02x%02x%02x" % tuple(max(0, min(255, int(int(c[i:i + 2], 16) * k))) for i in (0, 2, 4))
+
+
+NO_GRAND = {"megalodon", "kraken", "bungbung", "primordial_dragon", "field_boar_king", "field_frost_bear", "field_ravager"}
+
+
+def grand(m, bid, col):
+    """hero() 인체 보스: 3단 가시 견갑 · 넓은 건틀릿 · 갑옷 치마 · 보석 벨트 (갑옷) / 어깨 망토 · 술 장식 (로브)"""
+    H = m.hero
+    if not H:
+        return
+    w, h, trim, acc, top = H["w"], H["h"], H["trim"], H["accent"], H["top"]
+    dark = _hex(top, 0.6)
+    # 견갑 위 3단 판 + 위로 솟은 가시 두 개씩
+    m.sym(8 - 7.3 * w, 20.3 * h, 5.0, 8 - 3.3 * w, 21.1 * h, 11.0, top)
+    m.sym(8 - 7.4 * w, 20.1 * h, 4.9, 8 - 3.3 * w, 20.4 * h, 11.1, trim)
+    m.sym(8 - 6.6 * w, 21.1 * h, 5.6, 8 - 3.6 * w, 21.8 * h, 10.4, dark)
+    for zz in (6.4, 9.0):
+        m.sym(8 - 6.4 * w, 21.4 * h, zz, 8 - 5.6 * w, 24.2 * h, zz + 0.8, acc, rot=("z", 22.5, (8 - 6.0 * w, 21.4 * h, zz + 0.4)))
+    # 건틀릿: 넓게 벌어진 손목 덮개 + 손등 판
+    m.sym(8 - 7.0 * w, 12.9 * h, 5.9, 8 - 3.5 * w, 13.7 * h, 10.1, trim)
+    m.sym(8 - 6.6 * w, 10.8 * h, 9.0, 8 - 3.9 * w, 12.2 * h, 9.5, dark)
+    if not H["robe"]:
+        # 가슴판 두 장 · 복부 3단 판 · 무릎 가시 · 등판 척추 능선
+        m.sym(8 - 3.7 * w, 16.4 * h, 10.15, 8 - 0.3, 19.0 * h, 10.95, _hex(top, 1.12))
+        m.sym(8 - 3.7 * w, 16.2 * h, 10.9, 8 - 0.3, 16.6 * h, 11.1, trim)
+        for i in range(3):
+            y0 = (12.2 + i * 1.3) * h
+            m.box(8 - 2.8 * w + i * 0.2, y0, 10.15, 8 + 2.8 * w - i * 0.2, y0 + 1.0 * h, 10.7, dark if i % 2 == 0 else top)
+        m.sym(8 - 2.5 * w, 5.3 * h, 10.4, 8 - 1.6 * w, 6.4 * h, 11.8, acc, rot=("x", -22.5, (8 - 2.0 * w, 5.8 * h, 10.8)))
+        for i in range(4):
+            y0 = (12.4 + i * 1.8) * h
+            m.box(7.3, y0, 5.2, 8.7, y0 + 1.2 * h, 5.9, trim if i % 2 else dark, rot=("x", 22.5, (8, y0, 5.5)))
+        # 갑옷 치마 (앞 3장 · 옆 1장씩) + 보석 벨트
+        for i, (x0, x1) in enumerate(((5.0, 6.8), (7.1, 8.9), (9.2, 11.0))):
+            m.box(x0, 7.0 * h, 10.1, x1, 10.3 * h, 10.9, top if i == 1 else dark, rot=("x", -22.5, ((x0 + x1) / 2, 10.3 * h, 10.5)))
+            m.box(x0, 7.0 * h, 10.85, x1, 7.5 * h, 11.05, trim, rot=("x", -22.5, ((x0 + x1) / 2, 10.3 * h, 10.5)))
+        m.sym(8 - 4.6 * w, 7.4 * h, 6.4, 8 - 3.9 * w, 10.4 * h, 9.8, dark, rot=("z", -22.5, (8 - 4.2 * w, 10.4 * h, 8)))
+        m.box(6.6, 9.9 * h, 10.2, 9.4, 12.0 * h, 10.9, trim)
+        m.box(7.4, 10.5 * h, 10.85, 8.6, 11.5 * h, 11.2, acc, rot=("z", 45, (8, 11.0 * h, 11)))
+        m.sym(8 - 4.3 * w, 9.6 * h, 9.8, 8 - 3.2 * w, 11.0 * h, 10.9, "6a4a2a")   # 허리 주머니
+    else:
+        # 로브: 어깨를 덮는 망토 + 앞자락 술 장식
+        m.box(8 - 6.8 * w, 17.8 * h, 4.8, 8 + 6.8 * w, 19.6 * h, 11.2, dark)
+        m.box(8 - 6.9 * w, 17.6 * h, 4.7, 8 + 6.9 * w, 17.9 * h, 11.3, trim)
+        for k in range(7):
+            x = 8 - 6.0 * w + k * 2.0 * w
+            m.box(x - 0.25, 16.2 * h, 11.0, x + 0.25, 17.7 * h, 11.35, acc if k % 2 else trim)
+
+
+def relics(m, bid, col):
+    """보스 둘레를 떠도는 유물 수정 4개 (테마색 겉 · 흰 속)"""
+    import math as _m
+    if bid in NO_GRAND or bid in AQUATIC:
+        return
+    top, _ = _core(m)
+    for k in range(3):   # 뒤쪽 반원에 3개, 머리 높이 둘레 (몸에 붙지 않게 멀리)
+        a = _m.pi * (1.15 + 0.35 * k)
+        x, z, y = 8 + _m.cos(a) * 14, 8 + _m.sin(a) * 14, top * (0.78 + 0.08 * (k % 2))
+        m.box(x - 0.6, y - 1.3, z - 0.6, x + 0.6, y + 1.3, z + 0.6, col, rot=("y", 45, (x, y, z)))
+        m.box(x - 0.3, y - 0.7, z - 0.3, x + 0.3, y + 0.7, z + 0.3, "ffffff", rot=("y", 45, (x, y, z)))
+
+
+def edging(m, bid):
+    """큰 판의 앞면에 어두운 테두리 (갑옷 판처럼 보이게) — 회전 없는 큰 상자만, 머리 높이 제외"""
+    if bid in AQUATIC:
+        return
+    top, _ = _core(m)
+    extra = []
+    for e in list(m.els):
+        f, t = e["from"], e["to"]
+        if "rotation" in e or e.get("_edge"):
+            continue
+        wx, hy = t[0] - f[0], t[1] - f[1]
+        if wx < 2.6 or hy < 2.6 or t[2] < 9.6 or t[1] > top * 0.82 or t[2] - f[2] < 0.8:
+            continue
+        c = _hex(e.get("_col", "808080"), 0.55)
+        z0, z1, th = t[2], t[2] + 0.06, 0.28
+        for (a, b) in (((f[0], t[1] - th), (t[0], t[1])), ((f[0], f[1]), (t[0], f[1] + th)), ((f[0], f[1]), (f[0] + th, t[1])), ((t[0] - th, f[1]), (t[0], t[1]))):
+            extra.append((a[0], a[1], z0, b[0], b[1], z1, c))
+    for (x0, y0, z0, x1, y1, z1, c) in extra:
+        m.box(x0, y0, z0, x1, y1, z1, c)
+        m.els[-1]["_edge"] = True
+
+
 def _display(g):
     r = lambda v: round(v * g, 3)
     return {"gui": {"rotation": [20, -30, 0], "translation": [0, -3, 0], "scale": [r(0.42)] * 3},
@@ -1651,12 +1721,26 @@ def write(pack_dir, ns, write_json):
         m = Model(pal)
         is_boss = i < BOSS_ORDER.index("mount_wolf") or bid.startswith("field_")
         CLAMP_AT_BUILD[0] = not is_boss
-        BUILDERS[bid](m)
-        if bid in BOSS_IDS:
+        import voxel_bosses
+        voxel = bid in voxel_bosses.BUILDERS   # v5.8.3 복셀 조각 보스: 장식 단계 없이 조각 그대로
+        if voxel:
+            voxel_bosses.build(bid, m)
+        else:
+            BUILDERS[bid](m)
+        if len(pal.colors) > 256:
+            raise SystemExit("보스 팔레트 색이 256 개를 넘음: %s (%d)" % (bid, len(pal.colors)))
+        if bid in BOSS_IDS and not voxel and bid != "primordial_dragon":
+            if bid not in NO_GRAND:
+                grand(m, bid, THEME.get(bid, "ff5050"))       # v5.8.0 갑옷 세부
+            edging(m, bid)                                    # v5.8.0 판 테두리
             majesty(m, bid, THEME.get(bid, "ff5050"))        # 후광/왕관 · 날개/망토 (v5.5.0: 바닥 마법진 · 받침대 · 화로 · 등 뒤 마법진 제거)
+            relics(m, bid, THEME.get(bid, "ff5050"))          # v5.8.0 떠도는 유물
         if is_boss:
             shrink(m.els, BOSS_SHRINK, BOSS_DROP)
         CLAMP_AT_BUILD[0] = True
+        for e in m.els:
+            e.pop("_col", None)
+            e.pop("_edge", None)
         pal.image().save(os.path.join(tex_dir, bid + ".png"))
         model = {"credit": "RpgCraft boss model", "texture_size": [16, 16],
                  "textures": {"0": ns + ":item/boss/" + bid, "particle": ns + ":item/boss/" + bid},

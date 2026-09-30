@@ -57,7 +57,12 @@ public class FishingManager implements Listener {
                 if (s != null) return;
                 start(p, e.getHook());
             }
-            case CAUGHT_FISH, REEL_IN, IN_GROUND, FAILED_ATTEMPT -> {
+            case FAILED_ATTEMPT -> {
+                // v5.6.1: 바닐라는 입질 뒤 약 1초 안에 안 당기면 스스로 FAILED_ATTEMPT(물고기 도망)를 보낸다.
+                // 미니게임 중에는 플레이어가 누른 게 아니므로 무시 (예전엔 이게 헛손질로 처리돼 바로 안 하면 줄이 끊어졌음)
+                if (s != null) e.setCancelled(true);
+            }
+            case CAUGHT_FISH, REEL_IN, IN_GROUND -> {
                 if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH && e.getCaught() instanceof Item it) it.remove(); // 바닐라 보상 없음
                 if (s == null) {
                     if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH) e.setExpToDrop(0);

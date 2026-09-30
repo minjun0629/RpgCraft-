@@ -21,7 +21,7 @@ public class MemoryGame extends MiniGame {
             default -> new int[]{1, 2, 3, 5, 6, 7, 10, 11, 12, 14, 15, 16, 19, 20, 21, 23, 24, 25, 28, 29, 30, 32, 33, 34, 37, 38, 42, 43};
         };
         pairs = slots.length / 2;
-        limit = d.pick(90, 120, 150) * 20;
+        limit = d.pick(45, 70, 100) * 20;
         List<Integer> deck = new ArrayList<>();
         List<Integer> kinds = new ArrayList<>();
         for (int k = 0; k < Icons.FACES; k++) kinds.add(k);

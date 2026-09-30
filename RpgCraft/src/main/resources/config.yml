@@ -339,8 +339,9 @@ pets:
 
 server-list:                 # 서버 목록 (멀티플레이 화면)
   enabled: true
-  address: ""                # 서버 주소 (예: play.rpgcraft.kr) — 설명 두 번째 줄에 표시
-  auto-address: true         # 주소를 비워 두면 서버 IP(자동 감지한 공인 IP)를 대신 표시
+  address: ""                # 서버 도메인 (예: play.rpgcraft.kr) — 설명 두 번째 줄에 표시. 숫자 IP 는 표시하지 않음
+  auto-address: false        # true 면 주소를 비워 뒀을 때 서버 IP 를 대신 표시 (기본: 표시 안 함)
+  show-ip: false             # true 면 address 에 숫자 IP 를 적었을 때도 표시
   motd-line1: "&6&l⚔ RpgCraft &8| &e대규모 RPG · PvP 서버"
   motd-line2: "&f주소: &b{address}"
   motd-line2-no-address: "&7레벨 · 보스 · 길드 · 공성전 · 던전"
@@ -390,7 +391,11 @@ bosses:
   crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
   chase-radius: 48           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기
   leash-radius: 0            # 등장 위치에서 이만큼 넘게 끌려가면 제자리로 돌아감 (0 = 끔, 기본 끔)
-  stagger-ticks: 24         # 기술이 터진 직후 보스 경직 시간 (틱, 20 = 1초). 0 = 경직 없음
+  stagger-ticks: 0          # 기술이 터진 직후 보스 경직 시간 (틱, 20 = 1초). 0 = 경직 없음 (v5.7.3 기본값). 켜면 등급별로 x1.5 / x1 / x0.7 / x0.5
+  # v5.7.0 보스 등급: 1 = Lv.40 미만 · 2 = 80 미만 · 3 = 140 미만 · 4 = 그 이상 (월드 보스는 한 등급 위)
+  #   등급이 높을수록 기술을 더 자주 쓰고, 연계(콤보, 등급 2 15% · 3 35% · 4 55%)로 이어 씀
+  ultimates: true            # 등급 3 은 체력 50%, 등급 4 는 75 · 45 · 15% 와 50초마다 궁극기 (파멸의 주문 · 대붕괴 · 심판의 광선 · 운석 폭풍)
+  tier4-double-cast: 0.25    # 등급 4 보스가 기술 두 개를 겹쳐 쓸 확률
   minion-exp-mult: 0.4       # 보스가 소환한 부하 몬스터의 경험치 배율 (1 = 같은 레벨 일반 몬스터와 같음)
   spawn-safe-radius: 300     # 월드 스폰에서 이 거리(칸) 안에는 필드 보스 · 바다 보스 · 월드보스 · 토벌전 보스가 나오지 않음 (0 = 제한 없음, 관리자 소환 · 던전 제외)
 
@@ -487,9 +492,15 @@ casino:
   max-bet: 100000
   daily-limit: 500000        # 하루 베팅 한도
 
-minigames:                  # 이벤트 광장 /이벤트 (v5.6.0)
-  daily-clears: 20           # 게임마다 하루에 코인을 받을 수 있는 성공 횟수
-  reward:                    # 성공 코인 [쉬움, 보통, 어려움]
+quests:                     # 의뢰 경험치 = 지금 레벨의 필요 경험치 × 이 값 (v5.6.3 대폭 하향)
+  exp-daily: 0.03            # 일일 의뢰 1개 (예전 0.12)
+  exp-weekly: 0.15           # 주간 의뢰 1개 (예전 1.0 = 레벨 하나)
+  exp-npc: 0.02              # 마을 의뢰 NPC 1개 (예전 0.08)
+
+minigames:                  # 미니게임 광장 /미니게임 (v5.6.0)
+  daily-plays: 5             # 하루에 할 수 있는 판 수 (시작할 때 1판 차감, 자정에 초기화)
+  daily-plays-scope: total   # total = 4종 합쳐 5판 · per-game = 게임마다 5판
+  reward:                    # 성공 시 미니게임 코인 [쉬움, 보통, 어려움]
     mole: [1, 3, 6]
     breakout: [1, 3, 6]
     mines: [1, 3, 6]
@@ -544,18 +555,26 @@ economy:                    # 경제 밸런스 (배율)
   loot-sell-mult: 0.15        # 전리품 판매가
   equipment-price-mult: 2.5  # 상점 무기·방어구 구매가 (나무위키 가격 × 배율)
 
+mob-models:                 # v5.9.0 일반 몬스터 3D 모델 (mobs.yml 커스텀 몬스터, 리소스팩 필요)
+  enabled: true
+  size-mult: 1.0             # 모델 크기 배율
+  animate-range: 40          # 이 거리 안에 플레이어가 있을 때만 움직임 계산 (렉 줄이기)
+  view-range: 1.0            # 모델이 보이는 거리 배율 (1.0 = 기본 약 64블록, 낮추면 가벼워짐)
+  require-matching-pack: true  # 외부 리소스팩(resourcepack.url)이 플러그인 내장 팩과 다르면 모델을 끔 (예전 팩이면 여러 마리가 겹쳐 보임)
 boss-models:                # 보스 3D 모델 (리소스팩)
   enabled: true
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로
   hitbox: true               # 모델 크기에 맞는 판정 상자 (큰 보스를 모델 어디를 때려도 맞음)
   hitbox-mult: 1.0           # 판정 상자 크기 배율
-  scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}
+  scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}  (여기 적은 보스는 size-mult 를 곱하지 않음)
+  size-mult: 1.15            # 모든 보스 모델 크기 배율 (v5.8.0 1.15 = 15% 크게, 판정 상자도 같이)
 
 vfx:
   enabled: true              # 스킬 이펙트를 리소스팩 모델로 한 번에 번쩍 (잔상 없음). false: 기존 입자
   layers: true               # 겹 이펙트 (흰 칼심 · 잔상 · 반짝임 · 파동 원판 · 입자). 서버가 버거우면 false
   weapon-extra: true         # 무기 스킬 추가 연출 (속성 입자 · 시전 마법진 · 잔상 · 크레이터 · 화살 꼬리 · 궁극기). 서버가 버거우면 false
   mob-extra: true            # 몬스터 스킬 추가 연출 (차오르는 예고 · 기 모으기 · 크레이터 · 잔상 · 투사체 꼬리). 서버가 버거우면 false
+  boss-blocks: true          # 보스 빛나는 바닥 예고판 · 땅이 솟는 지진 · 파편 · 기둥 · 운석 · 밀려오는 벽 (블록 디스플레이, 지형은 안 바뀜). 서버가 버거우면 false
 
 visual:
   item-glow: false           # 떨어진 장비 발광(벽 너머로도 보임). 끄면 빛기둥·입자만 표시

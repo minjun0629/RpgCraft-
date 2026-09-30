@@ -231,7 +231,7 @@ public class QuestNpcManager implements Listener {
                     d.counters.put(key(npc, idx, "done"), 1.0);
                     d.counters.merge("ach_quest", 1.0, Double::sum);
                     plugin.economy().give(p, money);
-                    plugin.levels().addExp(p, plugin.levels().need(d.level) * 0.08);
+                    plugin.levels().addExp(p, plugin.levels().need(d.level) * plugin.getConfig().getDouble("quests.exp-npc", 0.02));   // v5.6.3: 8% → 2%
                     p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1f, 1.1f);
                     Text.msg(p, "&a의뢰 완료! &f" + Text.money(money) + " &7+ 경험치");
                     p.closeInventory();

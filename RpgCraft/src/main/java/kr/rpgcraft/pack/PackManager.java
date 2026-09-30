@@ -173,7 +173,8 @@ public class PackManager implements Listener {
                 if (cfg.length() == 40 && !cfg.equalsIgnoreCase(externalHashHex))
                     plugin.getLogger().warning("config 의 resourcepack.sha1 이 실제 파일과 달라 실제 값을 사용합니다.");
                 if (hash != null && !java.util.Arrays.equals(hash, h))
-                    plugin.getLogger().info("참고: 외부 팩이 플러그인에 내장된 팩과 다릅니다. (플러그인을 업데이트했다면 GitHub 의 zip 도 새 파일로 교체하세요: dist/RpgCraft-ResourcePack.zip)");
+                    plugin.getLogger().warning("외부 리소스팩이 플러그인에 내장된 팩과 다릅니다 → 몬스터 3D 모델을 끕니다 (예전 팩이면 한 마리가 여러 마리로 겹쳐 보임). "
+                            + "GitHub 의 zip 을 dist/RpgCraft-ResourcePack.zip 으로 교체하면 자동으로 켜집니다.");
             } catch (Exception e) {
                 plugin.getLogger().warning("외부 리소스팩을 내려받지 못했습니다: " + u + " (" + e.getMessage() + ")");
             } finally {
@@ -243,6 +244,22 @@ public class PackManager implements Listener {
         byte[] out = new byte[20];
         for (int i = 0; i < 20; i++) out[i] = (byte) Integer.parseInt(hex.substring(i * 2, i * 2 + 2), 16);
         return out;
+    }
+
+    /**
+     * v5.9.2: 플레이어가 받는 팩이 이 플러그인에 내장된 팩과 같은가.
+     * 몬스터 모델은 부위마다 CustomModelData 번호를 쓰므로, 예전 팩이면 부위 하나하나가 다른 몬스터 통모델로 보여
+     * 한 마리가 여러 마리 겹친 것처럼 보인다 → 다르면 모델을 쓰지 않는다. 외부 팩을 아직 확인하지 못했으면 false.
+     */
+    public boolean matchesBundled() {
+        if (!enabled()) return false;
+        if (externalUrl().isEmpty() || plugin.getConfig().getBoolean("resourcepack.use-custom-file", false)) return true;
+        return externalHash != null && hash != null && java.util.Arrays.equals(externalHash, hash);
+    }
+
+    /** 외부 팩이 확인됐고 내장 팩과 다름 (관리자 안내용) */
+    public boolean knownMismatch() {
+        return enabled() && !externalUrl().isEmpty() && externalHash != null && hash != null && !java.util.Arrays.equals(externalHash, hash);
     }
 
     public String hashHex() {
@@ -371,6 +388,12 @@ public class PackManager implements Listener {
         if (!enabled()) return;
         Player p = e.getPlayer();
         retried.remove(p.getUniqueId());
+        if (p.isOp() && knownMismatch())   // v5.9.2 관리자 안내: 외부 팩이 예전 버전이면 새 모델이 깨져 보임
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!p.isOnline()) return;
+                p.sendMessage(Text.c("&c[RpgCraft] &f외부 리소스팩(resourcepack.url)이 플러그인과 다른 버전입니다."));
+                p.sendMessage(Text.c("&7→ 몬스터 3D 모델을 잠시 껐습니다. &fdist/RpgCraft-ResourcePack.zip &7을 그 주소에 올리면 자동으로 켜집니다."));
+            }, 100L);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!p.isOnline()) return;
             // 외부 팩: 마지막 확인이 오래됐으면 해시를 새로 확인한 뒤 보냄 (GitHub 파일 교체 대응)
@@ -469,7 +492,7 @@ public class PackManager implements Listener {
                 case "quest": return '\uE006';
                 case "settings": return '\uE007';
                 case "spirit": return '\uE008';
-                case "event": return '\uE009';      // v5.6.0 이벤트 광장 · 미니게임 · 주식
+                case "event": return '\uE009';      // v5.6.0 미니게임 광장 · 미니게임 · 주식
                 case "mole": return '\uE00A';
                 case "breakout": return '\uE00B';
                 case "mines": return '\uE00C';

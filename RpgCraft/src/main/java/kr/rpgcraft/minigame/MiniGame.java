@@ -64,7 +64,7 @@ public abstract class MiniGame extends Gui {
         if (task != null) task.cancel();
         if (win) {
             long got = mgr.reward(p, game, diff);
-            p.sendTitle(Text.c("&a&l성공!"), Text.c(got > 0 ? game.coin.color + game.coin.label + " +" + got : "&7오늘 받을 수 있는 코인을 모두 받았습니다"), 0, 40, 10);
+            p.sendTitle(Text.c("&a&l성공!"), Text.c(game.coin.color + game.coin.label + " +" + got), 0, 40, 10);
             p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
         } else {
             p.sendTitle(Text.c("&c&l실패"), Text.c("&7" + why), 0, 40, 10);

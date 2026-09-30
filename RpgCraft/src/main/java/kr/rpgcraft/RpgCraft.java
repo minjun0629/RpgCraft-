@@ -108,6 +108,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
+    private kr.rpgcraft.mob.MobModelManager mobModels;
     private kr.rpgcraft.mob.CustomMobManager customMobs;
     private kr.rpgcraft.util.LegacyMigrator migrator;
     private kr.rpgcraft.pack.PackManager pack;
@@ -165,7 +166,7 @@ public final class RpgCraft extends JavaPlugin {
                 protection = new WorldProtection(this), customMobs = new kr.rpgcraft.mob.CustomMobManager(this),
                 new kr.rpgcraft.mob.AnimalAggro(this), weaponSkills = new WeaponSkillManager(this),
                 events = new WorldEventManager(this), structures = new StructureManager(this), compass = new CompassManager(this),
-                bossModels = new kr.rpgcraft.boss.BossModelManager(this),
+                bossModels = new kr.rpgcraft.boss.BossModelManager(this), mobModels = new kr.rpgcraft.mob.MobModelManager(this),
                 party = new PartyManager(this), legendary = new LegendaryManager(this), cycle = new kr.rpgcraft.world.CycleManager(this),
                 tiers = new kr.rpgcraft.mob.MonsterTierManager(this), dungeons = new kr.rpgcraft.world.DungeonManager(this),
                 questNpcs = new kr.rpgcraft.world.QuestNpcManager(this), new kr.rpgcraft.world.FishingManager(this),
@@ -197,7 +198,7 @@ public final class RpgCraft extends JavaPlugin {
         stocks = new kr.rpgcraft.economy.StockManager(this);
         command("stock", stocks);   // /주식 (v5.6.0)
         minigames = new kr.rpgcraft.minigame.MiniGameManager(this);
-        command("event", minigames);   // /이벤트 : 미니게임 · 이벤트 상점 (v5.6.0)
+        command("minigame", minigames);   // /미니게임 : 미니게임 · 미니게임 상점 (v5.6.0)
         duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
         Bukkit.getPluginManager().registerEvents(duels, this);
         command("duel", duels);
@@ -249,6 +250,7 @@ public final class RpgCraft extends JavaPlugin {
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
         if (bossModels != null) bossModels.shutdown();
+        if (mobModels != null) mobModels.shutdown();
         if (altar != null) altar.shutdown();
         if (events != null) events.shutdown();
         if (trades != null) trades.shutdown();
@@ -287,6 +289,9 @@ public final class RpgCraft extends JavaPlugin {
         for (String[] e : new String[][]{{"bgm.boss", "boss"}, {"bgm.dungeon", "dungeon"}, {"bgm.wave", "battle"}})   // 예전 배경음 설정 → bgm.fallback.* (v5.5.0)
             if (getConfig().isString(e[0])) { getConfig().set("bgm.fallback." + e[1], getConfig().getString(e[0])); getConfig().set(e[0], null); }
         if (getConfig().contains("bgm.loop-seconds")) { getConfig().set("bgm.fallback-seconds", getConfig().getInt("bgm.loop-seconds")); getConfig().set("bgm.loop-seconds", null); }
+        if (!getConfig().contains("minigames.coins-unified", true)) { getConfig().set("minigames.daily-plays-scope", "total"); getConfig().set("minigames.coins-unified", true); }   // 미니게임 4종 합쳐 하루 5판 — 한 번만 (v5.6.4)
+        if (!getConfig().contains("server-list.show-ip", true)) { getConfig().set("server-list.auto-address", false); getConfig().set("server-list.show-ip", false); }   // 서버 목록에 IP 표시 끔 — 한 번만 (v5.6.4)
+        if (getConfig().getInt("bosses.stagger-ticks", 0) == 24) getConfig().set("bosses.stagger-ticks", 0);   // 보스 경직 없앰 (v5.7.3)
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
         if (Math.abs(getConfig().getDouble("weapon-skills.bolt-range", 14) - 18) < 1e-9) getConfig().set("weapon-skills.bolt-range", 14);   // 지팡이 평타 18 → 14칸 (v5.4.29)
         if (Math.abs(getConfig().getDouble("bosses.chase-radius", 48) - 24) < 1e-9) getConfig().set("bosses.chase-radius", 48);   // 보스 추격 24 → 48칸 (v5.5.0)
@@ -463,6 +468,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }
+    public kr.rpgcraft.mob.MobModelManager mobModels() { return mobModels; }
     public JobManager jobs() { return jobs; }
     public WeaponSkillManager weaponSkills() { return weaponSkills; }
     public WorldEventManager events() { return events; }

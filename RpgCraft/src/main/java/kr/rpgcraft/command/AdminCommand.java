@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin", "mgreset");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -45,6 +45,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 give <플레이어> <아이템ID> [수량]");
         Text.msg(s, "&e/rpg관리 items [검색어] &7- 아이템 ID 목록");
         Text.msg(s, "&e/rpg관리 money <플레이어> <set|add|take> <금액>");
+        Text.msg(s, "&e/rpg관리 mgreset <플레이어|all> &7- 오늘의 미니게임 판 수 초기화");
         Text.msg(s, "&e/rpg관리 level <플레이어> <레벨> &7| &eexp <플레이어> <양>");
         Text.msg(s, "&e/rpg관리 stat <플레이어> <포인트> &7- 스탯 포인트 지급");
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
@@ -177,6 +178,21 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     Text.msg(s, "회복 완료");
                 }
                 case "auction" -> auction(s, a);
+                case "mgreset", "미니게임초기화" -> {   // v5.10.16 /rpg관리 mgreset <플레이어|all> : 오늘의 미니게임 판 수 초기화
+                    if (a.length < 2) { Text.msg(s, "&e/rpg관리 mgreset <플레이어|all> &7- 오늘의 미니게임 판 수 초기화"); return true; }
+                    List<Player> targets = new ArrayList<>();
+                    if (a[1].equalsIgnoreCase("all") || a[1].equals("전체")) targets.addAll(Bukkit.getOnlinePlayers());
+                    else {
+                        Player t = Bukkit.getPlayerExact(a[1]);
+                        if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
+                        targets.add(t);
+                    }
+                    for (Player t : targets) {
+                        plugin.minigames().resetPlays(plugin.data().get(t));
+                        Text.msg(t, "&a관리자가 오늘의 미니게임 횟수를 초기화했습니다. &7(" + plugin.minigames().dailyPlays() + "판 다시 가능)");
+                    }
+                    Text.msg(s, "&a" + (targets.size() == 1 ? targets.get(0).getName() + " 의" : "접속 중인 " + targets.size() + "명의") + " 오늘의 미니게임 횟수를 초기화했습니다.");
+                }
                 case "coin", "코인" -> {   // /rpg관리 coin <플레이어> <종류> <수> (v5.6.0)
                     if (a.length < 3) { Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 미니게임 코인"); return true; }
                     Player t = Bukkit.getPlayerExact(a[1]);
@@ -879,6 +895,9 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case "stock" -> {
                 if (a.length == 2) for (var st : kr.rpgcraft.economy.StockManager.STOCKS) out.add(st.id());
+            }
+            case "mgreset" -> {
+                if (a.length == 2) { out.add("all"); Bukkit.getOnlinePlayers().forEach(pl -> out.add(pl.getName())); }
             }
             case "coin" -> {
                 if (a.length == 2) Bukkit.getOnlinePlayers().forEach(pl -> out.add(pl.getName()));

@@ -100,6 +100,12 @@ public class MiniGameManager implements CommandExecutor {
         return total() ? "mg_plays_all" : "mg_plays_" + g.key();
     }
 
+    /** v5.10.16 관리자: 오늘 한 미니게임 판 수를 0으로 (클리어 기록 · 코인은 그대로) */
+    public void resetPlays(PlayerData d) {
+        d.counters.remove("mg_plays_all");
+        for (Game x : Game.values()) d.counters.remove("mg_plays_" + x.key());
+    }
+
     public int dailyPlays() {
         return plugin.getConfig().getInt("minigames.daily-plays", 5);
     }

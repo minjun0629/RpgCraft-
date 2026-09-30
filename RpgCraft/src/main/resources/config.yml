@@ -201,6 +201,9 @@ war:
   castle-spawn-safe-radius: 300   # v5.10.12 월드 스폰에서 이 거리(칸) 안에는 castle build 로 성을 지을 수 없음 (성 끝자락 포함, 0 = 제한 없음)
   castle-wall-hp-large: 60000   # /rpg관리 castle build 로 지은 대형 성의 성벽 구간 체력
   castle-build-blocks-per-tick: 20000   # 대형 성을 지을 때 한 틱에 놓는 블록 수 (낮출수록 천천히 · 렉 적게)
+  wall-game: true            # v5.10.15 성벽은 채집도구 타이밍 미니게임으로만 깎임 (false = 예전처럼 때리는 대로)
+  wall-game-hit-mult: 1.5    # 초록 칸 명중 시 (도구 수치 × 이 배율 × 콤보 배율, 콤보는 최대 ×2)
+  wall-game-perfect-mult: 2.5   # 가운데 금색 칸 (완벽)
   wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)
   hit-interval-ms: 400
   repair-seconds: 10         # [위키] 성벽 수리 망치 쉬프트 10초

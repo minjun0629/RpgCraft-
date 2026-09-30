@@ -49,9 +49,11 @@ public class Castle {
         this.name = name;
     }
 
+    /** 이 블록이 속한 성벽. 겹치면 가장 작은 성벽 (v5.10.15: 성문을 막은 길드 성벽이 큰 성벽 구간 안에 있어도 그 성벽이 맞음) */
     public Wall wallAt(Location l) {
-        for (Wall w : walls) if (w.contains(l)) return w;
-        return null;
+        Wall best = null;
+        for (Wall w : walls) if (w.contains(l) && (best == null || w.volume() < best.volume())) best = w;
+        return best;
     }
 
     public int brokenWalls() {

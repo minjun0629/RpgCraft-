@@ -7,7 +7,8 @@
 """
 import math
 
-VS = 0.75   # 복셀 한 칸 크기 (모델 단위)
+import voxel_lib
+VS = voxel_lib.VS   # 복셀 한 칸 크기 (모델 단위) — v5.8.4: 공통 도구와 같게 (0.5)
 
 # 색
 BACK, BACK2, SIDE, SIDE2, SIDE3 = "2a1238", "341848", "43205e", "4f2870", "5b2e80"
@@ -250,52 +251,5 @@ def build(g):
 
 
 def emit(g, m):
-    """g 의 복셀을 합쳐 m (boss_models.Model) 상자로. 드러난 면만 남긴다"""
-    solid = g.cells
-    filled = set(solid)
-    # 속 복셀 제거 (6면이 모두 막힌 것)
-    visible = {}
-    for k, (pri, col) in solid.items():
-        i, j, l = k
-        if all(n in filled for n in ((i + 1, j, l), (i - 1, j, l), (i, j + 1, l), (i, j - 1, l), (i, j, l + 1), (i, j, l - 1))):
-            continue
-        visible[k] = col
-    used = set()
-    boxes = []
-    for k in sorted(visible, key=lambda t: (t[1], t[2], t[0])):
-        if k in used:
-            continue
-        col = visible[k]
-        i0, j0, l0 = k
-
-        def ok(c):
-            return c in visible and c not in used and visible[c] == col
-        i1 = i0
-        while ok((i1 + 1, j0, l0)):
-            i1 += 1
-        l1 = l0
-        while all(ok((i, j0, l1 + 1)) for i in range(i0, i1 + 1)):
-            l1 += 1
-        j1 = j0
-        while all(ok((i, j1 + 1, l)) for i in range(i0, i1 + 1) for l in range(l0, l1 + 1)):
-            j1 += 1
-        for i in range(i0, i1 + 1):
-            for j in range(j0, j1 + 1):
-                for l in range(l0, l1 + 1):
-                    used.add((i, j, l))
-        boxes.append((i0, j0, l0, i1, j1, l1, col))
-    for (i0, j0, l0, i1, j1, l1, col) in boxes:
-        faces = set()
-        if any((i0 - 1, j, l) not in filled for j in range(j0, j1 + 1) for l in range(l0, l1 + 1)): faces.add("west")
-        if any((i1 + 1, j, l) not in filled for j in range(j0, j1 + 1) for l in range(l0, l1 + 1)): faces.add("east")
-        if any((i, j0 - 1, l) not in filled for i in range(i0, i1 + 1) for l in range(l0, l1 + 1)): faces.add("down")
-        if any((i, j1 + 1, l) not in filled for i in range(i0, i1 + 1) for l in range(l0, l1 + 1)): faces.add("up")
-        if any((i, j, l0 - 1) not in filled for i in range(i0, i1 + 1) for j in range(j0, j1 + 1)): faces.add("north")
-        if any((i, j, l1 + 1) not in filled for i in range(i0, i1 + 1) for j in range(j0, j1 + 1)): faces.add("south")
-        if not faces:
-            continue
-        m.box(i0 * VS, j0 * VS, l0 * VS, (i1 + 1) * VS, (j1 + 1) * VS, (l1 + 1) * VS, col)
-        e = m.els[-1]
-        e["faces"] = {f: v for f, v in e["faces"].items() if f in faces}
-        e["_edge"] = True   # 판 테두리 장식 제외
-    return len(boxes)
+    """v5.8.4: 공통 emit (음영 · 팔레트 줄이기 포함)"""
+    return voxel_lib.emit(g, m)

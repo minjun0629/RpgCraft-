@@ -8,7 +8,8 @@
 """
 import math
 
-VS = 0.75
+VS = 0.5    # v5.8.4: 0.75 → 0.5 (더 촘촘한 조각)
+SHADE = True   # v5.8.4: 오목한 곳은 어둡게 · 윗면은 밝게 (음영)
 
 
 # ------------------------------------------------------------------ 색 도우미
@@ -100,6 +101,11 @@ class Grid:
         if cur is None or pri >= cur[0]:
             self.cells[k] = (pri, col)
 
+    def dot(self, x, y, z, col, pri=1, s=0.9):
+        """눈 · 보석 같은 작은 점 (복셀 크기와 상관없이 일정한 크기)"""
+        h = max(s, VS) / 2
+        self.box((x - h, y - h, z - h), (x + h, y + h, z + h), col, pri)
+
     def _rng(self, a, b):
         return range(math.floor(a / VS), math.floor(b / VS) + 1)
 
@@ -107,6 +113,7 @@ class Grid:
         """colf(x,y,z,d) — d: 중심 0 ~ 표면 1. inner 가 있으면 d<inner 인 속은 건드리지 않음 (껍데기 · 갑옷)"""
         cx, cy, cz = c
         rx, ry, rz = r
+        hit = False
         for i in self._rng(cx - rx, cx + rx):
             for j in self._rng(cy - ry, cy + ry):
                 for k in self._rng(cz - rz, cz + rz):
@@ -114,6 +121,9 @@ class Grid:
                     d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2
                     if d <= 1 and (inner is None or d >= inner):
                         self.put(x, y, z, _call(colf, x, y, z, d), pri)
+                        hit = True
+        if not hit and inner is None:   # 복셀보다 가는 부분도 끊기지 않게
+            self.put(cx, cy, cz, _call(colf, cx, cy, cz, 0.0), pri)
 
     def sphere(self, c, r, colf, pri=1):
         self.ellipsoid(c, (r, r, r), colf, pri)
@@ -212,6 +222,43 @@ class Grid:
 
 
 # ------------------------------------------------------------------ 합치기 · 내보내기
+def _occupancy(filled, R):
+    """각 칸 둘레 (2R+1)^3 안에 찬 칸 수 (축마다 나눠 더하기)"""
+    cnt = {k: 1 for k in filled}
+    for ax in range(3):
+        nxt = {}
+        for k, v in cnt.items():
+            for o in range(-R, R + 1):
+                q = list(k)
+                q[ax] += o
+                q = tuple(q)
+                nxt[q] = nxt.get(q, 0) + v
+        cnt = nxt
+    return cnt
+
+
+def _shade(col, f):
+    c = col.lstrip("#")
+    rgb = [int(c[i:i + 2], 16) for i in (0, 2, 4)]
+    if max(rgb) >= 240:   # 빛나는 색 · 흰색은 그대로 (발광 느낌 유지)
+        return col
+    return "%02x%02x%02x" % tuple(max(0, min(255, int(v * f))) for v in rgb)
+
+
+def _quantize(colors, limit=250):
+    """팔레트가 limit 색을 넘으면 채널을 점점 거칠게 반올림해서 줄임"""
+    uniq = set(colors.values())
+    q = 1
+    table = {c: c for c in uniq}
+    while len(set(table.values())) > limit:
+        q += 1
+        table = {}
+        for c in uniq:
+            h = c.lstrip("#")
+            table[c] = "%02x%02x%02x" % tuple(min(255, int(round(int(h[i:i + 2], 16) / q) * q)) for i in (0, 2, 4))
+    return {k: table[c] for k, c in colors.items()}
+
+
 def emit(g, m):
     solid = g.cells
     filled = set(solid)
@@ -221,6 +268,22 @@ def emit(g, m):
         if all(n in filled for n in ((i + 1, j, l), (i - 1, j, l), (i, j + 1, l), (i, j - 1, l), (i, j, l + 1), (i, j, l - 1))):
             continue
         visible[k] = col
+    if SHADE:
+        R = max(2, int(round(1.5 / VS)))
+        occ = _occupancy(filled, R)
+        tot = (2 * R + 1) ** 3
+        for k, col in visible.items():
+            i, j, l = k
+            o = occ.get(k, 0) / tot
+            f = 1 + (0.5 - o) * 1.2                      # 튀어나온 곳 밝게 · 오목한 곳 어둡게
+            if (i, j + 1, l) not in filled:
+                f += 0.08                                  # 위에서 비치는 빛
+            elif (i, j - 1, l) not in filled and j > 1:
+                f -= 0.1                                   # 아랫면 그늘
+            f = max(0.6, min(1.2, f))
+            f = round(f / 0.08) * 0.08
+            visible[k] = _shade(col, f)
+    visible = _quantize(visible)
     used = set()
     boxes = []
     for k in sorted(visible, key=lambda t: (t[1], t[2], t[0])):
@@ -302,11 +365,16 @@ def figure(g, s=1.0, w=1.0, skin="e8c4a0", top="555566", legs="444455", boots=No
         g.ellipsoid(B.head, B.head_r, lambda x, y, z, d: tex(skin, x, y, z, 0.05), pri)
         g.ellipsoid((cx, Y(21.9), cz + 1.4), (1.7 * s, 1.2 * s, 1.7 * s), lambda x, y, z, d: skin, pri)   # 턱
         if face:
+            fz = cz + 0.3 + 2.45 * s
             for sx in (-1, 1):
-                g.put(cx + sx * 0.95 * s, Y(23.3), cz + 0.3 + 2.45 * s, eye, pri + 5)
-                g.put(cx + sx * 0.95 * s, Y(23.95), cz + 0.3 + 2.35 * s, hx(skin, 0.75), pri + 4)   # 눈썹
-            g.put(cx, Y(22.6), cz + 0.3 + 2.65 * s, hx(skin, 0.88), pri + 4)                         # 코
-            g.put(cx, Y(21.9), cz + 0.3 + 2.45 * s, hx(skin, 0.6), pri + 4)                          # 입
+                ex = cx + sx * 0.95 * s
+                g.box((ex - 0.55, Y(23.0), fz - 0.5), (ex + 0.55, Y(23.6), fz + 0.1), "f4f4f0", pri + 4)          # 흰자
+                g.box((ex - 0.25 + sx * 0.05, Y(22.95), fz - 0.4), (ex + 0.3 + sx * 0.05, Y(23.65), fz + 0.2), eye, pri + 5)   # 눈동자
+                g.box((ex - 0.7, Y(23.85), fz - 0.4), (ex + 0.7, Y(24.2), fz + 0.15), hx(skin, 0.7), pri + 4)     # 눈썹
+                g.box((ex - 0.7, Y(22.5), fz - 0.6), (ex + 0.7, Y(22.9), fz - 0.1), hx(skin, 0.92), pri + 3)      # 광대 음영
+            g.box((cx - 0.3, Y(22.3), fz), (cx + 0.3, Y(23.3), fz + 0.45), hx(skin, 0.9), pri + 4)               # 코
+            g.box((cx - 0.3, Y(22.25), fz + 0.1), (cx + 0.3, Y(22.5), fz + 0.5), hx(skin, 0.75), pri + 4)
+            g.box((cx - 0.75, Y(21.75), fz - 0.4), (cx + 0.75, Y(22.0), fz + 0.1), hx(skin, 0.6), pri + 4)     # 입
     B.head_top = (cx, Y(23.0) + 2.75 * s, cz + 0.3)
     # 팔
     for sx in (-1, 1):
@@ -330,40 +398,89 @@ def figure(g, s=1.0, w=1.0, skin="e8c4a0", top="555566", legs="444455", boots=No
     return B
 
 
+def metal(base, t, x=0.0, y=0.0, z=0.0):
+    """금속 광택: t 0(위) → 1(아래)로 밝음 → 어두움, t≈0.28 에 반짝이는 띠, 아주 약한 결"""
+    k = 1.16 - 0.34 * t
+    if abs(t - 0.28) < 0.07:
+        k += 0.12
+    k += (rnd(math.floor(x / VS), math.floor(y / VS), math.floor(z / VS)) - 0.5) * 0.05
+    return hx(base, k)
+
+
 def armor(g, B, plate, trim, gem=None, pri=4, spikes=0, belt=True, greaves=True, tassets=True):
-    """판금: 가슴판(두 겹) · 층진 견갑 · 팔 보호대 · 벨트 · 치마 판 · 정강이 판"""
+    """판금: 가슴판(두 겹 · 음각 문양 · 리벳) · 목 보호대 · 층진 견갑(문장 보석) · 팔 보호대 · 벨트 · 치마 판 · 정강이 판"""
     s, w = B.s, B.w
     cx, cz = 8.0, 8.0
     cy, ry = 17.6 * s, 2.75 * s
-    pc = lambda x, y, z, d: trim if (y < cy - ry * 0.72 or y > cy + ry * 0.8 or abs(x - cx) < 0.4 and z > cz + 1.5) else tex(plate, x, y, z, 0.05)
-    g.ellipsoid((cx, cy, cz + 0.4), (4.25 * w, ry, 2.75), pc, pri, inner=0.62)          # 가슴판 (위 · 아래 테 · 가운데 능선)
-    g.ellipsoid((cx, 14.4 * s, cz + 0.2), (3.45 * w, 1.9 * s, 2.45), lambda x, y, z, d: tex(hx(plate, 0.88), x, y, z, 0.05), pri, inner=0.6)
+    rx, rz = 4.25 * w, 2.75
+    dark = hx(plate, 0.62)
+
+    def pc(x, y, z, d):
+        if y < cy - ry * 0.72 or y > cy + ry * 0.8:
+            return trim
+        if abs(x - cx) < 0.3 and z > cz + 1.5:
+            return trim
+        # 음각 문양: 가운데서 퍼지는 V 줄 두 겹 + 가슴 양쪽 소용돌이
+        vx = abs(x - cx)
+        for off in (0.0, 1.1):
+            if abs(vx - (cy + ry * 0.55 - y) * 0.85 - off) < 0.2 and cy - ry * 0.5 < y < cy + ry * 0.6:
+                return dark
+        if abs(math.hypot(vx - 2.2 * w, y - cy - 0.4) - 0.9) < 0.18 and z > cz + 1.2:
+            return dark
+        return metal(plate, (cy + ry - y) / (2 * ry), x, y, z)
+    g.ellipsoid((cx, cy, cz + 0.4), (rx, ry, rz), pc, pri, inner=0.62)
+    # 리벳: 위 · 아래 테를 따라
+    for yy in (cy + ry * 0.86, cy - ry * 0.8):
+        for k in range(-3, 4):
+            dx = k * 1.15 * w
+            t = 1 - (dx / rx) ** 2 - ((yy - cy) / ry) ** 2
+            if t > 0.05:
+                g.dot(cx + dx, yy, cz + 0.4 + rz * math.sqrt(t) + 0.15, hx(trim, 1.25), pri + 4, 0.5)
+    g.ellipsoid((cx, 14.4 * s, cz + 0.2), (3.45 * w, 1.9 * s, 2.45), lambda x, y, z, d: metal(hx(plate, 0.9), (15.4 * s - y) / (2 * s) * 0.8 + 0.2, x, y, z), pri, inner=0.6)
     for k in range(3):   # 복부 판 줄
         g.ellipsoid((cx, (13.0 + k * 1.15) * s, cz + 0.3), (3.3 * w - k * 0.1, 0.35, 2.5), lambda x, y, z, d: trim, pri + 1, inner=0.75)
+    # 목 보호대 (고르젯)
+    g.ellipsoid((cx, 19.9 * s, cz + 0.1), (2.3 * w, 0.9, 2.0), lambda x, y, z, d: trim if y > 19.9 * s + 0.4 else metal(plate, 0.3, x, y, z), pri + 1, inner=0.45)
     if gem:
-        g.ellipsoid((cx, 17.6 * s, cz + 3.05), (0.8, 0.8, 0.45), lambda x, y, z, d: "ffffff" if d < 0.25 else gem, pri + 3)
+        g.ellipsoid((cx, 17.6 * s, cz + 3.05), (0.95, 0.95, 0.5), lambda x, y, z, d: "ffffff" if d < 0.2 else gem if d < 0.75 else hx(gem, 0.7), pri + 3)
+        g.ring((cx, 17.6 * s, cz + 3.0), 1.1, 0.22, trim, pri + 3, axis="z")
     for sx in (-1, 1):   # 층진 견갑
         sh = B.shoulder_r if sx == 1 else B.shoulder_l
         for k in range(3):
             c0 = add(sh, (sx * 0.4, 1.0 - k * 0.9, 0))
-            g.ellipsoid(c0, (2.5 * w - k * 0.1, 1.0, 2.35), lambda x, y, z, d, c0=c0, k=k: trim if y < c0[1] - 0.55 else tex(plate if k % 2 == 0 else hx(plate, 0.88), x, y, z, 0.05), pri + k, inner=0.55)
+            base = plate if k % 2 == 0 else hx(plate, 0.88)
+            g.ellipsoid(c0, (2.5 * w - k * 0.1, 1.0, 2.35),
+                        lambda x, y, z, d, c0=c0, base=base: trim if y < c0[1] - 0.55 else metal(base, (c0[1] + 1.0 - y) / 2.0, x, y, z), pri + k, inner=0.55)
+        top = add(sh, (sx * 0.9, 1.95, 0))
+        for t in (-1, 0, 1):   # 견갑 리벳
+            g.dot(sh[0] + sx * 0.5 + sx * 1.8, sh[1] + 0.2, sh[2] + t * 1.1, hx(trim, 1.25), pri + 4, 0.5)
+        if gem:
+            g.ellipsoid(add(top, (sx * 0.2, 0.1, 0)), (0.6, 0.45, 0.6), lambda x, y, z, d: "ffffff" if d < 0.2 else gem, pri + 4)
         for t in range(spikes):
             base = add(sh, (sx * (0.8 + t * 0.9), 1.9 - t * 0.35, -0.4 + t * 0.5))
             g.cone(base, add(base, (sx * 0.9, 2.2 - t * 0.4, -0.3)), 0.55, 0.12, lambda x, y, z, f: trim if f > 0.6 else hx(plate, 0.7), pri + 3)
         el = B.elbow_r if sx == 1 else B.elbow_l
         hand = B.hand_r if sx == 1 else B.hand_l
-        g.tube([lerp(el, hand, 0.25), lerp(el, hand, 0.85)], [1.35 * w, 1.2 * w], lambda x, y, z, d, f: trim if f > 0.85 or f < 0.1 else tex(plate, x, y, z, 0.05), pri)   # 팔 보호대
+        g.tube([lerp(el, hand, 0.25), lerp(el, hand, 0.85)], [1.35 * w, 1.2 * w],
+               lambda x, y, z, d, f: trim if f > 0.85 or f < 0.1 or abs(f - 0.47) < 0.05 else metal(plate, 0.2 + f * 0.6, x, y, z), pri)   # 팔 보호대
+        g.ellipsoid(el, (1.3 * w, 1.1, 1.3), lambda x, y, z, d: trim if d > 0.7 else metal(plate, 0.3, x, y, z), pri + 1)   # 팔꿈치 판
         if greaves and hasattr(B, "hip"):
             kx = cx + sx * 2.0 * w
-            g.tube([(kx, 5.6 * s, cz + 0.6), (kx, 1.8 * s, cz + 0.4)], [1.45 * w, 1.2 * w], lambda x, y, z, d, f: trim if f < 0.08 else tex(plate, x, y, z, 0.05), pri, squash=(1, 1.05))
-            g.ellipsoid((kx, 5.9 * s, cz + 1.3), (1.2 * w, 1.0, 0.9), lambda x, y, z, d: trim, pri + 1)
+            g.tube([(kx, 5.6 * s, cz + 0.6), (kx, 1.8 * s, cz + 0.4)], [1.45 * w, 1.2 * w],
+                   lambda x, y, z, d, f: trim if f < 0.08 or f > 0.95 else metal(plate, f * 0.8, x, y, z), pri, squash=(1, 1.05))
+            g.ellipsoid((kx, 5.9 * s, cz + 1.3), (1.2 * w, 1.0, 0.9), lambda x, y, z, d: gem if (gem and d < 0.3) else trim, pri + 1)
+            g.ellipsoid((kx, 8.6 * s, cz + 0.2), (1.9 * w, 1.6, 2.0), lambda x, y, z, d: metal(plate, 0.5, x, y, z) if y > 7.6 * s else None, pri, inner=0.6)   # 허벅지 판
     if belt:
         g.ellipsoid((cx, 11.9 * s, cz), (3.4 * w, 0.75, 2.45), lambda x, y, z, d: trim, pri + 1, inner=0.7)
-        g.ellipsoid((cx, 11.9 * s, cz + 2.5), (0.9, 0.8, 0.4), lambda x, y, z, d: gem or hx(trim, 1.2), pri + 2)
+        g.ellipsoid((cx, 11.9 * s, cz + 2.5), (1.0, 0.85, 0.45), lambda x, y, z, d: "ffffff" if (gem and d < 0.15) else (gem or hx(trim, 1.2)), pri + 2)
+        g.ring((cx, 11.9 * s, cz + 2.45), 1.15, 0.2, hx(trim, 0.8), pri + 2, axis="z")
     if tassets:
         for k, x0 in enumerate((-2.4, -0.8, 0.8)):
             g.slab((cx + x0 * w + 0.75, 11.3 * s, cz + 2.4), (cx + x0 * w + 0.75, 7.8 * s, cz + 2.9), (1.45 * w, 0, 0), 0.5,
-                   lambda x, y, z, u, v: trim if u > 0.9 or abs(v) > 0.85 else tex(plate, x, y, z, 0.05), pri + 1)
+                   lambda x, y, z, u, v: trim if u > 0.9 or abs(v) > 0.85 else (hx(plate, 0.7) if abs(v) < 0.12 and u > 0.2 else metal(plate, u, x, y, z)), pri + 1)
+        for sx in (-1, 1):   # 옆 치마 판
+            g.slab((cx + sx * 3.1 * w, 11.3 * s, cz + 0.6), (cx + sx * 3.6 * w, 8.2 * s, cz + 0.8), (0, 0, 2.6), 0.5,
+                   lambda x, y, z, u, v: trim if u > 0.9 or abs(v) > 0.85 else metal(plate, u, x, y, z), pri + 1)
 
 
 def robe(g, B, col, col2, trim, pri=2, flare=5.6, hem_ragged=False):
@@ -382,7 +499,14 @@ def robe(g, B, col, col2, trim, pri=2, flare=5.6, hem_ragged=False):
                 x, z = 8 + math.cos(a) * (r + fold + dr), 8 + math.sin(a) * (r + fold + dr) * 0.85
                 if hem_ragged and y < 1.2 and rnd(i, 3) < 0.35:
                     continue
-                c = trim if y < 0.8 else (col if int((a / (2 * math.pi)) * 14) % 2 == 0 else col2)
+                band = int((a / (2 * math.pi)) * 14) % 2 == 0
+                if y < 0.6 or 1.9 < y < 2.3:
+                    c = trim                                              # 밑단 테 두 줄
+                elif y < 1.9:
+                    c = trim if (int(a * 40 / (2 * math.pi) + y * 2) % 4 == 0) else hx(col2, 0.8)   # 자수 무늬
+                else:
+                    c = hx(col if band else col2, 0.85 + 0.2 * min(1, y / top_y))   # 아래로 갈수록 짙게
+
                 g.put(x, y, z, c, pri)
         # 속 채움 (보이지 않지만 구멍 방지)
     g.ellipsoid((8, top_y * 0.55, 8), (r0 + 0.8, top_y * 0.55, (r0 + 0.8) * 0.85), lambda x, y, z, d: col2, pri - 1)
@@ -405,11 +529,15 @@ def cape(g, B, col, trim, pri=1, length=None, width=None, ragged=False, emblem=N
         return (x, y, z)
 
     def colf(p, u, v):
-        if u < 0.04 or u > 0.96 or v > 0.97:
+        if u < 0.035 or u > 0.965 or v > 0.975:
             return trim
-        if emblem and abs(u - 0.5) < 0.1 and 0.3 < v < 0.45:
-            return emblem
-        return col if int(u * 10) % 2 == 0 else hx(col, 0.85)
+        if (u < 0.075 or u > 0.925 or v > 0.94) and int((v + u) * 40) % 3 == 0:
+            return hx(trim, 0.8)                                               # 자수 테두리
+        if emblem and math.hypot((u - 0.5) * 2.2, (v - 0.33) * 3.0) < 0.28:
+            r = math.hypot((u - 0.5) * 2.2, (v - 0.33) * 3.0)
+            return trim if r > 0.22 else emblem                                # 둥근 문장
+        base = col if int(u * 10) % 2 == 0 else hx(col, 0.85)
+        return hx(base, 1.08 - 0.3 * v)                                        # 아래로 갈수록 짙게
     g.surface(fn, int(2 * W / (VS * 0.4)), int((top - bottom) / (VS * 0.4)), colf, pri)
     g.ellipsoid((8, top, B.back_z + 0.4), (4.6 * B.w, 0.8, 1.6), lambda x, y, z, d: trim, pri + 3, inner=0.4)   # 어깨 걸쇠 띠
 
@@ -460,11 +588,16 @@ def wings(g, B, c1, c2, rim=None, pri=1, span=17.0, rise=11.0, feathers=6, kind=
                     base = add(base, (0, -row * 1.2, 0.2 * row))
                     L = len0 * (0.55 + 0.6 * t)
                     end = add(base, (sx * 1.6 * t, -L, -0.6))
-                    g.slab(base, end, (sx * 1.3, 0, 0.1), 0.45, lambda x, y, z, u, v, c=c: hx(c, 1.12) if abs(v) < 0.25 else c, pri + row)
+                    g.slab(base, end, (sx * 1.3, 0, 0.1), 0.45, lambda x, y, z, u, v, c=c: hx(c, 0.7) if abs(v) < 0.12 else (hx(c, 1.12) if abs(v) < 0.4 else hx(c, 1.0 - 0.25 * u)), pri + row)
 
 
 def crown(g, center, r, col, gem=None, spikes=6, height=2.2, pri=6, tilt=0.0):
     g.ring(center, r, 0.45, col, pri)
+    g.ring(add(center, (0, 0.7, 0)), r * 0.98, 0.22, hx(col, 0.8), pri)
+    if gem:
+        for k in range(spikes):
+            a = (k + 0.5) * 2 * math.pi / spikes
+            g.dot(center[0] + math.cos(a) * (r + 0.3), center[1] + 0.2, center[2] + math.sin(a) * (r + 0.3), gem, pri + 1, 0.55)
     for k in range(spikes):
         a = k * 2 * math.pi / spikes
         base = (center[0] + math.cos(a) * r, center[1], center[2] + math.sin(a) * r)
@@ -477,6 +610,11 @@ def crown(g, center, r, col, gem=None, spikes=6, height=2.2, pri=6, tilt=0.0):
 def halo(g, center, r, col, glow="ffffff", pri=6):
     g.ring(center, r, 0.42, col, pri, axis="y", tilt=math.pi / 2)
     g.ring(center, r - 0.6, 0.25, glow, pri, axis="y", tilt=math.pi / 2)
+    for k in range(12):   # 빛살
+        a = k * math.pi / 6
+        p0 = (center[0] + math.cos(a) * (r + 0.4), center[1] + math.sin(a) * (r + 0.4), center[2])
+        L = 1.4 if k % 2 else 2.4
+        g.cone(p0, (center[0] + math.cos(a) * (r + L), center[1] + math.sin(a) * (r + L), center[2]), 0.3, 0.05, glow if k % 2 else col, pri)
 
 
 # ------------------------------------------------------------------ 무기
@@ -484,6 +622,10 @@ def staff(g, hand, top_y, wood, head_col, orb=None, pri=5, lean=0.25):
     bottom = (hand[0], 0.4, hand[2] - lean * hand[1])
     top = (hand[0], top_y, hand[2] + lean * (top_y - hand[1]))
     g.tube([bottom, top], [0.38, 0.32], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
+    for k in range(9):   # 감긴 띠 · 매듭
+        t = 0.45 + k * 0.06
+        c = lerp(bottom, top, t)
+        g.ellipsoid(c, (0.5, 0.18, 0.5), head_col if k % 4 == 0 else hx(wood, 0.7), pri + 1)
     if orb:
         g.sphere(add(top, (0, 1.0, 0.25)), 1.05, lambda x, y, z, d: "ffffff" if d < 0.2 else orb, pri + 1)
     for k in range(4):
@@ -496,10 +638,21 @@ def sword(g, hand, length, blade, edge, guard, pri=5, width=1.3, tilt=(0, 1, 0.3
     d = norm(tilt)
     tip = add(hand, mul(d, length))
     base = add(hand, mul(d, 1.0))
-    g.slab(base, tip, (width, 0, 0), 0.4, lambda x, y, z, u, v: edge if abs(v) > 0.7 or u > 0.92 else (hx(blade, 1.15) if abs(v) < 0.15 else blade), pri)
-    g.slab(add(hand, mul(d, 0.6)), add(hand, mul(d, 1.0)), (width * 2.6, 0, 0), 0.6, guard, pri + 1)
-    g.tube([add(hand, mul(d, -1.4)), add(hand, mul(d, 0.6))], [0.35, 0.35], lambda x, y, z, d_, f: hx(guard, 0.6), pri)
-    g.sphere(add(hand, mul(d, -1.6)), 0.5, guard, pri + 1)
+
+    def bc(x, y, z, u, v):
+        if abs(v) > 0.72 or u > 0.93:
+            return edge                                             # 날
+        if abs(v) < 0.14 and u < 0.8:
+            return edge if int(u * 22) % 3 == 0 else hx(blade, 0.7)  # 홈 + 룬 점
+        return hx(blade, 1.18 - 0.3 * abs(v))                       # 가운데가 밝은 광택
+    g.slab(base, tip, (width, 0, 0), 0.45, bc, pri)
+    g.slab(add(hand, mul(d, 0.6)), add(hand, mul(d, 1.05)), (width * 2.6, 0, 0), 0.7, lambda x, y, z, u, v: hx(guard, 0.75) if abs(v) < 0.2 else guard, pri + 1)
+    for sx in (-1, 1):   # 위로 휜 가드 끝
+        e = add(add(hand, mul(d, 0.8)), (sx * width * 1.3, 0, 0))
+        g.cone(e, add(e, (sx * 0.5, 1.0, 0)), 0.35, 0.1, guard, pri + 1)
+    g.dot(*add(hand, mul(d, 0.85)), edge, pri + 3, 0.6)
+    g.tube([add(hand, mul(d, -1.4)), add(hand, mul(d, 0.6))], [0.35, 0.35], lambda x, y, z, d_, f: hx(guard, 0.4) if int(f * 6) % 2 else hx(guard, 0.6), pri)   # 감은 손잡이
+    g.sphere(add(hand, mul(d, -1.7)), 0.55, lambda x, y, z, d_: edge if d_ < 0.35 else guard, pri + 1)
     return tip
 
 
@@ -509,7 +662,10 @@ def hammer(g, hand, handle_len, head_size, wood, metal, trim, pri=5):
     g.tube([bot, top], [0.42, 0.4], lambda x, y, z, d, f: tex(wood, x, y, z, 0.15), pri)
     h = head_size
     g.box((top[0] - h, top[1] - h * 0.6, top[2] - h * 0.7), (top[0] + h, top[1] + h * 0.6, top[2] + h * 0.7),
-          lambda x, y, z: trim if abs(x - top[0]) > h - 0.6 else tex(metal, x, y, z), pri + 1)
+          lambda x, y, z: trim if abs(x - top[0]) > h - 0.6 or abs(y - top[1]) > h * 0.6 - 0.35 else tex(metal, x, y, z), pri + 1)
+    g.cone(add(top, (0, h * 0.6, 0)), add(top, (0, h * 0.6 + 1.6, 0.2)), 0.6, 0.1, trim, pri + 2)   # 위 가시
+    for sx in (-1, 1):
+        g.ellipsoid(add(top, (sx * (h + 0.2), 0, 0)), (0.35, h * 0.35, h * 0.45), trim, pri + 2)      # 옆면 징
     return top
 
 
@@ -517,6 +673,11 @@ def spear(g, hand, length, shaft, head, pri=5, prongs=1):
     bot = add(hand, (0, -length * 0.35, -1.0))
     top = add(hand, (0, length * 0.65, 1.8))
     g.tube([bot, top], [0.35, 0.3], lambda x, y, z, d, f: tex(shaft, x, y, z, 0.1), pri)
+    for k in range(3):   # 날 아래 고리 · 술
+        g.ellipsoid(add(top, (0, -0.6 - k * 0.5, -0.1 * k)), (0.55, 0.2, 0.55), head, pri + 1)
+    for t in range(4):
+        a = t * math.pi / 2
+        g.tube([add(top, (0, -1.8, -0.2)), add(top, (math.cos(a) * 0.7, -3.8, math.sin(a) * 0.7 - 0.3))], [0.2, 0.12], "c83a2a", pri + 1)
     for k in range(prongs):
         off = (k - (prongs - 1) / 2) * 1.2
         b = add(top, (off, 0, 0))

@@ -23,7 +23,7 @@ def witch(g):
         g.cone(p, add(p, (0, -1.8 - (k % 3) * 0.6, 0)), 0.45, 0.15, "2a1640", 4)
     hair(g, B, HAIR, length=10, width=2.6)
     g.tube([(8, 22.8, 10.6), (8, 22.3, 12.0), (8, 21.4, 12.6)], [0.5, 0.42, 0.25], "6f9f4a", 6, smooth=True)   # 매부리코
-    g.put(8.6, 22.0, 11.9, "4a7a3a", 7)                                                                       # 사마귀
+    g.dot(8.6, 22.0, 11.9, "4a7a3a", 7)                                                                       # 사마귀
     # 모자: 넓은 챙 + 휘어진 원뿔 + 독 띠 + 버클
     g.ellipsoid((8, 25.3, 8.3), (6.6, 0.45, 6.2), lambda x, y, z, d: "241232" if d < 0.85 else "1a0c26", 6)
     g.tube([(8, 25.4, 8.3), (8, 29.0, 8.0), (8.3, 32.0, 7.2), (9.4, 33.6, 5.8), (11.0, 33.4, 4.8)], [3.0, 2.2, 1.3, 0.7, 0.3],
@@ -41,7 +41,7 @@ def witch(g):
         g.ellipsoid((x, y, z), (1.2, 1.2, 1.1), "e8e0d0", 6)
         g.box((x - 0.7, y - 1.3, z - 0.3), (x + 0.7, y - 0.6, z + 1.0), "d8d0c0", 6)
         for sx in (-1, 1):
-            g.put(x + sx * 0.45, y + 0.1, z + 1.0, TOX, 8)
+            g.dot(x + sx * 0.45, y + 0.1, z + 1.0, TOX, 8)
 
 
 # =================================================================== 드워프 왕
@@ -98,7 +98,7 @@ def kain(g):
 def thunder_god(g):
     SKIN, GOLD, GOLD2, DARK, BOLT, CAPE, WHITE = "f0d0b0", "f2c23a", "c8962a", "5a4a2a", "6bd8ff", "1f5ab8", "f4f8ff"
     B = figure(g, s=1.12, w=1.22, bulk=1.05, skin=SKIN, top=GOLD, legs=DARK, boots=GOLD2, arms=GOLD)
-    armor(g, B, GOLD, GOLD2, gem=BOLT, spikes=0)
+    armor(g, B, GOLD, "9a6414", gem=BOLT, spikes=0)
     cape(g, B, CAPE, BOLT, length=0.8, width=4.6, emblem=WHITE)
     wings(g, B, "cfeeff", BOLT, rim=WHITE, span=15, rise=12, kind="feather")
     hc = B.head
@@ -134,7 +134,7 @@ def elf_queen(g):
         g.slab(p, add(p, (math.cos(a) * 1.4, -1.4, math.sin(a) * 1.4)), (math.sin(a) * 1.2, 0, -math.cos(a) * 1.2), 0.35, LEAF, 4)
     g.ellipsoid((8, 17.6, 8.3), (3.9, 2.4, 2.5), lambda x, y, z, d: GOLD if y > 19.2 else tex(DRESS, x, y, z), 4, inner=0.6)   # 코르셋
     for k in range(5):
-        g.put(8, 15.8 + k * 0.9, 10.8, GOLD, 6)
+        g.dot(8, 15.8 + k * 0.9, 10.8, GOLD, 6)
     hair(g, B, HAIR, length=16, width=2.8)
     hc = B.head
     for sx in (-1, 1):   # 뾰족한 귀
@@ -275,7 +275,7 @@ def bungbung(g):
         g.slab((8 + sx * 0.6, 23.0, 12.6), (8 + sx * 3.0, 24.0, 12.3), (0, 0.5, 0), 0.4, "a8200e", 8)   # 눈썹
     g.box((6.2, 18.6, 12.2), (9.8, 19.6, 12.9), "5a1000", 7)
     for x in (6.5, 7.6, 8.7, 9.4):
-        g.put(x, 19.3, 12.8, CORE, 8)
+        g.dot(x, 19.3, 12.8, CORE, 8)
     # 불꽃 팔: 굵게 뻗은 불꽃 주먹
     for sx in (-1, 1):
         pts = [(8 + sx * 5.2, 15.5, 8), (8 + sx * 8.6, 14.0, 9.5), (8 + sx * 10.2, 16.5, 11.5)]
@@ -311,7 +311,7 @@ def desert_nightmare(g):
     g.ellipsoid(hc, (2.5, 2.8, 2.6), lambda x, y, z, d: tex(GOLD, x, y, z, 0.06), 6)
     for sx in (-1, 1):
         g.box((8 + sx * 0.5 - (1.4 if sx < 0 else 0), hc[1] + 0.1, hc[2] + 2.3), (8 + sx * 0.5 + (1.4 if sx > 0 else 0), hc[1] + 0.8, hc[2] + 2.9), "1a1a2a", 7)
-        g.put(8 + sx * 1.2, hc[1] + 0.45, hc[2] + 2.85, EYE, 9)
+        g.dot(8 + sx * 1.2, hc[1] + 0.45, hc[2] + 2.85, EYE, 9)
     g.box((7.5, hc[1] - 3.6, hc[2] + 1.8), (8.5, hc[1] - 1.6, hc[2] + 2.6), lambda x, y, z: GOLD if int(y * 2) % 2 else BLUE, 7)   # 수염 장식
     # 네메스 두건 (옆으로 늘어진 줄무늬 천)
     g.ellipsoid((8, hc[1] + 0.8, hc[2] - 0.2), (3.1, 2.6, 3.0), lambda x, y, z, d: (GOLD if int(y * 1.4) % 2 else BLUE) if z < hc[2] + 1.8 else None, 6, inner=0.6)
@@ -334,7 +334,7 @@ def desert_nightmare(g):
     body = [(8 - 5.0, 10, 9), (8 - 3.0, 12.5, 11), (8 + 1.5, 13.5, 11.2), (8 + 4.2, 15.5, 10.4), (8 + 3.0, 18.0, 11.4), (8 + 1.0, 19.4, 12.4)]
     g.tube(body, [0.6, 0.75, 0.8, 0.75, 0.6, 0.5], lambda x, y, z, d, f: SNAKE if int(f * 3) % 2 else "2a5a2a", 8, smooth=True)
     g.ellipsoid((8 + 0.6, 19.8, 13.2), (0.8, 0.6, 1.1), SNAKE, 9)
-    g.put(8 + 0.2, 20.1, 13.9, "ff3a3a", 10)
+    g.dot(8 + 0.2, 20.1, 13.9, "ff3a3a", 10)
     floaters(g, [(-5, 16, 5), (21, 22, 10), (-4, 28, 11), (20, 8, 2)], "ffcf6a", r=0.9)
     for k in range(12):   # 발치의 모래 소용돌이
         a = k * 2 * math.pi / 12
@@ -388,7 +388,7 @@ def frost_queen(g):
         g.cone(p, add(p, (math.cos(a) * 1.8, 2.2 + (k % 3), math.sin(a) * 1.6)), 0.6, 0.1, ICE if k % 2 else ICE2, 4)
     g.ellipsoid((8, 17.6, 8.3), (3.9, 2.4, 2.5), lambda x, y, z, d: ICE2 if y > 19.3 else tex(DRESS, x, y, z), 4, inner=0.6)
     for k in range(5):   # 가슴 서리 문양
-        g.put(8 + (k - 2) * 0.7, 17.0 + abs(k - 2) * 0.6, 10.9, ICE2, 6)
+        g.dot(8 + (k - 2) * 0.7, 17.0 + abs(k - 2) * 0.6, 10.9, ICE2, 6)
     hair(g, B, HAIR, length=17, width=3.0)
     hc = B.head
     # 얼음 왕관 (길쭉한 결정)
@@ -506,7 +506,7 @@ def void_apostle(g):
         g.ellipsoid((x, y, z + 0.9), (0.55, 0.55, 0.3), VOID, 7)
     for k in range(10):   # 떠도는 별 조각
         a = k * 2.4
-        g.put(8 + math.cos(a) * 15, 6 + k * 3.2, 8 + math.sin(a) * 12, STAR, 6)
+        g.dot(8 + math.cos(a) * 15, 6 + k * 3.2, 8 + math.sin(a) * 12, STAR, 6)
 
 
 # =================================================================== 몬스터의 원혼
@@ -537,13 +537,13 @@ def vengeful_spirit(g):
     g.ellipsoid(hc, (2.6, 2.8, 2.6), BONE, 5)
     for sx in (-1, 1):
         g.ellipsoid(add(hc, (sx * 1.1, 0.4, 2.2)), (0.8, 0.9, 0.6), DARK, 7)
-        g.put(hc[0] + sx * 1.1, hc[1] + 0.4, hc[2] + 2.5, GLOW, 9)
-    g.put(8, hc[1] - 0.8, hc[2] + 2.6, DARK, 7)
+        g.dot(hc[0] + sx * 1.1, hc[1] + 0.4, hc[2] + 2.5, GLOW, 9)
+    g.dot(8, hc[1] - 0.8, hc[2] + 2.6, DARK, 7)
     g.box((6.2, hc[1] - 4.6, hc[2] + 0.6), (9.8, hc[1] - 3.4, hc[2] + 2.6), BONE, 6)   # 벌어진 아래턱
     g.box((6.6, hc[1] - 3.4, hc[2] + 1.4), (9.4, hc[1] - 2.0, hc[2] + 2.4), DARK, 6)
     for x in (6.5, 7.4, 8.3, 9.2):
-        g.put(x, hc[1] - 1.9, hc[2] + 2.3, BONE, 8)
-        g.put(x, hc[1] - 3.3, hc[2] + 2.3, BONE, 8)
+        g.dot(x, hc[1] - 1.9, hc[2] + 2.3, BONE, 8)
+        g.dot(x, hc[1] - 3.3, hc[2] + 2.3, BONE, 8)
     # 긴 팔 · 뼈 발톱 · 끊어진 사슬
     for sx in (-1, 1):
         sh = (8 + sx * 5.4, 21.5, 8.5)
@@ -720,7 +720,7 @@ def field_boar_king(g):
     g.tube([add(hc, (0, -1.0, 2.8)), add(hc, (0, -1.8, 6.4))], [2.8, 2.4], lambda x, y, z, d, f: tex(SNOUT, x, y, z, 0.06), 4)   # 주둥이
     g.ellipsoid(add(hc, (0, -1.8, 7.0)), (2.4, 2.0, 0.6), "b08068", 5)
     for sx in (-1, 1):
-        g.put(8 + sx * 0.9, hc[1] - 1.6, hc[2] + 7.5, "2a1a10", 7)                            # 콧구멍
+        g.dot(8 + sx * 0.9, hc[1] - 1.6, hc[2] + 7.5, "2a1a10", 7)                            # 콧구멍
         g.ellipsoid(add(hc, (sx * 2.6, 1.2, 3.4)), (0.6, 0.6, 0.4), EYE, 7)
         g.slab(add(hc, (sx * 1.2, 2.2, 3.8)), add(hc, (sx * 3.6, 1.6, 3.4)), (0, 0.6, 0), 0.5, MANE, 7)   # 찌푸린 눈썹
         g.tube([add(hc, (sx * 2.2, -2.4, 5.4)), add(hc, (sx * 3.6, -2.2, 7.6)), add(hc, (sx * 3.8, 0.8, 8.8)), add(hc, (sx * 3.0, 3.2, 8.4))],
@@ -793,7 +793,7 @@ def field_bandit_lord(g):
     g.ellipsoid(add(hc, (0, -1.0, 1.0)), (2.6, 1.6, 1.9), lambda x, y, z, d: RED if z > hc[2] + 1.2 else None, 8, inner=0.4)   # 붉은 복면
     g.slab(add(hc, (2.2, -1.2, 0)), add(hc, (3.2, -4.6, -0.8)), (0, 0, 0.9), 0.3, RED, 8)
     for sx in (-1, 1):
-        g.put(8 + sx * 0.95, hc[1], hc[2] + 2.5, "ffd23f", 10)
+        g.dot(8 + sx * 0.95, hc[1], hc[2] + 2.5, "ffd23f", 10)
     # 양손의 굽은 단검
     for sx in (-1, 1):
         hand = B.hand_r if sx == 1 else B.hand_l
@@ -1023,11 +1023,11 @@ def field_frost_lich(g):
     g.ellipsoid(hc, (2.3, 2.6, 2.4), lambda x, y, z, d: tex(BONE, x, y, z, 0.06), 6)
     for sx in (-1, 1):
         g.ellipsoid(add(hc, (sx * 0.95, 0.3, 2.0)), (0.7, 0.8, 0.5), DARK, 8)
-        g.put(hc[0] + sx * 0.95, hc[1] + 0.3, hc[2] + 2.35, ICE, 10)
-    g.put(8, hc[1] - 0.9, hc[2] + 2.4, DARK, 8)
+        g.dot(hc[0] + sx * 0.95, hc[1] + 0.3, hc[2] + 2.35, ICE, 10)
+    g.dot(8, hc[1] - 0.9, hc[2] + 2.4, DARK, 8)
     g.box((6.6, hc[1] - 2.6, hc[2] + 0.8), (9.4, hc[1] - 1.4, hc[2] + 2.2), BONE2, 6)
     for x in (6.9, 7.6, 8.3, 9.0):
-        g.put(x, hc[1] - 1.6, hc[2] + 2.2, BONE, 8)
+        g.dot(x, hc[1] - 1.6, hc[2] + 2.2, BONE, 8)
     g.ellipsoid(add(hc, (0, 0.6, -0.5)), (3.1, 3.4, 3.2), lambda x, y, z, d: tex(ROBE, x, y, z) if z < hc[2] + 1.5 else None, 7, inner=0.6)
     g.ring((8, hc[1] + 2.6, hc[2]), 2.6, 0.35, TRIM, 8)
     for k in range(7):

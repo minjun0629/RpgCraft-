@@ -386,7 +386,6 @@ bosses:
   world-exp-levels: 4        # 월드보스는 이 값
   signature-min-level: 80    # 이 레벨 이상 보스는 고유 대형 패턴(십자 광선 · 파멸의 고리 · 유성 폭격 · 칼날 폭풍) 사용
   damage-mult: 1.15          # 모든 보스 피해 배율
-  chest-chance: 0.3          # 보스 처치 시 "보스 상자"(보스 드롭표로 뽑기) 확률
   crowd-skill-speed: 0.25    # 보스 주변 1명 늘 때마다 기술 간격 -25% 가량
   crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
   chase-radius: 48           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기
@@ -565,7 +564,7 @@ mob-models:                 # v5.9.0 일반 몬스터 3D 모델 (mobs.yml 커스
 boss-models:                # 보스 3D 모델 (리소스팩)
   enabled: true
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로
-  hitbox: false              # 모델 크기에 맞는 판정 상자 (v5.10.3: 기본 끔 — 우클릭 스킬이 상자에 막혔음)
+  hitbox: true               # 모델 크기에 맞는 판정 상자 (큰 보스를 모델 어디를 때려도 맞음)
   hitbox-mult: 1.0           # 판정 상자 크기 배율
   scale: {}                  # 예) scale: {kain: 2.5, witch: 1.4}  (여기 적은 보스는 size-mult 를 곱하지 않음)
   size-mult: 1.15            # 모든 보스 모델 크기 배율 (v5.8.0 1.15 = 15% 크게, 판정 상자도 같이)

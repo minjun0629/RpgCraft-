@@ -254,7 +254,8 @@ public class PackManager implements Listener {
     public boolean matchesBundled() {
         if (!enabled()) return false;
         if (externalUrl().isEmpty() || plugin.getConfig().getBoolean("resourcepack.use-custom-file", false)) return true;
-        return externalHash != null && hash != null && java.util.Arrays.equals(externalHash, hash);
+        // v5.10.11: 외부 팩을 아직 확인하지 못했으면(내려받기 실패 · 느린 서버) 끄지 않음 — 확실히 다른 팩일 때만 끔
+        return externalHash == null || hash == null || java.util.Arrays.equals(externalHash, hash);
     }
 
     /** 외부 팩이 확인됐고 내장 팩과 다름 (관리자 안내용) */

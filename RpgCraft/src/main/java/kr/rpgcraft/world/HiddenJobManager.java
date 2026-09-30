@@ -40,7 +40,11 @@ public class HiddenJobManager implements Listener {
             new Tier("A", 3, "명계의 군주", new String[]{"#lv:200", "#ach_boss:30", "loot_core:30"}, StatMap.of(Stat.LIFESTEAL, 10, Stat.MAGIC, 2000, Stat.HP_PCT, 35, Stat.STR_PCT, 30, Stat.DEX_PCT, 30, Stat.ADV_PCT, 30)),
             new Tier("B", 1, "별빛 방랑자", new String[]{"#lv:50", "#ach_treasure:10", "loot_frost:30"}, StatMap.of(Stat.CRIT, 8, Stat.SPEED, 8, Stat.STR_PCT, 12, Stat.DEX_PCT, 12, Stat.ADV_PCT, 12, Stat.HP_PCT, 8)),
             new Tier("B", 2, "성운 기사", new String[]{"#lv:120", "#ach_elite:300", "loot_scale:30"}, StatMap.of(Stat.CRIT, 12, Stat.CRIT_DMG, 40, Stat.DODGE, 6, Stat.STR_PCT, 20, Stat.DEX_PCT, 20, Stat.ADV_PCT, 20, Stat.HP_PCT, 12)),
-            new Tier("B", 3, "천구의 주재자", new String[]{"#lv:200", "#ach_boss:30", "loot_crown:10"}, StatMap.of(Stat.CRIT, 18, Stat.CRIT_DMG, 90, Stat.DODGE, 10, Stat.STR_PCT, 30, Stat.DEX_PCT, 30, Stat.ADV_PCT, 30, Stat.HP_PCT, 20)));
+            new Tier("B", 3, "천구의 주재자", new String[]{"#lv:200", "#ach_boss:30", "loot_crown:10"}, StatMap.of(Stat.CRIT, 18, Stat.CRIT_DMG, 90, Stat.DODGE, 10, Stat.STR_PCT, 30, Stat.DEX_PCT, 30, Stat.ADV_PCT, 30, Stat.HP_PCT, 20)),
+            // v5.10.9 네크로맨서: 혼자서는 약하고(능력치 보너스 낮음) 영혼으로 일으킨 군단으로 싸움. 조건도 가장 어려움 (NecromancyManager)
+            new Tier("C", 1, "네크로맨서", new String[]{"#lv:120", "#ach_boss:30", "#ach_elite:500", "loot_core:40"}, StatMap.of(Stat.MAGIC, 200, Stat.STR_PCT, 6, Stat.DEX_PCT, 6, Stat.ADV_PCT, 6, Stat.HP_PCT, 6)),
+            new Tier("C", 2, "해골 군단장", new String[]{"#lv:200", "#ach_boss:80", "loot_crown:20", "loot_eye:60"}, StatMap.of(Stat.MAGIC, 600, Stat.STR_PCT, 10, Stat.DEX_PCT, 10, Stat.ADV_PCT, 10, Stat.HP_PCT, 10)),
+            new Tier("C", 3, "죽음의 대군주", new String[]{"#lv:270", "#ach_boss:150", "loot_crown:50", "loot_core:100"}, StatMap.of(Stat.MAGIC, 1400, Stat.STR_PCT, 16, Stat.DEX_PCT, 16, Stat.ADV_PCT, 16, Stat.HP_PCT, 16)));
 
     /** 히든 전직서 아이템 ID (단계마다 하나) */
     public static String scrollId(Tier t) {
@@ -64,7 +68,7 @@ public class HiddenJobManager implements Listener {
     }
 
     public static Tier of(PlayerData d) {
-        String line = d.counters.containsKey("hj_line_A") ? "A" : d.counters.containsKey("hj_line_B") ? "B" : null;
+        String line = d.counters.containsKey("hj_line_A") ? "A" : d.counters.containsKey("hj_line_B") ? "B" : d.counters.containsKey("hj_line_C") ? "C" : null;
         if (line == null) return null;
         int t = (int) d.counter("hj_tier");
         for (Tier x : TIERS) if (x.line().equals(line) && x.tier() == t) return x;
@@ -83,7 +87,7 @@ public class HiddenJobManager implements Listener {
             String id = t.line() + t.tier();
             if (data.contains("placed." + id)) continue;
             for (int i = 0; i < 30; i++) {
-                double a = r.nextDouble() * Math.PI * 2, dd = 1800 + r.nextDouble() * 2600;
+                double a = r.nextDouble() * Math.PI * 2, dd = t.line().equals("C") ? 3500 + r.nextDouble() * 2500 : 1800 + r.nextDouble() * 2600;   // 네크로맨서는 더 먼 곳
                 Location l = w.getSpawnLocation().clone().add(Math.cos(a) * dd, 0, Math.sin(a) * dd);
                 w.getChunkAt(l).load(true);
                 Block top = kr.rpgcraft.util.Locs.surface(w, l);
@@ -104,7 +108,7 @@ public class HiddenJobManager implements Listener {
             v.setSilent(true);
             v.setPersistent(true);
             v.setRemoveWhenFarAway(false);
-            v.setProfession(t.line().equals("A") ? Villager.Profession.CLERIC : Villager.Profession.CARTOGRAPHER);
+            v.setProfession(t.line().equals("A") ? Villager.Profession.CLERIC : t.line().equals("C") ? Villager.Profession.NITWIT : Villager.Profession.CARTOGRAPHER);
             v.setVillagerLevel(5);
             v.setCustomName(Text.c("&8…"));
             v.setCustomNameVisible(true);
@@ -298,6 +302,7 @@ public class HiddenJobManager implements Listener {
         }
         d.counters.remove("hj_line_A");
         d.counters.remove("hj_line_B");
+        d.counters.remove("hj_line_C");
         d.counters.put("hj_line_" + t.line(), 1.0);
         d.counters.put("hj_tier", (double) t.tier());
         plugin.stats().refresh(p);
@@ -305,6 +310,7 @@ public class HiddenJobManager implements Listener {
         if (plugin.content() != null) plugin.content().onHiddenJob(p, t.label());   // 히든 직업 칭호 · 공지
         p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.6f, 1.4f);
         p.getWorld().strikeLightningEffect(p.getLocation());
+        if (t.line().equals("C")) Text.msg(p, "&5☠ &f/군단 &7— 쓰러뜨린 몬스터의 영혼으로 군단을 일으킬 수 있다.");
     }
 
     /** 숨은 직업 전용 효과: 망령(A) 처치 시 회복 · 3단계는 영혼 폭발 / 별(B) 3단계는 치명타 때 별똥별 */

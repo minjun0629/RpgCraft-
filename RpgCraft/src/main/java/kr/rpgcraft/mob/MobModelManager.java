@@ -43,7 +43,7 @@ import java.util.*;
  * 가까운 몬스터는 2틱, 먼 몬스터는 4틱마다 (보간으로 부드럽게), 멀리 있으면 계산하지 않음.
  */
 public class MobModelManager implements Listener {
-    private record Part(String name, int cmd, float px, float py, float pz) { }
+    private record Part(String name, int cmd, float px, float py, float pz, int undead) { }   // undead: v5.10.11 언데드 색 변형 번호 (0 = 없음)
 
     private record Def(String rig, float height, float size, List<Part> parts) { }
 
@@ -102,6 +102,7 @@ public class MobModelManager implements Listener {
         java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
         for (UUID id : new ArrayList<>(rigs.keySet())) {
             if (!(Bukkit.getEntity(id) instanceof Mob m) || !m.isValid() || m.isDead() || !m.isOnGround()) continue;
+            if (kr.rpgcraft.world.NecromancyManager.isMinion(m)) continue;   // 군단원은 주인을 따라다님
             if (m.getTarget() != null && m.getTarget().isValid()) continue;   // 싸우는 중이면 게임 AI 가 쫓아감
             if (m instanceof Slime || rnd.nextDouble() > 0.22) continue;
             if (nearest(m, 48) > 48) continue;
@@ -165,7 +166,8 @@ public class MobModelManager implements Listener {
                 for (String pn : ps.getKeys(false)) {
                     List<?> v = ps.getList(pn);
                     if (v == null || v.size() < 4) continue;
-                    parts.add(new Part(pn, ((Number) v.get(0)).intValue(), ((Number) v.get(1)).floatValue(), ((Number) v.get(2)).floatValue(), ((Number) v.get(3)).floatValue()));
+                    parts.add(new Part(pn, ((Number) v.get(0)).intValue(), ((Number) v.get(1)).floatValue(), ((Number) v.get(2)).floatValue(), ((Number) v.get(3)).floatValue(),
+                            v.size() > 4 ? ((Number) v.get(4)).intValue() : 0));
                 }
                 defs.put(id, new Def(m.getString("rig", "solid"), (float) m.getDouble("height", 16), (float) m.getDouble("size", 1), parts));
             }
@@ -200,6 +202,16 @@ public class MobModelManager implements Listener {
 
     /** 커스텀 몬스터가 생길 때 (CustomMobManager.setup) 바로 붙임 */
     public void attach(LivingEntity le, String id) {
+        attach(le, id, -1);
+    }
+
+    /** height > 0 이면 몹 키 대신 그 높이로 모델을 그림 (v5.10.9 네크로맨서 군단원: 늑대 몸에 원래 몬스터 크기의 모델) */
+    public void attach(LivingEntity le, String id, double height) {
+        attach(le, id, height, false);
+    }
+
+    /** undead: 네크로맨서 군단원 — 창백한 회녹색 피부 · 영혼빛 눈의 언데드 색으로 (v5.10.11) */
+    public void attach(LivingEntity le, String id, double height, boolean undead) {
         if (!enabled() || le.isDead() || rigs.containsKey(le.getUniqueId())) return;
         for (Entity old : le.getPassengers())   // 혹시 남아 있던 예전 모델 조각은 치우고 새로 붙임 (겹침 방지)
             if (old instanceof ItemDisplay od && od.getPersistentDataContainer().has(modelKey, PersistentDataType.BYTE)) od.remove();
@@ -208,7 +220,7 @@ public class MobModelManager implements Listener {
         CustomMobManager.MobDef md = plugin.customMobs() == null ? null : plugin.customMobs().def(id);
         // 몹 키에 맞춰 그림. 1.20.1 은 몹 크기 속성이 없어 강한 몬스터(scale)는 모델만 크게 그린다 (슬라임 · 팬텀은 몸 크기가 이미 커짐)
         double mult = md == null || le instanceof Slime || le instanceof Phantom || hasScaleAttr(le) ? 1 : Math.max(1, md.scale);
-        float scale = (float) (le.getHeight() * mult * def.size() * plugin.getConfig().getDouble("mob-models.size-mult", 1.0));
+        float scale = (float) ((height > 0 ? height : le.getHeight() * mult) * def.size() * plugin.getConfig().getDouble("mob-models.size-mult", 1.0));
         Rig r = new Rig(def, le.getUniqueId().hashCode());
         r.k = scale * 16f / def.height();
         r.h = scale;
@@ -219,7 +231,7 @@ public class MobModelManager implements Listener {
         for (Part p : def.parts()) {
             ItemStack it = new ItemStack(Material.PAPER);
             ItemMeta m = it.getItemMeta();
-            m.setCustomModelData(p.cmd());
+            m.setCustomModelData(undead && p.undead() > 0 ? p.undead() : p.cmd());
             it.setItemMeta(m);
             boolean body = p.name().equals("body");
             ItemDisplay d = le.getWorld().spawn(at, ItemDisplay.class, x -> {

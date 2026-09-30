@@ -58,6 +58,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 auction [list|remove|return|player|clear] &7- 옥션 물건 관리 (그냥 입력하면 관리 창)");
         Text.msg(s, "&e/rpg관리 boss <spawn <id>|list|killall>");
         Text.msg(s, "&e/rpg관리 npc <상점ID> &7- 현재 위치에 상점 NPC (제거: 쉬프트+방벽 우클릭)");
+        Text.msg(s, "&e/rpg관리 castle demolish <id> &7- 성을 허물고 짓기 전 땅으로 되돌림 (길드가 사라지면 그 길드의 성도 자동으로)");
         Text.msg(s, "&e/rpg관리 castle <create|pos1|pos2|wall|beacon|spawn|owner|delete|list|restore> ...");
         Text.msg(s, "&e/rpg관리 war stop <성ID>");
         Text.msg(s, "&e/rpg관리 ruin <create|start|end|adv|limit|passive|first|delete|list> ...");
@@ -303,6 +304,16 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
                     ap.openInventory(a[0].equals("inv") ? t.getInventory() : t.getEnderChest());
                 }
+                case "necro" -> {   // v5.10.9 네크로맨서 시험용: /rpg관리 necro <플레이어> <정수> [몬스터id 영혼수]
+                    if (a.length < 3) { Text.msg(s, "&e/rpg관리 necro <플레이어> <사령 정수> [커스텀몬스터id 영혼수]"); return true; }
+                    Player t = Bukkit.getPlayerExact(a[1]);
+                    if (t == null) { Text.msg(s, "&c접속 중인 플레이어가 아닙니다."); return true; }
+                    long ess;
+                    int souls = 0;
+                    try { ess = Long.parseLong(a[2]); if (a.length > 4) souls = Integer.parseInt(a[4]); } catch (NumberFormatException ex) { Text.msg(s, "&c숫자를 넣어 주세요."); return true; }
+                    plugin.necro().grant(t, ess, a.length > 3 ? a[3] : null, souls);
+                    Text.msg(s, "&a" + t.getName() + " 에게 사령 정수 " + ess + (souls > 0 ? " · " + a[3] + " 영혼 " + souls : "") + " 지급");
+                }
                 case "hiddennpc" -> {
                     if (a.length > 1 && (a[1].equalsIgnoreCase("respawn") || a[1].equals("재배치"))) {   // 사라진 히든 NPC 다시 세우기
                         plugin.hiddenQuests().respawnMissing(s);
@@ -531,6 +542,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             plugin.customMobs().killAll();
             if (plugin.auction() != null) plugin.auction().clearAll();   // 옥션 물건 · 대금 모두 삭제 (v5.4.18)
             for (var g : new ArrayList<>(plugin.guilds().all())) plugin.guilds().disband(g);
+            if (plugin.getConfig().getBoolean("war.demolish-on-reset", true))   // v5.10.10 초기화: 길드와 함께 공성 성도 모두 허묾
+                for (var c : new ArrayList<>(plugin.wars().castles())) plugin.wars().demolish(c, s);
             for (var c : plugin.wars().castles()) c.owner = null;
             plugin.wars().save();
             java.io.File folder = new java.io.File(plugin.getDataFolder(), "players");
@@ -760,7 +773,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case "delete" -> {
                 if (a.length > 2) wm.delete(a[2]);
-                Text.msg(p, "삭제 완료");
+                Text.msg(p, "삭제 완료 &7(목록에서만 지움, 건물은 그대로 · 건물까지 허물려면 castle demolish)");
+            }
+            case "demolish", "remove", "철거" -> {   // v5.10.10 성 없애기: 목록에서 지우고 짓기 전 땅으로 되돌림
+                Castle c = a.length > 2 ? wm.castle(a[2]) : null;
+                if (c == null) { Text.msg(p, "&c/rpg관리 castle demolish <성ID> &7- 성을 허물고 짓기 전 땅으로 되돌림"); return; }
+                wm.demolish(c, p);
             }
             case "restore" -> {
                 Castle c = a.length > 2 ? wm.castle(a[2]) : null;
@@ -878,7 +896,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case "npc" -> plugin.shops().all().forEach(sh -> out.add(sh.id));
             case "castle" -> {
-                if (a.length == 2) out.addAll(List.of("build", "create", "pos1", "pos2", "wall", "beacon", "spawn", "owner", "delete", "list", "restore"));
+                if (a.length == 2) out.addAll(List.of("build", "create", "pos1", "pos2", "wall", "beacon", "spawn", "owner", "delete", "demolish", "list", "restore"));
                 if (a.length == 3 && a[1].equals("build")) out.addAll(List.of("1", "2", "3"));
                 else if (a.length == 3) plugin.wars().castles().forEach(ca -> out.add(ca.id));
                 if (a.length == 4 && a[1].equals("build")) out.add("castle_" + (plugin.wars().castles().size() + 1));

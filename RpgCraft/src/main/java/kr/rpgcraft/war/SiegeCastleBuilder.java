@@ -252,6 +252,23 @@ public class SiegeCastleBuilder {
         int ox = at.getBlockX(), oy = at.getBlockY(), oz = at.getBlockZ();
         if (oy + 60 > w.getMaxHeight()) return "너무 높은 곳입니다. 조금 낮은 땅에서 해 주세요.";
         int perTick = Math.max(2000, plugin.getConfig().getInt("war.castle-build-blocks-per-tick", 20000));
+        // v5.10.10 짓기 전 부지를 기록해 둠 (길드가 사라지거나 철거 명령을 쓰면 원래 땅으로 되돌림)
+        int rr = 0, top = 0;
+        for (Op o : ops) { rr = Math.max(rr, Math.max(Math.abs(o.x), Math.abs(o.z))); top = Math.max(top, o.y); }
+        int fr = rr, ftop = top;
+        Text.msg(s, "&7부지 기록 중... (철거할 때 원래 땅으로 되돌리기 위해)");
+        SiteSnapshot.capture(plugin, w, ox - rr, oy - 14, oz - rr, ox + rr, oy + top, oz + rr, perTick, snap -> {
+            try {
+                snap.write(WarManager.snapFile(plugin, id));
+            } catch (java.io.IOException ex) {
+                plugin.getLogger().warning("성 부지 기록 저장 실패 (" + id + "): " + ex.getMessage());
+            }
+            build(s, design, id, w, ox, oy, oz, perTick, fr, ftop);
+        });
+        return null;
+    }
+
+    private void build(CommandSender s, int design, String id, World w, int ox, int oy, int oz, int perTick, int rr, int top) {
         Text.msg(s, "&e" + NAMES[design] + " &f건설을 시작합니다... &7(블록 " + String.format("%,d", ops.size()) + "개, 약 " + (ops.size() / perTick / 20 + 1) + "초)");
         new BukkitRunnable() {
             int i = 0, f = 0;
@@ -277,9 +294,16 @@ public class SiegeCastleBuilder {
                 if (i < ops.size() || f < foundation.size()) return;
                 cancel();
                 finish(s, design, id, w, ox, oy, oz);
+                Castle c = plugin.wars().castle(id);
+                if (c != null) {
+                    c.center = new Location(w, ox, oy, oz);
+                    c.r = rr;
+                    c.down = 14;
+                    c.up = top;
+                    plugin.wars().save();
+                }
             }
         }.runTaskTimer(plugin, 1L, 1L);
-        return null;
     }
 
     private void finish(CommandSender s, int design, String id, World w, int ox, int oy, int oz) {

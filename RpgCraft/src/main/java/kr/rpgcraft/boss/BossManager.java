@@ -198,6 +198,7 @@ public class BossManager {
             a.bar.setTitle(barTitle(a, s, frac));
             a.bar.setProgress(frac);
             auraTick(a);
+            if (now >= a.staggerUntil) holdAltitude(a.entity);
             Location bl = a.entity.getLocation();
             Set<Player> near = new HashSet<>();
             for (Player p : bl.getWorld().getPlayers()) if (p.getLocation().distanceSquared(bl) < 64 * 64) near.add(p);
@@ -307,6 +308,39 @@ public class BossManager {
         g.setYaw(l.getYaw());
         g.setPitch(l.getPitch());
         return g;
+    }
+
+    /** v5.10.7 발밑 땅에서 몸까지 높이 (땅에 서 있거나 아래에 땅이 없으면 0) */
+    private static double airHeight(LivingEntity b) {
+        if (b.isOnGround()) return 0;
+        return Math.max(0, b.getLocation().getY() - ground(b).getY());
+    }
+
+    /** v5.10.8 공중에 뜬 보스는 그 자리에서 기술을 쓰되, 몸에서 발밑 땅으로 기운이 내려꽂히는 연출 (기술 범위는 땅 기준) */
+    private void skyStrike(LivingEntity b, long at, Color c) {
+        if (airHeight(b) <= 1.2) return;
+        later(Math.max(0, at - 6), () -> {
+            if (!b.isValid() || airHeight(b) <= 1.2) return;
+            Location body = b.getLocation().add(0, b.getHeight() * 0.4, 0), g = ground(b).add(0, 0.1, 0);
+            kr.rpgcraft.util.Vfx.beam(body, g, 1.1, c);
+            b.getWorld().spawnParticle(Particle.CLOUD, g, 10, 0.6, 0.1, 0.6, 0.04);
+            b.getWorld().playSound(g, Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 0.8f);
+        });
+    }
+
+    /** v5.10.7 나는 보스가 너무 높이 뜨지 않게: max-fly-height 칸 위로는 끌어내리고, 한참 높으면 바로 내려놓음 */
+    private void holdAltitude(LivingEntity b) {
+        double max = plugin.getConfig().getDouble("bosses.max-fly-height", 8);
+        if (max <= 0) return;
+        double h = airHeight(b);
+        if (h <= max) return;
+        if (h > max + 5) {
+            Location g = b.getLocation().subtract(0, h - max, 0);
+            if (plugin.bossModels() != null) plugin.bossModels().teleportBoss(b, g); else b.teleport(g);
+        } else {
+            Vector v = b.getVelocity();
+            b.setVelocity(new Vector(v.getX(), -Math.min(0.8, 0.25 + (h - max) * 0.12), v.getZ()));
+        }
     }
 
     private List<Player> playersNear(Location l, double r) {
@@ -515,6 +549,7 @@ public class BossManager {
             });
         } else if (fireAt > 0) later(fireAt, () -> stagger(a));   // v5.6.0: 선딜(예고)이 끝나 기술이 터진 직후 잠시 경직
         Particle tp = themeParticle(a.def.id);
+        if (!"SUMMON".equals(k.type) && !k.type.contains("VOLLEY") && !"FIREBALL".equals(k.type)) skyStrike(b, fireAt, c);   // v5.10.8: 공중이면 몸에서 땅으로 내려꽂는 연출
         if (plugin.bossModels() != null) plugin.bossModels().attackPose(b);
         switch (k.type) {
             // ---------------------------------------------------------- v5.6.0 컨셉 패턴 — 그냥 달려서는 못 피하고, 보고 판단해야 하는 기믹
@@ -523,6 +558,7 @@ public class BossManager {
                 int n = Math.max(1, k.amount) + (aw ? 2 : 0);
                 Vector base = target.getLocation().toVector().subtract(ground(b).toVector()).setY(0);
                 if (base.lengthSquared() < 0.01) base = ground(b).getDirection().setY(0);
+                double aim = Math.max(2, Math.min(20, base.length()));   // v5.10.8 공중에서 쏠 때 조준할 거리
                 base.normalize();
                 double spread = n <= 1 ? 0 : Math.toRadians(Math.min(80, 15 * (n - 1)));
                 int wind = 16;
@@ -530,7 +566,7 @@ public class BossManager {
                 for (int i = 0; i < n; i++) {
                     Vector d = base.clone().rotateAroundY(n <= 1 ? 0 : -spread / 2 + spread * i / (n - 1));
                     telegraphLine(ground(b), d, 22, 1.5, wind, red);
-                    shootStraight(a, d, k.speed, 22, dmg, 1.3, wind + i * 2L, c, tp);
+                    shootStraight(a, d, k.speed, 22, dmg, 1.3, wind + i * 2L, c, tp, aim);
                 }
                 later(wind, () -> w.playSound(ground(b), Sound.ENTITY_BLAZE_SHOOT, 1.4f, 0.6f));
             }
@@ -539,7 +575,7 @@ public class BossManager {
                 Vector away = ground(b).toVector().subtract(target.getLocation().toVector()).setY(0);
                 if (away.lengthSquared() < 0.01) away = new Vector(1, 0, 0);
                 away.normalize();
-                b.setVelocity(away.multiply(1.5).setY(0.55));
+                b.setVelocity(away.multiply(1.5).setY(b.isOnGround() ? 0.55 : 0));
                 w.spawnParticle(Particle.CLOUD, ground(b), 12, 0.4, 0.1, 0.4, 0.05);
                 w.playSound(ground(b), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 1.5f);
                 int n = Math.max(3, k.amount) + (aw ? 2 : 0);
@@ -547,12 +583,13 @@ public class BossManager {
                     if (!b.isValid() || !target.isOnline() || target.getWorld() != b.getWorld()) return;
                     Vector base = target.getLocation().toVector().subtract(ground(b).toVector()).setY(0);
                     if (base.lengthSquared() < 0.01) return;
+                    double aim = Math.max(2, Math.min(22, base.length()));
                     base.normalize();
                     double spread = Math.toRadians(13 * (n - 1));
                     for (int i = 0; i < n; i++) {
                         Vector d = base.clone().rotateAroundY(-spread / 2 + spread * i / (n - 1));
                         telegraphLine(ground(b), d, 24, 1.3, 16, red);
-                        shootStraight(a, d, Math.max(0.9, k.speed), 24, dmg, 1.1, 16 + (i % 2) * 4L, c, Particle.CRIT);
+                        shootStraight(a, d, Math.max(0.9, k.speed), 24, dmg, 1.1, 16 + (i % 2) * 4L, c, Particle.CRIT, aim);
                     }
                     w.playSound(ground(b), Sound.ENTITY_ARROW_SHOOT, 1.4f, 0.7f);
                 });
@@ -1161,20 +1198,34 @@ public class BossManager {
     }
 
     /** v5.6.0: 곧게 날아가는 투사체 (유도 없음). 처음 맞은 사람에게 터짐 */
-    private void shootStraight(Active a, Vector dir, double speed, double range, double dmg, double hitR, long delay, Color c, Particle tp) {
+    private void shootStraight(Active a, Vector dir, double speed, double range, double dmg, double hitR, long delay, Color c, Particle tp, double aim) {
         LivingEntity b = a.entity;
-        Vector v = dir.clone().setY(0).normalize().multiply(Math.max(0.2, speed));
+        Vector flat = dir.clone().setY(0).normalize();
         new org.bukkit.scheduler.BukkitRunnable() {
             Location pos;
-            double gone;
+            Vector v;
+            double gone, len = range;
 
             @Override
             public void run() {
                 if (!b.isValid()) { cancel(); return; }
-                if (pos == null) { pos = b.getLocation().add(0, 1.3, 0); kr.rpgcraft.util.Vfx.burst(pos, 1.6, Color.WHITE); }
+                if (pos == null) {   // v5.10.8: 공중에 떠 있으면 몸에서 대상이 있던 땅 쪽으로 비스듬히 내리꽂음 (띠 끝 쪽은 땅에서 터짐)
+                    Location g = ground(b);
+                    if (airHeight(b) > 1.2 && aim > 0) {
+                        pos = b.getLocation().add(0, b.getHeight() * 0.5, 0);
+                        Location to = g.clone().add(flat.clone().multiply(aim)).add(0, 1.0, 0);
+                        Vector d = to.toVector().subtract(pos.toVector());
+                        len = d.length() + Math.max(0, range - aim);
+                        v = d.normalize().multiply(Math.max(0.2, speed));
+                    } else {
+                        pos = g.add(0, 1.3, 0);
+                        v = flat.clone().multiply(Math.max(0.2, speed));
+                    }
+                    kr.rpgcraft.util.Vfx.burst(pos, 1.6, Color.WHITE);
+                }
                 pos.add(v);
                 gone += v.length();
-                if (gone > range) { cancel(); return; }
+                if (gone > len) { cancel(); return; }
                 w().spawnParticle(tp, pos, 2, 0.08, 0.08, 0.08, 0.01);
                 dustAt(pos, c, 1.7f);
                 dustAt(pos.clone().subtract(v.clone().multiply(0.5)), Vfx2.light(c, 0.4), 1.2f);
@@ -1303,6 +1354,7 @@ public class BossManager {
         int first = Math.abs(a.def.id.hashCode()) % ULTS.length;
         String kind = ULTS[(first + a.ultDone.size() + (a.nextUlt > 0 ? (int) (a.nextUlt / 50_000 % 4) : 0)) % ULTS.length];
         Color c = theme(a.def.id), red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
+        skyStrike(b, 20, c);   // v5.10.8
         Material mat = BossFx.theme(a.def.id);
         World w = b.getWorld();
         Location o = ground(b);
@@ -1498,6 +1550,7 @@ public class BossManager {
         Color c = theme(a.def.id);
         Color red = Color.fromRGB(0xFF2A2A), green = Color.fromRGB(0x5AFF7A);
         double dmg = s.damage * 1.6;
+        skyStrike(b, 20, c);   // v5.10.8
         Location o = ground(b);
         Particle tp = themeParticle(a.def.id);
         Material mat = BossFx.theme(a.def.id);

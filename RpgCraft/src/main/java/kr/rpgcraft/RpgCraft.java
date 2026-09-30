@@ -108,6 +108,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
+    private kr.rpgcraft.mob.MobModelManager mobModels;
     private kr.rpgcraft.mob.CustomMobManager customMobs;
     private kr.rpgcraft.util.LegacyMigrator migrator;
     private kr.rpgcraft.pack.PackManager pack;
@@ -165,7 +166,7 @@ public final class RpgCraft extends JavaPlugin {
                 protection = new WorldProtection(this), customMobs = new kr.rpgcraft.mob.CustomMobManager(this),
                 new kr.rpgcraft.mob.AnimalAggro(this), weaponSkills = new WeaponSkillManager(this),
                 events = new WorldEventManager(this), structures = new StructureManager(this), compass = new CompassManager(this),
-                bossModels = new kr.rpgcraft.boss.BossModelManager(this),
+                bossModels = new kr.rpgcraft.boss.BossModelManager(this), mobModels = new kr.rpgcraft.mob.MobModelManager(this),
                 party = new PartyManager(this), legendary = new LegendaryManager(this), cycle = new kr.rpgcraft.world.CycleManager(this),
                 tiers = new kr.rpgcraft.mob.MonsterTierManager(this), dungeons = new kr.rpgcraft.world.DungeonManager(this),
                 questNpcs = new kr.rpgcraft.world.QuestNpcManager(this), new kr.rpgcraft.world.FishingManager(this),
@@ -249,6 +250,7 @@ public final class RpgCraft extends JavaPlugin {
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
         if (bossModels != null) bossModels.shutdown();
+        if (mobModels != null) mobModels.shutdown();
         if (altar != null) altar.shutdown();
         if (events != null) events.shutdown();
         if (trades != null) trades.shutdown();
@@ -466,6 +468,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }
+    public kr.rpgcraft.mob.MobModelManager mobModels() { return mobModels; }
     public JobManager jobs() { return jobs; }
     public WeaponSkillManager weaponSkills() { return weaponSkills; }
     public WorldEventManager events() { return events; }

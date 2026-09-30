@@ -103,7 +103,10 @@ class Grid:
 
     def dot(self, x, y, z, col, pri=1, s=0.9):
         """눈 · 보석 같은 작은 점 (복셀 크기와 상관없이 일정한 크기)"""
-        h = max(s, VS) / 2
+        if s <= VS:   # 한 칸보다 작으면 정확히 한 칸 (두 눈이 붙어 한 줄이 되지 않게)
+            self.put(x, y, z, col, pri)
+            return
+        h = s / 2
         self.box((x - h, y - h, z - h), (x + h, y + h, z + h), col, pri)
 
     def _rng(self, a, b):

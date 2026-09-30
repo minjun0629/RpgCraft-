@@ -123,7 +123,10 @@ public class WorldProtection implements Listener {
         if (!b.getType().isAir() && !b.isLiquid()) return; // 그 사이 다른 블록이 생겼으면 건드리지 않음
         b.setBlockData(data, false);
         for (Entity en : l.getWorld().getNearbyEntities(l.clone().add(0.5, 0.5, 0.5), 0.6, 1.0, 0.6)) {
-            if (en instanceof LivingEntity le) le.teleport(le.getLocation().add(0, 1.1, 0)); // 블록 안에 끼지 않게
+            if (en instanceof LivingEntity le) {   // 블록 안에 끼지 않게 (모델을 태운 몬스터는 내렸다 다시 태움, v5.9.0)
+                if (plugin.mobModels() != null && plugin.mobModels().has(le)) plugin.mobModels().teleport(le, le.getLocation().add(0, 1.1, 0));
+                else le.teleport(le.getLocation().add(0, 1.1, 0));
+            }
         }
         l.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, l.clone().add(0.5, 0.5, 0.5), 4, 0.3, 0.3, 0.3);
     }

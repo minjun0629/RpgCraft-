@@ -432,6 +432,482 @@
         }
       },
       {
+        "threshold": 9100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/jelly_slime"
+        }
+      },
+      {
+        "threshold": 9101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/goblin"
+        }
+      },
+      {
+        "threshold": 9102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/rotten_farmer"
+        }
+      },
+      {
+        "threshold": 9103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/forest_bandit"
+        }
+      },
+      {
+        "threshold": 9104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/silverfish_swarm"
+        }
+      },
+      {
+        "threshold": 9105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/venom_spider"
+        }
+      },
+      {
+        "threshold": 9106,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/skeleton_captain"
+        }
+      },
+      {
+        "threshold": 9107,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/bomber"
+        }
+      },
+      {
+        "threshold": 9108,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/swamp_hag"
+        }
+      },
+      {
+        "threshold": 9109,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/mummy"
+        }
+      },
+      {
+        "threshold": 9110,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/sand_scorpion"
+        }
+      },
+      {
+        "threshold": 9111,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/drowned_pirate"
+        }
+      },
+      {
+        "threshold": 9112,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/frost_wraith"
+        }
+      },
+      {
+        "threshold": 9113,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/orc_warrior"
+        }
+      },
+      {
+        "threshold": 9114,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/soul_wisp"
+        }
+      },
+      {
+        "threshold": 9115,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/orc_shaman"
+        }
+      },
+      {
+        "threshold": 9116,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/ember_spirit"
+        }
+      },
+      {
+        "threshold": 9117,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/magma_brute"
+        }
+      },
+      {
+        "threshold": 9118,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/night_hunter"
+        }
+      },
+      {
+        "threshold": 9119,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/plague_boar"
+        }
+      },
+      {
+        "threshold": 9120,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/nether_hog"
+        }
+      },
+      {
+        "threshold": 9121,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/piglin_berserker"
+        }
+      },
+      {
+        "threshold": 9122,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/bone_knight"
+        }
+      },
+      {
+        "threshold": 9123,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/shadow_stalker"
+        }
+      },
+      {
+        "threshold": 9124,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/dune_colossus"
+        }
+      },
+      {
+        "threshold": 9125,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/war_beast"
+        }
+      },
+      {
+        "threshold": 9126,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/lich"
+        }
+      },
+      {
+        "threshold": 9127,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/corrupted_knight"
+        }
+      },
+      {
+        "threshold": 9128,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/end_crawler"
+        }
+      },
+      {
+        "threshold": 9129,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/void_phantom"
+        }
+      },
+      {
+        "threshold": 9130,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/void_knight"
+        }
+      },
+      {
+        "threshold": 9131,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/star_golem"
+        }
+      },
+      {
+        "threshold": 9132,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/abyss_caster"
+        }
+      },
+      {
+        "threshold": 9133,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/frost_titan"
+        }
+      },
+      {
+        "threshold": 9134,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/inferno_lord"
+        }
+      },
+      {
+        "threshold": 9135,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/dread_rider"
+        }
+      },
+      {
+        "threshold": 9136,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/nightmare_spider"
+        }
+      },
+      {
+        "threshold": 9137,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/storm_herald"
+        }
+      },
+      {
+        "threshold": 9138,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/ancient_lich"
+        }
+      },
+      {
+        "threshold": 9139,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/world_eater"
+        }
+      },
+      {
+        "threshold": 9140,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/fallen_seraph"
+        }
+      },
+      {
+        "threshold": 9141,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/abyss_king"
+        }
+      },
+      {
+        "threshold": 9142,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/day_bandit"
+        }
+      },
+      {
+        "threshold": 9143,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/day_raider"
+        }
+      },
+      {
+        "threshold": 9144,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/day_mercenary"
+        }
+      },
+      {
+        "threshold": 9145,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/day_warlock"
+        }
+      },
+      {
+        "threshold": 9146,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/day_knight"
+        }
+      },
+      {
+        "threshold": 9147,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/treasure_guardian"
+        }
+      },
+      {
+        "threshold": 9148,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/wild_golem"
+        }
+      },
+      {
+        "threshold": 9149,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/moss_troll"
+        }
+      },
+      {
+        "threshold": 9150,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/bog_witch"
+        }
+      },
+      {
+        "threshold": 9151,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/crypt_knight"
+        }
+      },
+      {
+        "threshold": 9152,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/ember_imp"
+        }
+      },
+      {
+        "threshold": 9153,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/sand_stalker"
+        }
+      },
+      {
+        "threshold": 9154,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/void_hound"
+        }
+      },
+      {
+        "threshold": 9155,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/storm_harpy"
+        }
+      },
+      {
+        "threshold": 9156,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/thorn_sprite"
+        }
+      },
+      {
+        "threshold": 9157,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/bone_marksman"
+        }
+      },
+      {
+        "threshold": 9158,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/mire_slime"
+        }
+      },
+      {
+        "threshold": 9159,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/frost_archer"
+        }
+      },
+      {
+        "threshold": 9160,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/sand_wraith"
+        }
+      },
+      {
+        "threshold": 9161,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/canyon_raider"
+        }
+      },
+      {
+        "threshold": 9162,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/cave_brute"
+        }
+      },
+      {
+        "threshold": 9163,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/storm_caller"
+        }
+      },
+      {
+        "threshold": 9164,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/magma_sentinel"
+        }
+      },
+      {
+        "threshold": 9165,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/deep_horror"
+        }
+      },
+      {
+        "threshold": 9166,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/grave_knight"
+        }
+      },
+      {
+        "threshold": 9167,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/ancient_ravager"
+        }
+      },
+      {
         "threshold": 12000,
         "model": {
           "type": "minecraft:model",

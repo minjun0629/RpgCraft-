@@ -278,6 +278,9 @@ public class CustomMobManager implements Listener {
                 (long) (mm.expFor(level) * d.expMult), money, d.name);
         alive.put(le.getUniqueId(), d);
         if (d.scale > 1 && plugin.tiers() != null) plugin.tiers().resize(le, d.scale);
+        // v5.9.0 3D 모델: 등급 · 크기가 정해진 다음 틱에 붙임
+        if (plugin.mobModels() != null && !le.getPersistentDataContainer().has(Keys.BOSS, PersistentDataType.STRING))
+            Bukkit.getScheduler().runTask(plugin, () -> { if (le.isValid() && !le.isDead()) plugin.mobModels().attach(le, d.id); });
     }
 
     private ItemStack item(String s) {
@@ -569,7 +572,9 @@ public class CustomMobManager implements Listener {
                 behind.setY(tl.getY());
                 if (!behind.getBlock().isPassable() || !behind.clone().add(0, 1, 0).getBlock().isPassable()) return false;
                 w.spawnParticle(Particle.PORTAL, ml.clone().add(0, 1, 0), 30, 0.3, 0.6, 0.3, 0.3);
-                le.teleport(behind.setDirection(tl.toVector().subtract(behind.toVector())));
+                Location dest = behind.setDirection(tl.toVector().subtract(behind.toVector()));
+                if (plugin.mobModels() != null && plugin.mobModels().has(le)) plugin.mobModels().teleport(le, dest);   // 모델을 태운 몹 (v5.9.0)
+                else le.teleport(dest);
                 MobFx.blink(ml, behind);   // (연출)
                 w.playSound(behind, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
                 return true;

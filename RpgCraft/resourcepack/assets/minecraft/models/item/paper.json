@@ -372,6 +372,414 @@
     },
     {
       "predicate": {
+        "custom_model_data": 9100
+      },
+      "model": "rpgcraft:mob/jelly_slime"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9101
+      },
+      "model": "rpgcraft:mob/goblin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9102
+      },
+      "model": "rpgcraft:mob/rotten_farmer"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9103
+      },
+      "model": "rpgcraft:mob/forest_bandit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9104
+      },
+      "model": "rpgcraft:mob/silverfish_swarm"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9105
+      },
+      "model": "rpgcraft:mob/venom_spider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9106
+      },
+      "model": "rpgcraft:mob/skeleton_captain"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9107
+      },
+      "model": "rpgcraft:mob/bomber"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9108
+      },
+      "model": "rpgcraft:mob/swamp_hag"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9109
+      },
+      "model": "rpgcraft:mob/mummy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9110
+      },
+      "model": "rpgcraft:mob/sand_scorpion"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9111
+      },
+      "model": "rpgcraft:mob/drowned_pirate"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9112
+      },
+      "model": "rpgcraft:mob/frost_wraith"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9113
+      },
+      "model": "rpgcraft:mob/orc_warrior"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9114
+      },
+      "model": "rpgcraft:mob/soul_wisp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9115
+      },
+      "model": "rpgcraft:mob/orc_shaman"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9116
+      },
+      "model": "rpgcraft:mob/ember_spirit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9117
+      },
+      "model": "rpgcraft:mob/magma_brute"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9118
+      },
+      "model": "rpgcraft:mob/night_hunter"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9119
+      },
+      "model": "rpgcraft:mob/plague_boar"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9120
+      },
+      "model": "rpgcraft:mob/nether_hog"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9121
+      },
+      "model": "rpgcraft:mob/piglin_berserker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9122
+      },
+      "model": "rpgcraft:mob/bone_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9123
+      },
+      "model": "rpgcraft:mob/shadow_stalker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9124
+      },
+      "model": "rpgcraft:mob/dune_colossus"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9125
+      },
+      "model": "rpgcraft:mob/war_beast"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9126
+      },
+      "model": "rpgcraft:mob/lich"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9127
+      },
+      "model": "rpgcraft:mob/corrupted_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9128
+      },
+      "model": "rpgcraft:mob/end_crawler"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9129
+      },
+      "model": "rpgcraft:mob/void_phantom"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9130
+      },
+      "model": "rpgcraft:mob/void_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9131
+      },
+      "model": "rpgcraft:mob/star_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9132
+      },
+      "model": "rpgcraft:mob/abyss_caster"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9133
+      },
+      "model": "rpgcraft:mob/frost_titan"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9134
+      },
+      "model": "rpgcraft:mob/inferno_lord"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9135
+      },
+      "model": "rpgcraft:mob/dread_rider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9136
+      },
+      "model": "rpgcraft:mob/nightmare_spider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9137
+      },
+      "model": "rpgcraft:mob/storm_herald"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9138
+      },
+      "model": "rpgcraft:mob/ancient_lich"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9139
+      },
+      "model": "rpgcraft:mob/world_eater"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9140
+      },
+      "model": "rpgcraft:mob/fallen_seraph"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9141
+      },
+      "model": "rpgcraft:mob/abyss_king"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9142
+      },
+      "model": "rpgcraft:mob/day_bandit"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9143
+      },
+      "model": "rpgcraft:mob/day_raider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9144
+      },
+      "model": "rpgcraft:mob/day_mercenary"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9145
+      },
+      "model": "rpgcraft:mob/day_warlock"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9146
+      },
+      "model": "rpgcraft:mob/day_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9147
+      },
+      "model": "rpgcraft:mob/treasure_guardian"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9148
+      },
+      "model": "rpgcraft:mob/wild_golem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9149
+      },
+      "model": "rpgcraft:mob/moss_troll"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9150
+      },
+      "model": "rpgcraft:mob/bog_witch"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9151
+      },
+      "model": "rpgcraft:mob/crypt_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9152
+      },
+      "model": "rpgcraft:mob/ember_imp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9153
+      },
+      "model": "rpgcraft:mob/sand_stalker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9154
+      },
+      "model": "rpgcraft:mob/void_hound"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9155
+      },
+      "model": "rpgcraft:mob/storm_harpy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9156
+      },
+      "model": "rpgcraft:mob/thorn_sprite"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9157
+      },
+      "model": "rpgcraft:mob/bone_marksman"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9158
+      },
+      "model": "rpgcraft:mob/mire_slime"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9159
+      },
+      "model": "rpgcraft:mob/frost_archer"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9160
+      },
+      "model": "rpgcraft:mob/sand_wraith"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9161
+      },
+      "model": "rpgcraft:mob/canyon_raider"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9162
+      },
+      "model": "rpgcraft:mob/cave_brute"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9163
+      },
+      "model": "rpgcraft:mob/storm_caller"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9164
+      },
+      "model": "rpgcraft:mob/magma_sentinel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9165
+      },
+      "model": "rpgcraft:mob/deep_horror"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9166
+      },
+      "model": "rpgcraft:mob/grave_knight"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9167
+      },
+      "model": "rpgcraft:mob/ancient_ravager"
+    },
+    {
+      "predicate": {
         "custom_model_data": 12000
       },
       "model": "rpgcraft:item/minigame/mg_hole"

@@ -569,6 +569,14 @@ def main():
     # 보스 3D 모델 (PAPER CustomModelData 9000+)
     for cmd, model in boss_models.write(PACK, NS, lambda p, o: write_json(p, o, compact=True)):
         overrides.setdefault("paper", []).append((cmd, model))
+    # 일반 몬스터 3D 모델 (PAPER CustomModelData 9100+, v5.9.0) — 번호 · 키는 플러그인 리소스 mob-models.yml 로도 씀
+    import mob_models
+    for cmd, model in mob_models.write(PACK, NS, lambda p, o: write_json(p, o, compact=True),
+                                       plugin_res=os.path.join(ROOT, "src", "main", "resources")):
+        overrides.setdefault("paper", []).append((cmd, model))
+    used = [c for c, _ in overrides.get("paper", [])]
+    if len(used) != len(set(used)):
+        raise SystemExit("PAPER CustomModelData 번호가 겹침: %s" % sorted({c for c in used if used.count(c) > 1}))
     save_png(os.path.join(PACK, "assets", NS, "textures", "item", "empty.png"), lambda: Image.new("RGBA", (16, 16), (0, 0, 0, 0)))
     write_json(os.path.join(PACK, "assets", NS, "models", "item", "empty.json"),
                {"parent": "minecraft:item/generated", "textures": {"layer0": NS + ":item/empty"}})

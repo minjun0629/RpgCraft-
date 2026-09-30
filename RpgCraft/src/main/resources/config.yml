@@ -386,7 +386,6 @@ bosses:
   world-exp-levels: 4        # 월드보스는 이 값
   signature-min-level: 80    # 이 레벨 이상 보스는 고유 대형 패턴(십자 광선 · 파멸의 고리 · 유성 폭격 · 칼날 폭풍) 사용
   damage-mult: 1.15          # 모든 보스 피해 배율
-  chest-chance: 0.3          # 보스 처치 시 "보스 상자"(보스 드롭표로 뽑기) 확률
   crowd-skill-speed: 0.25    # 보스 주변 1명 늘 때마다 기술 간격 -25% 가량
   crowd-defense: 0.3         # 보스 주변 1명 늘 때마다 보스가 받는 피해 ÷(1+0.3)
   chase-radius: 48           # 보스가 쫓아가는 거리 — 이보다 멀어진 플레이어는 포기

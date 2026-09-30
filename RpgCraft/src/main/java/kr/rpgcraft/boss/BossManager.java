@@ -1779,29 +1779,7 @@ public class BossManager {
         }
         BossDefinition d = defs.get(s.bossId);
         if (d == null) return;
-        if (ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("bosses.chest-chance", 0.3)) {
-            ItemStack chest = plugin.items().create("boss_chest", 1);
-            if (chest != null) {
-                var cm = chest.getItemMeta();
-                cm.getPersistentDataContainer().set(new NamespacedKey(plugin, "boss_chest"), org.bukkit.persistence.PersistentDataType.STRING, d.id);
-                cm.setDisplayName(Text.c("&6&l" + Text.strip(Text.c(d.name)) + "의 상자"));
-                chest.setItemMeta(cm);
-                Player top = null;
-                double best = 0;
-                for (Map.Entry<UUID, Double> en : s.contrib.entrySet()) {
-                    Player cand = Bukkit.getPlayer(en.getKey());
-                    if (cand != null && en.getValue() > best) { best = en.getValue(); top = cand; }
-                }
-                if (top != null) {
-                    for (ItemStack l : top.getInventory().addItem(chest).values()) top.getWorld().dropItemNaturally(top.getLocation(), l);
-                    top.playSound(top.getLocation(), Sound.BLOCK_CHEST_LOCKED, 1f, 1.2f);
-                    Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(top) + "&f님이 &6" + Text.strip(Text.c(d.name)) + "의 상자&f를 얻었습니다!"));
-                } else {
-                    e.getWorld().dropItemNaturally(e.getLocation(), chest);
-                    Text.announce(Text.PREFIX + Text.c("&6보스 상자&f가 떨어졌습니다!"));
-                }
-            }
-        }
+        // v5.10.4: 보스 상자(아이템) 드롭 없앰 — 이미 가진 상자는 그대로 열 수 있음
         double total = s.contrib.values().stream().mapToDouble(Double::doubleValue).sum();
         double minShare = plugin.getConfig().getDouble("boss.min-contribution", 0.07);
         List<Map.Entry<UUID, Double>> ranking = new ArrayList<>(s.contrib.entrySet());

@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -60,6 +61,15 @@ public class BossModelManager implements Listener {
     private final Map<UUID, UUID> hitboxes = new HashMap<>();
     private final Map<UUID, UUID> hitboxOwner = new HashMap<>();
     private int tick;
+
+    /** v5.8.1 자연스러운 움직임: 보스마다 부드럽게 도는 방향 · 걸음 주기 · 공격 · 피격 자세 */
+    private static final class Pose {
+        float yaw = Float.NaN, speed;
+        double phase, lastX, lastZ;
+        int attack = -1, hurt = -1;
+    }
+
+    private final Map<UUID, Pose> poses = new HashMap<>();
 
     public BossModelManager(RpgCraft plugin) {
         this.plugin = plugin;
@@ -110,7 +120,10 @@ public class BossModelManager implements Listener {
         ItemMeta m = it.getItemMeta();
         m.setCustomModelData(9000 + ORDER.indexOf(id));
         it.setItemMeta(m);
-        ItemDisplay d = boss.getWorld().spawn(boss.getLocation(), ItemDisplay.class, x -> {
+        Location at = boss.getLocation().clone();
+        at.setYaw(0);   // 방향은 변환(회전)으로 부드럽게 돌림 — 엔티티 자체는 0
+        at.setPitch(0);
+        ItemDisplay d = boss.getWorld().spawn(at, ItemDisplay.class, x -> {
             x.setItemStack(it);
             x.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.NONE);
             x.setPersistent(false);
@@ -119,6 +132,7 @@ public class BossModelManager implements Listener {
             x.setTransformation(tf(scale, 0, yawOffset()));
             x.getPersistentDataContainer().set(Keys.INDICATOR, PersistentDataType.BYTE, (byte) 1);
         });
+        boss.addPassenger(d);   // v5.8.1: 보스에 태워서 클라이언트가 함께 부드럽게 움직이게 (매 틱 순간이동하면 1.20.1 에서는 뚝뚝 끊김)
         boss.setInvisible(true);
         if (boss.getEquipment() != null) boss.getEquipment().clear();
         displays.put(boss.getUniqueId(), d.getUniqueId());
@@ -185,65 +199,115 @@ public class BossModelManager implements Listener {
             if (!(b instanceof LivingEntity boss) || !boss.isValid() || boss.isDead() || d == null || !d.isValid()) {
                 if (d != null) d.remove();
                 scales.remove(en.getKey());
+                poses.remove(en.getKey());
                 removeHitbox(en.getKey());
                 it.remove();
                 continue;
             }
             Location l = boss.getLocation();
-            float yaw = boss instanceof Mob ? ((Mob) boss).getLocation().getYaw() : l.getYaw();
-            d.teleport(new Location(l.getWorld(), l.getX(), l.getY(), l.getZ(), yaw, 0));
+            if (!boss.getPassengers().contains(d)) {   // 순간이동 등으로 내려졌으면 다시 태움
+                d.teleport(new Location(l.getWorld(), l.getX(), l.getY(), l.getZ(), 0, 0));
+                boss.addPassenger(d);
+            }
             UUID hb = hitboxes.get(en.getKey());
             if (hb != null) {
                 Entity box = Bukkit.getEntity(hb);
                 if (box != null && box.isValid()) box.teleport(new Location(l.getWorld(), l.getX(), l.getY(), l.getZ()));
                 else removeHitbox(en.getKey());
             }
-            if (tick % 20 == 0 && d instanceof ItemDisplay id) { // 숨쉬기
-                float s = scales.getOrDefault(en.getKey(), 1.8f);
-                id.setInterpolationDelay(0);
-                id.setInterpolationDuration(20);
-                id.setTransformation(tf(s, (tick / 20) % 2 == 0 ? 0.08f * s : 0f, yawOffset()));
-            }
+            if (tick % 2 == 0 && d instanceof ItemDisplay id) animate(boss, id, en.getKey());
         }
     }
 
-    /** 피격 시 살짝 흔들림 */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHurt(EntityDamageEvent e) {
-        UUID did = displays.get(e.getEntity().getUniqueId());
-        if (did == null || !(Bukkit.getEntity(did) instanceof ItemDisplay d)) return;
-        float s = scales.getOrDefault(e.getEntity().getUniqueId(), 1.8f);
-        d.setInterpolationDelay(0);
-        d.setInterpolationDuration(2);
-        d.setTransformation(new Transformation(new Vector3f(0, (0.5f + MODEL_LIFT) * s, 0), new AxisAngle4f(yawOffset() + 0.15f, 0, 1, 0), new Vector3f(s * 0.95f / MODEL_SHRINK), new AxisAngle4f()));
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!d.isValid()) return;
-            d.setInterpolationDelay(0);
-            d.setInterpolationDuration(4);
-            d.setTransformation(tf(s, 0, yawOffset()));
-        }, 3L);
+    private static float wrap(float deg) {
+        deg %= 360;
+        if (deg > 180) deg -= 360;
+        if (deg < -180) deg += 360;
+        return deg;
     }
 
-    /** 보스가 스킬을 쓸 때 (BossManager 에서 호출): 크게 부풀었다 돌아옴 */
-    public void attackPose(LivingEntity boss) {
-        UUID did = displays.get(boss.getUniqueId());
-        if (did == null || !(Bukkit.getEntity(did) instanceof ItemDisplay d)) return;
-        float s = scales.getOrDefault(boss.getUniqueId(), 1.8f);
+    /**
+     * 2틱마다: 방향을 천천히 돌리고(급회전 없음), 걸을 때는 발걸음에 맞춰 위아래 · 좌우로 흔들리며 앞으로 기울고,
+     * 서 있을 때는 숨쉬듯 부풀었다 가라앉는다. 공격하면 앞으로 내지르고, 맞으면 뒤로 젖혀진다. (모두 보간되어 매끄럽게)
+     */
+    private void animate(LivingEntity boss, ItemDisplay d, UUID id) {
+        float s = scales.getOrDefault(id, 1.8f);
+        Pose p = poses.computeIfAbsent(id, k -> new Pose());
+        Location l = boss.getLocation();
+        float target = l.getYaw();
+        if (Float.isNaN(p.yaw)) { p.yaw = target; p.lastX = l.getX(); p.lastZ = l.getZ(); }
+        float diff = wrap(target - p.yaw), step = Math.max(-16f, Math.min(16f, diff * 0.35f));
+        p.yaw = wrap(p.yaw + step);
+        double moved = Math.hypot(l.getX() - p.lastX, l.getZ() - p.lastZ);
+        p.lastX = l.getX();
+        p.lastZ = l.getZ();
+        float sp = (float) Math.min(1, moved / 0.28);
+        p.speed = p.speed * 0.6f + sp * 0.4f;
+        p.phase += 0.25 + p.speed * 0.9;
+        double t = tick * 0.05;
+        // 걸음: 위아래 튐 · 좌우 흔들림 · 앞으로 기울기 / 서 있음: 숨쉬기
+        float bob = (float) (Math.abs(Math.sin(p.phase)) * 0.06 * s * p.speed + Math.sin(t * 1.6) * 0.025 * s * (1 - p.speed));
+        float roll = (float) (Math.sin(p.phase) * 3.5 * p.speed - step * 0.3);
+        float lean = 5f * p.speed;
+        float sx = 1, sy = (float) (1 + 0.018 * Math.sin(t * 1.6) * (1 - p.speed)), lunge = 0;
+        if (p.attack >= 0) {   // 공격: 크게 앞으로 내지름 (5단계)
+            float f = (float) Math.sin(Math.PI * p.attack / 5.0);
+            lean += 14 * f;
+            sx *= 1 + 0.1f * f;
+            sy *= 1 + 0.1f * f;
+            lunge = 0.28f * s * f;
+            if (++p.attack > 5) p.attack = -1;
+        }
+        if (p.hurt >= 0) {   // 피격: 뒤로 젖혀졌다 돌아옴
+            float f = 1 - p.hurt / 3f;
+            lean -= 7 * f;
+            sx *= 1 + 0.04f * f;
+            sy *= 1 - 0.04f * f;
+            if (++p.hurt > 3) p.hurt = -1;
+        }
+        double yr = Math.toRadians(p.yaw);
+        float fx = (float) (-Math.sin(yr)) * lunge, fz = (float) Math.cos(yr) * lunge;
+        float offY = boss.getPassengers().contains(d) ? (float) (d.getLocation().getY() - l.getY()) : 0;   // 탄 높이만큼 내려서 발을 땅에
+        Quaternionf q = new Quaternionf().rotateY((float) (-yr + yawOffset() + Math.PI)).rotateX((float) Math.toRadians(-lean)).rotateZ((float) Math.toRadians(roll));
+        float k = s / MODEL_SHRINK;
         d.setInterpolationDelay(0);
-        d.setInterpolationDuration(4);
-        d.setTransformation(tf(s * 1.12f, 0.2f * s, yawOffset()));
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!d.isValid()) return;
-            d.setInterpolationDelay(0);
-            d.setInterpolationDuration(8);
-            d.setTransformation(tf(s, 0, yawOffset()));
-        }, 6L);
+        d.setInterpolationDuration(2);
+        d.setTransformation(new Transformation(new Vector3f(fx, (0.5f + MODEL_LIFT) * s + bob - offY, fz), q, new Vector3f(k * sx, k * sy, k * sx), new Quaternionf()));
+    }
+
+    /** 보스 순간이동: 태운 모델을 내려 함께 옮긴 뒤 다시 태움 (탑승 중인 엔티티는 순간이동이 안 되므로) */
+    public void teleportBoss(LivingEntity boss, Location to) {
+        UUID did = displays.get(boss.getUniqueId());
+        Entity d = did == null ? null : Bukkit.getEntity(did);
+        if (d != null) boss.removePassenger(d);
+        boss.teleport(to);
+        if (d != null && d.isValid()) {
+            d.teleport(new Location(to.getWorld(), to.getX(), to.getY(), to.getZ(), 0, 0));
+            Bukkit.getScheduler().runTaskLater(plugin, () -> { if (d.isValid() && boss.isValid()) boss.addPassenger(d); }, 1L);
+        }
+        Pose p = poses.get(boss.getUniqueId());
+        if (p != null) { p.lastX = to.getX(); p.lastZ = to.getZ(); p.yaw = to.getYaw(); }
+    }
+
+    /** 피격 시 뒤로 살짝 젖혀짐 (animate 에서 보간) */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHurt(EntityDamageEvent e) {
+        if (!displays.containsKey(e.getEntity().getUniqueId())) return;
+        Pose p = poses.computeIfAbsent(e.getEntity().getUniqueId(), k -> new Pose());
+        if (p.attack < 0) p.hurt = 0;
+    }
+
+    /** 보스가 스킬을 쓸 때 (BossManager 에서 호출): 앞으로 크게 내지르는 자세 */
+    public void attackPose(LivingEntity boss) {
+        if (!displays.containsKey(boss.getUniqueId())) return;
+        poses.computeIfAbsent(boss.getUniqueId(), k -> new Pose()).attack = 0;
     }
 
     @EventHandler
     public void onDeath(EntityDeathEvent e) {
         UUID did = displays.remove(e.getEntity().getUniqueId());
         scales.remove(e.getEntity().getUniqueId());
+        poses.remove(e.getEntity().getUniqueId());
         removeHitbox(e.getEntity().getUniqueId());
         if (did != null) {
             Entity d = Bukkit.getEntity(did);

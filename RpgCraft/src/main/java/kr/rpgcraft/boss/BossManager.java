@@ -216,7 +216,7 @@ public class BossManager {
             if (homeHere && bl.distanceSquared(a.home) > leash * leash) {
                 if (a.entity instanceof Mob mob) mob.setTarget(null);
                 bl.getWorld().spawnParticle(Particle.SMOKE_LARGE, bl.clone().add(0, 1, 0), 30, 0.8, 1, 0.8, 0.03);
-                a.entity.teleport(a.home);
+                if (plugin.bossModels() != null) plugin.bossModels().teleportBoss(a.entity, a.home); else a.entity.teleport(a.home);
                 a.entity.getWorld().spawnParticle(Particle.PORTAL, a.home.clone().add(0, 1, 0), 60, 1, 1.5, 1, 0.3);
                 a.entity.getWorld().playSound(a.home, Sound.ENTITY_ENDERMAN_TELEPORT, 1.5f, 0.6f);
                 continue;
@@ -1068,7 +1068,7 @@ public class BossManager {
                             w.spawnParticle(Particle.SMOKE_LARGE, ghost, 4, 0.2, 0.4, 0.2, 0.01);
                         }
                         kr.rpgcraft.util.Vfx.beam(from.clone().add(0, 1, 0), behind.clone().add(0, 1, 0), 1.6, c);
-                        b.teleport(behind);
+                        if (plugin.bossModels() != null) plugin.bossModels().teleportBoss(b, behind); else b.teleport(behind);   // 모델을 태운 채로는 순간이동이 안 됨
                         BossFx.debris(behind, 6, mat, 1.4);
                         Vector f = target.getLocation().toVector().subtract(behind.toVector()).setY(0);
                         if (f.lengthSquared() < 0.01) f = new Vector(1, 0, 0);

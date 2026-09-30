@@ -95,6 +95,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.LimitBreakManager limitBreak;
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.NecromancyManager necro;
+    private kr.rpgcraft.world.ChronoManager chrono;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
     private kr.rpgcraft.world.AuctionManager auction;
     private PartyManager party;
@@ -190,6 +191,7 @@ public final class RpgCraft extends JavaPlugin {
         getServer().getPluginManager().registerEvents(hiddenJobs, this);
         necro = new kr.rpgcraft.world.NecromancyManager(this);   // v5.10.9 히든 직업 네크로맨서 군단
         command("legion", necro);
+        chrono = new kr.rpgcraft.world.ChronoManager(this);   // v5.10.18 히든 직업 시간술사
         auction = new kr.rpgcraft.world.AuctionManager(this);
         command("auction", auction);
         hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
@@ -466,6 +468,7 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.NecromancyManager necro() { return necro; }
+    public kr.rpgcraft.world.ChronoManager chrono() { return chrono; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }
     public kr.rpgcraft.world.AuctionManager auction() { return auction; }
     public PartyManager party() { return party; }

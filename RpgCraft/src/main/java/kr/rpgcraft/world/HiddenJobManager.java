@@ -44,7 +44,11 @@ public class HiddenJobManager implements Listener {
             // v5.10.9 네크로맨서: 혼자서는 약하고(능력치 보너스 낮음) 영혼으로 일으킨 군단으로 싸움. 조건도 가장 어려움 (NecromancyManager)
             new Tier("C", 1, "네크로맨서", new String[]{"#lv:120", "#ach_boss:30", "#ach_elite:500", "loot_core:40"}, StatMap.of(Stat.MAGIC, 200, Stat.STR_PCT, 6, Stat.DEX_PCT, 6, Stat.ADV_PCT, 6, Stat.HP_PCT, 6)),
             new Tier("C", 2, "해골 군단장", new String[]{"#lv:200", "#ach_boss:80", "loot_crown:20", "loot_eye:60"}, StatMap.of(Stat.MAGIC, 600, Stat.STR_PCT, 10, Stat.DEX_PCT, 10, Stat.ADV_PCT, 10, Stat.HP_PCT, 10)),
-            new Tier("C", 3, "죽음의 대군주", new String[]{"#lv:270", "#ach_boss:150", "loot_crown:50", "loot_core:100"}, StatMap.of(Stat.MAGIC, 1400, Stat.STR_PCT, 16, Stat.DEX_PCT, 16, Stat.ADV_PCT, 16, Stat.HP_PCT, 16)));
+            new Tier("C", 3, "죽음의 대군주", new String[]{"#lv:270", "#ach_boss:150", "loot_crown:50", "loot_core:100"}, StatMap.of(Stat.MAGIC, 1400, Stat.STR_PCT, 16, Stat.DEX_PCT, 16, Stat.ADV_PCT, 16, Stat.HP_PCT, 16)),
+            // v5.10.18 시간술사: 되감기 · 시간 가속 · 시간 역행 (ChronoManager)
+            new Tier("D", 1, "시간 방랑자", new String[]{"#lv:80", "#ach_treasure:30", "#ach_elite:200", "loot_eye:30"}, StatMap.of(Stat.SPEED, 10, Stat.DODGE, 5, Stat.CRIT, 5, Stat.STR_PCT, 12, Stat.DEX_PCT, 12, Stat.ADV_PCT, 12, Stat.HP_PCT, 8)),
+            new Tier("D", 2, "시간술사", new String[]{"#lv:150", "#ach_boss:40", "loot_core:40", "loot_frost:40"}, StatMap.of(Stat.SPEED, 15, Stat.DODGE, 8, Stat.CRIT, 8, Stat.CRIT_DMG, 30, Stat.STR_PCT, 20, Stat.DEX_PCT, 20, Stat.ADV_PCT, 20, Stat.HP_PCT, 14)),
+            new Tier("D", 3, "시간의 지배자", new String[]{"#lv:230", "#ach_boss:100", "loot_crown:30", "loot_core:60"}, StatMap.of(Stat.SPEED, 20, Stat.DODGE, 12, Stat.CRIT, 12, Stat.CRIT_DMG, 60, Stat.STR_PCT, 30, Stat.DEX_PCT, 30, Stat.ADV_PCT, 30, Stat.HP_PCT, 20)));
 
     /** 히든 전직서 아이템 ID (단계마다 하나) */
     public static String scrollId(Tier t) {
@@ -68,7 +72,7 @@ public class HiddenJobManager implements Listener {
     }
 
     public static Tier of(PlayerData d) {
-        String line = d.counters.containsKey("hj_line_A") ? "A" : d.counters.containsKey("hj_line_B") ? "B" : d.counters.containsKey("hj_line_C") ? "C" : null;
+        String line = d.counters.containsKey("hj_line_A") ? "A" : d.counters.containsKey("hj_line_B") ? "B" : d.counters.containsKey("hj_line_C") ? "C" : d.counters.containsKey("hj_line_D") ? "D" : null;
         if (line == null) return null;
         int t = (int) d.counter("hj_tier");
         for (Tier x : TIERS) if (x.line().equals(line) && x.tier() == t) return x;
@@ -87,7 +91,7 @@ public class HiddenJobManager implements Listener {
             String id = t.line() + t.tier();
             if (data.contains("placed." + id)) continue;
             for (int i = 0; i < 30; i++) {
-                double a = r.nextDouble() * Math.PI * 2, dd = t.line().equals("C") ? 3500 + r.nextDouble() * 2500 : 1800 + r.nextDouble() * 2600;   // 네크로맨서는 더 먼 곳
+                double a = r.nextDouble() * Math.PI * 2, dd = t.line().equals("C") ? 3500 + r.nextDouble() * 2500 : t.line().equals("D") ? 2500 + r.nextDouble() * 2500 : 1800 + r.nextDouble() * 2600;   // 네크로맨서는 더 먼 곳
                 Location l = w.getSpawnLocation().clone().add(Math.cos(a) * dd, 0, Math.sin(a) * dd);
                 w.getChunkAt(l).load(true);
                 Block top = kr.rpgcraft.util.Locs.surface(w, l);
@@ -108,7 +112,7 @@ public class HiddenJobManager implements Listener {
             v.setSilent(true);
             v.setPersistent(true);
             v.setRemoveWhenFarAway(false);
-            v.setProfession(t.line().equals("A") ? Villager.Profession.CLERIC : t.line().equals("C") ? Villager.Profession.NITWIT : Villager.Profession.CARTOGRAPHER);
+            v.setProfession(t.line().equals("A") ? Villager.Profession.CLERIC : t.line().equals("C") ? Villager.Profession.NITWIT : t.line().equals("D") ? Villager.Profession.LIBRARIAN : Villager.Profession.CARTOGRAPHER);
             v.setVillagerLevel(5);
             v.setCustomName(Text.c("&8…"));
             v.setCustomNameVisible(true);
@@ -163,15 +167,16 @@ public class HiddenJobManager implements Listener {
     }
 
     // ------------------------------------------------------------------ v5.10.17 히든 직업 전용 직업창
-    private static final String[] LINE_NAME = {"망령의 길", "별의 길", "죽음의 길"};
+    private static final String[] LINE_NAME = {"망령의 길", "별의 길", "죽음의 길", "시간의 길"};
     private static final String[][] PERK = {
             {"처치 시 흡혈", "처치 시 체력 5% 회복", "처치 시 체력 회복 + 영혼 폭발 (주변 적에게 피해)"},
             {"치명타 · 이동 속도", "치명타 피해 · 회피", "치명타가 터지면 별똥별이 떨어짐"},
-            {"영혼으로 군단원 3기", "군단원 5기 · 군단 능력치 +20%", "군단원 8기 · 군단 능력치 +45%"}};
-    private static final String[][] SKILL = {{"영혼 수확", "영혼 수확", "명계 강림"}, {"유성 낙하", "유성 낙하", "천구 붕괴"}, {"시체 폭발", "시체 폭발", "죽음의 행진"}};
+            {"영혼으로 군단원 3기", "군단원 5기 · 군단 능력치 +20%", "군단원 8기 · 군단 능력치 +45%"},
+            {"처치 시 모든 재사용 대기 -10%", "처치 시 대기 -15% · 되감기 자리에 시간 균열", "처치 시 대기 -20% · 도착 지점 시간 정지 · 체력 20% 아래면 시간 역행"}};
+    private static final String[][] SKILL = {{"영혼 수확", "영혼 수확", "명계 강림"}, {"유성 낙하", "유성 낙하", "천구 붕괴"}, {"시체 폭발", "시체 폭발", "죽음의 행진"}, {"되감기", "되감기 · 시간 균열", "되감기 · 시간 정지"}};
 
     private static int lineIdx(String line) {
-        return line.equals("A") ? 0 : line.equals("B") ? 1 : 2;
+        return line.equals("A") ? 0 : line.equals("B") ? 1 : line.equals("C") ? 2 : 3;
     }
 
     private static String bonusLine(StatMap m) {
@@ -191,7 +196,7 @@ public class HiddenJobManager implements Listener {
         int li = lineIdx(cur.line());
         Gui g = new Gui(4, "&5&l✦ 히든 직업 ✦") {
         };
-        Material icon = li == 0 ? Material.WITHER_SKELETON_SKULL : li == 1 ? Material.NETHER_STAR : Material.SKELETON_SKULL;
+        Material icon = li == 0 ? Material.WITHER_SKELETON_SKULL : li == 1 ? Material.NETHER_STAR : li == 2 ? Material.SKELETON_SKULL : Material.CLOCK;
         List<String> head = new java.util.ArrayList<>();
         head.add("&8" + LINE_NAME[li] + " · " + cur.tier() + "단계");
         head.add("");
@@ -380,6 +385,7 @@ public class HiddenJobManager implements Listener {
         d.counters.remove("hj_line_A");
         d.counters.remove("hj_line_B");
         d.counters.remove("hj_line_C");
+        d.counters.remove("hj_line_D");
         d.counters.put("hj_line_" + t.line(), 1.0);
         d.counters.put("hj_tier", (double) t.tier());
         plugin.stats().refresh(p);
@@ -388,6 +394,7 @@ public class HiddenJobManager implements Listener {
         p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.6f, 1.4f);
         p.getWorld().strikeLightningEffect(p.getLocation());
         if (t.line().equals("C")) Text.msg(p, "&5☠ &f/군단 &7— 쓰러뜨린 몬스터의 영혼으로 군단을 일으킬 수 있다.");
+        if (t.line().equals("D")) Text.msg(p, "&b⟲ &f직업 스킬(Q) &b되감기 &7— 3초 전의 자리와 체력으로 돌아간다.");
     }
 
     /** 숨은 직업 전용 효과: 망령(A) 처치 시 회복 · 3단계는 영혼 폭발 / 별(B) 3단계는 치명타 때 별똥별 */

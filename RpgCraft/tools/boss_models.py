@@ -1721,8 +1721,15 @@ def write(pack_dir, ns, write_json):
         m = Model(pal)
         is_boss = i < BOSS_ORDER.index("mount_wolf") or bid.startswith("field_")
         CLAMP_AT_BUILD[0] = not is_boss
-        BUILDERS[bid](m)
-        if bid in BOSS_IDS:
+        import voxel_bosses
+        voxel = bid in voxel_bosses.BUILDERS   # v5.8.3 복셀 조각 보스: 장식 단계 없이 조각 그대로
+        if voxel:
+            voxel_bosses.build(bid, m)
+        else:
+            BUILDERS[bid](m)
+        if len(pal.colors) > 256:
+            raise SystemExit("보스 팔레트 색이 256 개를 넘음: %s (%d)" % (bid, len(pal.colors)))
+        if bid in BOSS_IDS and not voxel and bid != "primordial_dragon":
             if bid not in NO_GRAND:
                 grand(m, bid, THEME.get(bid, "ff5050"))       # v5.8.0 갑옷 세부
             edging(m, bid)                                    # v5.8.0 판 테두리

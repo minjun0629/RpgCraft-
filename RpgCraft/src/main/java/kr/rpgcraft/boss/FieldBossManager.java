@@ -137,7 +137,8 @@ public class FieldBossManager implements org.bukkit.event.Listener {
         List<Player> cands = new ArrayList<>();
         if (near != null) cands.add(near);
         else for (Player p : Bukkit.getOnlinePlayers()) if (eligible(p)) cands.add(p);
-        if (near == null) cands.removeIf(p -> plugin.bosses().nearSpawn(p.getLocation()));   // 스폰 근처에 있는 사람 옆에는 나오지 않음
+        if (near == null) cands.removeIf(p -> plugin.bosses().nearSpawn(p.getLocation()));
+        if (near == null && plugin.wars() != null) cands.removeIf(p -> plugin.wars().castleArea(p.getLocation(), 40) != null);   // v5.10.13 성 안 · 바로 옆에 있는 사람 옆에는 필드 보스가 나오지 않음   // 스폰 근처에 있는 사람 옆에는 나오지 않음
         if (cands.isEmpty()) return null;
         ThreadLocalRandom r = ThreadLocalRandom.current();
         Player p = cands.get(r.nextInt(cands.size()));

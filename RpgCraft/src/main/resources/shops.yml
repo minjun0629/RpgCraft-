@@ -129,6 +129,8 @@ war:
   command: false
   items:
     - ticket_war
+    - wall_small
+    - wall_large
     - hammer_100
     - hammer_1000
     - hammer_10000

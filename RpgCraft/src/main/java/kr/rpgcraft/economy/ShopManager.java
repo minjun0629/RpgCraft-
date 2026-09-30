@@ -68,6 +68,16 @@ public class ShopManager implements Listener {
             if (gen.stream().noneMatch(x -> x.startsWith("boots_flipper"))) { gen.add("boots_flipper"); ch = true; }
             if (ch) { y.set("general.items", gen); try { y.save(file); } catch (Exception ignored) { } }
         }
+        // v5.10.14 전쟁 상점: 성벽 설치권 (기존 파일에도)
+        java.util.List<String> war = y.getStringList("war.items");
+        if (!war.isEmpty() && war.stream().noneMatch(x -> x.startsWith("wall_small"))) {
+            int at = 0;
+            for (int i = 0; i < war.size(); i++) if (war.get(i).startsWith("ticket_war")) at = i + 1;
+            war.add(at, "wall_large");
+            war.add(at, "wall_small");
+            y.set("war.items", war);
+            try { y.save(file); } catch (Exception ignored) { }
+        }
         for (String id : y.getKeys(false)) {
             ConfigurationSection s = y.getConfigurationSection(id);
             if (s == null) continue;

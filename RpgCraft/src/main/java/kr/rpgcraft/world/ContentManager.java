@@ -408,7 +408,7 @@ public class ContentManager implements Listener {
         for (int tries = 0; tries < 20; tries++) {
             double a = rnd.nextDouble() * Math.PI * 2, r = 250 + rnd.nextDouble() * 900;
             Block top = kr.rpgcraft.util.Locs.surface(w, w.getSpawnLocation().clone().add(Math.cos(a) * r, 0, Math.sin(a) * r));
-            if (top.isLiquid()) continue;
+            if (top.isLiquid() || plugin.wars() != null && plugin.wars().noMobs(top.getLocation())) continue;   // v5.10.13 성 안 제외
             CustomMobManager.MobDef d = pool.get(rnd.nextInt(pool.size()));
             LivingEntity m = plugin.customMobs().spawn(d, top.getLocation().add(0.5, 1, 0.5), lv);
             if (m == null) return;
@@ -620,6 +620,7 @@ public class ContentManager implements Listener {
             }
             plugin.economy().give(p, (long) (5000 * (1 + lv / 10.0) * plugin.getConfig().getDouble("economy.boss-money-mult", 0.1)));
             CustomMobManager.MobDef guard = plugin.customMobs().def("treasure_guardian");
+            if (plugin.wars() != null && plugin.wars().noMobs(top.getLocation())) guard = null;   // v5.10.13 성 안에서는 수호자 없음
             for (int i = 0; i < 2 && guard != null; i++) plugin.customMobs().spawn(guard, top.getLocation().add(2 - i * 4, 0, 1), Math.max(1, lv));
             Bukkit.getScheduler().runTaskLater(plugin, () -> top.setType(Material.AIR, false),
                     20L * plugin.getConfig().getLong("treasure.chest-seconds", 180));   // 3분 뒤 사라짐

@@ -13,6 +13,27 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class WarListener implements Listener {
+    /** v5.10.14 성벽 설치권 사용 (다른 곳에서 "설치 방지"로 취소돼도 여기서 처리) */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onWallTicket(org.bukkit.event.player.PlayerInteractEvent e) {
+        if (e.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
+        var a = e.getAction();
+        if (a != org.bukkit.event.block.Action.RIGHT_CLICK_AIR && a != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
+        org.bukkit.inventory.ItemStack it = e.getPlayer().getInventory().getItemInMainHand();
+        String id = kr.rpgcraft.item.ItemData.id(it);
+        if (!"wall_small".equals(id) && !"wall_large".equals(id)) return;
+        e.setCancelled(true);
+        plugin.wars().useWallTicket(e.getPlayer(), it, id.equals("wall_large"));
+    }
+
+    /** v5.10.13 성 안(부지 + 여유 4칸)에서는 몬스터가 자연적으로 생기지 않음 (자연 · 스포너 · 습격 · 순찰대 · 증원 등). 플러그인이 일부러 부르는 보스 등은 그대로 */
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onMobSpawn(org.bukkit.event.entity.CreatureSpawnEvent e) {
+        if (!(e.getEntity() instanceof org.bukkit.entity.Enemy)) return;
+        if (e.getSpawnReason() == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CUSTOM) return;
+        if (plugin.wars().noMobs(e.getLocation())) e.setCancelled(true);
+    }
+
     private final RpgCraft plugin;
 
     public WarListener(RpgCraft plugin) {

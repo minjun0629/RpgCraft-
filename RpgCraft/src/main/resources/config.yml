@@ -193,6 +193,12 @@ war:
   prepare-seconds: 600
   duration-seconds: 1200
   walls-required: 3          # [위키] 성벽 3개 파괴 후 신호기 파괴 시 승리 (0 = 전부)
+  guild-walls-max: 6         # v5.10.14 성벽 설치권으로 한 성에 더 세울 수 있는 성벽 수
+  guild-wall-hp-small: 30000 # 성벽 설치권(소형)으로 세운 성벽 체력
+  guild-wall-hp-large: 60000 # 성벽 설치권(대형)
+  no-mob-spawn: true         # v5.10.13 성 안(성 부지 + no-mob-margin 칸)에서는 몬스터가 생기지 않음 (자연 스폰 · 웨이브 깃발 · 현상금 · 필드 보스)
+  no-mob-margin: 4
+  castle-spawn-safe-radius: 300   # v5.10.12 월드 스폰에서 이 거리(칸) 안에는 castle build 로 성을 지을 수 없음 (성 끝자락 포함, 0 = 제한 없음)
   castle-wall-hp-large: 60000   # /rpg관리 castle build 로 지은 대형 성의 성벽 구간 체력
   castle-build-blocks-per-tick: 20000   # 대형 성을 지을 때 한 틱에 놓는 블록 수 (낮출수록 천천히 · 렉 적게)
   wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)

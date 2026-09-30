@@ -188,6 +188,8 @@ guild:
   max-level: 5
 
 war:
+  demolish-on-disband: true  # v5.10.10 길드가 사라지면 그 길드가 차지한 공성 성도 허물고 짓기 전 땅으로 (false = 소유만 비움)
+  demolish-on-reset: true    # v5.10.10 /rpg관리 reset all confirm (전체 초기화) 때 공성 성도 모두 허묾
   prepare-seconds: 600
   duration-seconds: 1200
   walls-required: 3          # [위키] 성벽 3개 파괴 후 신호기 파괴 시 승리 (0 = 전부)

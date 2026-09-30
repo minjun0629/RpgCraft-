@@ -339,9 +339,97 @@ public class WarManager {
     }
 
     public void onGuildDisband(String guild) {
-        for (Castle c : castles.values()) if (guild.equals(c.owner)) c.owner = null;
         for (War w : new ArrayList<>(wars.values())) if (w.attacker.equals(guild) || guild.equals(w.defender)) end(w);
+        boolean demolish = plugin.getConfig().getBoolean("war.demolish-on-disband", true);
+        for (Castle c : new ArrayList<>(castles.values())) {
+            if (!guild.equals(c.owner)) continue;
+            if (demolish) {   // v5.10.10 길드가 사라지면 그 길드의 성도 허물고 원래 땅으로
+                Text.announce(Text.PREFIX + Text.c("&7길드 " + guild + "이(가) 사라져 &f" + c.name + "&7도 무너집니다..."));
+                demolish(c, null);
+            } else c.owner = null;
+        }
         save();
+    }
+
+    // ------------------------------------------------------------------ v5.10.10 성 철거 (짓기 전 땅으로 되돌림)
+    static File snapFile(RpgCraft plugin, String id) {
+        return new File(new File(plugin.getDataFolder(), "castle-sites"), id + ".bin.gz");
+    }
+
+    /** 성을 목록에서 지우고 블록을 허묾. 지을 때 저장한 원래 지형이 있으면 그대로 되돌리고, 없으면 성 자리를 비우고 풀밭으로 */
+    public void demolish(Castle c, org.bukkit.command.CommandSender who) {
+        War w = wars.get(c.id);
+        if (w != null) end(w);
+        castles.remove(c.id);
+        save();
+        File f = snapFile(plugin, c.id);
+        if (f.isFile()) {
+            try {
+                SiteSnapshot snap = SiteSnapshot.read(f);
+                World wd = Bukkit.getWorld(snap.world);
+                if (wd != null) {
+                    snap.restore(plugin, wd, plugin.getConfig().getInt("war.castle-build-blocks-per-tick", 20000), () -> {
+                        f.delete();
+                        if (who != null) Text.msg(who, "&a" + c.name + " 철거 완료 &7(짓기 전 땅으로 되돌림)");
+                        plugin.getLogger().info("공성 성 " + c.id + " 철거 완료");
+                    });
+                    if (who != null) Text.msg(who, "&e" + c.name + " 철거 중... &7(블록 " + String.format("%,d", snap.size()) + "개)");
+                    return;
+                }
+            } catch (IOException ex) {
+                plugin.getLogger().warning("성 부지 기록을 읽지 못했습니다 (" + c.id + "): " + ex.getMessage());
+            }
+        }
+        clearArea(c, who);
+    }
+
+    /** 원래 지형 기록이 없는 성 (예전에 지은 성 · 손으로 만든 성): 성벽 · 신호기를 감싸는 범위를 비움 */
+    private void clearArea(Castle c, org.bukkit.command.CommandSender who) {
+        World wd;
+        int x1, y1, z1, x2, y2, z2;
+        if (c.center != null && c.r > 0 && c.center.getWorld() != null) {
+            wd = c.center.getWorld();
+            x1 = c.center.getBlockX() - c.r; x2 = c.center.getBlockX() + c.r;
+            z1 = c.center.getBlockZ() - c.r; z2 = c.center.getBlockZ() + c.r;
+            y1 = c.center.getBlockY(); y2 = c.center.getBlockY() + c.up;
+        } else {
+            List<Location> pts = new ArrayList<>();
+            for (Castle.Wall wl : c.walls) { pts.add(wl.min); pts.add(wl.max); }
+            if (c.beacon != null) pts.add(c.beacon);
+            pts.removeIf(l -> l == null || l.getWorld() == null);
+            if (pts.isEmpty()) { if (who != null) Text.msg(who, "&e" + c.name + " 목록에서 지웠습니다. &7(허물 블록 위치를 몰라 건물은 그대로)"); return; }
+            wd = pts.get(0).getWorld();
+            x1 = y1 = z1 = Integer.MAX_VALUE; x2 = y2 = z2 = Integer.MIN_VALUE;
+            for (Location l : pts) {
+                x1 = Math.min(x1, l.getBlockX()); y1 = Math.min(y1, l.getBlockY()); z1 = Math.min(z1, l.getBlockZ());
+                x2 = Math.max(x2, l.getBlockX()); y2 = Math.max(y2, l.getBlockY()); z2 = Math.max(z2, l.getBlockZ());
+            }
+            x1 -= 3; z1 -= 3; x2 += 3; z2 += 3; y2 += 20;
+        }
+        int fx1 = x1, fy1 = y1, fz1 = z1, fx2 = x2, fy2 = y2, fz2 = z2;
+        int perTick = Math.max(2000, plugin.getConfig().getInt("war.castle-build-blocks-per-tick", 20000));
+        if (who != null) Text.msg(who, "&e" + c.name + " 철거 중... &7(짓기 전 땅 기록이 없어 성 자리를 비우고 풀밭으로)");
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int x = fx1, z = fz1;
+
+            @Override
+            public void run() {
+                int budget = perTick;
+                while (budget > 0 && x <= fx2) {
+                    for (int y = fy2; y >= fy1; y--) {
+                        Block b = wd.getBlockAt(x, y, z);
+                        if (!b.getType().isAir()) { b.setType(Material.AIR, false); budget--; }
+                    }
+                    Block floor = wd.getBlockAt(x, fy1 - 1, z);
+                    if (!floor.getType().isAir()) floor.setType(Material.GRASS_BLOCK, false);
+                    budget--;
+                    if (++z > fz2) { z = fz1; x++; }
+                }
+                if (x <= fx2) return;
+                cancel();
+                if (who != null) Text.msg(who, "&a" + c.name + " 철거 완료");
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
     public void shutdown() {
@@ -433,6 +521,10 @@ public class WarManager {
             c.beacon = Locs.parse(s.getString("beacon"));
             c.attackerSpawn = Locs.parse(s.getString("attacker-spawn"));
             c.defenderSpawn = Locs.parse(s.getString("defender-spawn"));
+            c.center = Locs.parse(s.getString("area.center"));
+            c.r = s.getInt("area.r");
+            c.down = s.getInt("area.down");
+            c.up = s.getInt("area.up");
             ConfigurationSection ws = s.getConfigurationSection("walls");
             if (ws != null) {
                 for (String wid : ws.getKeys(false)) {
@@ -458,6 +550,13 @@ public class WarManager {
             y.set(c.id + ".beacon", c.beacon == null ? null : Locs.block(c.beacon));
             y.set(c.id + ".attacker-spawn", c.attackerSpawn == null ? null : Locs.full(c.attackerSpawn));
             y.set(c.id + ".defender-spawn", c.defenderSpawn == null ? null : Locs.full(c.defenderSpawn));
+            y.set(c.id + ".area", null);
+            if (c.center != null && c.r > 0) {
+                y.set(c.id + ".area.center", Locs.block(c.center));
+                y.set(c.id + ".area.r", c.r);
+                y.set(c.id + ".area.down", c.down);
+                y.set(c.id + ".area.up", c.up);
+            }
             y.set(c.id + ".walls", null);
             for (Castle.Wall w : c.walls) {
                 y.set(c.id + ".walls." + w.id + ".min", Locs.block(w.min));

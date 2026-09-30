@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.10
+- **공성 성 철거**: `/rpg관리 castle demolish <id>` 로 성을 허물고 짓기 전 땅으로 되돌림 (지을 때 부지를 기록). 길드가 해체되면 그 길드의 성도 자동 철거, 전체 초기화 때는 모든 성 철거 (`war.demolish-on-disband` · `war.demolish-on-reset`).
+
 ## v5.10.9
 - **히든 직업 「네크로맨서」 (C 계열 3단계)**: 먼 곳의 새 NPC 3명. 조건이 가장 어렵고 혼자서는 약한 대신, 커스텀 몬스터를 잡아 모은 영혼 + 사령 정수로 **나만의 군단원**(그 몬스터 모습 · 역할 · 고른 각인)을 일으켜 싸움. `/군단` 에서 일으키기(성공 확률 · 등급 운) · 강화 · 부활 · 소환. 소환 중 유지비, 쓰러지면 5분 부활 대기. 설정 `necromancer.*`.
 

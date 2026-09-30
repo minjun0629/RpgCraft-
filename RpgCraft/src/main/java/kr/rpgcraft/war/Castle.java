@@ -39,6 +39,9 @@ public class Castle {
     public String name;
     public String owner;
     public Location beacon, attackerSpawn, defenderSpawn;
+    /** v5.10.10 자동으로 지은 성의 부지 (철거할 때 씀): 한가운데 · 가로세로 반지름 · 아래/위 높이 (r = 0 이면 모름) */
+    public Location center;
+    public int r, down, up;
     public final List<Wall> walls = new ArrayList<>();
 
     public Castle(String id, String name) {

@@ -35,11 +35,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class WorldEventManager implements Listener {
     private final RpgCraft plugin;
     private final Random rnd = new Random();
-    private final NamespacedKey HIDDEN;
+    private final NamespacedKey HIDDEN, HIDDEN_UNTIL;
 
     public WorldEventManager(RpgCraft plugin) {
         this.plugin = plugin;
         this.HIDDEN = new NamespacedKey(plugin, "hidden_merchant");
+        this.HIDDEN_UNTIL = new NamespacedKey(plugin, "hidden_merchant_until");
         Bukkit.getScheduler().runTaskTimer(plugin, this::flagTick, 20L * 30, 20L * 30);
         Bukkit.getScheduler().runTaskTimer(plugin, this::waveTick, 20L, 20L);
         long every = plugin.getConfig().getLong("hidden-merchant.interval-minutes", 30) * 60 * 20;
@@ -471,6 +472,29 @@ public class WorldEventManager implements Listener {
         return best;
     }
 
+    /** v5.10.1: 끝났는데 남아 있는 히든 상인인가 (재시작 · 지역이 로딩되지 않아 못 지운 경우 — 재고가 없어 아무것도 안 팔았음) */
+    private boolean staleMerchant(Entity e) {
+        var pdc = e.getPersistentDataContainer();
+        if (!pdc.has(HIDDEN, PersistentDataType.BYTE)) return false;
+        Long until = pdc.get(HIDDEN_UNTIL, PersistentDataType.LONG);
+        return !e.getUniqueId().equals(merchant) || until == null || System.currentTimeMillis() > until;
+    }
+
+    @EventHandler
+    public void onMerchantLoad(org.bukkit.event.world.EntitiesLoadEvent e) {
+        for (Entity en : e.getEntities()) if (en instanceof Villager && staleMerchant(en)) en.remove();
+    }
+
+    @EventHandler(priority = org.bukkit.event.EventPriority.LOWEST)
+    public void onMerchantClick(org.bukkit.event.player.PlayerInteractEntityEvent e) {
+        Entity en = e.getRightClicked();
+        if (!(en instanceof Villager) || !staleMerchant(en)) return;
+        e.setCancelled(true);
+        en.getWorld().spawnParticle(Particle.PORTAL, en.getLocation().add(0, 1, 0), 40, 0.4, 0.8, 0.4, 0.5);
+        en.remove();
+        Text.msg(e.getPlayer(), "&7상인은 이미 떠난 뒤였다...");
+    }
+
     private void cleanupMerchants() {
         for (World w : Bukkit.getWorlds())
             for (Villager v : w.getEntitiesByClass(Villager.class))
@@ -498,6 +522,7 @@ public class WorldEventManager implements Listener {
             v.getPersistentDataContainer().set(HIDDEN, PersistentDataType.BYTE, (byte) 1);
             merchant = v.getUniqueId();
             long stay = plugin.getConfig().getLong("hidden-merchant.stay-minutes", 5);
+            v.getPersistentDataContainer().set(HIDDEN_UNTIL, PersistentDataType.LONG, System.currentTimeMillis() + stay * 60_000L);   // v5.10.1 만료 시각
             String dir = direction(l.getX() - spawn.getX(), l.getZ() - spawn.getZ());
             int dist = (int) Math.round(l.distance(spawn) / 50.0) * 50;
             if (plugin.getConfig().getBoolean("hidden-merchant.reveal-direction", false))
@@ -511,6 +536,9 @@ public class WorldEventManager implements Listener {
                 if (e != null) {
                     e.getWorld().spawnParticle(Particle.PORTAL, e.getLocation().add(0, 1, 0), 60, 0.4, 0.8, 0.4, 0.5);
                     e.remove();
+                }
+                if (id.equals(merchant)) {   // 그 지역이 로딩되지 않아 못 지웠어도 끝난 것으로 (다시 로딩될 때 지움)
+                    merchant = null;
                     Text.announce(Text.PREFIX + Text.c("&7히든 상인이 사라졌습니다..."));
                 }
             }, stay * 60 * 20);

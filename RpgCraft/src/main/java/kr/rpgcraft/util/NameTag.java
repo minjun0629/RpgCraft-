@@ -32,6 +32,7 @@ public final class NameTag {
             x.setShadowed(true);
             x.setBackgroundColor(HIDDEN);
             x.setBrightness(new Display.Brightness(15, 15));
+            x.setViewRange(0.6f);   // v5.10.2 프레임
             x.getPersistentDataContainer().set(Keys.INDICATOR, PersistentDataType.BYTE, (byte) 1);
         });
         host.addPassenger(t);

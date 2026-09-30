@@ -268,6 +268,15 @@ public class CustomMobManager implements Listener {
                     default -> { }
                 }
             }
+            // v5.9.4: 원거리 몹은 무기가 없으면 아예 공격을 못 함 (약탈자는 쇠뇌가 없으면 맞아도 쫓아오기만 했음) → 손이 비었으면 기본 무기
+            boolean noHand = d.equipment.keySet().stream().noneMatch(k -> k.equalsIgnoreCase("hand"));
+            ItemStack ranged = null;
+            if (noHand && d.type == EntityType.PILLAGER) ranged = new ItemStack(Material.CROSSBOW);
+            else if (noHand && (d.type == EntityType.SKELETON || d.type == EntityType.STRAY) && (d.name.contains("궁") || d.name.contains("명사수"))) ranged = new ItemStack(Material.BOW);
+            if (ranged != null) {
+                eq.setItemInMainHand(ranged);
+                eq.setItemInMainHandDropChance(0);
+            }
         }
         AttributeInstance sp = le.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
         if (sp != null && d.speed != 1) sp.setBaseValue(sp.getDefaultValue() * d.speed);
@@ -303,6 +312,19 @@ public class CustomMobManager implements Listener {
     @EventHandler
     public void onEntitiesLoad(EntitiesLoadEvent e) {
         for (Entity en : e.getEntities()) if (en instanceof LivingEntity le) reattach(le);
+    }
+
+    // ------------------------------------------------------------------ 맞으면 반격 (v5.10.0)
+    /** 플레이어에게 맞은 커스텀 몬스터는 그 플레이어를 확실히 노림 (게임 AI 가 반격 대상을 못 잡는 경우가 있었음) */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onStruck(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Mob m) || !alive.containsKey(m.getUniqueId())) return;
+        Entity src = e.getDamager() instanceof Projectile pr && pr.getShooter() instanceof Entity sh ? sh : e.getDamager();
+        if (!(src instanceof Player p) || p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR) return;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (m.isValid() && !m.isDead() && p.isOnline() && p.getWorld().equals(m.getWorld()) && (m.getTarget() == null || !m.getTarget().isValid() || m.getTarget().isDead()))
+                m.setTarget(p);
+        });
     }
 
     // ------------------------------------------------------------------ 공격 시 상태이상
@@ -605,7 +627,7 @@ public class CustomMobManager implements Listener {
                     Entity m = w.spawnEntity(at, type);
                     if (m instanceof LivingEntity ml2) {
                         MobManager mm = plugin.mobs();
-                        mm.initCustom(ml2, lv, mm.hpFor(lv) * 0.4, mm.damageFor(lv) * 0.6, 0, mm.expFor(lv) / 4, 0, "소환된 " + MobManager.korean(type));
+                        mm.initCustom(ml2, lv, mm.hpFor(lv) * 0.4, mm.damageFor(lv) * 0.6, 0, (long) (mm.expFor(lv) * plugin.getConfig().getDouble("mobs.summon-exp-mult", 0.1)), 0, "소환된 " + MobManager.korean(type));
                         if (m instanceof Mob mob) mob.setTarget(t);
                     }
                     w.spawnParticle(Particle.SMOKE_LARGE, at.add(0, 0.5, 0), 10, 0.3, 0.5, 0.3, 0.02);

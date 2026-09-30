@@ -151,10 +151,24 @@ public class ShopManager implements Listener {
         if (h == null) return;
         java.util.concurrent.ThreadLocalRandom r = java.util.concurrent.ThreadLocalRandom.current();
         for (Entry en : h.entries) hiddenStock.put(en.id(), r.nextDouble() < plugin.getConfig().getDouble("hidden-merchant.absent-chance", 0.35) ? 0 : 1 + r.nextInt(plugin.getConfig().getInt("hidden-merchant.max-stock", 2)));
+        // v5.10.1: 최소 몇 가지는 꼭 팔도록 (운이 나쁘면 거의 다 "이번엔 팔지 않음" 이었음)
+        int min = Math.min(h.entries.size(), plugin.getConfig().getInt("hidden-merchant.min-items", 3));
+        java.util.List<String> absent = new java.util.ArrayList<>();
+        for (Map.Entry<String, Integer> en : hiddenStock.entrySet()) if (en.getValue() <= 0) absent.add(en.getKey());
+        java.util.Collections.shuffle(absent);
+        long have = hiddenStock.values().stream().filter(v -> v > 0).count();
+        for (String id : absent) {
+            if (have >= min) break;
+            hiddenStock.put(id, 1);
+            have++;
+        }
     }
 
     private int stockLeft(Shop s, String item) {
-        if (s.id.equals("hidden")) return hiddenStock.getOrDefault(item, 0);
+        if (s.id.equals("hidden")) {
+            if (hiddenStock.isEmpty()) rollHiddenStock();   // v5.10.1: 재시작 등으로 재고를 잃었으면 새로 채움
+            return hiddenStock.getOrDefault(item, 0);
+        }
         Integer lim = s.limited.get(item);
         if (lim == null) return Integer.MAX_VALUE;
         return lim - plugin.rounds().state().getInt("shop-stock." + s.id + "." + item);
@@ -248,6 +262,7 @@ public class ShopManager implements Listener {
     public void onNpc(PlayerInteractEntityEvent e) {
         if (e.getHand() != EquipmentSlot.HAND) return;
         Entity en = e.getRightClicked();
+        if (!en.isValid() || en.isDead()) return;   // v5.10.1: 이미 떠난 히든 상인 (먼저 지워짐)
         String id = en.getPersistentDataContainer().get(Keys.NPC_SHOP, PersistentDataType.STRING);
         if (id == null) return;
         e.setCancelled(true);

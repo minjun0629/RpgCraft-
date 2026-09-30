@@ -7,6 +7,13 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.9.2
+- **몬스터 한 마리가 여러 마리로 겹쳐 보이던 문제 · 새 보스 모델이 안 보이던 문제**
+  - 원인: config 의 `resourcepack.url` 이 GitHub **main** 의 zip 을 가리키는데, 그 팩이 예전 버전(v5.6.0)이었음. 새 몬스터 모델은 부위마다 번호를 쓰므로 예전 팩에서는 부위 하나하나가 다른 몬스터로 보였음.
+  - 이제 외부 팩이 플러그인에 내장된 팩과 **다르면 몬스터 3D 모델을 자동으로 끄고**(바닐라 모습), 서버 로그와 관리자(OP) 접속 시 안내합니다. 팩을 새 파일로 바꾸면 자동으로 다시 켜집니다. (`mob-models.require-matching-pack`)
+  - 모델을 붙일 때 남아 있던 예전 모델 조각은 치우고 붙입니다.
+  - **해결 방법**: GitHub 의 `RpgCraft-ResourcePack.zip` 을 이 버전의 파일로 교체하거나, `resourcepack.url` 을 최신 팩이 있는 주소로 바꾸세요.
+
 ## v5.9.1
 - **몬스터 움직임을 자연스럽게 — 관절 애니메이션** (`dist/mob-walk-preview.png`: 위 기본 / 아래 걷는 자세)
   - 몬스터 모델을 **몸통 · 머리 · 양팔 · 양다리 · 날개** 부위로 나눠 각각 따로 움직입니다 (사람형 45종 · 네발짐승 7종 · 날개 7종).

@@ -103,7 +103,9 @@ public class MobModelManager implements Listener {
     }
 
     private boolean enabled() {
-        return plugin.getConfig().getBoolean("mob-models.enabled", true);
+        if (!plugin.getConfig().getBoolean("mob-models.enabled", true)) return false;
+        // v5.9.2: 플레이어가 받는 팩이 이 플러그인의 팩과 다르면(예전 팩) 부위가 다른 몬스터로 보여 여러 마리가 겹쳐 보임 → 쓰지 않음
+        return !plugin.getConfig().getBoolean("mob-models.require-matching-pack", true) || plugin.pack() == null || plugin.pack().matchesBundled();
     }
 
     public boolean has(Entity e) {
@@ -127,6 +129,8 @@ public class MobModelManager implements Listener {
     /** 커스텀 몬스터가 생길 때 (CustomMobManager.setup) 바로 붙임 */
     public void attach(LivingEntity le, String id) {
         if (!enabled() || le.isDead() || rigs.containsKey(le.getUniqueId())) return;
+        for (Entity old : le.getPassengers())   // 혹시 남아 있던 예전 모델 조각은 치우고 새로 붙임 (겹침 방지)
+            if (old instanceof ItemDisplay od && od.getPersistentDataContainer().has(modelKey, PersistentDataType.BYTE)) od.remove();
         Def def = defs.get(id);
         if (def == null || def.parts().isEmpty()) return;
         CustomMobManager.MobDef md = plugin.customMobs() == null ? null : plugin.customMobs().def(id);

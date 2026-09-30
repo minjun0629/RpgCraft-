@@ -560,6 +560,7 @@ mob-models:                 # v5.9.0 일반 몬스터 3D 모델 (mobs.yml 커스
   size-mult: 1.0             # 모델 크기 배율
   animate-range: 40          # 이 거리 안에 플레이어가 있을 때만 움직임 계산 (렉 줄이기)
   view-range: 1.0            # 모델이 보이는 거리 배율 (1.0 = 기본 약 64블록, 낮추면 가벼워짐)
+  require-matching-pack: true  # 외부 리소스팩(resourcepack.url)이 플러그인 내장 팩과 다르면 모델을 끔 (예전 팩이면 여러 마리가 겹쳐 보임)
 boss-models:                # 보스 3D 모델 (리소스팩)
   enabled: true
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로

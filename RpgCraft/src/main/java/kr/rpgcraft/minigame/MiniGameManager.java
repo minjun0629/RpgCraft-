@@ -180,7 +180,7 @@ public class MiniGameManager implements CommandExecutor {
             case MOLE -> "&7목표 " + d.pick(12, 20, 28) + "점" + (d == Diff.EASY ? " · 폭탄 없음" : d == Diff.NORMAL ? " · 폭탄 가끔" : " · 폭탄 많음 · 헛손질 -1");
             case BREAKOUT -> "&7벽돌 " + d.pick(2, 3, 4) + "줄 · 목숨 " + d.pick(3, 2, 1) + (d == Diff.HARD ? " · 강철 벽돌 · 짧은 받침대" : "");
             case MINES -> "&79x5 판 · 지뢰 " + d.pick(5, 8, 11) + "개";
-            case MEMORY -> "&7" + d.pick(6, 10, 14) + "쌍 · 제한 " + d.pick(90, 120, 100) + "초";
+            case MEMORY -> "&7" + d.pick(6, 10, 14) + "쌍 · 제한 " + d.pick(45, 70, 100) + "초";
         };
     }
 

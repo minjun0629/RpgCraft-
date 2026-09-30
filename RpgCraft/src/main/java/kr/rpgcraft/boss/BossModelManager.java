@@ -67,9 +67,26 @@ public class BossModelManager implements Listener {
 
     /** v5.8.1 자연스러운 움직임: 보스마다 부드럽게 도는 방향 · 걸음 주기 · 공격 · 피격 자세 */
     private static final class Pose {
-        float yaw = Float.NaN, speed;
-        double phase, lastX, lastZ;
+        float yaw = Float.NaN, speed, bank, pitch, climb;
+        double phase, lastX, lastY, lastZ;
         int attack = -1, hurt = -1;
+    }
+
+    /** v5.9.5 보스마다 다른 움직임: 걷기 · 육중한 걸음 · 떠다니기 · 날기(활공) · 헤엄 · 맥동 · 일렁이는 불꽃 · 네발 걸음 */
+    private enum Gait { WALK, HEAVY, FLOAT, FLY, SWIM, PULSE, FLAME, BEAST }
+
+    private static Gait gait(String id) {
+        if (id == null) return Gait.WALK;
+        return switch (id) {
+            case "primordial_dragon", "harpy_queen" -> Gait.FLY;
+            case "megalodon" -> Gait.SWIM;
+            case "kraken" -> Gait.PULSE;
+            case "bungbung" -> Gait.FLAME;
+            case "witch", "siphonia", "frost_queen", "void_apostle", "vengeful_spirit", "field_swamp_witch", "field_frost_lich", "thunder_god" -> Gait.FLOAT;
+            case "volcano_giant", "balrog", "dwarf_king", "field_ancient_golem", "field_deep_warden" -> Gait.HEAVY;
+            case "field_boar_king", "field_frost_bear", "field_ravager" -> Gait.BEAST;
+            default -> Gait.WALK;
+        };
     }
 
     private final Map<UUID, Pose> poses = new HashMap<>();
@@ -266,23 +283,88 @@ public class BossModelManager implements Listener {
     private void animate(LivingEntity boss, ItemDisplay d, UUID id) {
         float s = scales.getOrDefault(id, 1.8f);
         Pose p = poses.computeIfAbsent(id, k -> new Pose());
+        Gait g = gait(ids.get(id));
         Location l = boss.getLocation();
         float target = l.getYaw();
-        if (Float.isNaN(p.yaw)) { p.yaw = target; p.lastX = l.getX(); p.lastZ = l.getZ(); }
-        float diff = wrap(target - p.yaw), step = Math.max(-16f, Math.min(16f, diff * 0.35f));
+        if (Float.isNaN(p.yaw)) { p.yaw = target; p.lastX = l.getX(); p.lastY = l.getY(); p.lastZ = l.getZ(); }
+        // 큰 몸일수록 천천히 돈다 (용 · 상어는 크게 선회)
+        float maxTurn = switch (g) { case FLY, SWIM -> 7f; case HEAVY, PULSE -> 9f; case BEAST -> 11f; default -> 16f; };
+        float diff = wrap(target - p.yaw), step = Math.max(-maxTurn, Math.min(maxTurn, diff * (g == Gait.FLY || g == Gait.SWIM ? 0.2f : 0.35f)));
         p.yaw = wrap(p.yaw + step);
-        double moved = Math.hypot(l.getX() - p.lastX, l.getZ() - p.lastZ);
+        double moved = Math.hypot(l.getX() - p.lastX, l.getZ() - p.lastZ), vy = l.getY() - p.lastY;
         p.lastX = l.getX();
+        p.lastY = l.getY();
         p.lastZ = l.getZ();
         float sp = (float) Math.min(1, moved / 0.28);
         p.speed = p.speed * 0.6f + sp * 0.4f;
-        p.phase += 0.25 + p.speed * 0.9;
         double t = tick * 0.05;
-        // 걸음: 위아래 튐 · 좌우 흔들림 · 앞으로 기울기 / 서 있음: 숨쉬기
-        float bob = (float) (Math.abs(Math.sin(p.phase)) * 0.06 * s * p.speed + Math.sin(t * 1.6) * 0.025 * s * (1 - p.speed));
-        float roll = (float) (Math.sin(p.phase) * 3.5 * p.speed - step * 0.3);
-        float lean = 5f * p.speed;
-        float sx = 1, sy = (float) (1 + 0.018 * Math.sin(t * 1.6) * (1 - p.speed)), lunge = 0;
+        float bob, roll, lean, sx = 1, sy = 1, lunge = 0, yawWobble = 0;
+        switch (g) {
+            case FLY -> {   // 날개로 활공: 뒤뚱거림 없이 날갯짓에 맞춰 크게 오르내리고, 도는 쪽으로 몸을 기울이며, 오를 땐 머리를 들고 내려갈 땐 숙임
+                p.phase += 0.12 + p.speed * 0.1;
+                p.bank += (Math.max(-28f, Math.min(28f, -step * 3.2f)) - p.bank) * 0.25f;
+                p.climb += ((float) Math.max(-22, Math.min(22, vy * 60)) - p.climb) * 0.3f;
+                bob = (float) (Math.sin(p.phase) * 0.07 * s);
+                roll = p.bank + (float) Math.sin(p.phase * 0.5) * 2;
+                lean = -p.climb + 4f * p.speed;
+                sy = (float) (1 + 0.012 * Math.sin(p.phase));
+            }
+            case SWIM -> {   // 헤엄: 꼬리를 좌우로 저으며 (몸 방향이 살랑), 도는 쪽으로 기울고, 위아래로는 부드럽게
+                p.phase += 0.2 + p.speed * 0.5;
+                p.bank += (Math.max(-22f, Math.min(22f, -step * 2.6f)) - p.bank) * 0.25f;
+                p.climb += ((float) Math.max(-18, Math.min(18, vy * 50)) - p.climb) * 0.3f;
+                yawWobble = (float) (Math.sin(p.phase) * (4 + 5 * p.speed));
+                bob = (float) (Math.sin(t * 0.9) * 0.02 * s);
+                roll = p.bank;
+                lean = -p.climb;
+            }
+            case PULSE -> {   // 크라켄: 외투막이 부풀었다 오그라들며 둥실
+                p.phase += 0.1 + p.speed * 0.15;
+                bob = (float) (Math.sin(p.phase) * 0.05 * s);
+                roll = (float) (Math.sin(t * 0.45) * 3) - step * 0.2f;
+                lean = 2f * p.speed;
+                sy = (float) (1 + 0.05 * Math.sin(p.phase * 2));
+                sx = (float) (1 - 0.03 * Math.sin(p.phase * 2));
+            }
+            case FLAME -> {   // 불꽃 정령: 떠서 일렁임 (가늘어졌다 부풀었다)
+                p.phase += 0.3;
+                bob = (float) (Math.sin(t * 2.1) * 0.035 * s);
+                roll = (float) (Math.sin(t * 2.9) * 2.5) - step * 0.2f;
+                lean = 6f * p.speed;
+                sy = (float) (1 + 0.03 * Math.sin(t * 6.3) + 0.02 * Math.sin(t * 9.7));
+                sx = (float) (1 - 0.02 * Math.sin(t * 6.3));
+            }
+            case FLOAT -> {   // 떠다니기: 걸음 없이 둥실 · 미끄러지듯 앞으로 기울어 이동
+                p.phase += 0.1;
+                bob = (float) (Math.sin(t * 1.4) * 0.04 * s);
+                roll = (float) (Math.sin(t * 0.8) * 2) - step * 0.25f;
+                lean = 6f * p.speed;
+                sy = (float) (1 + 0.012 * Math.sin(t * 1.4));
+            }
+            case HEAVY -> {   // 육중한 걸음: 느리고 깊게 쿵쿵, 발 디딜 때 살짝 눌림
+                p.phase += 0.14 + p.speed * 0.45;
+                double foot = Math.abs(Math.sin(p.phase));
+                bob = (float) (foot * 0.08 * s * p.speed + Math.sin(t * 1.1) * 0.02 * s * (1 - p.speed));
+                roll = (float) (Math.sin(p.phase) * 2.2 * p.speed) - step * 0.2f;
+                lean = 3f * p.speed;
+                sy = (float) (1 - 0.035 * (1 - foot) * p.speed + 0.012 * Math.sin(t * 1.1) * (1 - p.speed));
+                sx = (float) (1 + 0.02 * (1 - foot) * p.speed);
+            }
+            case BEAST -> {   // 네발 걸음: 좌우 흔들림 대신 앞뒤로 끄덕이며
+                p.phase += 0.2 + p.speed * 0.8;
+                bob = (float) (Math.abs(Math.sin(p.phase)) * 0.04 * s * p.speed + Math.sin(t * 1.5) * 0.015 * s * (1 - p.speed));
+                roll = (float) (Math.sin(p.phase) * 1.2 * p.speed) - step * 0.2f;
+                lean = 2f * p.speed + (float) (Math.sin(p.phase * 2) * 2.5 * p.speed);
+                sy = (float) (1 + 0.015 * Math.sin(t * 1.5) * (1 - p.speed));
+            }
+            default -> {   // 사람형 걷기
+                p.phase += 0.25 + p.speed * 0.9;
+                bob = (float) (Math.abs(Math.sin(p.phase)) * 0.06 * s * p.speed + Math.sin(t * 1.6) * 0.025 * s * (1 - p.speed));
+                roll = (float) (Math.sin(p.phase) * 3.5 * p.speed - step * 0.3);
+                lean = 5f * p.speed;
+                sy = (float) (1 + 0.018 * Math.sin(t * 1.6) * (1 - p.speed));
+            }
+        }
         if (p.attack >= 0) {   // 공격: 크게 앞으로 내지름 (5단계)
             float f = (float) Math.sin(Math.PI * p.attack / 5.0);
             lean += 14 * f;
@@ -298,7 +380,7 @@ public class BossModelManager implements Listener {
             sy *= 1 - 0.04f * f;
             if (++p.hurt > 3) p.hurt = -1;
         }
-        double yr = Math.toRadians(p.yaw);
+        double yr = Math.toRadians(p.yaw + yawWobble);
         float fx = (float) (-Math.sin(yr)) * lunge, fz = (float) Math.cos(yr) * lunge;
         float offY = boss.getPassengers().contains(d) ? (float) (d.getLocation().getY() - l.getY()) : 0;   // 탄 높이만큼 내려서 발을 땅에
         Quaternionf q = new Quaternionf().rotateY((float) (-yr + yawOffset() + Math.PI)).rotateX((float) Math.toRadians(-lean)).rotateZ((float) Math.toRadians(roll));
@@ -326,7 +408,7 @@ public class BossModelManager implements Listener {
             Bukkit.getScheduler().runTaskLater(plugin, () -> { if (d.isValid() && boss.isValid()) boss.addPassenger(d); }, 1L);
         }
         Pose p = poses.get(boss.getUniqueId());
-        if (p != null) { p.lastX = to.getX(); p.lastZ = to.getZ(); p.yaw = to.getYaw(); }
+        if (p != null) { p.lastX = to.getX(); p.lastY = to.getY(); p.lastZ = to.getZ(); p.yaw = to.getYaw(); }
     }
 
     /** 피격 시 뒤로 살짝 젖혀짐 (animate 에서 보간) */

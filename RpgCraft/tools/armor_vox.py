@@ -282,12 +282,16 @@ def build(name):
         return None
     sid, slot = MAP[name]
     body, rim, gem, pat, deco = AA.SETS[sid]
-    S = {"body": body, "rim": rim, "gem": gem, "pat": pat, "deco": deco}
+    adorned = sid in ("qinglong", "baihu", "zhuque", "xuanwu", "fiend")   # v5.10.53 사신수 · 사흉수: 전용 장식 (spirit_vox) 이 기본 장식을 대신함
+    S = {"body": body, "rim": rim, "gem": gem, "pat": pat, "deco": None if adorned else deco}
     old = VL.VS
     VL.VS = VS
     try:
         g = VL.Grid()
         BUILD[slot](g, S)
+        if adorned:
+            import spirit_vox
+            spirit_vox.adorn(g, sid, slot)
         pal = bm.Palette()
         m = bm.Model(pal)
         bm.CLAMP_AT_BUILD[0] = False
@@ -303,7 +307,17 @@ def build(name):
     if len(pal.colors) > 256:
         raise SystemExit("방어구 팔레트 색이 256 개를 넘음: " + name)
     disp = dict(DISPLAY)
-    disp["gui"] = dict(DISPLAY["gui"], scale=[GUI_SCALE[slot]] * 3)
+    sc = GUI_SCALE[slot]
+    if adorned:   # 장식이 커진 만큼 슬롯을 넘지 않게 줄임 (가운데 맞춤)
+        xs = [c for e in m.els for c in (e["from"][0], e["to"][0])]
+        ys = [c for e in m.els for c in (e["from"][1], e["to"][1])]
+        zs = [c for e in m.els for c in (e["from"][2], e["to"][2])]
+        ext = max(max(xs) - min(xs), max(ys) - min(ys), (max(zs) - min(zs)) * 0.8)
+        sc = round(min(sc, 15.0 / ext), 3)
+        tr = [round(-((max(xs) + min(xs)) / 2 - 8) * sc, 2), round(-((max(ys) + min(ys)) / 2 - 8) * sc, 2), 0]
+        disp["gui"] = dict(DISPLAY["gui"], scale=[sc] * 3, translation=tr)
+    else:
+        disp["gui"] = dict(DISPLAY["gui"], scale=[sc] * 3)
     return m.els, list(pal.colors), disp
 
 

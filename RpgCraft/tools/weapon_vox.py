@@ -757,8 +757,9 @@ DISPLAY_SHIELD_BLOCKING = {
 }
 # 바닐라 bow.json 과 같은 손 위치
 DISPLAY_BOW = dict(DISPLAY_HELD, **{
-    "thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
-    "thirdperson_lefthand": {"rotation": [-80, -280, 40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
+    # v5.10.53 모델을 -45° 로 세워 둔 만큼 3인칭에서는 z 를 +90° (게임은 z 회전을 먼저 적용) → 바닐라 활처럼 세로로 듦 (가로로 들던 문제)
+    "thirdperson_righthand": {"rotation": [-80, 260, 50], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
+    "thirdperson_lefthand": {"rotation": [-80, -280, 130], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
     "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
     "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
 })

@@ -133,7 +133,7 @@ public final class HudFont {
     }
 
     /** v5.10.50 뒤에 깔 그림 (판 = BACK2 · 바 · 배지 = BACK1, tools/ui4r.py hud_shader_snippet 와 같은 색), 다음 글자는 다시 흰색 */
-    private static final String BACK2 = "§x§f§e§f§e§f§c", BACK1 = "§x§f§e§f§e§f§a", FRONT = "§f";
+    private static final String BACK2 = "§x§f§8§f§8§f§4", BACK1 = "§x§f§4§f§4§f§0", FRONT = "§f";   // v5.10.52 그림자 색이 겹치지 않는 색 (그림자는 셰이더가 숨김)
 
     private static String back(String color, char g, int width, int[] cursor) {
         return color + glyph(g, width, cursor) + FRONT;

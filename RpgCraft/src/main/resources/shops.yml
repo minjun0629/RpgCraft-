@@ -344,3 +344,4 @@ cook:                        # v5.10.20 요리 재료 상점 (/상점 cook · /�
     - ing_egg
     - ing_apple
     - ing_spice
+    - pet_snack

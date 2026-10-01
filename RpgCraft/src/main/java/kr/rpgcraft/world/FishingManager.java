@@ -186,7 +186,7 @@ public class FishingManager implements Listener {
         String size = "";
         if (sp != null) {   // v5.6.0: 길이 · 무게를 아이템에 적고, 무거울수록 비싸게
             double base = switch (sp.grade()) { case RARE -> 50; case UNIQUE -> 90; case LEGEND -> 180; default -> 28; } * sp.size();
-            double f = 0.75 + ThreadLocalRandom.current().nextDouble() * 0.6;   // 0.75 ~ 1.35 배 크기
+            double f = 0.75 + ThreadLocalRandom.current().nextDouble() * 0.6 + (plugin.mastery() != null ? plugin.mastery().fishSize(plugin.data().get(p)) : 0);   // 0.75 ~ 1.35 배 크기
             double len = base * f, kg = Math.pow(len, 3) * 1.1e-5 * (0.9 + ThreadLocalRandom.current().nextDouble() * 0.2);
             double mult = Math.max(0.5, Math.min(2.2, Math.pow(kg / (Math.pow(base, 3) * 1.1e-5), 0.7)));
             var meta = it.getItemMeta();
@@ -234,6 +234,7 @@ public class FishingManager implements Listener {
         plugin.levels().addExp(p, plugin.levels().need(lv) * pct * gradeMul);
         plugin.data().get(p).counters.merge("fish_caught", 1.0, Double::sum);
         if (plugin.seasonPass() != null) plugin.seasonPass().add(p, 3, "낚시");   // v5.10.20
+        if (plugin.mastery() != null) plugin.mastery().add(p, kr.rpgcraft.feature.MasteryManager.Life.FISH, switch (t.grade) { case RARE -> 25; case UNIQUE -> 40; case LEGEND -> 80; default -> 15; });
         if (plugin.questNpcs() != null) plugin.questNpcs().onFish(p);
         if (plugin.seaMonsters() != null) plugin.seaMonsters().onFishCatch(p, hookAt);   // 바다 낚시: 아주 낮은 확률로 메갈로돈 · 크라켄 (v5.4.32)
     }
@@ -250,7 +251,7 @@ public class FishingManager implements Listener {
     /** 보상 추첨: 등급을 먼저 뽑고, 그 등급에서 찌가 있는 바이옴 · 밤 · 비에 맞는 어종을 고른다. 밤·비 오는 날엔 희귀 확률 ↑ */
     private String roll(Player p, FishHook hook) {
         boolean rain = p.getWorld().hasStorm(), night = plugin.cycle() != null && plugin.cycle().phase() != CycleManager.Phase.DAY;
-        double luck = (rain ? 1.3 : 1.0) * (night ? 1.2 : 1.0);
+        double luck = (rain ? 1.3 : 1.0) * (night ? 1.2 : 1.0) * (plugin.mastery() != null ? plugin.mastery().fishLuck(plugin.data().get(p)) : 1);   // v5.10.30 낚시 숙련
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
         double r = rnd.nextDouble() / luck;
         kr.rpgcraft.item.Grade g;

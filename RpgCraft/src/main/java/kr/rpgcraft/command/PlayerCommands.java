@@ -144,6 +144,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 if (from == null) { Text.msg(p, "&7요청한 플레이어가 없습니다."); return true; }
                 if (name.equals("tpdeny")) { Text.msg(from, "&c" + Text.name(p) + "님이 순간이동을 거절했습니다."); Text.msg(p, "&7거절했습니다."); return true; }
                 if (plugin.dungeons() != null && (plugin.dungeons().runOf(from) != null || plugin.dungeons().runOf(p) != null)) { Text.msg(p, "&c던전 안에서는 할 수 없습니다."); return true; }
+                if (plugin.tower() != null && (plugin.tower().inRun(from) || plugin.tower().inRun(p))) { Text.msg(p, "&c무한의 탑 안에서는 할 수 없습니다."); return true; }
                 Text.msg(from, "&a3초 뒤 이동합니다. 움직이지 마세요.");
                 org.bukkit.Location start = from.getLocation().clone();
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {

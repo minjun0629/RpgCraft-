@@ -37,6 +37,7 @@ public class CombatListener implements Listener {
         if (pdc.has(Keys.BOSS, PersistentDataType.STRING) || pdc.has(Keys.MINION, PersistentDataType.STRING)) return true;
         if (plugin.events() != null && plugin.events().isWaveMob(e)) return true;
         if (plugin.dungeons() != null && plugin.dungeons().isDungeonMob(e)) return true;
+        if (plugin.tower() != null && plugin.tower().isTowerMob(e)) return true;
         return pdc.has(new org.bukkit.NamespacedKey(plugin, "bounty"), PersistentDataType.STRING);
     }
 

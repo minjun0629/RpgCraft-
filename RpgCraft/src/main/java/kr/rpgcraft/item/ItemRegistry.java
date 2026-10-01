@@ -56,6 +56,8 @@ public class ItemRegistry {
         for (var r : kr.rpgcraft.feature.CookingManager.RECIPES)
             reg(new ItemTemplate(kr.rpgcraft.feature.CookingManager.foodId(r), r.name(), r.icon(), Category.TICKET).grade(r.minutes() >= 30 ? Grade.UNIQUE : Grade.RARE).price(-1, 2000)
                     .desc("들고 우클릭하면 먹음", "효과: " + r.effect() + " (" + r.minutes() + "분)", "버프는 하나만 (새로 먹으면 바뀜)"));
+        reg(new ItemTemplate("pet_snack", "[펫] 펫 간식", Material.COOKIE, Category.MATERIAL).grade(Grade.RARE).price(25000, 5000)
+                .desc("/펫 → 펫 우클릭 → 먹이 주기", "꺼내 둔 펫 경험치 +60"));   // v5.10.30 펫 성장
         // 히든 직업 전용 무기: 그 히든 직업만 쓸 수 있고, 단계가 오를수록 고유 효과가 강해짐 (히든 직업창에서 제작)
         reg(new ItemTemplate("hjw_a", "명계의 낫", Material.NETHERITE_HOE, Category.WEAPON).weapon(WeaponClass.AXE).grade(Grade.MYTHIC)
                 .stats(StatMap.of(ATK, 9000, MAGIC, 1500, LIFESTEAL, 5, CRIT, 10, LEVEL_REQ, 50)).glow().price(-1, -1)

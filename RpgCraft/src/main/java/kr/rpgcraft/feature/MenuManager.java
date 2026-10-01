@@ -245,6 +245,8 @@ public class MenuManager implements Listener {
             set(40, icon(hj ? Material.WITHER_SKELETON_SKULL : Material.IRON_SWORD, hj ? "&5&l✦ 히든 직업" : "&6&l직업",
                     hj ? List.of("&7현재: &5" + plugin.jobs().title(d), "&8숨겨진 길을 걷는 자", "&e▶ 클릭") : List.of("&7현재: &f" + plugin.jobs().title(d), "&7Lv.10 기초 직업 · Lv.40 전직", "&e▶ 클릭")), e -> plugin.jobs().open(p));
             set(41, icon(Material.OAK_SIGN, "&f&l도움말", List.of("&7조작키와 시스템 안내", "&e▶ 클릭")), e -> new HelpGui(p).open(p));
+            set(47, icon(Material.END_CRYSTAL, "&5&l무한의 탑", List.of("&7최고 " + (int) d.counter("tower_best") + "층", "&e▶ 클릭")), e -> plugin.tower().open(p));   // v5.10.30
+            set(51, icon(Material.EXPERIENCE_BOTTLE, "&b&l숙련도", List.of("&7생활 · 전투 · 직업 (최대 50)", "&e▶ 클릭")), e -> plugin.mastery().open(p));   // v5.10.30
             set(49, Gui.button(Material.BARRIER, "&c닫기"), e -> p.closeInventory());
             border(this, 6);
             // UI 설명 제거: 값(숫자)이나 ▶ 가 있는 줄만 남긴다

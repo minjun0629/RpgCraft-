@@ -109,6 +109,7 @@ public class BgmManager implements Listener {
         for (Entity e : p.getNearbyEntities(40, 20, 40))
             if (e instanceof LivingEntity && !e.isDead() && e.getPersistentDataContainer().has(Keys.BOSS, PersistentDataType.STRING)) return "boss";
         if (plugin.dungeons() != null && plugin.dungeons().runOf(p) != null) return "dungeon";
+        if (plugin.tower() != null && plugin.tower().inRun(p)) return "dungeon";
         if (plugin.getConfig().getStringList("bgm.dungeon-worlds").contains(p.getWorld().getName())) return "dungeon";
         long t = System.currentTimeMillis();
         if (plugin.events() != null && plugin.events().inWave(p)) return "battle";

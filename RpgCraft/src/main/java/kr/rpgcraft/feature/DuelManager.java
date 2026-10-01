@@ -130,6 +130,7 @@ public class DuelManager implements CommandExecutor, TabCompleter, Listener {
         if (inDuel(p)) return Text.name(p) + "님은 이미 야차 중입니다.";
         if (p.isDead()) return Text.name(p) + "님은 쓰러져 있습니다.";
         if (plugin.dungeons() != null && plugin.dungeons().runOf(p) != null) return Text.name(p) + "님은 던전 공략 중입니다.";
+        if (plugin.tower() != null && plugin.tower().inRun(p)) return Text.name(p) + "님은 무한의 탑 도전 중입니다.";
         return null;
     }
 

@@ -32,6 +32,7 @@ public class WarListener implements Listener {
         if (!(e.getEntity() instanceof org.bukkit.entity.Enemy)) return;
         if (e.getSpawnReason() == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CUSTOM) return;
         if (plugin.wars().noMobs(e.getLocation())) e.setCancelled(true);
+        else if (plugin.tower() != null && plugin.tower().inArena(e.getLocation())) e.setCancelled(true);   // v5.10.30 무한의 탑 전투장
     }
 
     private final RpgCraft plugin;

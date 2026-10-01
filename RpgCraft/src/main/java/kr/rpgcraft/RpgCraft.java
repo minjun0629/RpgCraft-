@@ -99,6 +99,8 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.MailManager mail;
     private kr.rpgcraft.feature.SeasonPassManager seasonPass;
     private kr.rpgcraft.feature.CookingManager cooking;
+    private kr.rpgcraft.feature.MasteryManager mastery;
+    private kr.rpgcraft.world.TowerManager tower;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
     private kr.rpgcraft.world.AuctionManager auction;
     private PartyManager party;
@@ -201,6 +203,10 @@ public final class RpgCraft extends JavaPlugin {
         command("seasonpass", seasonPass);
         cooking = new kr.rpgcraft.feature.CookingManager(this);   // v5.10.20 요리
         command("cook", cooking);
+        mastery = new kr.rpgcraft.feature.MasteryManager(this);   // v5.10.30 숙련도
+        command("mastery", mastery);
+        tower = new kr.rpgcraft.world.TowerManager(this);   // v5.10.30 무한의 탑
+        command("tower", tower);
         auction = new kr.rpgcraft.world.AuctionManager(this);
         command("auction", auction);
         hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
@@ -264,6 +270,7 @@ public final class RpgCraft extends JavaPlugin {
         if (necro != null) necro.shutdown();
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
+        if (tower != null) tower.shutdown();   // v5.10.30
         if (bossModels != null) bossModels.shutdown();
         if (mobModels != null) mobModels.shutdown();
         if (altar != null) altar.shutdown();
@@ -482,6 +489,8 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.MailManager mail() { return mail; }
     public kr.rpgcraft.feature.SeasonPassManager seasonPass() { return seasonPass; }
     public kr.rpgcraft.feature.CookingManager cooking() { return cooking; }
+    public kr.rpgcraft.feature.MasteryManager mastery() { return mastery; }
+    public kr.rpgcraft.world.TowerManager tower() { return tower; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }
     public kr.rpgcraft.world.AuctionManager auction() { return auction; }
     public PartyManager party() { return party; }

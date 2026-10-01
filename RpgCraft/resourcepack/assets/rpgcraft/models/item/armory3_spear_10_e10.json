@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/armory3_spear_10",
   "textures": {
-    "0": "rpgcraft:item/armory3_spear_10_e10",
-    "particle": "rpgcraft:item/armory3_spear_10_e10"
+    "0": "rpgcraft:item/wvox/armory3_spear_10_e10",
+    "particle": "rpgcraft:item/wvox/armory3_spear_10_e10"
   }
 }

@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/spirit_qinglong",
   "textures": {
-    "0": "rpgcraft:item/spirit_qinglong_e10",
-    "particle": "rpgcraft:item/spirit_qinglong_e10"
+    "0": "rpgcraft:item/wvox/spirit_qinglong_e10",
+    "particle": "rpgcraft:item/wvox/spirit_qinglong_e10"
   }
 }

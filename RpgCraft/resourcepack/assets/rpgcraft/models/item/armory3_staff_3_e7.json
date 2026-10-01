@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/armory3_staff_3",
   "textures": {
-    "0": "rpgcraft:item/armory3_staff_3_e7",
-    "particle": "rpgcraft:item/armory3_staff_3_e7"
+    "0": "rpgcraft:item/wvox/armory3_staff_3_e7",
+    "particle": "rpgcraft:item/wvox/armory3_staff_3_e7"
   }
 }

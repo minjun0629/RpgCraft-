@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/spirit_baihu",
   "textures": {
-    "0": "rpgcraft:item/spirit_baihu_e7",
-    "particle": "rpgcraft:item/spirit_baihu_e7"
+    "0": "rpgcraft:item/wvox/spirit_baihu_e7",
+    "particle": "rpgcraft:item/wvox/spirit_baihu_e7"
   }
 }

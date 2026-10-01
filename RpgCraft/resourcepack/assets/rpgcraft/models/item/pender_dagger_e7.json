@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/pender_dagger",
   "textures": {
-    "0": "rpgcraft:item/pender_dagger_e7",
-    "particle": "rpgcraft:item/pender_dagger_e7"
+    "0": "rpgcraft:item/wvox/pender_dagger_e7",
+    "particle": "rpgcraft:item/wvox/pender_dagger_e7"
   }
 }

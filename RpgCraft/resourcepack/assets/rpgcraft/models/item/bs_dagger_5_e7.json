@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/bs_dagger_5",
   "textures": {
-    "0": "rpgcraft:item/bs_dagger_5_e7",
-    "particle": "rpgcraft:item/bs_dagger_5_e7"
+    "0": "rpgcraft:item/wvox/bs_dagger_5_e7",
+    "particle": "rpgcraft:item/wvox/bs_dagger_5_e7"
   }
 }

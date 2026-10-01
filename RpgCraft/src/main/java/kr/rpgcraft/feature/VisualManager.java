@@ -107,11 +107,33 @@ public class VisualManager implements Listener {
         ThreadLocalRandom r = ThreadLocalRandom.current();
         Location l = victim.getLocation().add(r.nextDouble(-0.6, 0.6), victim.getHeight() + 0.1, r.nextDouble(-0.6, 0.6));
         String skinned = heal || plugin.damageSkins() == null ? null : plugin.damageSkins().render(attacker, amount, crit);
-        String text = skinned != null ? skinned : heal ? "&a+" + Text.num(amount)
+        String plain = heal ? "&a+" + Text.num(amount)
                 : crit ? "&6&l✦ " + Text.num(amount) + " ✦"
                 : amount >= 10000 ? "&c&l" + Text.num(amount) : "&c" + Text.num(amount);
         float scale = crit ? 1.6f : heal ? 0.9f : 1.1f;
-        TextDisplay td = victim.getWorld().spawn(l, TextDisplay.class, d -> {
+        // v5.10.42 스킨 숫자는 리소스팩을 적용한 사람에게만, 나머지에게는 기본 숫자 (팩 필수 모드가 아니어도 스킨이 보이도록)
+        TextDisplay main = spawnNumber(l, skinned != null ? skinned : plain, scale);
+        TextDisplay alt = skinned != null ? spawnNumber(l, plain, scale) : null;
+        for (Player p : victim.getWorld().getPlayers()) {
+            if (p.getLocation().distanceSquared(l) > 48 * 48) continue;
+            if (!Setting.INDICATOR.get(plugin.data().get(p))) {
+                p.hideEntity(plugin, main);
+                if (alt != null) p.hideEntity(plugin, alt);
+            } else if (alt != null) {
+                if (plugin.damageSkins().canSee(p)) p.hideEntity(plugin, alt);
+                else p.hideEntity(plugin, main);
+            }
+        }
+        animateNumber(main, scale);
+        if (alt != null) animateNumber(alt, scale);
+        if (crit) {
+            victim.getWorld().spawnParticle(Particle.CRIT, victim.getLocation().add(0, victim.getHeight() * 0.6, 0), 18, 0.3, 0.4, 0.3, 0.35);
+            Fx.circle(victim.getLocation().add(0, victim.getHeight() * 0.6, 0), 0.8, 14, Color.fromRGB(0xFFC83D), 1.1f);
+        }
+    }
+
+    private TextDisplay spawnNumber(Location l, String text, float scale) {
+        return l.getWorld().spawn(l, TextDisplay.class, d -> {
             d.setText(Text.c(text));
             d.setBillboard(Display.Billboard.CENTER);
             d.setShadowed(true);
@@ -123,10 +145,9 @@ public class VisualManager implements Listener {
             d.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(scale * 0.3f), new AxisAngle4f()));
             d.getPersistentDataContainer().set(Keys.INDICATOR, PersistentDataType.BYTE, (byte) 1);
         });
-        for (Player p : victim.getWorld().getPlayers()) {
-            if (p.getLocation().distanceSquared(l) > 48 * 48) continue;
-            if (!Setting.INDICATOR.get(plugin.data().get(p))) p.hideEntity(plugin, td);
-        }
+    }
+
+    private void animateNumber(TextDisplay td, float scale) {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!td.isValid()) return;
             td.setInterpolationDelay(0);
@@ -140,10 +161,6 @@ public class VisualManager implements Listener {
             td.setTransformation(new Transformation(new Vector3f(0, 1.1f, 0), new AxisAngle4f(), new Vector3f(scale * 0.4f), new AxisAngle4f()));
         }, 6L);
         Bukkit.getScheduler().runTaskLater(plugin, td::remove, 22L);
-        if (crit) {
-            victim.getWorld().spawnParticle(Particle.CRIT, victim.getLocation().add(0, victim.getHeight() * 0.6, 0), 18, 0.3, 0.4, 0.3, 0.35);
-            Fx.circle(victim.getLocation().add(0, victim.getHeight() * 0.6, 0), 0.8, 14, Color.fromRGB(0xFFC83D), 1.1f);
-        }
     }
 
     // ------------------------------------------------------------------ 드롭

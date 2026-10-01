@@ -43,7 +43,29 @@ public enum UiIcon {
     OPT_BGM,
     NAV_BACK,
     NAV_NEXT,
-    NAV_CLOSE;
+    NAV_CLOSE,
+    SHOP_GENERAL,
+    SHOP_WEAPON,
+    SHOP_ARMOR_WARRIOR,
+    SHOP_ARMOR_ASSASSIN,
+    SHOP_ARMOR_ADVENTURER,
+    SHOP_SPECIAL,
+    SHOP_WANDERING,
+    SHOP_WAR,
+    SHOP_LOOT,
+    SHOP_ARMOR_SET,
+    SHOP_SCROLL,
+    SHOP_FISH,
+    SHOP_TRANSCEND,
+    SHOP_COOK,
+    WPN_SWORD,
+    WPN_DAGGER,
+    WPN_AXE,
+    WPN_SHIELD,
+    WPN_BOW,
+    WPN_STAFF,
+    WPN_SPEAR,
+    WPN_SPECIAL;
 
     public static final int BASE = 12600;
 

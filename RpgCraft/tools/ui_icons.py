@@ -393,6 +393,140 @@ def sym_close(d):
     ink(d, many(line([(9, 9), (23, 23)], 3), line([(23, 9), (9, 23)], 3)), _rgb("ff8a8a"))
 
 
+# ---- v5.10.42 상점 아이콘
+def sym_shop_general(d):
+    ink(d, many(ell(6, 11, 26, 28), poly((11, 6), (21, 6), (19, 12), (13, 12))), _rgb("c89a5a"))
+    ink(d, rect(10, 10, 22, 13, 1), _rgb("8a5a2a"))
+    ink(d, many(ell(10, 15, 17, 24)), RED)
+    ink(d, rect(17, 16, 23, 24, 1.5), _rgb("8af0ff"))
+
+
+def sym_weapon(d):
+    ink(d, many(line([(7, 25), (24, 8)], 2.2)), _rgb("e8ecf6"))
+    ink(d, many(line([(10, 18), (14, 22)], 1.6)), GOLD)
+    ink(d, poly((17, 15), (27, 15), (27, 22), (22, 27), (17, 22)), BLUE)
+    ink(d, star(22, 19.5, 2.6, 1.1), GOLD)
+
+
+def _chest(d, col, trim):
+    ink(d, poly((8, 7), (13, 6), (16, 9), (19, 6), (24, 7), (27, 13), (24, 15), (23, 27), (9, 27), (8, 15), (5, 13)), col)
+    ink(d, many(line([(16, 9), (16, 27)], 0.9), line([(9, 20), (23, 20)], 0.9)), trim)
+
+
+def sym_arm_warrior(d):
+    _chest(d, _rgb("d8dce6"), RED)
+
+
+def sym_arm_assassin(d):
+    ink(d, poly((16, 3), (26, 12), (25, 27), (7, 27), (6, 12)), _rgb("3a3448"))
+    ink(d, ell(10, 10, 22, 22), _rgb("15121c"))
+    ink(d, many(ell(12, 14, 15, 16), ell(17, 14, 20, 16)), RED)
+
+
+def sym_arm_adventurer(d):
+    _chest(d, _rgb("a8784a"), GREEN)
+    ink(d, many(ell(10, 13, 13, 16), ell(19, 13, 22, 16)), GOLD)
+
+
+def sym_special(d):
+    ink(d, many(poly((16, 3), (22, 12), (16, 29), (10, 12))), _rgb("c88aff"))
+    ink(d, poly((16, 3), (19, 12), (16, 29)), _rgb("e8c8ff"))
+    ink(d, many(star(25, 7, 2.4, 0.8, 4), star(7, 22, 2, 0.7, 4)), INK)
+
+
+def sym_wandering(d):
+    ink(d, rect(8, 9, 24, 27, 3), _rgb("a8784a"))
+    ink(d, rect(10, 5, 22, 11, 3, 1.4), _rgb("6a4a2a"))
+    ink(d, rect(11, 15, 21, 21, 1.5), _rgb("8a5a2a"))
+    ink(d, ell(14.5, 16.5, 17.5, 19.5), GOLD)
+
+
+def sym_war(d):
+    ink(d, line([(8, 4), (8, 28)], 1.6), _rgb("c8a060"))
+    ink(d, poly((9, 5), (25, 8), (9, 14)), RED)
+    ink(d, many(line([(14, 27), (27, 16)], 1.8), line([(26, 27), (16, 18)], 1.8)), _rgb("e8ecf6"))
+
+
+def sym_loot(d):
+    ink(d, line([(16, 5), (16, 25)], 1.4), _rgb("d8c49a"))
+    ink(d, line([(6, 9), (26, 9)], 1.4), _rgb("d8c49a"))
+    ink(d, many(arc(3, 9, 11, 19, 0, 180, 1.2), arc(21, 9, 29, 19, 0, 180, 1.2)), _rgb("d8c49a"))
+    ink(d, many(ell(4, 12, 10, 17), ell(22, 12, 28, 17)), GOLD)
+    ink(d, rect(10, 24, 22, 27, 1), _rgb("a8842a"))
+
+
+def sym_armor_set(d):
+    ink(d, ell(12, 3, 20, 10), _rgb("e8c060"))
+    _chest(d, _rgb("e8c060"), _rgb("fff0b0"))
+
+
+def sym_scroll_shop(d):
+    sym_quest(d)
+
+
+def sym_fish(d):
+    ink(d, many(ell(5, 10, 23, 22), poly((21, 16), (28, 9), (28, 23))), _rgb("6ac8e8"))
+    ink(d, ell(8, 13, 11, 16), _rgb("102030"))
+    ink(d, many(line([(14, 11), (14, 21)], 0.8), line([(18, 11), (18, 21)], 0.8)), _rgb("3a8ab0"))
+
+
+def sym_transcend(d):
+    ink(d, star(16, 16, 13, 4, 8), _rgb("fff0a0"))
+    ink(d, line([(10, 23), (22, 9)], 2), INK)
+    ink(d, line([(11, 18), (14, 21)], 1.4), GOLD)
+
+
+def sym_cook(d):
+    ink(d, many(rect(6, 14, 26, 26, 3), rect(4, 13, 28, 16, 1.5)), _rgb("8a8f9a"))
+    ink(d, many(arc(9, 4, 15, 14, 180, 360, 1), arc(15, 2, 21, 12, 180, 360, 1)), INK)
+
+
+def sym_wpn_sword(d):
+    ink(d, line([(8, 24), (23, 9)], 2.4), _rgb("e8ecf6"))
+    ink(d, line([(9, 17), (15, 23)], 1.8), GOLD)
+    ink(d, ell(5, 24, 9, 28), _rgb("a07040"))
+
+
+def sym_wpn_dagger(d):
+    ink(d, poly((12, 20), (22, 8), (24, 10), (14, 22)), _rgb("e8ecf6"))
+    ink(d, line([(10, 18), (16, 24)], 1.6), GOLD)
+    ink(d, line([(8, 26), (12, 22)], 1.8), _rgb("6a4a2a"))
+
+
+def sym_wpn_axe(d):
+    ink(d, line([(9, 27), (21, 6)], 1.8), _rgb("a07040"))
+    ink(d, poly((18, 6), (27, 8), (27, 18), (18, 15)), _rgb("e8ecf6"))
+
+
+def sym_wpn_shield(d):
+    ink(d, poly((6, 5), (26, 5), (26, 16), (16, 28), (6, 16)), BLUE)
+    ink(d, many(line([(16, 6), (16, 26)], 1.2), line([(7, 13), (25, 13)], 1.2)), GOLD)
+
+
+def sym_wpn_bow(d):
+    ink(d, arc(7, 4, 21, 28, -80, 80, 2.2), _rgb("c8a060"))
+    ink(d, line([(15.5, 5), (15.5, 27)], 0.8), INK)
+    ink(d, line([(6, 16), (24, 16)], 1.2), _rgb("e8ecf6"))
+    ink(d, poly((24, 13), (28, 16), (24, 19)), _rgb("e8ecf6"))
+
+
+def sym_wpn_staff(d):
+    ink(d, line([(9, 27), (20, 10)], 1.8), _rgb("8a5a32"))
+    ink(d, ell(17, 3, 27, 13), _rgb("8af0ff"))
+    ink(d, ell(20, 6, 23, 9), INK)
+
+
+def sym_wpn_spear(d):
+    ink(d, line([(6, 27), (22, 11)], 1.6), _rgb("8a5a32"))
+    ink(d, poly((20, 9), (27, 4), (23, 12)), _rgb("e8ecf6"))
+    ink(d, line([(17, 12), (21, 16)], 1.4), RED)
+
+
+def sym_wpn_special(d):
+    sym_wpn_sword(d)
+    ink(d, many(star(24, 22, 3.6, 1.2, 4), star(9, 8, 2.4, 0.8, 4)), _rgb("e0b0ff"))
+
+
 # (이름, 바탕, 색, 그림)
 ICONS = [
     ("season_pass", "medal", "3a6ac8", sym_season), ("skill", "medal", "6a3aa8", sym_skill), ("enhance", "medal", "a86a2a", sym_enhance),
@@ -410,6 +544,16 @@ ICONS = [
     ("opt_announce", "medal", "8a6a1a", sym_announce), ("opt_exp_chat", "medal", "3a6a2a", sym_expchat), ("opt_pvp", "medal", "8a2a2a", sym_pvp),
     ("opt_bgm", "medal", "7a2a5a", sym_bgm),
     ("nav_back", "medal", "4a4e5a", sym_back), ("nav_next", "medal", "4a4e5a", sym_next), ("nav_close", "medal", "5a2a2a", sym_close),
+    # v5.10.42 상점 (뒤에 붙여 기존 번호 유지)
+    ("shop_general", "medal", "2a7a4a", sym_shop_general), ("shop_weapon", "medal", "4a4e6a", sym_weapon),
+    ("shop_armor_warrior", "medal", "6a2a2a", sym_arm_warrior), ("shop_armor_assassin", "medal", "2a2434", sym_arm_assassin),
+    ("shop_armor_adventurer", "medal", "3a5a2a", sym_arm_adventurer), ("shop_special", "medal", "4a2a6a", sym_special),
+    ("shop_wandering", "medal", "6a4a2a", sym_wandering), ("shop_war", "medal", "5a2a1a", sym_war), ("shop_loot", "medal", "6a5a1a", sym_loot),
+    ("shop_armor_set", "medal", "6a5a1a", sym_armor_set), ("shop_scroll", "medal", "3a5a3a", sym_scroll_shop), ("shop_fish", "medal", "1a4a6a", sym_fish),
+    ("shop_transcend", "medal", "7a5a1a", sym_transcend), ("shop_cook", "medal", "5a3a2a", sym_cook),
+    ("wpn_sword", "medal", "3a3e4a", sym_wpn_sword), ("wpn_dagger", "medal", "3a3e4a", sym_wpn_dagger), ("wpn_axe", "medal", "3a3e4a", sym_wpn_axe),
+    ("wpn_shield", "medal", "3a3e4a", sym_wpn_shield), ("wpn_bow", "medal", "3a3e4a", sym_wpn_bow), ("wpn_staff", "medal", "3a3e4a", sym_wpn_staff),
+    ("wpn_spear", "medal", "3a3e4a", sym_wpn_spear), ("wpn_special", "medal", "4a2a6a", sym_wpn_special),
 ]
 
 

@@ -6,6 +6,7 @@ import kr.rpgcraft.data.PlayerData;
 import kr.rpgcraft.data.Setting;
 import kr.rpgcraft.economy.ShopManager;
 import kr.rpgcraft.gui.Gui;
+import kr.rpgcraft.gui.UiIcon;
 import kr.rpgcraft.guild.Guild;
 import kr.rpgcraft.item.Category;
 import kr.rpgcraft.item.ItemTemplate;
@@ -345,29 +346,67 @@ public class MenuManager implements Listener {
             for (int i = page * per; i < list.size() && i < (page + 1) * per; i++) {
                 ShopManager.Shop s = list.get(i);
                 if (!weapons && s.id.equals("weapon")) {   // 묶음 칸
-                    set(slot, icon(Material.IRON_SWORD, "&a&l무기 상점 · 무기고", List.of("&7무기 상점 · 특수 무기 · 무기고 I·II·III",
-                            "&7상점 " + weaponShops + "곳", "&e▶ 클릭하여 목록 열기")), e -> new ShopListGui(p, 0, true).open(p));
+                    set(slot, Gui.ui(UiIcon.SHOP_WEAPON, true, "&a&l무기 상점 · 무기고", "&7무기 상점 · 특수 무기 · 무기고 I·II·III",
+                            "&7상점 " + weaponShops + "곳", "&e▶ 클릭하여 목록 열기"), e -> new ShopListGui(p, 0, true).open(p));
                     slot++;
                     if (slot % 9 == 8) slot += 2;
                     continue;
                 }
                 boolean ok = s.command || admin;
-                Material m = s.id.contains("weapon") || s.id.startsWith("armory") ? Material.IRON_SWORD : s.id.equals("fish") ? Material.COD : s.id.contains("armor") ? Material.IRON_CHESTPLATE
-                        : s.id.contains("war") ? Material.TNT : s.id.contains("wander") ? Material.LEAD : s.id.contains("special") ? Material.AMETHYST_SHARD : Material.EMERALD;
-                set(slot, icon(ok ? m : Material.GRAY_DYE, (ok ? "&a" : "&8") + Text.strip(s.title),
-                        List.of("&7상품 " + s.entries.size() + "종" + (s.multiplier != 1 ? " &c(가격 x" + s.multiplier + ")" : ""),
-                                ok ? "&e▶ 클릭하여 열기" : "&cNPC 를 찾아가야 이용할 수 있습니다")), e -> {
+                ItemStack ic = Gui.ui(shopIcon(s.id), ok, (ok ? "&a" : "&8") + Text.strip(s.title),
+                        "&7상품 " + s.entries.size() + "종" + (s.multiplier != 1 ? " &c(가격 x" + s.multiplier + ")" : ""),
+                        ok ? "&e▶ 클릭하여 열기" : "&cNPC 를 찾아가야 이용할 수 있습니다");
+                if (s.id.startsWith("armory3_")) ic.setAmount(3);   // 무기고 단계 표시
+                else if (s.id.startsWith("armory2_")) ic.setAmount(2);
+                set(slot, ic, e -> {
                     if (ok) plugin.shops().open(p, s.id, 0);
                 });
                 slot++;
                 if (slot % 9 == 8) slot += 2;
             }
-            if (page > 0) set(45, icon(Material.ARROW, "&f이전 페이지", List.of()), e -> new ShopListGui(p, page - 1, weapons).open(p));
-            if (page + 1 < pages) set(53, icon(Material.ARROW, "&f다음 페이지", List.of()), e -> new ShopListGui(p, page + 1, weapons).open(p));
-            if (weapons) set(49, icon(Material.ARROW, "&f상점 목록으로", List.of()), e -> new ShopListGui(p).open(p));
+            if (page > 0) set(45, Gui.ui(UiIcon.NAV_BACK, true, "&f이전 페이지"), e -> new ShopListGui(p, page - 1, weapons).open(p));
+            if (page + 1 < pages) set(53, Gui.ui(UiIcon.NAV_NEXT, true, "&f다음 페이지"), e -> new ShopListGui(p, page + 1, weapons).open(p));
+            if (weapons) set(49, Gui.ui(UiIcon.NAV_BACK, true, "&f상점 목록으로"), e -> new ShopListGui(p).open(p));
             else back(this, 49, p);
             fill(0, 53);
         }
+    }
+
+    /** v5.10.42 상점마다 전용 아이콘 (tools/ui_icons.py) */
+    private static UiIcon shopIcon(String id) {
+        if (id.startsWith("armory")) {
+            String w = id.substring(id.indexOf('_') + 1);
+            return switch (w) {
+                case "sword" -> UiIcon.WPN_SWORD;
+                case "dagger" -> UiIcon.WPN_DAGGER;
+                case "axe" -> UiIcon.WPN_AXE;
+                case "shield" -> UiIcon.WPN_SHIELD;
+                case "bow" -> UiIcon.WPN_BOW;
+                case "staff" -> UiIcon.WPN_STAFF;
+                case "spear" -> UiIcon.WPN_SPEAR;
+                default -> UiIcon.SHOP_WEAPON;
+            };
+        }
+        return switch (id) {
+            case "weapon" -> UiIcon.SHOP_WEAPON;
+            case "weapon2" -> UiIcon.WPN_SPECIAL;
+            case "armor_warrior" -> UiIcon.SHOP_ARMOR_WARRIOR;
+            case "armor_assassin" -> UiIcon.SHOP_ARMOR_ASSASSIN;
+            case "armor_adventurer" -> UiIcon.SHOP_ARMOR_ADVENTURER;
+            case "armor_set" -> UiIcon.SHOP_ARMOR_SET;
+            case "special" -> UiIcon.SHOP_SPECIAL;
+            case "wandering" -> UiIcon.SHOP_WANDERING;
+            case "war" -> UiIcon.SHOP_WAR;
+            case "loot" -> UiIcon.SHOP_LOOT;
+            case "scroll" -> UiIcon.SHOP_SCROLL;
+            case "fish" -> UiIcon.SHOP_FISH;
+            case "transcend" -> UiIcon.SHOP_TRANSCEND;
+            case "cook" -> UiIcon.SHOP_COOK;
+            case "accessory" -> UiIcon.ACCESSORY;
+            case "potential" -> UiIcon.POTENTIAL;
+            default -> id.contains("weapon") ? UiIcon.SHOP_WEAPON : id.contains("armor") ? UiIcon.SHOP_ARMOR_SET
+                    : id.contains("fish") ? UiIcon.SHOP_FISH : UiIcon.SHOP_GENERAL;
+        };
     }
 
     private static boolean weaponGroup(String id) {

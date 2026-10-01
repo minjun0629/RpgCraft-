@@ -204,6 +204,7 @@ GUI_LAYOUTS = {
     "potion": ("\ue005", 3, {10, 12, 14, 16, 22}, None),
     "quest": ("\ue006", 5, {4, 11, 13, 15, 22, 29, 31, 33, 36}, None),                 # v5.5.0: 일일 + 주간 (5줄)
     "settings": ("\ue007", 4, {10, 11, 12, 13, 14, 15, 16, 21, 22, 23, 27}, None),       # v5.5.0: 설정 10개 (4줄)
+    "inspect": ("\ue01b", 6, {4, 10, 19, 28, 37, 12, 21, 30, 39, 14, 15, 16, 23, 24, 25, 32, 33, 34, 41, 42, 43, 47, 49, 51}, "inspect"),   # v5.10.34
     "spirit": ("\ue008", 6, {1, 2, 3, 4, 5, 10, 12, 14, 16, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 38, 39, 40, 41, 49}, "spirit"),
 }
 
@@ -242,6 +243,33 @@ def decorate(img, kind, rows):
             xb, _ = slot_xy(b)
             d.rectangle([xa - 2, ya - 2, xb + 19, ya + 19], outline=col + (255,))
             d.rectangle([xa - 1, ya - 1, xb + 18, ya + 18], outline=tuple(int(v * 0.45) for v in col) + (255,))
+    if kind == "inspect":   # v5.10.34 4R 풍 캐릭터 정보창: 장비 칸 사이 실루엣 + 구역 테두리
+        import ui4r
+        def box(a, b, col):
+            xa, ya = slot_xy(a)
+            xb, yb = slot_xy(b)
+            d.rectangle([xa - 3, ya - 3, xb + 20, yb + 20], fill=(62, 55, 50, 255), outline=(28, 24, 22, 255))
+            d.line([(xa - 2, ya - 2), (xb + 19, ya - 2)], fill=col)
+            for cx, cy in ((xa - 3, ya - 3), (xb + 20, ya - 3), (xa - 3, yb + 20), (xb + 20, yb + 20)):
+                ui4r.diamond(d, cx, cy, 2, cross=False)
+        box(10, 39, (140, 126, 112, 255))      # 장비
+        box(14, 25, (200, 90, 90, 255))        # 능력치
+        box(32, 43, (150, 120, 220, 255))      # 장신구 · 룬
+        x0, y0 = slot_xy(11)   # 실루엣 (가운데 열, 4줄 높이)
+        cx = x0 + 9
+        sil = (40, 35, 32, 255)
+        d.ellipse([cx - 5, y0 + 2, cx + 5, y0 + 13], fill=sil)                      # 머리
+        d.rectangle([cx - 7, y0 + 15, cx + 7, y0 + 40], fill=sil)                   # 몸
+        d.rectangle([cx - 10, y0 + 15, cx - 8, y0 + 36], fill=sil)                  # 팔
+        d.rectangle([cx + 8, y0 + 15, cx + 10, y0 + 36], fill=sil)
+        d.rectangle([cx - 6, y0 + 41, cx - 1, y0 + 66], fill=sil)                   # 다리
+        d.rectangle([cx + 1, y0 + 41, cx + 6, y0 + 66], fill=sil)
+        for yy in (y0 + 7, y0 + 27, y0 + 52, y0 + 64):                              # 칸과 잇는 점선
+            for xx in range(x0 - 1, cx - 9, 3):
+                d.point((xx, yy), fill=(120, 108, 96, 255))
+        ui4r.diamond(d, cx, y0 + 70, 3)
+        for idx in (10, 19, 28, 37, 12, 21, 30, 39, 14, 15, 16, 23, 24, 25, 32, 33, 34, 41, 42, 43):   # 상자 위로 칸 다시
+            ui4r.slot(d, *slot_xy(idx), True, True)
     if kind == "rune":
         for idx in (11, 13, 15):
             x0, y0 = slot_xy(idx)

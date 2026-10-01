@@ -41,8 +41,9 @@ public class ItemRegistry {
         registerTranscend();
         registerArmory();
         registerArmory2();
-        for (kr.rpgcraft.world.HiddenJobManager.Tier t : kr.rpgcraft.world.HiddenJobManager.TIERS)   // 히든 전직서 (v5.3.0)
+        for (kr.rpgcraft.world.HiddenJobManager.Tier t : kr.rpgcraft.world.HiddenJobManager.TIERS)   // 히든 전직서 (v5.3.0) · v5.10.34 계열 · 단계마다 다른 그림
             reg(new ItemTemplate(kr.rpgcraft.world.HiddenJobManager.scrollId(t), "히든 전직서: " + t.label(), Material.ENCHANTED_BOOK, Category.TICKET)
+                    .model(2100 + ("ABCD".indexOf(t.line()) * 3 + t.tier() - 1))
                     .grade(t.tier() >= 3 ? Grade.MYTHIC : Grade.LEGEND).price(-1, -1)
                     .desc(t.tier() == 1 ? "들고 우클릭하면 원래 직업 대신 히든 직업으로 전직" : "들고 우클릭하면 히든 직업이 한 단계 오름", "히든 전직 퀘스트 보상"));
         registerLife();

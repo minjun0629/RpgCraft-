@@ -1,0 +1,80 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/enchanted_book"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 2100
+      },
+      "model": "rpgcraft:item/hj_scroll_a1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2101
+      },
+      "model": "rpgcraft:item/hj_scroll_a2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2102
+      },
+      "model": "rpgcraft:item/hj_scroll_a3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2103
+      },
+      "model": "rpgcraft:item/hj_scroll_b1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2104
+      },
+      "model": "rpgcraft:item/hj_scroll_b2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2105
+      },
+      "model": "rpgcraft:item/hj_scroll_b3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2106
+      },
+      "model": "rpgcraft:item/hj_scroll_c1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2107
+      },
+      "model": "rpgcraft:item/hj_scroll_c2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2108
+      },
+      "model": "rpgcraft:item/hj_scroll_c3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2109
+      },
+      "model": "rpgcraft:item/hj_scroll_d1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2110
+      },
+      "model": "rpgcraft:item/hj_scroll_d2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2111
+      },
+      "model": "rpgcraft:item/hj_scroll_d3"
+    }
+  ]
+}

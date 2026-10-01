@@ -105,34 +105,51 @@ public class PlayerListener implements Listener {
         Player p = e.getPlayer();
         PlayerData d = plugin.data().get(t);
         var s = d.stats;
-        kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(6, "&8" + Text.name(t) + " 님의 정보") {
+        // v5.10.34 마크에이지 4R 풍 캐릭터 정보창: 왼쪽 장비(갑옷 · 무기) + 실루엣, 오른쪽 능력치 문장 · 장신구 · 룬
+        kr.rpgcraft.gui.Gui g = new kr.rpgcraft.gui.Gui(6, "&8" + Text.name(t) + " 님의 정보", "inspect") {
         };
         org.bukkit.inventory.ItemStack head = new org.bukkit.inventory.ItemStack(Material.PLAYER_HEAD);
         var hm = (org.bukkit.inventory.meta.SkullMeta) head.getItemMeta();
         hm.setOwningPlayer(t);
-        hm.setDisplayName(Text.c("&e&l" + Text.name(t)));
+        hm.setDisplayName(Text.c("&e&l" + Text.name(t) + " &7Lv." + d.level));
         var guild = plugin.guilds().of(t.getUniqueId());
         String title = plugin.content() == null ? "" : plugin.content().title(d);
-        hm.setLore(java.util.List.of(Text.c("&fLv." + d.level + " &7" + plugin.jobs().title(d)), Text.c("&f칭호 &d" + (title.isEmpty() ? "-" : title)),
-                Text.c("&f길드 &b" + (guild == null ? "-" : guild.name)), Text.c("&f전투력 &e" + Text.num(kr.rpgcraft.stat.Power.of(s)))));
+        hm.setLore(java.util.List.of(Text.c("&7" + plugin.jobs().title(d)), Text.c("&f칭호 &d" + (title.isEmpty() ? "-" : title)),
+                Text.c("&f길드 &b" + (guild == null ? "-" : guild.name)), Text.c("&f전투력 &6&l" + Text.num(kr.rpgcraft.stat.Power.of(s)))));
         head.setItemMeta(hm);
         g.set(4, head, null);
         var inv = t.getInventory();
         org.bukkit.inventory.ItemStack[] armor = inv.getArmorContents();
-        for (int i = 0; i < 4; i++) if (armor[3 - i] != null) g.set(19 + i, armor[3 - i].clone(), null);
-        if (!inv.getItemInMainHand().getType().isAir()) g.set(24, inv.getItemInMainHand().clone(), null);
-        if (!inv.getItemInOffHand().getType().isAir()) g.set(25, inv.getItemInOffHand().clone(), null);
-        g.set(31, kr.rpgcraft.gui.Gui.button(Material.PAPER, "&f능력치",
+        String[] armorName = {"&7투구 없음", "&7갑옷 없음", "&7바지 없음", "&7신발 없음"};
+        int[] armorSlot = {10, 19, 28, 37};
+        for (int i = 0; i < 4; i++) {
+            if (armor[3 - i] != null && !armor[3 - i].getType().isAir()) g.set(armorSlot[i], armor[3 - i].clone(), null);
+            else g.set(armorSlot[i], kr.rpgcraft.gui.Gui.button(Material.GRAY_STAINED_GLASS_PANE, armorName[i]), null);
+        }
+        g.set(12, inv.getItemInMainHand().getType().isAir() ? kr.rpgcraft.gui.Gui.button(Material.GRAY_STAINED_GLASS_PANE, "&7주 무기 없음") : inv.getItemInMainHand().clone(), null);
+        g.set(21, inv.getItemInOffHand().getType().isAir() ? kr.rpgcraft.gui.Gui.button(Material.GRAY_STAINED_GLASS_PANE, "&7보조 손 없음") : inv.getItemInOffHand().clone(), null);
+        g.set(30, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.ACHIEVEMENT, true, "&d&l칭호", "&f" + (title.isEmpty() ? "없음" : title)), null);
+        g.set(39, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.GUILD, guild != null, "&b&l길드", "&f" + (guild == null ? "없음" : guild.name + " &7Lv." + guild.level)), null);
+        boolean hj = kr.rpgcraft.world.HiddenJobManager.of(d) != null;
+        g.set(14, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.STAT_STR, true, "&c&l공격 &7(힘 " + (int) s.str + ")",
+                "&f공격력 &c" + Text.num(s.attack), "&f마력 &d" + Text.num(s.magic), "&f방어 관통 &b" + String.format("%.1f", s.armorPen) + "%"), null);
+        g.set(15, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.STAT_DEX, true, "&9&l치명 &7(민첩 " + (int) s.dex + ")",
+                "&f치명타 &e" + String.format("%.1f", s.crit) + "%", "&f치명타 피해 &e+" + (int) s.critDmg + "%", "&f회피 &b" + String.format("%.1f", s.dodge) + "%"), null);
+        g.set(16, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.STAT_ADV, true, "&a&l생존 &7(모험 " + (int) s.adv + ")",
+                "&f체력 &c" + Text.num(s.maxHp), "&f방어력 &7" + String.format("%.1f", s.def) + "%", "&f흡혈 &c" + String.format("%.1f", s.lifesteal) + "%"), null);
+        g.set(23, kr.rpgcraft.gui.Gui.ui(hj ? kr.rpgcraft.gui.UiIcon.HIDDEN_JOB : kr.rpgcraft.gui.UiIcon.JOB, true, (hj ? "&5&l" : "&6&l") + plugin.jobs().title(d),
+                "&f레벨 &e" + d.level, "&f이동속도 &a" + String.format("%+.1f", s.speed) + "%"), null);
+        g.set(24, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.STAT_POINT, true, "&6&l전투력 &e" + Text.num(kr.rpgcraft.stat.Power.of(s))), null);
+        g.set(25, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.STAT_INFO, true, "&f&l전체 능력치",
                 "&f힘 &6" + (int) s.str + " &f민첩 &a" + (int) s.dex + " &f모험 &b" + (int) s.adv,
-                "&f공격력 &c" + Text.num(s.attack) + " &f마력 &d" + Text.num(s.magic),
-                "&f체력 &c" + Text.num(s.maxHp) + " &f방어력 &7" + String.format("%.1f", s.def),
-                "&f치명타 &e" + String.format("%.1f", s.crit) + "% &f치명타 피해 &e" + (int) s.critDmg + "%",
-                "&f흡혈 &c" + String.format("%.1f", s.lifesteal) + "% &f이동속도 &a" + String.format("%+.1f", s.speed) + "%",
-                "&f회피 &b" + String.format("%.1f", s.dodge) + "% &f방어 관통 &b" + String.format("%.1f", s.armorPen) + "%"), null);
-        for (int i = 0; i < 3; i++) if (d.accessories[i] != null) g.set(37 + i, d.accessories[i].clone(), null);
-        for (int i = 0; i < 3; i++) if (d.runes[i] != null) g.set(41 + i, d.runes[i].clone(), null);
-        g.set(47, kr.rpgcraft.gui.Gui.button(Material.EMERALD, "&a거래 신청"), ev -> { p.closeInventory(); plugin.trades().request(p, t.getName()); });
-        g.set(51, kr.rpgcraft.gui.Gui.button(Material.CAKE, "&b파티 초대"), ev -> { p.closeInventory(); p.performCommand("파티 초대 " + t.getName()); });
+                "&f공격력 &c" + Text.num(s.attack) + " &f체력 &c" + Text.num(s.maxHp),
+                "&f치명타 &e" + String.format("%.1f", s.crit) + "% &f방어 &7" + String.format("%.1f", s.def) + "%"), null);
+        String[] accName = {"&7반지 없음", "&7목걸이 없음", "&7귀걸이 없음"};
+        for (int i = 0; i < 3; i++) g.set(32 + i, d.accessories[i] != null ? d.accessories[i].clone() : kr.rpgcraft.gui.Gui.button(Material.GRAY_STAINED_GLASS_PANE, accName[i]), null);
+        for (int i = 0; i < 3; i++) g.set(41 + i, d.runes[i] != null ? d.runes[i].clone() : kr.rpgcraft.gui.Gui.button(Material.GRAY_STAINED_GLASS_PANE, "&7룬 칸 " + (i + 1)), null);
+        g.set(47, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.SHOP, true, "&a&l거래 신청"), ev -> { p.closeInventory(); plugin.trades().request(p, t.getName()); });
+        g.set(49, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.NAV_CLOSE, true, "&c닫기"), ev -> p.closeInventory());
+        g.set(51, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.GUILD, true, "&b&l파티 초대"), ev -> { p.closeInventory(); p.performCommand("파티 초대 " + t.getName()); });
         g.fill(0, 53);
         g.open(p);
     }

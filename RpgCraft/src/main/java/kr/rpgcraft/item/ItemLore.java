@@ -199,6 +199,10 @@ public final class ItemLore {
     }
 
     private static void applyModel(ItemMeta m, ItemTemplate t, int e) {
+        if (t.id.startsWith("hj_scroll_") && t.modelData > 0 && (!m.hasCustomModelData() || m.getCustomModelData() != t.modelData)) {   // v5.10.34 예전 전직서도 새 그림
+            m.setCustomModelData(t.modelData);
+            return;
+        }
         if (t.category != Category.WEAPON || !t.enhanceable || t.modelData <= 0) return;
         Integer cur = m.hasCustomModelData() ? m.getCustomModelData() : null;
         int b = t.modelData;

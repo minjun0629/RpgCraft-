@@ -29,7 +29,7 @@ import java.util.UUID;
 
 /** 10틱마다 스탯 재계산, 이동속도, 자연회복, 경험치바, 액션바, 사이드바 갱신 */
 public class HudManager implements Listener {
-    private static final int LINES = 12;
+    private static final int LINES = 13;   // v5.10.34 4R 풍 사이드바 (구분선 3줄)
     private final RpgCraft plugin;
     private final Map<UUID, Scoreboard> boards = new HashMap<>();
     private int tick;
@@ -228,6 +228,10 @@ public class HudManager implements Listener {
         Guild g = plugin.guilds().of(p.getUniqueId());
         double need = plugin.levels().need(d.level);
         List<String> lines = new ArrayList<>();
+        if (plugin.pack().hasPack(p)) {   // v5.10.34 마크에이지 4R 풍: 아이콘 + 은 구분선
+            sidebar4r(p, d, s, sb, g, need);
+            return;
+        }
         lines.add(" ");
         lines.add("&f직업 &e" + plugin.jobs().title(d));
         lines.add("&f레벨 &eLv." + d.level + " &7(" + String.format("%.1f", d.exp / need * 100) + "%)");
@@ -254,6 +258,41 @@ public class HudManager implements Listener {
             Team t = sb.getTeam("l" + i);
             String line = Text.c(i < lines.size() ? lines.get(i) : "");
             if (t != null && !line.equals(t.getPrefix())) t.setPrefix(line);   // 렉 줄이기: 바뀐 줄만 전송 (v5.4.29)
+        }
+    }
+
+    private static final String DIV = "&f\uE070", I_JOB = "&f\uE060", I_LV = "&f\uE061", I_MONEY = "&f\uE062", I_POINT = "&f\uE063",
+            I_POWER = "&f\uE064", I_QUEST = "&f\uE065", I_GUILD = "&f\uE066", I_BUFF = "&f\uE067", I_STR = "&f\uE068", I_DEX = "&f\uE069", I_ADV = "&f\uE06A";
+
+    private void sidebar4r(Player p, PlayerData d, StatSnapshot s, Scoreboard sb, Guild g, double need) {
+        List<String> lines = new ArrayList<>();
+        lines.add(DIV);
+        lines.add(I_JOB + " &7직업 &f" + plugin.jobs().title(d));
+        lines.add(I_LV + " &7레벨 &e&lLv." + d.level + " &8(" + String.format("%.1f", d.exp / need * 100) + "%)");
+        lines.add(I_MONEY + " &7소지금 &6" + Text.money(d.money));
+        lines.add(I_POINT + " &7포인트 " + (d.statPoints > 0 ? "&a&l" : "&f") + d.statPoints + (d.statPoints > 0 ? " &8(인벤토리 위)" : ""));
+        lines.add(DIV + "&r");
+        lines.add(I_STR + "&c" + (int) s.str + "  " + I_DEX + "&9" + (int) s.dex + "  " + I_ADV + "&a" + (int) s.adv);
+        lines.add(I_POWER + " &7전투력 &6&l" + Text.num(Power.of(s)));
+        lines.add(I_QUEST + " &7의뢰 &a" + plugin.quests().completedCount(d) + "&8/3 &7· &b" + plugin.quests().weeklyCompleted(d) + "&8/3");
+        lines.add(I_GUILD + " &7길드 " + (g == null ? "&8없음" : "&b" + g.name + " &8Lv." + g.level));
+        lines.add(DIV + "&r&r");
+        StringBuilder buffs = new StringBuilder();
+        long now = System.currentTimeMillis();
+        String[][] B = {{"buff_atk", "공격"}, {"buff_def", "수호"}, {"buff_speed", "질풍"}, {"buff_exp", "지혜"}};
+        for (String[] b : B) {
+            long left = (long) d.counter(b[0]) - now;
+            if (left > 0) buffs.append("&d").append(b[1]).append(" &f").append(left / 60000).append(":").append(String.format("%02d", left / 1000 % 60)).append(" ");
+        }
+        double wk = plugin.levels().weekendMult();
+        if (wk > 1) buffs.insert(0, "&6주말 x" + (wk == Math.floor(wk) ? String.valueOf((int) wk) : String.valueOf(wk)) + " ");
+        lines.add(buffs.length() > 0 ? I_BUFF + " " + buffs.toString().trim() : I_BUFF + " &8버프 없음");
+        String gl = plugin.guide() == null ? null : plugin.guide().line(d);
+        if (gl != null) lines.add(gl);
+        for (int i = 0; i < LINES; i++) {
+            Team t = sb.getTeam("l" + i);
+            String line = Text.c(i < lines.size() ? lines.get(i) : "");
+            if (t != null && !line.equals(t.getPrefix())) t.setPrefix(line);
         }
     }
 

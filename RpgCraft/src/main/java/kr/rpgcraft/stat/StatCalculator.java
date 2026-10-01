@@ -219,7 +219,7 @@ public class StatCalculator {
                 + s.adv * c.getDouble("player.adv-hp-per-point", 40) + t.get(HP) * c.getDouble("player.item-hp-mult", 0.4);
         double hpPct = t.get(HP_PCT) * c.getDouble("player.item-hp-mult", 0.4) + (d.doldolUntil > System.currentTimeMillis() ? 50 : 0);   // 체력% 효과 너프
         s.maxHp = Math.max(1, Math.round(hp * (1 + hpPct / 100) * hpScale() * 10) / 10.0);
-        s.lifesteal = Math.max(0, t.get(LIFESTEAL));
+        s.lifesteal = Math.max(0, t.get(LIFESTEAL)) * plugin.getConfig().getDouble("player.lifesteal-mult", 0.85);   // v5.10.34 흡혈 소폭 너프 (-15%)
         s.armorPen = clamp(t.get(ARMOR_PEN), 0, 100);
         s.dodge = clamp(t.get(DODGE), 0, 75);
         s.speed = (t.get(SPEED) + Math.min(c.getDouble("player.dex-speed-max", 30), s.dex * c.getDouble("player.dex-speed-per-point", 0.05)))

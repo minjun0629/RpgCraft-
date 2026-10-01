@@ -151,6 +151,15 @@
     },
     {
       "type": "bitmap",
+      "file": "rpgcraft:gui/inspect.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
       "file": "rpgcraft:gui/spirit.png",
       "ascent": 13,
       "height": 222,
@@ -345,6 +354,123 @@
       "height": 11,
       "chars": [
         ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_job.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_level.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_money.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_point.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_power.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_quest.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_guild.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_buff.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_str.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_dex.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_adv.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/sb_divider.png",
+      "ascent": 5,
+      "height": 7,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/compass_frame.png",
+      "ascent": 10,
+      "height": 15,
+      "chars": [
+        ""
       ]
     },
     {

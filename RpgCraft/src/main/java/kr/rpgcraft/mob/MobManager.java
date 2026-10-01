@@ -323,6 +323,8 @@ public class MobManager implements Listener {
         if (s.level > kd0.level && kd0.hp <= plugin.health().max(killer) * 0.05) kd0.counters.merge("hs_grit", 1.0, Double::sum);   // 투지 누적
         int under = plugin.data().get(killer).level - s.level - plugin.getConfig().getInt("mobs.overlevel-free", 20);
         double expMul = under > 0 ? Math.max(0.1, 1 - 0.03 * under) : 1;   // 나보다 20레벨 넘게 낮은 몬스터는 경험치 감소
+        if (plugin.tiers() == null || plugin.tiers().tier(ent) == kr.rpgcraft.mob.MonsterTierManager.Tier.NORMAL)
+            expMul *= plugin.getConfig().getDouble("mobs.normal-exp-mult", 0.75);   // v5.10.34 일반 몬스터 경험치 75%
         plugin.party().giveKillReward(killer, s, s.exp * expMul, (long) (moneyRoll(s.money) * plugin.jobs().moneyMult(killer)));
         ThreadLocalRandom r = ThreadLocalRandom.current();
         double cc = plugin.getConfig().getDouble("mobs.crystal-chance", 0.06) * (s.level >= 90 ? 0.25 : s.level >= 60 ? 0.4 : s.level >= 30 ? 0.6 : 1.0);   // 고등급 결정일수록 드물게

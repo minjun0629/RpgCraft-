@@ -2609,6 +2609,783 @@
         }
       },
       {
+        "threshold": 9411,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie"
+        }
+      },
+      {
+        "threshold": 9412,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_head"
+        }
+      },
+      {
+        "threshold": 9413,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_arm_l"
+        }
+      },
+      {
+        "threshold": 9414,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_arm_r"
+        }
+      },
+      {
+        "threshold": 9415,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_leg_l"
+        }
+      },
+      {
+        "threshold": 9416,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_leg_r"
+        }
+      },
+      {
+        "threshold": 9417,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk"
+        }
+      },
+      {
+        "threshold": 9418,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_head"
+        }
+      },
+      {
+        "threshold": 9419,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_arm_l"
+        }
+      },
+      {
+        "threshold": 9420,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_arm_r"
+        }
+      },
+      {
+        "threshold": 9421,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_leg_l"
+        }
+      },
+      {
+        "threshold": 9422,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_leg_r"
+        }
+      },
+      {
+        "threshold": 9423,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned"
+        }
+      },
+      {
+        "threshold": 9424,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_head"
+        }
+      },
+      {
+        "threshold": 9425,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_arm_l"
+        }
+      },
+      {
+        "threshold": 9426,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_arm_r"
+        }
+      },
+      {
+        "threshold": 9427,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_leg_l"
+        }
+      },
+      {
+        "threshold": 9428,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_leg_r"
+        }
+      },
+      {
+        "threshold": 9429,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton"
+        }
+      },
+      {
+        "threshold": 9430,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_head"
+        }
+      },
+      {
+        "threshold": 9431,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_arm_l"
+        }
+      },
+      {
+        "threshold": 9432,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_arm_r"
+        }
+      },
+      {
+        "threshold": 9433,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_leg_l"
+        }
+      },
+      {
+        "threshold": 9434,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_leg_r"
+        }
+      },
+      {
+        "threshold": 9435,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray"
+        }
+      },
+      {
+        "threshold": 9436,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_head"
+        }
+      },
+      {
+        "threshold": 9437,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_arm_l"
+        }
+      },
+      {
+        "threshold": 9438,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_arm_r"
+        }
+      },
+      {
+        "threshold": 9439,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_leg_l"
+        }
+      },
+      {
+        "threshold": 9440,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_leg_r"
+        }
+      },
+      {
+        "threshold": 9441,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton"
+        }
+      },
+      {
+        "threshold": 9442,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_head"
+        }
+      },
+      {
+        "threshold": 9443,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_arm_l"
+        }
+      },
+      {
+        "threshold": 9444,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_arm_r"
+        }
+      },
+      {
+        "threshold": 9445,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_leg_l"
+        }
+      },
+      {
+        "threshold": 9446,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_leg_r"
+        }
+      },
+      {
+        "threshold": 9447,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper"
+        }
+      },
+      {
+        "threshold": 9448,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_fl"
+        }
+      },
+      {
+        "threshold": 9449,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_fr"
+        }
+      },
+      {
+        "threshold": 9450,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_bl"
+        }
+      },
+      {
+        "threshold": 9451,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_br"
+        }
+      },
+      {
+        "threshold": 9452,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_spider"
+        }
+      },
+      {
+        "threshold": 9453,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_cave_spider"
+        }
+      },
+      {
+        "threshold": 9454,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman"
+        }
+      },
+      {
+        "threshold": 9455,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_head"
+        }
+      },
+      {
+        "threshold": 9456,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_arm_l"
+        }
+      },
+      {
+        "threshold": 9457,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_arm_r"
+        }
+      },
+      {
+        "threshold": 9458,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_leg_l"
+        }
+      },
+      {
+        "threshold": 9459,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_leg_r"
+        }
+      },
+      {
+        "threshold": 9460,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch"
+        }
+      },
+      {
+        "threshold": 9461,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_head"
+        }
+      },
+      {
+        "threshold": 9462,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_arm_l"
+        }
+      },
+      {
+        "threshold": 9463,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_arm_r"
+        }
+      },
+      {
+        "threshold": 9464,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager"
+        }
+      },
+      {
+        "threshold": 9465,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_head"
+        }
+      },
+      {
+        "threshold": 9466,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_arm_l"
+        }
+      },
+      {
+        "threshold": 9467,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_arm_r"
+        }
+      },
+      {
+        "threshold": 9468,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_leg_l"
+        }
+      },
+      {
+        "threshold": 9469,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_leg_r"
+        }
+      },
+      {
+        "threshold": 9470,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator"
+        }
+      },
+      {
+        "threshold": 9471,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_head"
+        }
+      },
+      {
+        "threshold": 9472,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_arm_l"
+        }
+      },
+      {
+        "threshold": 9473,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_arm_r"
+        }
+      },
+      {
+        "threshold": 9474,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_leg_l"
+        }
+      },
+      {
+        "threshold": 9475,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_leg_r"
+        }
+      },
+      {
+        "threshold": 9476,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_slime"
+        }
+      },
+      {
+        "threshold": 9477,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_magma_cube"
+        }
+      },
+      {
+        "threshold": 9478,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_phantom"
+        }
+      },
+      {
+        "threshold": 9479,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_phantom_wing_l"
+        }
+      },
+      {
+        "threshold": 9480,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_phantom_wing_r"
+        }
+      },
+      {
+        "threshold": 9481,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow"
+        }
+      },
+      {
+        "threshold": 9482,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_fl"
+        }
+      },
+      {
+        "threshold": 9483,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_fr"
+        }
+      },
+      {
+        "threshold": 9484,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_bl"
+        }
+      },
+      {
+        "threshold": 9485,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_br"
+        }
+      },
+      {
+        "threshold": 9486,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig"
+        }
+      },
+      {
+        "threshold": 9487,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_fl"
+        }
+      },
+      {
+        "threshold": 9488,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_fr"
+        }
+      },
+      {
+        "threshold": 9489,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_bl"
+        }
+      },
+      {
+        "threshold": 9490,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_br"
+        }
+      },
+      {
+        "threshold": 9491,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep"
+        }
+      },
+      {
+        "threshold": 9492,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_fl"
+        }
+      },
+      {
+        "threshold": 9493,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_fr"
+        }
+      },
+      {
+        "threshold": 9494,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_bl"
+        }
+      },
+      {
+        "threshold": 9495,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_br"
+        }
+      },
+      {
+        "threshold": 9496,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken"
+        }
+      },
+      {
+        "threshold": 9497,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_head"
+        }
+      },
+      {
+        "threshold": 9498,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_leg_l"
+        }
+      },
+      {
+        "threshold": 9499,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_leg_r"
+        }
+      },
+      {
+        "threshold": 9500,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_rabbit"
+        }
+      },
+      {
+        "threshold": 9501,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_rabbit_head"
+        }
+      },
+      {
+        "threshold": 9502,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf"
+        }
+      },
+      {
+        "threshold": 9503,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_fl"
+        }
+      },
+      {
+        "threshold": 9504,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_fr"
+        }
+      },
+      {
+        "threshold": 9505,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_bl"
+        }
+      },
+      {
+        "threshold": 9506,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_br"
+        }
+      },
+      {
+        "threshold": 9507,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox"
+        }
+      },
+      {
+        "threshold": 9508,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_fl"
+        }
+      },
+      {
+        "threshold": 9509,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_fr"
+        }
+      },
+      {
+        "threshold": 9510,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_bl"
+        }
+      },
+      {
+        "threshold": 9511,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_br"
+        }
+      },
+      {
+        "threshold": 9512,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat"
+        }
+      },
+      {
+        "threshold": 9513,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_fl"
+        }
+      },
+      {
+        "threshold": 9514,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_fr"
+        }
+      },
+      {
+        "threshold": 9515,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_bl"
+        }
+      },
+      {
+        "threshold": 9516,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_br"
+        }
+      },
+      {
+        "threshold": 9517,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear"
+        }
+      },
+      {
+        "threshold": 9518,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_fl"
+        }
+      },
+      {
+        "threshold": 9519,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_fr"
+        }
+      },
+      {
+        "threshold": 9520,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_bl"
+        }
+      },
+      {
+        "threshold": 9521,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_br"
+        }
+      },
+      {
         "threshold": 12000,
         "model": {
           "type": "minecraft:model",
@@ -3306,6 +4083,594 @@
         "model": {
           "type": "minecraft:model",
           "model": "rpgcraft:item/minigame/mg_2048_logo"
+        }
+      },
+      {
+        "threshold": 12600,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_season_pass"
+        }
+      },
+      {
+        "threshold": 12601,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_skill"
+        }
+      },
+      {
+        "threshold": 12602,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_enhance"
+        }
+      },
+      {
+        "threshold": 12603,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_rune"
+        }
+      },
+      {
+        "threshold": 12604,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_potion_bag"
+        }
+      },
+      {
+        "threshold": 12605,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_aura"
+        }
+      },
+      {
+        "threshold": 12606,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_smith"
+        }
+      },
+      {
+        "threshold": 12607,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_quest"
+        }
+      },
+      {
+        "threshold": 12608,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop"
+        }
+      },
+      {
+        "threshold": 12609,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_warp"
+        }
+      },
+      {
+        "threshold": 12610,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_guild"
+        }
+      },
+      {
+        "threshold": 12611,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_potential"
+        }
+      },
+      {
+        "threshold": 12612,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_ranking"
+        }
+      },
+      {
+        "threshold": 12613,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_codex"
+        }
+      },
+      {
+        "threshold": 12614,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_achievement"
+        }
+      },
+      {
+        "threshold": 12615,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_attendance"
+        }
+      },
+      {
+        "threshold": 12616,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_accessory"
+        }
+      },
+      {
+        "threshold": 12617,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_roulette"
+        }
+      },
+      {
+        "threshold": 12618,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_settings"
+        }
+      },
+      {
+        "threshold": 12619,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_job"
+        }
+      },
+      {
+        "threshold": 12620,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_hidden_job"
+        }
+      },
+      {
+        "threshold": 12621,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_help"
+        }
+      },
+      {
+        "threshold": 12622,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_tower"
+        }
+      },
+      {
+        "threshold": 12623,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_mastery"
+        }
+      },
+      {
+        "threshold": 12624,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_str"
+        }
+      },
+      {
+        "threshold": 12625,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_dex"
+        }
+      },
+      {
+        "threshold": 12626,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_adv"
+        }
+      },
+      {
+        "threshold": 12627,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_point"
+        }
+      },
+      {
+        "threshold": 12628,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_info"
+        }
+      },
+      {
+        "threshold": 12629,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_sidebar"
+        }
+      },
+      {
+        "threshold": 12630,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_compass"
+        }
+      },
+      {
+        "threshold": 12631,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_hud"
+        }
+      },
+      {
+        "threshold": 12632,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_indicator"
+        }
+      },
+      {
+        "threshold": 12633,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_sound"
+        }
+      },
+      {
+        "threshold": 12634,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_loot_notice"
+        }
+      },
+      {
+        "threshold": 12635,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_announce"
+        }
+      },
+      {
+        "threshold": 12636,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_exp_chat"
+        }
+      },
+      {
+        "threshold": 12637,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_pvp"
+        }
+      },
+      {
+        "threshold": 12638,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_bgm"
+        }
+      },
+      {
+        "threshold": 12639,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_nav_back"
+        }
+      },
+      {
+        "threshold": 12640,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_nav_next"
+        }
+      },
+      {
+        "threshold": 12641,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_nav_close"
+        }
+      },
+      {
+        "threshold": 12700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_season_pass_off"
+        }
+      },
+      {
+        "threshold": 12701,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_skill_off"
+        }
+      },
+      {
+        "threshold": 12702,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_enhance_off"
+        }
+      },
+      {
+        "threshold": 12703,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_rune_off"
+        }
+      },
+      {
+        "threshold": 12704,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_potion_bag_off"
+        }
+      },
+      {
+        "threshold": 12705,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_aura_off"
+        }
+      },
+      {
+        "threshold": 12706,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_smith_off"
+        }
+      },
+      {
+        "threshold": 12707,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_quest_off"
+        }
+      },
+      {
+        "threshold": 12708,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_off"
+        }
+      },
+      {
+        "threshold": 12709,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_warp_off"
+        }
+      },
+      {
+        "threshold": 12710,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_guild_off"
+        }
+      },
+      {
+        "threshold": 12711,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_potential_off"
+        }
+      },
+      {
+        "threshold": 12712,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_ranking_off"
+        }
+      },
+      {
+        "threshold": 12713,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_codex_off"
+        }
+      },
+      {
+        "threshold": 12714,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_achievement_off"
+        }
+      },
+      {
+        "threshold": 12715,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_attendance_off"
+        }
+      },
+      {
+        "threshold": 12716,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_accessory_off"
+        }
+      },
+      {
+        "threshold": 12717,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_roulette_off"
+        }
+      },
+      {
+        "threshold": 12718,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_settings_off"
+        }
+      },
+      {
+        "threshold": 12719,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_job_off"
+        }
+      },
+      {
+        "threshold": 12720,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_hidden_job_off"
+        }
+      },
+      {
+        "threshold": 12721,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_help_off"
+        }
+      },
+      {
+        "threshold": 12722,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_tower_off"
+        }
+      },
+      {
+        "threshold": 12723,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_mastery_off"
+        }
+      },
+      {
+        "threshold": 12724,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_str_off"
+        }
+      },
+      {
+        "threshold": 12725,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_dex_off"
+        }
+      },
+      {
+        "threshold": 12726,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_adv_off"
+        }
+      },
+      {
+        "threshold": 12727,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_point_off"
+        }
+      },
+      {
+        "threshold": 12728,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_stat_info_off"
+        }
+      },
+      {
+        "threshold": 12729,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_sidebar_off"
+        }
+      },
+      {
+        "threshold": 12730,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_compass_off"
+        }
+      },
+      {
+        "threshold": 12731,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_hud_off"
+        }
+      },
+      {
+        "threshold": 12732,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_indicator_off"
+        }
+      },
+      {
+        "threshold": 12733,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_sound_off"
+        }
+      },
+      {
+        "threshold": 12734,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_loot_notice_off"
+        }
+      },
+      {
+        "threshold": 12735,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_announce_off"
+        }
+      },
+      {
+        "threshold": 12736,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_exp_chat_off"
+        }
+      },
+      {
+        "threshold": 12737,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_pvp_off"
+        }
+      },
+      {
+        "threshold": 12738,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_opt_bgm_off"
+        }
+      },
+      {
+        "threshold": 12739,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_nav_back_off"
+        }
+      },
+      {
+        "threshold": 12740,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_nav_next_off"
+        }
+      },
+      {
+        "threshold": 12741,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_nav_close_off"
         }
       },
       {
@@ -5483,6 +6848,783 @@
         "model": {
           "type": "minecraft:model",
           "model": "rpgcraft:mob/ancient_ravager_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_undead"
+        }
+      },
+      {
+        "threshold": 16312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_head_undead"
+        }
+      },
+      {
+        "threshold": 16313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_zombie_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_undead"
+        }
+      },
+      {
+        "threshold": 16318,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_head_undead"
+        }
+      },
+      {
+        "threshold": 16319,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16320,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16321,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16322,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_husk_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16323,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_undead"
+        }
+      },
+      {
+        "threshold": 16324,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_head_undead"
+        }
+      },
+      {
+        "threshold": 16325,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16326,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16327,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16328,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_drowned_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16329,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_undead"
+        }
+      },
+      {
+        "threshold": 16330,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_head_undead"
+        }
+      },
+      {
+        "threshold": 16331,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16332,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16333,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16334,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_skeleton_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16335,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_undead"
+        }
+      },
+      {
+        "threshold": 16336,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_head_undead"
+        }
+      },
+      {
+        "threshold": 16337,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16338,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16339,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16340,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_stray_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16341,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_undead"
+        }
+      },
+      {
+        "threshold": 16342,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_head_undead"
+        }
+      },
+      {
+        "threshold": 16343,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16344,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16345,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16346,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_wither_skeleton_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16347,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_undead"
+        }
+      },
+      {
+        "threshold": 16348,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16349,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16350,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16351,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_creeper_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16352,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_spider_undead"
+        }
+      },
+      {
+        "threshold": 16353,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_cave_spider_undead"
+        }
+      },
+      {
+        "threshold": 16354,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_undead"
+        }
+      },
+      {
+        "threshold": 16355,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_head_undead"
+        }
+      },
+      {
+        "threshold": 16356,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16357,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16358,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16359,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_enderman_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16360,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_undead"
+        }
+      },
+      {
+        "threshold": 16361,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_head_undead"
+        }
+      },
+      {
+        "threshold": 16362,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16363,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_witch_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16364,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_undead"
+        }
+      },
+      {
+        "threshold": 16365,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_head_undead"
+        }
+      },
+      {
+        "threshold": 16366,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16367,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16368,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16369,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_pillager_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16370,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_undead"
+        }
+      },
+      {
+        "threshold": 16371,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_head_undead"
+        }
+      },
+      {
+        "threshold": 16372,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_arm_l_undead"
+        }
+      },
+      {
+        "threshold": 16373,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_arm_r_undead"
+        }
+      },
+      {
+        "threshold": 16374,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16375,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_vindicator_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16376,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_slime_undead"
+        }
+      },
+      {
+        "threshold": 16377,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_magma_cube_undead"
+        }
+      },
+      {
+        "threshold": 16378,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_phantom_undead"
+        }
+      },
+      {
+        "threshold": 16379,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_phantom_wing_l_undead"
+        }
+      },
+      {
+        "threshold": 16380,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/vn_phantom_wing_r_undead"
+        }
+      },
+      {
+        "threshold": 16381,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_undead"
+        }
+      },
+      {
+        "threshold": 16382,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16383,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16384,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16385,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_cow_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16386,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_undead"
+        }
+      },
+      {
+        "threshold": 16387,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16388,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16389,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16390,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_pig_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16391,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_undead"
+        }
+      },
+      {
+        "threshold": 16392,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16393,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16394,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16395,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_sheep_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16396,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_undead"
+        }
+      },
+      {
+        "threshold": 16397,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_head_undead"
+        }
+      },
+      {
+        "threshold": 16398,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_leg_l_undead"
+        }
+      },
+      {
+        "threshold": 16399,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_chicken_leg_r_undead"
+        }
+      },
+      {
+        "threshold": 16400,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_rabbit_undead"
+        }
+      },
+      {
+        "threshold": 16401,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_rabbit_head_undead"
+        }
+      },
+      {
+        "threshold": 16402,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_undead"
+        }
+      },
+      {
+        "threshold": 16403,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16404,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16405,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16406,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_wolf_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16407,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_undead"
+        }
+      },
+      {
+        "threshold": 16408,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16409,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16410,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16411,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_fox_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16412,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_undead"
+        }
+      },
+      {
+        "threshold": 16413,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16414,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16415,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16416,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_goat_leg_br_undead"
+        }
+      },
+      {
+        "threshold": 16417,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_undead"
+        }
+      },
+      {
+        "threshold": 16418,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_fl_undead"
+        }
+      },
+      {
+        "threshold": 16419,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_fr_undead"
+        }
+      },
+      {
+        "threshold": 16420,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_bl_undead"
+        }
+      },
+      {
+        "threshold": 16421,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:mob/an_polar_bear_leg_br_undead"
         }
       }
     ],

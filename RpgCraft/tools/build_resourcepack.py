@@ -142,6 +142,9 @@ def build_items():
         for t in (1, 2, 3):
             add(mat, 1400 + k * 3 + t - 1, "acc_%s_%d" % (kind, t), False, lambda st=0, fn=fn, t=t: fn(t))
     add("paper", 1420, "potential_scroll", False, lambda st=0: MA.scroll())
+    for li, ln in enumerate("ABCD"):   # v5.10.34 히든 전직서: 계열 · 단계마다 다른 그림 (ENCHANTED_BOOK 2100+)
+        for tr in (1, 2, 3):
+            add("enchanted_book", 2100 + li * 3 + tr - 1, "hj_scroll_%s%d" % (ln.lower(), tr), False, lambda st=0, ln=ln, tr=tr: MA.hj_scroll(ln, tr))
     add("red_dye", 1421, "cube_red", False, lambda st=0: MA.cube("c02a2a", "ffb0a0"))
     add("light_blue_dye", 1422, "cube_master", False, lambda st=0: MA.cube("2a5ac0", "a0e0ff"))
     add("ghast_tear", 1423, "spirit_summon", False, lambda st=0: MA.talisman())
@@ -529,6 +532,11 @@ def main():
     import minigame_art
     for cmd, model in minigame_art.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
         overrides.setdefault("paper", []).append((cmd, model))
+    # v5.10.34 4R 풍 메뉴 아이콘 (PAPER CustomModelData 12600+, 회색 +100) + Java UiIcon 자동 생성
+    import ui_icons
+    for cmd, model in ui_icons.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
+        overrides.setdefault("paper", []).append((cmd, model))
+    ui_icons.write_java(os.path.join(ROOT, "src", "main", "java", "kr", "rpgcraft", "gui", "UiIcon.java"))
     # 보스 3D 모델 (PAPER CustomModelData 9000+)
     for cmd, model in boss_models.write(PACK, NS, lambda p, o: write_json(p, o, compact=True)):
         overrides.setdefault("paper", []).append((cmd, model))
@@ -558,6 +566,11 @@ def main():
             raise SystemExit("CustomModelData 중복: " + vanilla)
         for cmd, model in sorted(lst):
             ov.append({"predicate": {"custom_model_data": cmd}, "model": model})
+            if vanilla == "shield":   # v5.10.34 막을 때는 바닐라처럼 앞으로 들어 올림 (같은 번호 · blocking 이 뒤에 와야 이김)
+                ns, path = model.split(":", 1)
+                write_json(os.path.join(PACK, "assets", ns, "models", path + "_blocking.json"),
+                           {"parent": model, "display": weapon_vox.DISPLAY_SHIELD_BLOCKING})
+                ov.append({"predicate": {"blocking": 1, "custom_model_data": cmd}, "model": model + "_blocking"})
         write_json(os.path.join(PACK, "assets", "minecraft", "models", "item", vanilla + ".json"), m)
 
     providers = []
@@ -582,6 +595,8 @@ def main():
     extra, logo_img = ui_pack.default_font_extra(PACK, art.weapon_image("relic_sword", 2))
     providers.extend(extra)
     providers.append(ui_pack.boss_frame_provider(PACK))   # 보스바 장식 틀
+    providers.extend(ui4r.sidebar_providers(PACK, NS))   # v5.10.34 사이드바 아이콘 · 구분선
+    providers.append(ui4r.compass_provider(PACK, NS))   # v5.10.34 나침반 틀
     # 바닐라 기본 폰트 참조 (다른 팩과 합쳐지지 않는 환경에서도 글자가 깨지지 않도록)
     for ref in ("minecraft:include/space", "minecraft:include/default", "minecraft:include/unifont"):
         providers.append({"type": "reference", "id": ref})

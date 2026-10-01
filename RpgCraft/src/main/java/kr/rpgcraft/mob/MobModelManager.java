@@ -182,6 +182,44 @@ public class MobModelManager implements Listener {
         return !plugin.getConfig().getBoolean("mob-models.require-matching-pack", true) || plugin.pack() == null || plugin.pack().matchesBundled();
     }
 
+    // ------------------------------------------------------------------ v5.10.34 바닐라 몹 모델
+    private final Set<UUID> vanilla = new HashSet<>();
+
+    private double attachRange() {
+        return plugin.getConfig().getDouble("mob-models.vanilla-range", 40);
+    }
+
+    private double cullRange() {
+        return attachRange() + 24;
+    }
+
+    private static boolean nearPlayer(LivingEntity le, double r) {
+        double r2 = r * r;
+        for (Player p : le.getWorld().getPlayers()) if (p.getLocation().distanceSquared(le.getLocation()) <= r2) return true;
+        return false;
+    }
+
+    /** 바닐라 몹 → 모델 이름 (없으면 null). 길들인 동물 · 소환수 · 보스 · NPC · 무언가에 탄 몹은 제외 */
+    private String vanillaId(LivingEntity le) {
+        if (!plugin.getConfig().getBoolean("mob-models.vanilla", true)) return null;
+        if (le instanceof Player || le instanceof ArmorStand || le.isInsideVehicle()) return null;
+        if (le instanceof Tameable t && t.isTamed()) return null;
+        var pdc = le.getPersistentDataContainer();
+        if (pdc.has(Keys.BOSS, PersistentDataType.STRING) || pdc.has(Keys.MINION, PersistentDataType.STRING)) return null;
+        if (plugin.combat() != null && plugin.combat().isNpc(le)) return null;
+        for (Entity pas : le.getPassengers()) if (!(pas instanceof ItemDisplay) && !(pas instanceof TextDisplay)) return null;
+        String n = switch (le.getType().name()) {
+            case "ZOMBIE" -> "vn_zombie"; case "HUSK" -> "vn_husk"; case "DROWNED" -> "vn_drowned"; case "SKELETON" -> "vn_skeleton";
+            case "STRAY" -> "vn_stray"; case "WITHER_SKELETON" -> "vn_wither_skeleton"; case "CREEPER" -> "vn_creeper"; case "SPIDER" -> "vn_spider";
+            case "CAVE_SPIDER" -> "vn_cave_spider"; case "ENDERMAN" -> "vn_enderman"; case "WITCH" -> "vn_witch"; case "PILLAGER" -> "vn_pillager";
+            case "VINDICATOR" -> "vn_vindicator"; case "SLIME" -> "vn_slime"; case "MAGMA_CUBE" -> "vn_magma_cube"; case "PHANTOM" -> "vn_phantom";
+            case "COW" -> "an_cow"; case "PIG" -> "an_pig"; case "SHEEP" -> "an_sheep"; case "CHICKEN" -> "an_chicken"; case "RABBIT" -> "an_rabbit";
+            case "WOLF" -> "an_wolf"; case "FOX" -> "an_fox"; case "GOAT" -> "an_goat"; case "POLAR_BEAR" -> "an_polar_bear";
+            default -> null;
+        };
+        return n == null || !plugin.getConfig().getBoolean("mob-models.vanilla-types." + n, true) ? null : n;
+    }
+
     public boolean has(Entity e) {
         return rigs.containsKey(e.getUniqueId());
     }
@@ -193,9 +231,24 @@ public class MobModelManager implements Listener {
             for (ItemDisplay d : w.getEntitiesByClass(ItemDisplay.class))
                 if (d.getPersistentDataContainer().has(modelKey, PersistentDataType.BYTE) && !owned.contains(d.getUniqueId()) && !dying.contains(d.getUniqueId())) d.remove();
             for (LivingEntity le : w.getLivingEntities()) {
-                if (rigs.containsKey(le.getUniqueId()) || le.isDead()) continue;
+                if (le.isDead()) continue;
+                if (rigs.containsKey(le.getUniqueId())) {
+                    if (vanilla.contains(le.getUniqueId()) && !nearPlayer(le, cullRange())) {   // v5.10.34 멀어진 바닐라 몹은 모델을 떼서 가볍게
+                        removeRig(le.getUniqueId(), rigs.get(le.getUniqueId()));
+                        vanilla.remove(le.getUniqueId());
+                        le.setInvisible(false);
+                    }
+                    continue;
+                }
                 String id = le.getPersistentDataContainer().get(mobKey, PersistentDataType.STRING);
                 if (id != null && !le.getPersistentDataContainer().has(Keys.BOSS, PersistentDataType.STRING)) attach(le, id);
+                else if (id == null) {   // v5.10.34 바닐라 몬스터 · 야생 동물도 블록을 쌓은 모델로 (플레이어 근처만)
+                    String vid = vanillaId(le);
+                    if (vid != null && defs.containsKey(vid) && nearPlayer(le, attachRange())) {
+                        attach(le, vid);
+                        if (rigs.containsKey(le.getUniqueId())) vanilla.add(le.getUniqueId());
+                    }
+                }
             }
         }
     }
@@ -289,6 +342,7 @@ public class MobModelManager implements Listener {
             if (d != null) d.remove();
         }
         rigs.remove(mob);
+        vanilla.remove(mob);
     }
 
     private void removeName(Rig r) {
@@ -538,6 +592,7 @@ public class MobModelManager implements Listener {
     public void onDeath(EntityDeathEvent e) {
         LivingEntity mob = e.getEntity();
         Rig r = rigs.remove(mob.getUniqueId());
+        vanilla.remove(mob.getUniqueId());
         if (r == null) return;
         removeName(r);
         Location l = mob.getLocation();

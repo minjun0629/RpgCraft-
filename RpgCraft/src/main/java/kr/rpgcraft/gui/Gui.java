@@ -121,6 +121,15 @@ public abstract class Gui implements InventoryHolder {
         return new ItemBuilder(m).name(name).lore(lore).hideAll().build();
     }
 
+    /** v5.10.34 4R 풍 아이콘 단추 (PAPER + UiIcon 그림, on=false 면 회색) */
+    public static ItemStack ui(UiIcon icon, boolean on, String name, String... lore) {
+        ItemStack it = button(Material.PAPER, name, lore);
+        org.bukkit.inventory.meta.ItemMeta m = it.getItemMeta();
+        m.setCustomModelData(icon.cmd(on));
+        it.setItemMeta(m);
+        return it;
+    }
+
     /** 아이템을 넣고 뺄 수 있는 슬롯인지 */
     public boolean editable(int rawSlot) {
         return false;
@@ -150,6 +159,8 @@ public abstract class Gui implements InventoryHolder {
             return;
         }
         e.setCancelled(true);
+        // v5.10.34 더블클릭은 첫 클릭과 함께 한 번 더 들어와서 켜고 바로 끄는 문제 (설정이 자꾸 꺼짐) → 무시
+        if (e.getClick() == org.bukkit.event.inventory.ClickType.DOUBLE_CLICK) return;
         Consumer<InventoryClickEvent> c = buttons.get(raw);
         // 클릭 이벤트 도중 인벤토리를 열고 닫으면 불안정하므로 다음 틱에 실행
         if (c != null && e.getWhoClicked() instanceof org.bukkit.entity.Player pl

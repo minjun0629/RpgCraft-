@@ -123,6 +123,8 @@ def _tier(name):
 
 
 def kind_of(name):
+    if name.startswith(("fish_", "loot_", "mat_", "herb_", "wood_", "ore_", "ing_", "food_", "pet_", "mg_", "ui_")):   # v5.10.38 물고기 이름(무지개 송어=rainbow · 황새치=swordfish)이 무기로 잘못 잡히던 문제
+        return None
     if "shield" in name:
         return "shield"
     if "bow" in name:

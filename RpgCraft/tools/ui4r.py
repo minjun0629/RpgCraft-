@@ -317,3 +317,102 @@ def generic54_png():
     for c in range(9):
         slot(d, 7 + c * 18, 197)
     return img
+
+
+# ------------------------------------------------------------------ v5.10.33 HUD (핫바 양옆): LV 배지 · 체력/경험치 바 · 전투 수치
+# Java kr.rpgcraft.pack.HudFont.build4r 와 글리프 번호 · 폭 · 높이가 같아야 함
+HUD_HP, HUD_XP = 0xE400, 0xE420            # 0 ~ 20 단계
+HUD_FRAME_L, HUD_FRAME_R, HUD_BADGE = 0xE440, 0xE441, 0xE442
+HUD_DIG_A, HUD_DIG_B = 0xE450, 0xE470      # 위 줄(흰색) · 아래 줄(크림색) 숫자
+HUD_ICON_A, HUD_ICON_B = 0xE490, 0xE4A0    # 위 줄 · 아래 줄 아이콘 (ICON_KINDS 순서)
+ICON_KINDS = ["sword", "crit", "def", "potion", "skill", "skill_cd", "quick", "quick_cd"]
+BAR_W, FRAME_LW, FRAME_RW, BADGE_W = 82, 118, 104, 26
+# 액션바 기준선에서 위 가장자리까지 (음수 = 기준선 아래). 핫바 위 끝 = 기준선 + 43
+ASC_FRAME, ASC_BADGE, ASC_TOP, ASC_BOT, ASC_DA, ASC_DB = -40, -39, -43, -53, -45, -55
+
+
+def _fullw(img):
+    w, h = img.size
+    if img.getpixel((w - 1, 0))[3] == 0:
+        img.putpixel((w - 1, 0), (0, 0, 0, 1))
+    return img
+
+
+def hud_bar(step, kind):
+    """82x9 바: 어두운 홈 + 채움 (체력 빨강 / 경험치 초록) + 위쪽 빛"""
+    img = Image.new("RGBA", (BAR_W, 9), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle([0, 0, BAR_W - 1, 8], fill=(22, 19, 18, 235), outline=F_OUT)
+    d.line([(1, 7), (BAR_W - 2, 7)], fill=(58, 52, 48, 255))
+    top, bot = ((236, 70, 78), (150, 22, 36)) if kind == "hp" else ((128, 222, 84), (52, 140, 44))
+    inner = BAR_W - 2
+    fill = round(inner * step / 20)
+    for x in range(fill):
+        for y in range(1, 8):
+            c = _lerp(top, bot, (y - 1) / 6)
+            if y == 1:
+                c = tuple(min(255, v + 70) for v in c)
+            if x % 10 == 9 and y > 1:   # 눈금
+                c = tuple(int(v * 0.8) for v in c)
+            img.putpixel((1 + x, y), c + (255,))
+    if 0 < fill < inner:
+        for y in range(1, 8):
+            img.putpixel((fill, y), (255, 255, 255, 220))
+    return _fullw(img)
+
+
+def hud_frame(w, left):
+    """바 · 수치를 받치는 판 (높이 24, 반투명 어두운 판 + 은 테두리 + 끝 마름모)"""
+    img = Image.new("RGBA", (w, 24), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    x0, x1 = (8, w - 7) if left else (6, w - 7)
+    d.rectangle([x0, 1, x1, 22], fill=(40, 35, 32, 205), outline=F_OUT)
+    d.line([(x0 + 1, 2), (x1 - 1, 2)], fill=F_MID)
+    d.line([(x0 + 1, 21), (x1 - 1, 21)], fill=F_LO)
+    diamond(d, x1 + 1, 12, 5)
+    if not left:
+        diamond(d, x0 - 1, 12, 5)
+    return _fullw(img)
+
+
+LV_TXT = {"L": ["10", "10", "10", "10", "11"], "V": ["101", "101", "101", "101", "010"]}
+
+
+def hud_badge():
+    """둥근 레벨 배지 26x26: 은 고리 · 청동 안 고리 · 'LV' 글자 (숫자는 아래 줄 숫자 글리프로)"""
+    img = Image.new("RGBA", (BADGE_W, BADGE_W), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse([0, 0, 25, 25], fill=F_OUT)
+    d.ellipse([1, 1, 24, 24], fill=(196, 198, 208, 255))
+    d.ellipse([3, 3, 22, 22], fill=(110, 92, 64, 255))
+    d.ellipse([4, 4, 21, 21], fill=(30, 27, 30, 255))
+    d.arc([4, 4, 21, 21], 200, 320, fill=(70, 66, 74, 255))
+    x = 9
+    for ch in "LV":
+        for yy, row in enumerate(LV_TXT[ch]):
+            for xx, v in enumerate(row):
+                if v == "1":
+                    d.point((x + xx, 7 + yy), fill=(220, 224, 236, 255))
+        x += len(LV_TXT[ch][0]) + 1
+    diamond(d, 21, 4, 3)
+    return img
+
+
+def hud_providers(icon_fn, digit_fn, chars):
+    """[(이름, 이미지, ascent, 글자 번호)] — ui_pack.write_hud 가 hud.json 에 추가"""
+    out = []
+    for s in range(21):
+        out.append(("h4_hp_%02d" % s, hud_bar(s, "hp"), ASC_TOP, HUD_HP + s))
+        out.append(("h4_xp_%02d" % s, hud_bar(s, "xp"), ASC_BOT, HUD_XP + s))
+    out.append(("h4_frame_l", hud_frame(FRAME_LW, True), ASC_FRAME, HUD_FRAME_L))
+    out.append(("h4_frame_r", hud_frame(FRAME_RW, False), ASC_FRAME, HUD_FRAME_R))
+    out.append(("h4_badge", hud_badge(), ASC_BADGE, HUD_BADGE))
+    names = {"/": "slash", ",": "comma", "%": "pct", ".": "dot", "+": "plus"}
+    for i, ch in enumerate(chars):
+        n = names.get(ch, ch if ch.isdigit() else ch.lower() + ("_u" if ch.isupper() else "_l"))
+        out.append(("h4_da_" + n, digit_fn(ch, (255, 255, 255, 255)), ASC_DA, HUD_DIG_A + i))
+        out.append(("h4_db_" + n, digit_fn(ch, (255, 236, 188, 255)), ASC_DB, HUD_DIG_B + i))
+    for i, k in enumerate(ICON_KINDS):
+        out.append(("h4_ia_" + k, icon_fn(k), ASC_TOP, HUD_ICON_A + i))
+        out.append(("h4_ib_" + k, icon_fn(k), ASC_BOT, HUD_ICON_B + i))
+    return out

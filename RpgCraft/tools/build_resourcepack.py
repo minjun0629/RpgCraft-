@@ -537,6 +537,9 @@ def main():
     for cmd, model in ui_icons.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
         overrides.setdefault("paper", []).append((cmd, model))
     ui_icons.write_java(os.path.join(ROOT, "src", "main", "java", "kr", "rpgcraft", "gui", "UiIcon.java"))
+    import dmg_skin   # v5.10.35 대미지 스킨 아이템 아이콘 (PAPER 12801+)
+    for cmd, model in dmg_skin.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
+        overrides.setdefault("paper", []).append((cmd, model))
     # 보스 3D 모델 (PAPER CustomModelData 9000+)
     for cmd, model in boss_models.write(PACK, NS, lambda p, o: write_json(p, o, compact=True)):
         overrides.setdefault("paper", []).append((cmd, model))
@@ -597,6 +600,8 @@ def main():
     providers.append(ui_pack.boss_frame_provider(PACK))   # 보스바 장식 틀
     providers.extend(ui4r.sidebar_providers(PACK, NS))   # v5.10.34 사이드바 아이콘 · 구분선
     providers.append(ui4r.compass_provider(PACK, NS))   # v5.10.34 나침반 틀
+    import dmg_skin   # v5.10.35 대미지 스킨 숫자 글꼴
+    providers.extend(dmg_skin.providers(PACK, NS))
     # 바닐라 기본 폰트 참조 (다른 팩과 합쳐지지 않는 환경에서도 글자가 깨지지 않도록)
     for ref in ("minecraft:include/space", "minecraft:include/default", "minecraft:include/unifont"):
         providers.append({"type": "reference", "id": ref})

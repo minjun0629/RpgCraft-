@@ -59,6 +59,12 @@ public class ItemRegistry {
                     .desc("들고 우클릭하면 먹음", "효과: " + r.effect() + " (" + r.minutes() + "분)", "버프는 하나만 (새로 먹으면 바뀜)"));
         reg(new ItemTemplate("pet_snack", "[펫] 펫 간식", Material.COOKIE, Category.MATERIAL).grade(Grade.RARE).price(25000, 5000)
                 .desc("/펫 → 펫 우클릭 → 먹이 주기", "꺼내 둔 펫 경험치 +60"));   // v5.10.30 펫 성장
+        for (var sk : kr.rpgcraft.feature.DamageSkinManager.Skin.values()) {   // v5.10.35 대미지 스킨 (시즌 패스 보상)
+            if (sk.ordinal() == 0) continue;
+            reg(new ItemTemplate(sk.itemId(), "대미지 스킨: " + sk.label, Material.PAPER, Category.TICKET).model(12800 + sk.ordinal())
+                    .grade(sk.ordinal() >= 6 ? Grade.MYTHIC : sk.ordinal() >= 3 ? Grade.LEGEND : Grade.UNIQUE).price(-1, -1)
+                    .desc(sk.desc, "들고 우클릭하면 등록 · 장착 (/데미지스킨 에서 변경)", "내가 준 대미지 숫자를 모두가 이 모양으로 봄"));
+        }
         // 히든 직업 전용 무기: 그 히든 직업만 쓸 수 있고, 단계가 오를수록 고유 효과가 강해짐 (히든 직업창에서 제작)
         reg(new ItemTemplate("hjw_a", "명계의 낫", Material.NETHERITE_HOE, Category.WEAPON).weapon(WeaponClass.AXE).grade(Grade.MYTHIC)
                 .stats(StatMap.of(ATK, 9000, MAGIC, 1500, LIFESTEAL, 5, CRIT, 10, LEVEL_REQ, 50)).glow().price(-1, -1)

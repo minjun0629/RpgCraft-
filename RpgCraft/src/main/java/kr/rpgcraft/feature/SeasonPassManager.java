@@ -74,6 +74,8 @@ public class SeasonPassManager implements Listener, CommandExecutor {
     // ------------------------------------------------------------------ 보상표
     private Reward free(int lv) {
         // v5.10.34 돈 보상 없음 — 모두 아이템
+        if (lv == 15) return item("dmg_skin_gold", 1);   // v5.10.35 대미지 스킨
+        if (lv == 35) return item("dmg_skin_ice", 1);
         if (lv == MAX) return item("rune_mid", 1);
         if (lv % 10 == 0) return item("ticket_protect", 1);
         if (lv % 5 == 0) return item("crystal_high", 2);
@@ -83,7 +85,12 @@ public class SeasonPassManager implements Listener, CommandExecutor {
     }
 
     private Reward premium(int lv) {
-        if (lv == MAX) return item("cube_master", 3);
+        if (lv == MAX) return item("dmg_skin_rainbow", 1);   // v5.10.35 대미지 스킨
+        if (lv == 49) return item("cube_master", 3);
+        if (lv == 20) return item("dmg_skin_fire", 1);
+        if (lv == 30) return item("dmg_skin_arcane", 1);
+        if (lv == 40) return item("dmg_skin_candy", 1);
+        if (lv == 45) return item("dmg_skin_toxic", 1);
         if (lv % 10 == 0) return item("cube_master", 1);
         if (lv % 5 == 0) return item("ticket_rate10", 1);
         if (lv % 3 == 0) return item("cube_red", 1);

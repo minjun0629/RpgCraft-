@@ -313,7 +313,7 @@ public class CombatService {
     public void applyDamage(LivingEntity victim, double amount, Player attacker, Entity source, boolean crit) {
         if (victim.isDead() || !victim.isValid()) return;
         if (victim instanceof Player vp && (vp.getGameMode() == GameMode.CREATIVE || vp.getGameMode() == GameMode.SPECTATOR)) return;
-        indicator(victim, amount, crit);
+        indicator(victim, amount, crit, attacker);
         if (attacker != null && victim instanceof Player vp2 && !vp2.equals(attacker)) markPvp(attacker, vp2);
         boolean lethal = plugin.health().damage(victim, amount, attacker);
         if (lethal) kill(victim, source);
@@ -470,5 +470,9 @@ public class CombatService {
 
     public void indicator(LivingEntity victim, double amount, boolean crit) {
         plugin.visuals().damageNumber(victim, amount, crit, false);
+    }
+
+    public void indicator(LivingEntity victim, double amount, boolean crit, Player attacker) {
+        plugin.visuals().damageNumber(victim, amount, crit, false, attacker);
     }
 }

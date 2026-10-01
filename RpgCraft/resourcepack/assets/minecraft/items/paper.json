@@ -4674,6 +4674,55 @@
         }
       },
       {
+        "threshold": 12801,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_gold"
+        }
+      },
+      {
+        "threshold": 12802,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_ice"
+        }
+      },
+      {
+        "threshold": 12803,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_fire"
+        }
+      },
+      {
+        "threshold": 12804,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_arcane"
+        }
+      },
+      {
+        "threshold": 12805,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_candy"
+        }
+      },
+      {
+        "threshold": 12806,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_toxic"
+        }
+      },
+      {
+        "threshold": 12807,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/dmg_skin_rainbow"
+        }
+      },
+      {
         "threshold": 16000,
         "model": {
           "type": "minecraft:model",

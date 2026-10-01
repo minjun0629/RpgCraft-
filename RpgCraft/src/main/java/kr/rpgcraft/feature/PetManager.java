@@ -221,14 +221,19 @@ public class PetManager implements Listener, CommandExecutor {
         Text.msg(pl, "&e★ " + p.label + " 별 합성 성공! &f" + "★".repeat(stars(d, p)));
     }
 
-    /** 등급 합성: 같은 등급의 남는 펫 3마리 → 한 등급 위 펫 알 1개 */
+    /** 등급 합성: 같은 등급의 남는 펫 5마리 (v5.10.35 3 → 5, config pets.fuse-count) → 한 등급 위 펫 알 1개 */
+    private int fuseCount() {
+        return Math.max(2, plugin.getConfig().getInt("pets.fuse-count", 5));
+    }
+
     private void gradeFuse(Player pl, int grade) {
         PlayerData d = plugin.data().get(pl);
         if (grade >= 3) return;
         int have = 0;
         for (Pet m : Pet.values()) if (m.grade == grade) have += dups(d, m);
-        if (have < 3) { Text.actionBar(pl, "&c" + Text.strip(Text.c(GRADE[grade])) + " 남는 펫이 3마리 필요합니다 (" + have + "/3)"); return; }
-        int left = 3;
+        int need = fuseCount();
+        if (have < need) { Text.actionBar(pl, "&c" + Text.strip(Text.c(GRADE[grade])) + " 남는 펫이 " + need + "마리 필요합니다 (" + have + "/" + need + ")"); return; }
+        int left = need;
         for (Pet m : Pet.values()) {
             if (m.grade != grade) continue;
             int take = Math.min(left, dups(d, m));
@@ -339,7 +344,7 @@ public class PetManager implements Listener, CommandExecutor {
         try { pet = Pet.valueOf(id); } catch (IllegalArgumentException ex) { return; }
         it.setAmount(it.getAmount() - 1);
         if (owns(d, pet)) {   // 중복: 합성 재료로 보관 (v5.10.30 — 별 합성 · 등급 합성). 별이 가득 차고 재료도 넉넉하면 환급
-            if (stars(d, pet) >= MAX_STARS && dups(d, pet) >= 3) {
+            if (stars(d, pet) >= MAX_STARS && dups(d, pet) >= fuseCount()) {
                 long back = (long) (plugin.getConfig().getLong("pets.draw-cost", 1500000) * plugin.getConfig().getDouble("pets.duplicate-refund", 0.2));
                 plugin.economy().give(p, back);
                 Text.msg(p, "&7별이 가득 찬 펫이라 &e" + Text.money(back) + "&7을(를) 돌려받았습니다.");
@@ -428,9 +433,10 @@ public class PetManager implements Listener, CommandExecutor {
         for (int gr = 0; gr < 3; gr++) {   // 등급 합성 (v5.10.30)
             int have = 0, fg = gr;
             for (Pet m : Pet.values()) if (m.grade == gr) have += dups(d, m);
-            g.set(46 + gr, Gui.button(have >= 3 ? Material.ENCHANTING_TABLE : Material.CRAFTING_TABLE, "&d&l등급 합성 " + GRADE[gr] + " &7→ " + GRADE[gr + 1],
-                    "&7남는 " + Text.strip(Text.c(GRADE[gr])) + " 펫 3마리 → " + Text.strip(Text.c(GRADE[gr + 1])) + " 펫 알 1개", "", "&f가진 재료: &e" + have + " / 3",
-                    have >= 3 ? "&e▶ 클릭" : "&8재료 부족"), e -> { gradeFuse(p, fg); open(p); });
+            int need = fuseCount();
+            g.set(46 + gr, Gui.button(have >= need ? Material.ENCHANTING_TABLE : Material.CRAFTING_TABLE, "&d&l등급 합성 " + GRADE[gr] + " &7→ " + GRADE[gr + 1],
+                    "&7같은 등급의 남는 " + Text.strip(Text.c(GRADE[gr])) + " 펫 " + need + "마리 → " + Text.strip(Text.c(GRADE[gr + 1])) + " 펫 알 1개", "", "&f가진 재료: &e" + have + " / " + need,
+                    have >= need ? "&e▶ 클릭" : "&8재료 부족"), e -> { gradeFuse(p, fg); open(p); });
         }
         g.set(50, Gui.button(Material.COOKIE, "&a&l펫 간식 사기", "&7요리 재료 상점에서 팝니다", "&e▶ 클릭"), e -> {
             if (plugin.shops().get("cook") != null) plugin.shops().open(p, "cook", 0);

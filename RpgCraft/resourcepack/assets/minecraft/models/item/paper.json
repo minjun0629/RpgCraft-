@@ -4008,6 +4008,48 @@
     },
     {
       "predicate": {
+        "custom_model_data": 12801
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_gold"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12802
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_ice"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12803
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_fire"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12804
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_arcane"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12805
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_candy"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12806
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_toxic"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12807
+      },
+      "model": "rpgcraft:item/ui/dmg_skin_rainbow"
+    },
+    {
+      "predicate": {
         "custom_model_data": 16000
       },
       "model": "rpgcraft:mob/jelly_slime_undead"

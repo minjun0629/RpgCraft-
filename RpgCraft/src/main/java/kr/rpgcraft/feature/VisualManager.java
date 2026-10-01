@@ -98,10 +98,16 @@ public class VisualManager implements Listener {
 
     // ------------------------------------------------------------------ 대미지 숫자
     public void damageNumber(LivingEntity victim, double amount, boolean crit, boolean heal) {
+        damageNumber(victim, amount, crit, heal, null);
+    }
+
+    /** attacker: 대미지를 준 플레이어 (v5.10.35 그 사람의 대미지 스킨으로) */
+    public void damageNumber(LivingEntity victim, double amount, boolean crit, boolean heal, org.bukkit.entity.Player attacker) {
         if (!plugin.getConfig().getBoolean("combat.damage-indicator", true) || amount <= 0) return;
         ThreadLocalRandom r = ThreadLocalRandom.current();
         Location l = victim.getLocation().add(r.nextDouble(-0.6, 0.6), victim.getHeight() + 0.1, r.nextDouble(-0.6, 0.6));
-        String text = heal ? "&a+" + Text.num(amount)
+        String skinned = heal || plugin.damageSkins() == null ? null : plugin.damageSkins().render(attacker, amount, crit);
+        String text = skinned != null ? skinned : heal ? "&a+" + Text.num(amount)
                 : crit ? "&6&l✦ " + Text.num(amount) + " ✦"
                 : amount >= 10000 ? "&c&l" + Text.num(amount) : "&c" + Text.num(amount);
         float scale = crit ? 1.6f : heal ? 0.9f : 1.1f;

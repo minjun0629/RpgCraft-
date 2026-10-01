@@ -69,7 +69,7 @@ public class TargetHud implements Listener {
             // v5.10.46 싸우는 중이 아니면 바라보는 몬스터의 이름 · 레벨 · 체력 (머리 위 이름표 대신)
             if (enabled() && look > 0 && (cur == null || cur.look() || cur.until() - now < 3500)) {
                 var hit = p.getWorld().rayTraceEntities(p.getEyeLocation(), p.getEyeLocation().getDirection(), look, 0.4,
-                        en -> en != p && en instanceof LivingEntity && !(en instanceof Player) && plugin.mobs().tracked(en));
+                        en -> en != p && en instanceof LivingEntity && !(en instanceof Player) && plugin.mobs().tracked((Entity) en));
                 if (hit != null && hit.getHitEntity() instanceof LivingEntity le && (cur == null || cur.look() || !le.getUniqueId().equals(cur.mob())))
                     targets.put(p.getUniqueId(), new Target(le.getUniqueId(), now + 1200, true));
             }

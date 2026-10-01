@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.23
+- **불꽃 · 가시 칼날 무기**: 들쭉날쭉한 비대칭 칼날 · 빛나는 가장자리 · 빛줄기 · 가드 불꽃, 덩굴 활.
+
 ## v5.10.22
 - **무기를 화려한 MMORPG 느낌으로**: 빛나는 그라데이션 · 룬 · 날개 가드 · 떠 있는 결정 조각, 지팡이는 마력 결정.
 

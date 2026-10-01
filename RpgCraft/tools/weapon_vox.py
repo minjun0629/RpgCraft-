@@ -271,6 +271,70 @@ def _blade(g, y0, y1, width, thick, P, style, curve=0.0, pri=4, fuller=True):
     _fill(g, y0, y1, prof, col, pri)
 
 
+def _jagged(g, y0, y1, width, thick, P, seed, pri=4, curve=0.0, spikes=1.0):
+    """v5.10.23 불꽃 · 가시 칼날 (참고: 들쭉날쭉한 실루엣 · 어두운 속 → 빛나는 가장자리 · 칼날 속을 흐르는 빛줄기)"""
+    vs = VL.VS
+    L = y1 - y0
+    glow = P.get("glow", P["edge"])
+    core, body, rim, hot = lit(P["blade"], 0.5), P["blade"], lit(glow, 1.25), lit(glow, 1.7)
+    ph1, ph2 = (seed % 97) / 97.0, (seed % 89) / 89.0
+    n1, n2 = 3 + seed % 2, 3 + (seed >> 3) % 2
+
+    def saw(v):
+        f = v % 1.0
+        return f ** 2.2   # 위로 갈수록 길어지다 뚝 끊기는 가시
+
+    for j in range(math.floor(y0 / vs), math.floor(y1 / vs) + 1):
+        y = (j + 0.5) * vs
+        t = (y - y0) / L
+        if t < 0 or t > 1:
+            continue
+        base = width * (0.5 + 0.35 * math.sin(math.pi * min(1.0, t ** 0.7)))
+        if t > 0.7:
+            base *= max(0.0, 1 - (t - 0.7) / 0.3) ** 1.1   # 길고 뾰족한 끝
+        cx = C[0] + curve * t * t * 3 + 0.5 * math.sin(t * 5.0 + ph1 * 6) * width * 0.12
+        xl = cx - base / 2 - spikes * 0.9 * saw(t * n1 + ph1) * (1 - t) * width * 0.4
+        xr = cx + base / 2 + spikes * 2.0 * saw(t * n2 + ph2) * (1 - t * 0.5) * width * 0.42   # 한쪽이 더 크게 갈라짐 (비대칭)
+        if xr - xl < vs:
+            xl, xr = cx - vs / 2, cx + vs / 2
+        for i in range(math.floor(xl / vs), math.floor(xr / vs) + 1):
+            x = (i + 0.5) * vs
+            if x < xl or x > xr:
+                continue
+            u = (x - cx) / max(1e-6, (xr - xl) / 2)          # -1 ~ 1 (대략)
+            dl = min(x - xl, xr - x)                         # 가장자리까지 거리
+            th = max(vs * 0.5, min(thick / 2 * (1 - 0.3 * t), dl * 0.55 + vs * 0.3))
+            vein = abs(x - (cx + 0.7 * math.sin(y * 1.6 + ph2 * 9) * width * 0.18)) < 0.32 and t < 0.86
+            for k in range(math.floor((C[1] - th) / vs), math.floor((C[1] + th) / vs) + 1):
+                z = (k + 0.5) * vs
+                surf = abs(z - C[1]) > th - vs * 1.1
+                if dl < 0.55:
+                    col = hot if t > 0.55 or dl < 0.3 else rim                 # 빛나는 가장자리
+                elif vein and surf:
+                    col = mixc(rim, hot, t)                                     # 빛줄기
+                else:
+                    k2 = min(1.0, dl / (width * 0.45))
+                    col = body if k2 < 0.35 else mixc(body, core, 0.45) if k2 < 0.7 else core   # 가운데가 어두운 속살 (3단계)
+                g.put(x, y, z, col, pri)
+
+
+def _flames(g, base, n, size, P, seed, up=1.0, spread=1.0, pri=6):
+    """손잡이 · 가드에서 피어오르는 불꽃 조각 (가운데 하얗게 · 끝은 어둡게)"""
+    glow = P.get("glow", P["gem"])
+    cols = [lit(glow, 1.9), lit(glow, 1.45), lit(glow, 1.1), glow, lit(glow, 0.7)]
+    for k in range(n):
+        a = (seed * 0.37 + k * 2.39) % (2 * math.pi)
+        dx = math.cos(a) * spread
+        x, y, z = base[0] + dx * 0.6, base[1], base[2] + math.sin(a) * 0.4
+        steps = 5 + (seed + k) % 3
+        for st in range(steps):
+            f = st / steps
+            r = size * (1 - f * 0.75)
+            x += dx * 0.55 + (VL.rnd(seed, k, st) - 0.5) * 0.8
+            y += up * (0.75 + 0.4 * VL.rnd(k, st, seed))
+            g.box((x - r, y - r, z - r * 0.6), (x + r, y + r, z + r * 0.6), cols[min(len(cols) - 1, int(f * len(cols)))], pri)
+
+
 def _shards(g, pts, col, size=0.8, pri=7):
     """공중에 떠 있는 작은 결정 조각 (마름모)"""
     for (x, y, z) in pts:
@@ -303,13 +367,20 @@ def sword(g, P, s, tier):
     gy = y0 + 1.6 + gl + 0.7
     width = 3.7 + (s >> 3) % 3 * 0.4 + (0.5 if tier >= 5 else 0)
     _guard(g, gy, width * 1.25 + 0.9, P, (s >> 5) % 4)
-    if (s >> 11) % 3 != 0 or tier >= 4:   # 날개 장식 (대부분)
+    if ((s >> 11) % 3 != 0 or tier >= 4) and not (tier >= 2 or (s >> 13) % 2 == 0):   # 날개 장식 (매끈한 칼날만)
         _wings(g, gy, width * 1.1 + 0.8, P)
     _fill(g, gy + 0.9, gy + 2.0, lambda y: (width * 0.42, 0.95, "box"), lambda x, y, z, u, w: P["guard"] if abs(u) > 0.5 else lit(P["guard"], 1.2), 6)   # 칼날 받침 (리카소)
     g.dot(C[0], gy + 1.45, C[1] + 0.9, lit(P["gem"], 1.3), 8, 0.8)
     g.dot(C[0], gy + 1.45, C[1] - 0.9, lit(P["gem"], 1.3), 8, 0.8)
-    _blade(g, gy + 1.9, y0 + total, width, 1.7, P, (s >> 7) % 4)
-    if tier >= 3 or (s >> 9) % 3 == 0:   # 칼날 옆에 떠 있는 결정 조각
+    jag = tier >= 2 or (s >> 13) % 2 == 0
+    if jag:   # v5.10.23 불꽃 · 가시 칼날 + 가드에서 피어오르는 불꽃
+        _jagged(g, gy + 1.6, y0 + total + 2.5, width * 1.15, 1.9, P, s, curve=[0, 0.2, -0.15][s % 3], spikes=0.7 + min(4, tier) * 0.15)
+        _flames(g, (C[0] - width * 0.9, gy, C[1]), 3 + min(3, tier), 0.55, P, s, up=1.0, spread=-1.2)
+        if tier >= 3:
+            _flames(g, (C[0], y0 + 0.4, C[1]), 3, 0.45, P, s + 7, up=-1.0, spread=0.6)   # 폼멜 아래 불꽃 꼬리
+    else:
+        _blade(g, gy + 1.9, y0 + total, width, 1.7, P, (s >> 7) % 4)
+    if not jag and (tier >= 3 or (s >> 9) % 3 == 0):   # 칼날 옆에 떠 있는 결정 조각
         top = y0 + total
         _shards(g, [(C[0] - width * 0.5 - 1.6, top - 5.5, C[1]), (C[0] + width * 0.5 + 1.6, top - 8.5, C[1])], P.get("glow", P["gem"]), 0.75)
 
@@ -322,9 +393,11 @@ def dagger(g, P, s, tier):
     gy = y0 + 4.8
     _guard(g, gy, 2.4, P, (s >> 4) % 4)
     curve = [0.0, 0.25, -0.25, 0.4][(s >> 6) % 4]
-    _blade(g, gy + 0.9, y0 + total, 3.0, 1.35, P, [0, 1, 0, 1][(s >> 8) % 4], curve=curve)
-    if (s >> 10) % 2:
-        _wings(g, gy, 2.6, P)
+    if tier >= 2 or (s >> 8) % 2:
+        _jagged(g, gy + 0.7, y0 + total + 1.5, 3.2, 1.5, P, s, curve=curve, spikes=0.8)
+        _flames(g, (C[0] - 2.2, gy, C[1]), 3, 0.45, P, s, up=1.0, spread=-1.0)
+    else:
+        _blade(g, gy + 0.9, y0 + total, 3.0, 1.35, P, [0, 1, 0, 1][(s >> 8) % 4], curve=curve)
 
 
 def axe(g, P, s, tier):
@@ -392,7 +465,11 @@ def spear(g, P, s, tier):
         _fill(g, yy - 0.35, yy + 0.35, lambda y: (0.78, 0.78, "round"), lambda *a: P["guard"], 3)
     g.sphere((C[0], y0, C[1]), 0.75, P["guard"], 3)
     _fill(g, y1 - 0.6, y1 + 0.8, lambda y: (1.1, 1.1, "box"), lambda *a: P["guard"], 4)   # 날 받침
-    _blade(g, y1 + 0.6, y1 + 9.0, 3.8, 1.5, P, 1 if (s >> 3) % 2 else 0, fuller=True)
+    if tier >= 2:
+        _jagged(g, y1 + 0.4, y1 + 9.5, 4.0, 1.6, P, s, spikes=0.8)
+        _flames(g, (C[0], y1 + 0.2, C[1]), 3, 0.4, P, s, up=-1.0, spread=0.9)
+    else:
+        _blade(g, y1 + 0.6, y1 + 9.0, 3.8, 1.5, P, 1 if (s >> 3) % 2 else 0, fuller=True)
     if (s >> 5) % 2:   # 갈고리 날개
         for sx in (-1, 1):
             g.cone((C[0], y1 + 0.8, C[1]), (C[0] + sx * 3.0, y1 + 2.4, C[1]), 0.7, 0.12, P["edge"], 4)
@@ -429,17 +506,28 @@ def staff(g, P, s, tier):
 
 
 def bow(g, P, s, tier):
-    """활: 세로로 쥔 휜 몸 (위아래 끝이 뒤로 젖혀짐) + 감은 손잡이 + 시위"""
-    top, bot = 17.5, -1.5
-    bend = 3.2
-    pts = [(C[0] - 0.8, bot, C[1]), (C[0] + bend * 0.75, bot + 4.0, C[1]), (C[0] + bend, 8.0, C[1]), (C[0] + bend * 0.75, top - 4.0, C[1]), (C[0] - 0.8, top, C[1])]
-    g.tube(pts, [0.35, 0.62, 0.75, 0.62, 0.35], lambda x, y, z, d, f: lit(P["blade"], 1.1 if d > 0.6 else 0.9), 3, smooth=True, squash=(1, 0.8))
-    _fill(g, 6.6, 9.4, lambda y: (0.85, 0.75, "round", bend), lambda x, y, z, u, w: P["grip"] if int(y * 2.4) % 2 else lit(P["grip"], 0.7), 5)
+    """활: 마디진 덩굴 같은 휜 몸 (나무 마디 · 잎 · 가시) + 감은 손잡이 + 가는 시위 (참고 이미지 느낌)"""
+    top, bot = 18.0, -2.0
+    bend = 3.4
+    wood, leaf = P["blade"], P.get("glow", P["gem"])
+    pts = [(C[0] - 0.9, bot, C[1]), (C[0] + bend * 0.8, bot + 4.5, C[1]), (C[0] + bend, 8.0, C[1]), (C[0] + bend * 0.8, top - 4.5, C[1]), (C[0] - 0.9, top, C[1])]
+    path = VL.catmull(pts, 10)
+    for i2, p in enumerate(path):   # 마디마다 굵기 · 위치가 조금씩 어긋나는 나무 몸
+        if i2 % 2:
+            continue
+        jx = (VL.rnd(s, i2) - 0.5) * 0.7
+        r0 = 0.5 + 0.25 * (1 - abs(p[1] - 8) / 10)
+        g.box((p[0] - r0 + jx, p[1] - 0.45, p[2] - r0 * 0.8), (p[0] + r0 + jx, p[1] + 0.45, p[2] + r0 * 0.8),
+              lit(wood, 0.85 + 0.3 * VL.rnd(i2, s)), 3)
+        if i2 % 6 == 0 and abs(p[1] - 8) > 2:   # 잎 · 가시
+            side = 1 if (i2 // 6) % 2 else -1
+            for k in range(3):
+                g.box((p[0] + side * (0.6 + k * 0.5), p[1] + k * 0.45, p[2] - 0.5 + k * 0.1), (p[0] + side * (1.2 + k * 0.5), p[1] + 0.5 + k * 0.45, p[2] + 0.5),
+                      [lit(leaf, 0.75), leaf, lit(leaf, 1.3)][k], 4)
+    _fill(g, 6.4, 9.6, lambda y: (0.85, 0.75, "round", bend), lambda x, y, z, u, w: P["grip"] if int(y * 2.4) % 2 else lit(P["grip"], 0.7), 5)
     for yy in (bot, top):
-        g.sphere((C[0] - 0.8, yy, C[1]), 0.6, P["guard"], 4)
-    _fill(g, bot, top, lambda y: (0.16, 0.16, "box", -0.8), lambda *a: lit(P["edge"], 1.1), 2)   # 시위
-    for yy in (bot + 2.2, top - 2.2):
-        g.dot(C[0] + bend * 0.62, yy, C[1] + 0.5, P["gem"], 6, 0.6)
+        g.box((C[0] - 1.5, yy - 0.5, C[1] - 0.5), (C[0] - 0.3, yy + 0.5, C[1] + 0.5), lit(P["guard"], 1.1), 4)
+    _fill(g, bot, top, lambda y: (0.14, 0.14, "box", -0.9), lambda *a: lit(P["edge"], 1.15), 2)   # 시위
 
 
 def shield(g, P, s, tier):

@@ -210,7 +210,13 @@ public class MobModelManager implements Listener {
         if (pdc.has(Keys.BOSS, PersistentDataType.STRING) || pdc.has(Keys.MINION, PersistentDataType.STRING)) return null;
         if (plugin.combat() != null && plugin.combat().isNpc(le)) return null;
         for (Entity pas : le.getPassengers()) if (!(pas instanceof ItemDisplay) && !(pas instanceof TextDisplay)) return null;
-        String n = switch (le.getType().name()) {
+        String n = vanillaKey(le.getType());
+        return n == null || !plugin.getConfig().getBoolean("mob-models.vanilla-types." + n, true) ? null : n;
+    }
+
+    /** v5.10.49 바닐라 종류 → 모델 키 (초상 등에서도 씀, 설정과 상관없이) */
+    public static String vanillaKey(org.bukkit.entity.EntityType t) {
+        return switch (t.name()) {
             case "ZOMBIE" -> "vn_zombie"; case "HUSK" -> "vn_husk"; case "DROWNED" -> "vn_drowned"; case "SKELETON" -> "vn_skeleton";
             case "STRAY" -> "vn_stray"; case "WITHER_SKELETON" -> "vn_wither_skeleton"; case "CREEPER" -> "vn_creeper"; case "SPIDER" -> "vn_spider";
             case "CAVE_SPIDER" -> "vn_cave_spider"; case "ENDERMAN" -> "vn_enderman"; case "WITCH" -> "vn_witch"; case "PILLAGER" -> "vn_pillager";
@@ -219,7 +225,6 @@ public class MobModelManager implements Listener {
             case "WOLF" -> "an_wolf"; case "FOX" -> "an_fox"; case "GOAT" -> "an_goat"; case "POLAR_BEAR" -> "an_polar_bear";
             default -> null;
         };
-        return n == null || !plugin.getConfig().getBoolean("mob-models.vanilla-types." + n, true) ? null : n;
     }
 
     public boolean has(Entity e) {

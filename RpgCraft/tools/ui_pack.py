@@ -302,9 +302,9 @@ def write_hud(pack_dir, write_json):
     os.makedirs(tex_dir, exist_ok=True)
     providers = [{"type": "space", "advances": space_advances()}]
 
-    def add(name, img, asc, ch):
+    def add(name, img, asc, ch, height=None):
         img.save(os.path.join(tex_dir, name + ".png"))
-        providers.append({"type": "bitmap", "file": NS + ":hud/" + name + ".png", "ascent": asc, "height": img.height, "chars": [chr(ch)]})
+        providers.append({"type": "bitmap", "file": NS + ":hud/" + name + ".png", "ascent": asc, "height": height or img.height, "chars": [chr(ch)]})
 
     for s in range(HP_STEPS + 1):
         add("hp_%02d" % s, hp_bar(s), ASC_ROW1, HP_BASE + s)
@@ -317,8 +317,8 @@ def write_hud(pack_dir, write_json):
         add("d1_" + n, digit_img(ch), ASC_DIG1, DIGITS_ROW1 + i)
         add("d2_" + n, digit_img(ch, (255, 235, 180, 255)), ASC_DIG2, DIGITS_ROW2 + i)
     import ui4r   # v5.10.33 마크에이지 4R 풍 HUD (핫바 양옆)
-    for name, img, asc, cp in ui4r.hud_providers(icon, digit_img, DIGIT_CHARS):
-        add(name, img, asc, cp)
+    for name, img, asc, cp, *h in ui4r.hud_providers(icon, digit_img, DIGIT_CHARS):
+        add(name, img, asc, cp, h[0] if h else None)
     write_json(os.path.join(pack_dir, "assets", NS, "font", "hud.json"), {"providers": providers})
     return len(providers)
 

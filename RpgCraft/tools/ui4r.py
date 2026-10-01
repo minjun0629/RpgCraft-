@@ -10,6 +10,8 @@ import os
 
 from PIL import Image, ImageDraw
 
+import num4r   # v5.10.49 마크에이지 4R 풍 숫자
+
 PANEL_T = (94, 84, 76)
 PANEL_B = (74, 66, 60)
 F_OUT = (28, 24, 22, 255)
@@ -335,7 +337,7 @@ HUD_BADGE_XP, BADGE_XP_STEPS = 0xE4C0, 24   # v5.10.45 경험치가 고리로 �
 HUD_DIG_A, HUD_DIG_B = 0xE450, 0xE470      # 위 줄(흰색) · 아래 줄(크림색) 숫자
 HUD_ICON_A, HUD_ICON_B = 0xE490, 0xE4A0    # 위 줄 · 아래 줄 아이콘 (ICON_KINDS 순서)
 ICON_KINDS = ["sword", "crit", "def", "potion", "skill", "skill_cd", "quick", "quick_cd"]
-BAR_W, FRAME_LW, FRAME_RW, BADGE_W = 82, 118, 104, 26
+BAR_W, FRAME_LW, FRAME_RW, BADGE_W = 82, 118, 128, 26   # v5.10.49 오른쪽 판 넓힘 (숫자 폭)
 # 액션바 기준선에서 위 가장자리까지 (음수 = 기준선 아래). 핫바 위 끝 = 기준선 + 43
 ASC_FRAME, ASC_BADGE, ASC_TOP, ASC_BOT, ASC_DA, ASC_DB = -40, -39, -43, -53, -45, -55
 
@@ -387,6 +389,25 @@ def hud_frame(w, left):
 LV_TXT = {"L": ["10", "10", "10", "10", "11"], "V": ["101", "101", "101", "101", "010"]}
 
 
+NUM_H = 7
+
+
+def badge_hi(img):
+    """1배 배지를 4배로 키우고 'Lv' 를 기울임 세리프 글자로 (마크에이지 4R 배지처럼)"""
+    from PIL import ImageFont
+    S = 4
+    big = img.resize((img.width * S, img.height * S), Image.NEAREST)
+    d = ImageDraw.Draw(big)
+    try:
+        f = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSerif-BoldItalic.ttf", 9 * S)
+    except OSError:
+        f = ImageFont.load_default()
+    x, y = 7.2 * S, 2.6 * S
+    d.text((x, y), "Lv", font=f, fill=(24, 20, 26, 255), stroke_width=S, stroke_fill=(24, 20, 26, 255))
+    d.text((x, y), "Lv", font=f, fill=(236, 238, 246, 255))
+    return big
+
+
 def hud_badge(xp=None):
     """둥근 레벨 배지 26x26: 은 고리 · 청동 안 고리 · 'LV' 글자 (숫자는 아래 줄 숫자 글리프로).
     v5.10.45 xp(0~1) 를 주면 바깥 고리가 12시부터 시계 방향으로 경험치만큼 금빛으로 차오름"""
@@ -407,13 +428,6 @@ def hud_badge(xp=None):
     d.ellipse([3, 3, 22, 22], fill=(110, 92, 64, 255))
     d.ellipse([4, 4, 21, 21], fill=(30, 27, 30, 255))
     d.arc([4, 4, 21, 21], 200, 320, fill=(70, 66, 74, 255))
-    x = 9
-    for ch in "LV":
-        for yy, row in enumerate(LV_TXT[ch]):
-            for xx, v in enumerate(row):
-                if v == "1":
-                    d.point((x + xx, 7 + yy), fill=(220, 224, 236, 255))
-        x += len(LV_TXT[ch][0]) + 1
     diamond(d, 21, 4, 3)
     return img
 
@@ -426,14 +440,15 @@ def hud_providers(icon_fn, digit_fn, chars):
         out.append(("h4_xp_%02d" % s, hud_bar(s, "xp"), ASC_BOT, HUD_XP + s))
     out.append(("h4_frame_l", hud_frame(FRAME_LW, True), ASC_FRAME, HUD_FRAME_L))
     out.append(("h4_frame_r", hud_frame(FRAME_RW, False), ASC_FRAME, HUD_FRAME_R))
-    out.append(("h4_badge", hud_badge(), ASC_BADGE, HUD_BADGE))
-    for k in range(BADGE_XP_STEPS + 1):
-        out.append(("h4_badge_xp%02d" % k, hud_badge(k / BADGE_XP_STEPS), ASC_BADGE, HUD_BADGE_XP + k))
+    out.append(("h4_badge", badge_hi(hud_badge()), ASC_BADGE, HUD_BADGE, BADGE_W))
+    for k in range(BADGE_XP_STEPS + 1):   # v5.10.49 고해상도 (4배) + 기울임 'Lv'
+        out.append(("h4_badge_xp%02d" % k, badge_hi(hud_badge(k / BADGE_XP_STEPS)), ASC_BADGE, HUD_BADGE_XP + k, BADGE_W))
     names = {"/": "slash", ",": "comma", "%": "pct", ".": "dot", "+": "plus"}
     for i, ch in enumerate(chars):
         n = names.get(ch, ch if ch.isdigit() else ch.lower() + ("_u" if ch.isupper() else "_l"))
-        out.append(("h4_da_" + n, digit_fn(ch, (255, 255, 255, 255)), ASC_DA, HUD_DIG_A + i))
-        out.append(("h4_db_" + n, digit_fn(ch, (255, 236, 188, 255)), ASC_DB, HUD_DIG_B + i))
+        # v5.10.49 마크에이지 4R 풍 굵은 기울임 숫자 (높이 7, 4배 해상도) — Java Num4R 폭 표
+        out.append(("h4_da_" + n, num4r.glyph(ch, NUM_H)[0], ASC_DA + 1, HUD_DIG_A + i, NUM_H))
+        out.append(("h4_db_" + n, num4r.glyph(ch, NUM_H, fill=(255, 238, 196))[0], ASC_DB + 1, HUD_DIG_B + i, NUM_H))
     for i, k in enumerate(ICON_KINDS):
         out.append(("h4_ia_" + k, icon_fn(k), ASC_TOP, HUD_ICON_A + i))
         out.append(("h4_ib_" + k, icon_fn(k), ASC_BOT, HUD_ICON_B + i))

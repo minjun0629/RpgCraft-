@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.49
+- 적 정보 숫자 깨짐 수정 · 문장 안 몬스터 초상 · 보스 전용 체력 판 · HUD · 대미지 숫자를 4R 풍 기울임 숫자 글꼴로.
+
 ## v5.10.48
 - 적 체력바 크기 · 위치를 마크에이지 4R 화면 비율로 (작게, 문장 일부가 화면 밖으로).
 

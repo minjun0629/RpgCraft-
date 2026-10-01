@@ -34,11 +34,12 @@ void main() {
     // RpgCraft: 4R-style target panel - text in reserved colors is anchored to the top-right of the screen, its shadow hidden.
     if (abs(gl_Position.w - 1.0) < 0.0001) {
         vec3 c255 = Color.rgb * 255.0;
-        if (all(lessThan(abs(c255 - vec3(63.0, 63.0, 62.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(63.0, 56.0, 32.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(63.0, 24.0, 24.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(50.0, 50.0, 49.0)), vec3(0.6)))) {
+        if (all(lessThan(abs(c255 - vec3(63.0, 63.0, 62.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(63.0, 56.0, 32.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(63.0, 24.0, 24.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(50.0, 50.0, 49.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(62.0, 63.0, 63.0)), vec3(0.6)))) {
             gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-        } else if (all(lessThan(abs(c255 - vec3(252.0, 252.0, 248.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 224.0, 128.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 96.0, 96.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(200.0, 200.0, 196.0)), vec3(0.6)))) {
+        } else if (all(lessThan(abs(c255 - vec3(252.0, 252.0, 248.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 224.0, 128.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 96.0, 96.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(200.0, 200.0, 196.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(248.0, 252.0, 252.0)), vec3(0.6)))) {
             gl_Position.x += 1.0 - (184.0 * 0.5 + -21.0) * ProjMat[0][0];
             gl_Position.y += 22.0 * ProjMat[1][1];
+            if (all(lessThan(abs(c255 - vec3(252.0, 224.0, 128.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 96.0, 96.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(200.0, 200.0, 196.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(248.0, 252.0, 252.0)), vec3(0.6)))) gl_Position.z -= 0.002;
         }
     }
 }

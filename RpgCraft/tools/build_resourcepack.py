@@ -608,8 +608,13 @@ def main():
     providers.append(ui_pack.boss_frame_provider(PACK))   # 보스바 장식 틀
     providers.extend(ui4r.sidebar_providers(PACK, NS))   # v5.10.34 사이드바 아이콘 · 구분선
     providers.append(ui4r.compass_provider(PACK, NS))   # v5.10.34 나침반 틀
+    import num4r   # v5.10.49 4R 풍 기본 대미지 숫자 + Java 폭 표
+    providers.extend(num4r.damage_providers(PACK, NS))
+    num4r.write_java(os.path.join(ROOT, "src", "main", "java", "kr", "rpgcraft", "pack", "Num4R.java"), num4r.hud_table())
     import target_hud   # v5.10.45 대상 정보 틀 · 체력 바 (보스바 제목)
     providers.extend(target_hud.providers(PACK, NS))
+    import portraits   # v5.10.49 몬스터 · 보스 초상 (적 정보 문장 안) + portraits.yml
+    providers.extend(portraits.write(PACK, NS, os.path.join(ROOT, "src", "main", "resources")))
     import dmg_skin   # v5.10.35 대미지 스킨 숫자 글꼴
     providers.extend(dmg_skin.providers(PACK, NS))
     # 바닐라 기본 폰트 참조 (다른 팩과 합쳐지지 않는 환경에서도 글자가 깨지지 않도록)

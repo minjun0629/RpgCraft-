@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.41
+- 몽둥이를 나무 막대기 느낌으로.
+
 ## v5.10.40
 - 활을 90도 돌려 세워 듦 (시위를 잡은 것처럼).
 

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.51
+- 결투 막대기로 붙인 보스끼리도 끝이 나게 (한 대에 최대 체력 4% 이상, 보스 AI 가 플레이어로 눈 돌리지 않음).
+
 ## v5.10.50
 - HUD 판 · 바가 아이콘 · 숫자를 가리던 문제 수정, 보스 판은 가장 가까운 보스 하나만, 숫자 간격 좁힘.
 

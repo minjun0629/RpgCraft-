@@ -155,7 +155,10 @@ public class CombatListener implements Listener {
                     }
                     Double power = proj.getPersistentDataContainer().get(Keys.POWER, PersistentDataType.DOUBLE);
                     CombatService.Hit hit = new CombatService.Hit(c.mobDamage(shooter) * (power == null ? 0.8 : power), false);
-                    finish(e, victim, c.defend(victim, hit, null, shooter), null, shooter, false);
+                    double dealt = c.defend(victim, hit, null, shooter);
+                    if (kr.rpgcraft.feature.MobFightStick.fighting(shooter, victim))
+                        dealt = Math.max(dealt, plugin.health().max(victim) * plugin.getConfig().getDouble("admin.mob-fight-hit-pct", 0.04));
+                    finish(e, victim, dealt, null, shooter, false);
                     return;
                 }
                 environmental(e, victim);
@@ -166,7 +169,10 @@ public class CombatListener implements Listener {
                 double mult = cause == DamageCause.ENTITY_EXPLOSION ? 1.5 * Math.min(1, e.getDamage() / 20) : 1;
                 if (mob instanceof Player) mult = 0.3; // 플레이어가 일으킨 기타 대미지(가시 등)
                 CombatService.Hit hit = new CombatService.Hit(c.mobDamage(mob) * mult, false);
-                finish(e, victim, c.defend(victim, hit, null, mob), null, mob, false);
+                double dealt = c.defend(victim, hit, null, mob);
+                if (kr.rpgcraft.feature.MobFightStick.fighting(mob, victim))   // v5.10.51 관리자 몬스터 결투: 보스끼리도 끝이 나게 최대 체력의 일정 비율 이상
+                    dealt = Math.max(dealt, plugin.health().max(victim) * plugin.getConfig().getDouble("admin.mob-fight-hit-pct", 0.04));
+                finish(e, victim, dealt, null, mob, false);
                 return;
             }
             if (damager instanceof TNTPrimed || damager instanceof EnderCrystal || damager instanceof Firework) {

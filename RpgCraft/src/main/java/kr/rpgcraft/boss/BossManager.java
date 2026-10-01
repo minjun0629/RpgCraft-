@@ -245,6 +245,7 @@ public class BossManager {
                 a.entity.getWorld().playSound(a.home, Sound.ENTITY_ENDERMAN_TELEPORT, 1.5f, 0.6f);
                 continue;
             }
+            if (kr.rpgcraft.feature.MobFightStick.isFighting(a.entity)) continue;   // v5.10.51 결투 막대기 싸움 중이면 플레이어로 눈 돌리지 않음
             if (a.entity instanceof Mob mob && mob.getTarget() instanceof Player tp
                     && (tp.getWorld() != bl.getWorld() || tp.getLocation().distanceSquared(bl) > chase * chase
                         || homeHere && tp.getLocation().distanceSquared(a.home) > (leash + 6) * (leash + 6))) mob.setTarget(null);

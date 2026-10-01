@@ -55,6 +55,11 @@ public class MobFightStick implements Listener {
         return it != null && it.hasItemMeta() && it.getItemMeta().getPersistentDataContainer().has(KEY, PersistentDataType.BYTE);
     }
 
+    /** 이 몬스터가 결투 막대기로 붙인 싸움 중인지 (보스 AI 가 플레이어로 눈을 돌리지 않게) */
+    public static boolean isFighting(Entity e) {
+        return e != null && FIGHTS.containsKey(e.getUniqueId());
+    }
+
     /** 이 두 몬스터가 지금 서로 싸우는 중인지 (CombatListener 의 몬스터끼리 막기 예외) */
     public static boolean fighting(Entity a, Entity b) {
         if (a == null || b == null) return false;

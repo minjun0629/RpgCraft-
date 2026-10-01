@@ -186,7 +186,7 @@ public class MobManager implements Listener {
     public void updateName(LivingEntity e, MobState s) {
         if (e instanceof Player) return;
         if (s.bossId != null) {
-            e.setCustomName(Text.c("&4&l[보스] &c" + s.baseName + " &f" + Text.num(s.hp)));
+            e.setCustomName(Text.c("&4&l[보스] &c" + s.baseName));   // v5.10.45 체력은 오른쪽 위 대상 정보에
             e.setCustomNameVisible(true);
             return;
         }
@@ -194,7 +194,8 @@ public class MobManager implements Listener {
         int full = (int) Math.ceil(ratio * 10);
         String col = ratio > 0.5 ? "&a" : ratio > 0.2 ? "&e" : "&c";
         String lvCol = s.minionOf != null ? "&5" : s.level >= 90 ? "&4" : s.level >= 60 ? "&c" : s.level >= 30 ? "&6" : "&7";
-        e.setCustomName(Text.c(lvCol + "Lv." + s.level + " &f" + s.baseName + " " + col + "▌".repeat(full) + "&8" + "▌".repeat(10 - full)));
+        boolean overheadBar = plugin.getConfig().getBoolean("mobs.overhead-hp-bar", false);   // v5.10.45 4R 처럼 체력은 오른쪽 위 대상 정보에 (머리 위엔 이름만)
+        e.setCustomName(Text.c(lvCol + "Lv." + s.level + " &f" + s.baseName + (overheadBar ? " " + col + "▌".repeat(full) + "&8" + "▌".repeat(10 - full) : "")));
         e.setCustomNameVisible(s.shownUntil > System.currentTimeMillis());
     }
 

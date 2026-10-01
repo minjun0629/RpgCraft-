@@ -474,5 +474,6 @@ public class CombatService {
 
     public void indicator(LivingEntity victim, double amount, boolean crit, Player attacker) {
         plugin.visuals().damageNumber(victim, amount, crit, false, attacker);
+        if (attacker != null && plugin.targetHud() != null) plugin.targetHud().mark(attacker, victim);   // v5.10.45 오른쪽 위 대상 정보
     }
 }

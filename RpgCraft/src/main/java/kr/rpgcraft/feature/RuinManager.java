@@ -164,8 +164,8 @@ public class RuinManager implements Listener, org.bukkit.command.CommandExecutor
     private void start(Player p, Ruin r) {
         PlayerData d = plugin.data().get(p);
         if (r.id.equals(d.ruinId)) return;
-        if (d.stats.adv < r.minAdv) {
-            Text.actionBar(p, "&c이 유적은 모험 " + r.minAdv + " 이상만 도전할 수 있습니다. (현재 " + (int) d.stats.adv + ")");
+        if (!Exploration.meets(d, r.minAdv)) {   // v5.10.45 모험 대신 탐험도로도
+            Text.actionBar(p, "&c이 유적은 " + Exploration.label() + " " + r.minAdv + " 이상만 도전할 수 있습니다. (현재 " + Exploration.value(d) + " · /숙련 에서 확인)");
             return;
         }
         d.ruinId = r.id;
@@ -181,6 +181,7 @@ public class RuinManager implements Listener, org.bukkit.command.CommandExecutor
         d.ruinId = null;
         int round = plugin.rounds().round();
         String counter = "ruin_" + r.id;
+        d.addCounter("ruin_clears", 1);   // v5.10.45 탐험도
         kr.rpgcraft.util.Text.announce(Text.PREFIX + Text.c("&e" + Text.name(p) + "&f님이 유적 &6" + r.name + "&f을(를) 클리어했습니다! &7(" + String.format("%.1f", ms / 1000.0) + "초)"));
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
         if (!r.firstCleared && r.firstPassive != null) {
@@ -247,7 +248,7 @@ public class RuinManager implements Listener, org.bukkit.command.CommandExecutor
             p.setCompassTarget(l);
             double dx = l.getX() - p.getLocation().getX(), dz = l.getZ() - p.getLocation().getZ();
             Text.msg(p, "&6" + r.name + " &f→ &e" + dir(dx, dz) + "쪽 " + (int) Math.hypot(dx, dz) + "칸 &7(좌표 " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ")");
-            Text.msg(p, "&7나침반이 이 유적을 가리킵니다. 필요 모험 &e" + r.minAdv + (d.stats.adv < r.minAdv ? " &c(현재 " + (int) d.stats.adv + " — 부족)" : " &a(입장 가능)"));
+            Text.msg(p, "&7나침반이 이 유적을 가리킵니다. 필요 " + Exploration.label() + " &e" + r.minAdv + (!Exploration.meets(d, r.minAdv) ? " &c(현재 " + Exploration.value(d) + " — 부족)" : " &a(입장 가능)"));
             return true;
         }
         Text.msg(p, "&6&l유적 목록 &7(가까운 순 · /유적 <번호> 로 방향 안내)");
@@ -258,7 +259,7 @@ public class RuinManager implements Listener, org.bukkit.command.CommandExecutor
                     ? (int) Math.hypot(l.getX() - p.getLocation().getX(), l.getZ() - p.getLocation().getZ()) + "칸 " + dir(l.getX() - p.getLocation().getX(), l.getZ() - p.getLocation().getZ()) + "쪽"
                     : l.getWorld().getName();
             boolean done = d.roundCounter("ruin_" + r.id, round) >= 1;
-            p.sendMessage(Text.c(" &e" + (i + 1) + ". &f" + r.name + " &7모험 " + (d.stats.adv >= r.minAdv ? "&a" : "&c") + r.minAdv
+            p.sendMessage(Text.c(" &e" + (i + 1) + ". &f" + r.name + " &7" + Exploration.label() + " " + (Exploration.meets(d, r.minAdv) ? "&a" : "&c") + r.minAdv
                     + " &7· " + where + " &8(" + l.getBlockX() + ", " + l.getBlockZ() + ")" + (done ? " &a[이번 회차 클리어]" : "")));
         }
         return true;

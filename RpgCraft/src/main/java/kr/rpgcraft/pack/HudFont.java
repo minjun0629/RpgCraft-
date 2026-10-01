@@ -153,7 +153,8 @@ public final class HudFont {
         sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth(hpText) / 2, cur)).append(digits4(hpText, true, cur));
         String xpText = String.format("%.1f%%", Math.max(0, Math.min(99.9, xpRatio * 100)));
         sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth(xpText) / 2, cur)).append(digits4(xpText, false, cur));
-        sb.append(moveTo(badge, cur)).append(glyph(H4_BADGE, H4_BW, cur));
+        int rs = (int) Math.round(Math.max(0, Math.min(1, xpRatio)) * 24);   // v5.10.45 경험치 고리 (tools/ui4r.py HUD_BADGE_XP)
+        sb.append(moveTo(badge, cur)).append(glyph((char) (0xE4C0 + rs), H4_BW, cur));
         String lv = String.valueOf(Math.min(9999, level));
         sb.append(moveTo(badge + H4_BW / 2 - digitsWidth(lv) / 2, cur)).append(digits4(lv, false, cur));
         // 오른쪽 판

@@ -100,6 +100,16 @@ public class InvStatManager implements Listener {
                 "&f방어 &b" + String.format("%.1f", s.def) + "%  &f흡혈 &c" + String.format("%.1f", s.lifesteal) + "%",
                 "&f회피 &b" + String.format("%.1f", s.dodge) + "%  &f관통 &b" + String.format("%.1f", s.armorPen) + "%",
                 "", "&e▶ 클릭: 자세한 스탯 창"));
+        if (plugin.playerCommands() != null) {   // v5.10.45 히든 패시브 보너스
+            List<String> pl = plugin.playerCommands().passiveLines(p, d);
+            if (!pl.isEmpty()) {
+                ItemMeta im = info.getItemMeta();
+                List<String> lore = new ArrayList<>(im.getLore());
+                lore.addAll(lore.size() - 2, pl.stream().map(Text::c).toList());
+                im.setLore(lore);
+                info.setItemMeta(im);
+            }
+        }
         ItemStack[] want = {info, str, dex, adv, point};
         for (int i = 0; i < 5; i++) {
             ItemStack cur = v.getItem(i);

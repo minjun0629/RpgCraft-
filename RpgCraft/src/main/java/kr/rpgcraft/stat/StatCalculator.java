@@ -229,6 +229,20 @@ public class StatCalculator {
         return s;
     }
 
+    /** v5.10.45 히든 · 던전 · 최초 보상 패시브가 주는 능력치 합 (스탯 창 표시용, 이미 최종 능력치에 포함됨) */
+    public StatMap passiveBonus(Player p, PlayerData d) {
+        StatMap t = new StatMap();
+        for (String id : d.passives) {
+            try {
+                Passive ps = Passive.valueOf(id);
+                if (ps.flat != null) t.addAll(ps.flat);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        applySpecialPassives(p, d, t);
+        return t;
+    }
+
     private void applySpecialPassives(Player p, PlayerData d, StatMap t) {
         if (d.has(Passive.TRAINED_FEAR)) t.add(ATK, Math.min(500, d.counter("trained_fear")));
         if (d.has(Passive.FAMILIAR_FEAR)) t.add(ATK, Math.min(500, d.counter("familiar_fear")));

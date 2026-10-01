@@ -797,7 +797,8 @@ def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2,
     for zz, front in ((z0 + L * 0.13, False), (zf - L * 0.16, True)):
         for sx in (-1, 1):
             x = 8 + sx * (W / 2 - 1.5)
-            top = (x, cy, zz)
+            # v5.10.45 작은 짐승(여우 · 늑대)은 엉덩이 관절을 몸 아래쪽에 → 걸을 때 다리가 몸 가운데부터 크게 휘둘려 벌어지던 문제
+            top = (x, leg + H * 0.22, zz) if simple_back else (x, cy, zz)
             foot = (x, 0.9, zz + (0.3 if front else 0.6))
             leg_name = "leg_" + ("f" if front else "b") + ("l" if sx < 0 else "r")   # v5.9.1 다리마다 따로 움직임
             g.rig[leg_name] = top

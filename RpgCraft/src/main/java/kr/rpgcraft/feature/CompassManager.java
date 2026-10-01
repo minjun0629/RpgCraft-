@@ -78,8 +78,13 @@ public class CompassManager implements Listener {
         java.util.List<Location> mates = new java.util.ArrayList<>();
         var party = plugin.party() == null ? null : plugin.party().of(p);
         if (party != null) for (Player m : party.online()) if (!m.equals(p) && m.getWorld().equals(p.getWorld())) mates.add(m.getLocation());
+        boolean pack = plugin.pack().hasPack(p);
         StringBuilder sb = new StringBuilder();
         double step = 7.5;
+        // v5.10.45 팩 HUD: 표시마다 정해진 자리에 하나씩 놓음 (예전엔 한 줄로 이어 붙여 폭 계산 오차가 쌓여 가운데가 어긋났음)
+        int fw = 232, adv = fw + 1, spacing = 8;
+        int cur = 0;
+        if (pack) sb.append("§f").append('\uE073').append(kr.rpgcraft.pack.PackManager.shift(-adv));
         for (int i = -12; i <= 12; i++) {
             double h = (heading + i * step + 360) % 360;
             String mark = null;
@@ -98,14 +103,16 @@ public class CompassManager implements Listener {
                     }
                 }
             }
-            if (mark == null) mark = i == 0 ? "§e§l│" : plugin.pack().hasPack(p) ? "§7|" : "§8·";
-            sb.append(mark).append(i < 12 ? " " : "");
+            if (mark == null) mark = pack ? "§7|" : i == 0 ? "§e§l│" : "§8·";
+            if (pack) {
+                int w = kr.rpgcraft.pack.HudFont.textWidth(mark);
+                int x = fw / 2 + i * spacing - w / 2;
+                sb.append(kr.rpgcraft.pack.PackManager.shift(x - cur)).append(mark);
+                cur = x + w;
+            } else sb.append(mark).append(i < 12 ? " " : "");
         }
-        if (!plugin.pack().hasPack(p)) return sb.toString();
-        // v5.10.34 마크에이지 4R 풍 틀 (은 테두리 · 양끝 마름모 · 가운데 금빛 바늘). 전체 폭 = 틀 폭 → 틀은 화면 가운데, 방위는 그 안 가운데
-        String text = sb.toString();
-        int fw = 232, adv = fw + 1, n = kr.rpgcraft.pack.HudFont.textWidth(text);
-        return "§f" + '\uE073' + kr.rpgcraft.pack.PackManager.shift(fw / 2 - n / 2 - adv) + text + kr.rpgcraft.pack.PackManager.shift(fw / 2 - (n - n / 2));
+        if (pack) sb.append(kr.rpgcraft.pack.PackManager.shift(fw - cur));
+        return sb.toString();
     }
 
     @EventHandler

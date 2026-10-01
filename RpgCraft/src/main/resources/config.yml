@@ -271,6 +271,23 @@ hidden-merchant:
   reveal-direction: false    # true: 등장 알림에 방향·거리 표시 + 나침반 ✦ 표시 / false: 비공개 (근처에서 기척만)
   sense-radius: 500          # 이 거리 안에 들어오면 "기척이 느껴진다" 알림
 
+board:                       # v5.10.45 보드게임 (/보드게임) — 윷놀이 · 부루마블 · 인디언 포커 (컴퓨터와 1대1, 판 수 제한 없음)
+  daily-chip-cap: 60         # 하루에 얻을 수 있는 보드 칩
+  reward:
+    yut: {win: 8, lose: 2}
+    marble: {win: 12, lose: 2}
+    poker: {win: 8, lose: 2}
+  yut-pieces: 2              # 윷놀이 말 개수 (1~4)
+  marble-start-money: 1500
+  marble-salary: 200
+  marble-rounds: 20
+  poker-chips: 10
+  poker-rounds: 15
+
+ruins:                       # v5.10.45 유적 · 보물 상자 도전 조건
+  requirement: either        # either: 모험 스탯과 탐험도 중 높은 쪽 / explore: 탐험도만 / adv: 예전처럼 모험만
+                             # 탐험도 = 걸은 거리 · 몬스터 처치 · 채집 · 낚시 · 도감 발견 · 유적 클리어 · 보물 상자 (항목마다 상한, /숙련 에서 확인)
+
 structures:
   natural-chance: 0.004      # 새 청크가 생성될 때 장식 구조물이 생길 확률
   max-natural: 25            # 동시에 존재할 수 있는 자연 구조물 최대 수
@@ -445,6 +462,8 @@ duel:                        # 야차 (1대1 결투, /야차 <닉네임>)
   time-limit-seconds: 180    # 제한 시간 (끝나면 무승부)
   arena-y: 250               # 하늘 결투장 높이
   arena-offset-x: 20000      # 월드 스폰에서 동쪽으로 떨어진 거리 (결투장 8개가 64칸 간격)
+  fame-k: 32                 # v5.10.45 명성 변화 크기 (Elo K) — 강한 상대를 이길수록 많이 오름
+  fame-pair-daily: 3         # 같은 상대와 하루 몇 판까지 명성 반영 (짜고 치기 방지)
 
 sea:
   megalodon-chance: 0.004    # 바다에서 헤엄칠 때 20초마다 메갈로돈 확률

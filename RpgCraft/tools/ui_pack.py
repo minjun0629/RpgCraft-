@@ -464,10 +464,10 @@ HIDE_SCORE_SNIPPET = """
 """
 
 
-def write_score_shader(pack_dir, vanilla_vsh):
+def write_score_shader(pack_dir, vanilla_vsh, extra=""):
     src = open(vanilla_vsh, encoding="utf-8").read().rstrip()
     assert src.endswith("}"), "unexpected vanilla shader"
-    out = src[:-1].rstrip() + "\n" + HIDE_SCORE_SNIPPET + "}\n"
+    out = src[:-1].rstrip() + "\n" + HIDE_SCORE_SNIPPET + extra + "}\n"
     d = os.path.join(pack_dir, "assets", "minecraft", "shaders", "core")
     os.makedirs(d, exist_ok=True)
     with open(os.path.join(d, "rendertype_text.vsh"), "w", encoding="utf-8", newline="\n") as f:

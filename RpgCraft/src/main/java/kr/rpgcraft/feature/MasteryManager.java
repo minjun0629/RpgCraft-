@@ -259,6 +259,16 @@ public class MasteryManager implements Listener, CommandExecutor {
         if (jk != null) g.set(40, icon(d, jk, jobLabel(d), Material.NAME_TAG, jobEffect(jk), true, null), null);
         else g.set(40, Gui.button(Material.GRAY_DYE, "&8직업 숙련", "&7직업을 고르면 직업 숙련이 생깁니다 (/직업)"), null);
         g.set(36, Gui.button(Material.NAME_TAG, "&d&l직업 숙련", "&7직업마다 따로 쌓임 (바꾸면 그 직업 숙련으로)"), null);
+        {   // v5.10.45 탐험도 (유적 · 보물 상자 조건)
+            List<String> el = new ArrayList<>();
+            el.add("&f탐험도 &e" + Exploration.score(d) + (d.stats.adv > Exploration.score(d) && !"explore".equalsIgnoreCase(plugin.getConfig().getString("ruins.requirement", "either")) ? " &7(모험 " + (int) d.stats.adv + " 이 더 높아 그걸 씀)" : ""));
+            el.add("&7유적 · 보물 상자 도전 조건 = " + Exploration.label());
+            el.add("");
+            el.addAll(Exploration.lines(d));
+            el.add("");
+            el.add("&8돌아다니고 · 사냥하고 · 캐고 · 낚고 · 모으면 오름");
+            g.set(49, Gui.button(Material.MAP, "&e&l탐험도", el.toArray(new String[0])), null);
+        }
         g.fill(0, 53);
         g.open(p);
     }

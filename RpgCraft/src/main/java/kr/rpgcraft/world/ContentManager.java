@@ -254,12 +254,19 @@ public class ContentManager implements Listener {
                 var t = kr.rpgcraft.world.HiddenJobManager.of(d);
                 if (t != null) return Text.c("&5" + t.label() + "&d");
             }
+            case 6 -> { if (plugin.boards() != null) return plugin.boards().boardTitle(d, idx); }   // v5.10.45 보드 칩 상점 칭호
+            case 7 -> { if (plugin.boards() != null) return plugin.boards().fameTitle(d); }       // v5.10.45 야차 명성 등급
             case 5 -> {   // 히든 패시브 (가지고 있는 동안만)
                 if (idx < HIDDEN_PASSIVES.length && d.passives.contains(HIDDEN_PASSIVES[idx].name())) return Text.c("&b" + HIDDEN_PASSIVE_TITLE[idx] + "&d");
             }
             default -> { }
         }
         return "";
+    }
+
+    /** v5.10.45 다른 곳(보드 칩 상점 · 명성)에서 칭호 장착 · 같은 걸 다시 누르면 해제 */
+    public void equipTitle(PlayerData d, int kind, int idx) {
+        equip(d, kind, idx);
     }
 
     private void equip(PlayerData d, int kind, int idx) {

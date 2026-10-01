@@ -5605,6 +5605,587 @@
         }
       },
       {
+        "threshold": 13400,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_station"
+        }
+      },
+      {
+        "threshold": 13401,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_corner"
+        }
+      },
+      {
+        "threshold": 13402,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_center"
+        }
+      },
+      {
+        "threshold": 13403,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_me"
+        }
+      },
+      {
+        "threshold": 13404,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_ai"
+        }
+      },
+      {
+        "threshold": 13405,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_both"
+        }
+      },
+      {
+        "threshold": 13406,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_res0"
+        }
+      },
+      {
+        "threshold": 13407,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_res1"
+        }
+      },
+      {
+        "threshold": 13408,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_res2"
+        }
+      },
+      {
+        "threshold": 13409,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_res3"
+        }
+      },
+      {
+        "threshold": 13410,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_res4"
+        }
+      },
+      {
+        "threshold": 13411,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_res5"
+        }
+      },
+      {
+        "threshold": 13412,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_throw"
+        }
+      },
+      {
+        "threshold": 13413,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_home_me"
+        }
+      },
+      {
+        "threshold": 13414,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_home_ai"
+        }
+      },
+      {
+        "threshold": 13415,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_goal"
+        }
+      },
+      {
+        "threshold": 13416,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/yut_select"
+        }
+      },
+      {
+        "threshold": 13420,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city0"
+        }
+      },
+      {
+        "threshold": 13421,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city1"
+        }
+      },
+      {
+        "threshold": 13422,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city2"
+        }
+      },
+      {
+        "threshold": 13423,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city3"
+        }
+      },
+      {
+        "threshold": 13424,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city4"
+        }
+      },
+      {
+        "threshold": 13425,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city5"
+        }
+      },
+      {
+        "threshold": 13426,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city6"
+        }
+      },
+      {
+        "threshold": 13427,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city7"
+        }
+      },
+      {
+        "threshold": 13428,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city0_me"
+        }
+      },
+      {
+        "threshold": 13429,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city1_me"
+        }
+      },
+      {
+        "threshold": 13430,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city2_me"
+        }
+      },
+      {
+        "threshold": 13431,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city3_me"
+        }
+      },
+      {
+        "threshold": 13432,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city4_me"
+        }
+      },
+      {
+        "threshold": 13433,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city5_me"
+        }
+      },
+      {
+        "threshold": 13434,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city6_me"
+        }
+      },
+      {
+        "threshold": 13435,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city7_me"
+        }
+      },
+      {
+        "threshold": 13436,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city0_ai"
+        }
+      },
+      {
+        "threshold": 13437,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city1_ai"
+        }
+      },
+      {
+        "threshold": 13438,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city2_ai"
+        }
+      },
+      {
+        "threshold": 13439,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city3_ai"
+        }
+      },
+      {
+        "threshold": 13440,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city4_ai"
+        }
+      },
+      {
+        "threshold": 13441,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city5_ai"
+        }
+      },
+      {
+        "threshold": 13442,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city6_ai"
+        }
+      },
+      {
+        "threshold": 13443,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/city7_ai"
+        }
+      },
+      {
+        "threshold": 13444,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/start"
+        }
+      },
+      {
+        "threshold": 13445,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/island"
+        }
+      },
+      {
+        "threshold": 13446,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/chance"
+        }
+      },
+      {
+        "threshold": 13447,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/travel"
+        }
+      },
+      {
+        "threshold": 13448,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/fund"
+        }
+      },
+      {
+        "threshold": 13449,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tok_me"
+        }
+      },
+      {
+        "threshold": 13450,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tok_ai"
+        }
+      },
+      {
+        "threshold": 13451,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tok_both"
+        }
+      },
+      {
+        "threshold": 13452,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/dice1"
+        }
+      },
+      {
+        "threshold": 13453,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/dice2"
+        }
+      },
+      {
+        "threshold": 13454,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/dice3"
+        }
+      },
+      {
+        "threshold": 13455,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/dice4"
+        }
+      },
+      {
+        "threshold": 13456,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/dice5"
+        }
+      },
+      {
+        "threshold": 13457,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/dice6"
+        }
+      },
+      {
+        "threshold": 13458,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/roll"
+        }
+      },
+      {
+        "threshold": 13459,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/money"
+        }
+      },
+      {
+        "threshold": 13460,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card_back"
+        }
+      },
+      {
+        "threshold": 13461,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card1"
+        }
+      },
+      {
+        "threshold": 13462,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card2"
+        }
+      },
+      {
+        "threshold": 13463,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card3"
+        }
+      },
+      {
+        "threshold": 13464,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card4"
+        }
+      },
+      {
+        "threshold": 13465,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card5"
+        }
+      },
+      {
+        "threshold": 13466,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card6"
+        }
+      },
+      {
+        "threshold": 13467,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card7"
+        }
+      },
+      {
+        "threshold": 13468,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card8"
+        }
+      },
+      {
+        "threshold": 13469,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card9"
+        }
+      },
+      {
+        "threshold": 13470,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/card10"
+        }
+      },
+      {
+        "threshold": 13471,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/chip"
+        }
+      },
+      {
+        "threshold": 13472,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/call"
+        }
+      },
+      {
+        "threshold": 13473,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/fold"
+        }
+      },
+      {
+        "threshold": 13480,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_bronze"
+        }
+      },
+      {
+        "threshold": 13481,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_silver"
+        }
+      },
+      {
+        "threshold": 13482,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_gold"
+        }
+      },
+      {
+        "threshold": 13483,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_platinum"
+        }
+      },
+      {
+        "threshold": 13484,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_diamond"
+        }
+      },
+      {
+        "threshold": 13485,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_master"
+        }
+      },
+      {
+        "threshold": 13486,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/tier_grandmaster"
+        }
+      },
+      {
+        "threshold": 13487,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/board_chip"
+        }
+      },
+      {
+        "threshold": 13488,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/hub_yut"
+        }
+      },
+      {
+        "threshold": 13489,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/hub_marble"
+        }
+      },
+      {
+        "threshold": 13490,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/hub_poker"
+        }
+      },
+      {
+        "threshold": 13491,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/board/hub_duel"
+        }
+      },
+      {
         "threshold": 16000,
         "model": {
           "type": "minecraft:model",

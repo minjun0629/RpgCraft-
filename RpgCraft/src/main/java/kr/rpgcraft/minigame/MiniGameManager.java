@@ -161,6 +161,9 @@ public class MiniGameManager implements CommandExecutor {
             set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&a&l미니게임 상점", "&7미니게임 코인으로 여러 보상을 살 수 있습니다",
                     "&f보유 &e" + Coin.EVENT.get(d) + " 미니게임 코인", "", "&f오늘 남은 판 " + (playsLeft(d, Game.MOLE) > 0 ? "&e" : "&c") + playsLeft(d, Game.MOLE) + " &7/ " + dailyPlays()
                             + (total() ? " &8(모든 게임 합계)" : ""), "&e▶ 클릭"), e -> new EventShop(p).open(p));
+            if (plugin.boards() != null)   // v5.10.45 보드게임 (판 수 제한 없음)
+                set(38, kr.rpgcraft.board.BoardIcons.of(kr.rpgcraft.board.BoardIcons.HUB_YUT, "&d&l보드게임 · 오락실 &a&lNEW", "&7윷놀이 · 부루마블 · 인디언 포커",
+                        "&7판 수 제한 없이 컴퓨터와 한 판!", "&7이기면 보드 칩 (전용 칭호 · 스킨 · 장신구)", "&e▶ 클릭 (/보드게임)"), e -> plugin.boards().openHub(p));
             set(49, Gui.button(Material.BOOK, "&f도움말", "&7각 게임은 쉬움 · 보통 · 어려움 3단계", "&7어려울수록 코인을 많이 줍니다",
                     "&7하루에 " + (total() ? "모든 게임 합쳐 " : "게임마다 ") + dailyPlays() + "판 (시작하면 1판 차감)",
                     "&7미니게임 코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));

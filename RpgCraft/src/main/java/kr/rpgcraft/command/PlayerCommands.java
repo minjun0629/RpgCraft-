@@ -434,30 +434,63 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
             strLore.addAll(kr.rpgcraft.stat.StatCalculator.strMilestones(d));
             strLore.add("");
             strLore.add("&a좌클릭 +1 &7| &a우클릭 +10 &7| &a쉬프트 전부");
-            set(11, button(Material.IRON_SWORD, "&c힘 &f" + d.str, strLore.toArray(new String[0])), e -> add(p, e, 0));
+            set(11, button(Material.IRON_SWORD, "&c힘 &f" + d.str + finalOf(d.str, s.str), strLore.toArray(new String[0])), e -> add(p, e, 0));
             java.util.List<String> dexLore = new java.util.ArrayList<>(java.util.List.of("&71포인트당 치명타 확률 +" + c.getDouble("player.dex-crit-per-point", 0.12) + "%, 치명타 피해 +" + c.getDouble("player.dex-critdmg-per-point", 0.6) + "%", ""));
             dexLore.addAll(kr.rpgcraft.stat.StatCalculator.dexMilestones(d));
             dexLore.add("");
             dexLore.add("&a좌클릭 +1 &7| &a우클릭 +10 &7| &a쉬프트 전부");
-            set(13, button(Material.FEATHER, "&a민첩 &f" + d.dex, dexLore.toArray(new String[0])), e -> add(p, e, 1));
-            java.util.List<String> advLore = new java.util.ArrayList<>(java.util.List.of("&71포인트당 체력 +" + String.format("%.2f", c.getDouble("player.adv-hp-per-point", 90) * plugin.stats().hpScale()) + ", 방어력 +" + c.getDouble("player.adv-def-per-point", 0.065) + "%", "&7유적 입장 조건", ""));
+            set(13, button(Material.FEATHER, "&a민첩 &f" + d.dex + finalOf(d.dex, s.dex), dexLore.toArray(new String[0])), e -> add(p, e, 1));
+            java.util.List<String> advLore = new java.util.ArrayList<>(java.util.List.of("&71포인트당 체력 +" + String.format("%.2f", c.getDouble("player.adv-hp-per-point", 90) * plugin.stats().hpScale()) + ", 방어력 +" + c.getDouble("player.adv-def-per-point", 0.065) + "%", "&7유적 · 보물 상자는 탐험도로도 도전 가능 &8(/숙련)", ""));
             advLore.addAll(kr.rpgcraft.stat.StatCalculator.advMilestones(d));
             advLore.add("");
             advLore.add("&a좌클릭 +1 &7| &a우클릭 +10 &7| &a쉬프트 전부");
-            set(15, button(Material.LEATHER_BOOTS, "&b모험 &f" + d.adv, advLore.toArray(new String[0])), e -> add(p, e, 2));
-            set(22, button(Material.BOOK, "&f현재 능력치",
+            set(15, button(Material.LEATHER_BOOTS, "&b모험 &f" + d.adv + finalOf(d.adv, s.adv), advLore.toArray(new String[0])), e -> add(p, e, 2));
+            java.util.List<String> info = new java.util.ArrayList<>(java.util.List.of(
                     "&f공격력 &6" + Text.num(s.attack), "&f체력 &c" + Text.num(s.maxHp),
                     "&f마력 &d" + Text.num(s.magic), "&f크리티컬 &e" + String.format("%.1f", s.crit) + "% &7(피해 +" + String.format("%.0f", 100 + s.critDmg) + "%)",
                     "&f방어력 &b" + String.format("%.1f", s.def) + "%", "&f이동속도 &a" + String.format("%+.1f", s.speed) + "%",
                     "&f흡혈 &c" + String.format("%.1f", s.lifesteal) + "% &7(주는 피해만큼 체력 회복)",
                     "&f회피 &b" + String.format("%.1f", s.dodge) + "% &f방어 관통 &b" + String.format("%.1f", s.armorPen) + "%",
                     "&f직업 &e" + plugin.jobs().title(d)));
+            info.addAll(passiveLines(p, d));   // v5.10.45 히든 패시브 보너스도 한눈에
+            set(22, button(Material.BOOK, "&f현재 능력치 &7(모든 보너스 포함)", info.toArray(new String[0])));
             fill(0, 26);
         }
 
         void add(Player p, InventoryClickEvent e, int which) {
             if (allocateStat(p, which, e.isShiftClick(), e.isRightClick())) render(p);
         }
+
+        private String finalOf(int invested, double total) {
+            return (int) Math.round(total) != invested ? " &7→ 최종 &e" + (int) Math.round(total) : "";
+        }
+    }
+
+    /** v5.10.45 히든 · 던전 · 최초 보상 패시브가 주는 능력치 (이미 최종 능력치에 포함) — 스탯 창 · 인벤토리 스탯 칸 공용 */
+    public java.util.List<String> passiveLines(Player p, PlayerData d) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        kr.rpgcraft.stat.StatMap pb = plugin.stats().passiveBonus(p, d);
+        java.util.List<String> parts = new java.util.ArrayList<>();
+        for (var en : pb.entries()) {
+            double v = en.getValue();
+            if (Math.abs(v) < 1e-9 || en.getKey().isRequirement()) continue;
+            String num = en.getKey().pct || en.getKey() == kr.rpgcraft.stat.Stat.SPEED ? (v == Math.rint(v) ? String.valueOf((long) v) : String.format("%.1f", v)) + (en.getKey().pct ? "%" : "")
+                    : Text.num(v);
+            parts.add("&f" + en.getKey().label + " &a" + (v > 0 ? "+" : "") + num);
+        }
+        if (parts.isEmpty()) return out;
+        out.add("");
+        out.add("&d히든 패시브 보너스 &8(위 능력치에 이미 포함)");
+        StringBuilder line = new StringBuilder(" ");
+        int n = 0;
+        for (String part : parts) {
+            if (n == 3) { out.add(line.toString()); line = new StringBuilder(" "); n = 0; }
+            if (n > 0) line.append(" &8· ");
+            line.append(part);
+            n++;
+        }
+        if (n > 0) out.add(line.toString());
+        return out;
     }
 
     /** 스탯 분배 (스탯 창 · v5.10.34 인벤토리 위 스탯 칸 공용). 좌클릭 +1 · 우클릭 +10 · 쉬프트 전부. 분배했으면 true */

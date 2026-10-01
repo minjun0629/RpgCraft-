@@ -101,10 +101,12 @@ public class DuelManager implements CommandExecutor, TabCompleter, Listener {
         if (a.length < 1) {
             Text.msg(p, "&e/야차 <닉네임> &7- 1대1 결투 신청 (Tab 자동완성)");
             Text.msg(p, "&e/야차 수락 &7· &e/야차 거절 &7- 받은 신청에 답하기");
+            Text.msg(p, "&e/야차 랭킹 &7- 명성 랭킹 · 등급 칭호 (이기면 명성 +, 지면 -)");
             return true;
         }
         switch (a[0]) {
             case "수락", "accept" -> { respond(p, true); return true; }
+            case "랭킹", "명성", "rank" -> { if (plugin.boards() != null) plugin.boards().new FameGui(p).open(p); return true; }   // v5.10.45
             case "거절", "deny" -> { respond(p, false); return true; }
             default -> { }
         }
@@ -211,6 +213,16 @@ public class DuelManager implements CommandExecutor, TabCompleter, Listener {
             Text.announce(Text.PREFIX + Text.c("&c⚔ &e" + wn + "&f님이 야차에서 &e" + ln + "&f님을 이겼습니다!"));
             if (w != null) { w.sendTitle(Text.c("&6&l승리"), Text.c("&7잠시 후 원래 자리로 돌아갑니다"), 5, 40, 10); w.playSound(w.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f); }
             if (l != null) { l.sendTitle(Text.c("&c&l패배"), Text.c("&7야차에서는 잃는 것이 없습니다"), 5, 40, 10); l.playSound(l.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 0.8f); }
+            if (w != null && l != null && plugin.boards() != null) {   // v5.10.45 명성
+                int[] dl = plugin.boards().recordDuel(w, l);
+                if (dl[0] != 0 || dl[1] != 0) {
+                    Text.msg(w, "&c⚔ 명성 &a+" + dl[0] + " &7→ " + plugin.boards().fame(w.getUniqueId()) + " (" + plugin.boards().tierLabel(w.getUniqueId()) + "&7)");
+                    Text.msg(l, "&c⚔ 명성 &c" + dl[1] + " &7→ " + plugin.boards().fame(l.getUniqueId()) + " (" + plugin.boards().tierLabel(l.getUniqueId()) + "&7)");
+                } else {
+                    Text.msg(w, "&7오늘 같은 상대와는 명성이 더 오르지 않습니다. (하루 " + plugin.getConfig().getInt("duel.fame-pair-daily", 3) + "판)");
+                    Text.msg(l, "&7오늘 같은 상대와는 명성이 더 바뀌지 않습니다.");
+                }
+            }
         }
         for (Player q : online(d)) {   // 체력 가득 (패배자도 바로 회복, 진짜 사망 없음)
             PlayerData pd = plugin.data().get(q);
@@ -332,7 +344,7 @@ public class DuelManager implements CommandExecutor, TabCompleter, Listener {
     public List<String> onTabComplete(CommandSender s, Command c, String l, String[] a) {
         if (a.length != 1) return List.of();
         List<String> out = new ArrayList<>();
-        for (String x : List.of("수락", "거절")) if (x.startsWith(a[0])) out.add(x);
+        for (String x : List.of("수락", "거절", "랭킹")) if (x.startsWith(a[0])) out.add(x);
         out.addAll(Text.onlineNames(a[0], s));
         return out;
     }

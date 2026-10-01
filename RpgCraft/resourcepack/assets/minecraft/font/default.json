@@ -475,6 +475,276 @@
     },
     {
       "type": "bitmap",
+      "file": "rpgcraft:font/target/frame.png",
+      "ascent": 11,
+      "height": 30,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_00.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_01.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_02.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_03.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_04.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_05.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_06.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_07.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_08.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_09.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_10.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_11.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_12.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_13.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_14.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_15.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_16.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_17.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_18.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_19.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_20.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_21.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_22.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_23.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_24.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/bar_25.png",
+      "ascent": -5,
+      "height": 6,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/icon_normal.png",
+      "ascent": 3,
+      "height": 13,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/icon_elite.png",
+      "ascent": 3,
+      "height": 13,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/icon_boss.png",
+      "ascent": 3,
+      "height": 13,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
       "file": "rpgcraft:font/dmg/gold_n_0.png",
       "ascent": 7,
       "height": 10,

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.48
+- 적 체력바 크기 · 위치를 마크에이지 4R 화면 비율로 (작게, 문장 일부가 화면 밖으로).
+
 ## v5.10.47
 - 오른쪽 위 적 체력바를 마크에이지 4R 양식 그대로 (이름 칸 · 보라→파랑 바 · 날개 문장).
 

@@ -37,8 +37,8 @@ void main() {
         if (all(lessThan(abs(c255 - vec3(63.0, 63.0, 62.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(63.0, 56.0, 32.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(63.0, 24.0, 24.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(50.0, 50.0, 49.0)), vec3(0.6)))) {
             gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
         } else if (all(lessThan(abs(c255 - vec3(252.0, 252.0, 248.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 224.0, 128.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 96.0, 96.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(200.0, 200.0, 196.0)), vec3(0.6)))) {
-            gl_Position.x += 1.0 - (236.0 * 0.5 + 4.0) * ProjMat[0][0];
-            gl_Position.y += 30.0 * ProjMat[1][1];
+            gl_Position.x += 1.0 - (184.0 * 0.5 + -21.0) * ProjMat[0][0];
+            gl_Position.y += 22.0 * ProjMat[1][1];
         }
     }
 }

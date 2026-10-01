@@ -30,7 +30,7 @@ public class TargetHud implements Listener {
     // tools/target_hud.py 와 같아야 함 (v5.10.47 마크에이지 4R 참고 화면대로: 이름 칸 + 보라→파랑 바 + 날개 문장)
     private static final char FRAME = '\uE0A0', BAR0 = '\uE0A1', EMB0 = '\uE0BB', DIG0 = '\uE0C0';
     private static final String DIGITS = "0123456789/,.kM";
-    private static final int W = 236, FRAME_ADV = 171, FILL_X = 4, FILL_ADV = 162, EMB_X = 150, EMB_ADV = 87, CENTER = 84, INNER = 150, STEPS = 25;
+    private static final int W = 184, FRAME_ADV = 111, FILL_X = 4, FILL_ADV = 102, EMB_X = 98, EMB_ADV = 87, CENTER = 54, INNER = 100, STEPS = 25;   // v5.10.48 참고 화면 비율로 줄임
     private static final String WHITE = hex("fcfcf8"), GOLD = hex("fce080"), RED = hex("fc6060"), GRAY = hex("c8c8c4");
 
     private record Target(UUID mob, long until, boolean look) {}

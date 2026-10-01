@@ -12,17 +12,17 @@ import os
 
 from PIL import Image, ImageDraw
 
-W = 236                        # 전체 폭 (보스바 가운데 정렬 기준) = 문장 오른쪽 끝
-FRAME_W, FRAME_H = 170, 46     # 이름 칸 + 바 틀
-BOX_X0, BOX_X1 = 2, 166        # 이름 칸 · 바 좌우
-NAME_Y0, NAME_Y1 = 10, 30      # 이름 칸
-BAR_Y0, BAR_Y1 = 32, 44        # 바 틀
-FILL_X, FILL_Y, FILL_W, FILL_H = 4, 34, 161, 9
-ASC = 23                       # 글자 기준선 = 틀 위에서 23px (이름 글자가 이름 칸 가운데에 오도록)
-EMB_X, EMB, EMB_H = 150, 86, 78   # 문장 위치 (이름 칸 끝에 겹침) · 폭 · 높이
+W = 184                        # 전체 폭 (보스바 가운데 정렬 기준) = 문장 오른쪽 끝
+FRAME_W, FRAME_H = 110, 42     # 이름 칸 + 바 틀
+BOX_X0, BOX_X1 = 2, 106        # 이름 칸 · 바 좌우
+NAME_Y0, NAME_Y1 = 10, 28      # 이름 칸
+BAR_Y0, BAR_Y1 = 29, 40        # 바 틀
+FILL_X, FILL_Y, FILL_W, FILL_H = 4, 31, 101, 7
+ASC = 22                       # 글자 기준선 = 틀 위에서 23px (이름 글자가 이름 칸 가운데에 오도록)
+EMB_X, EMB, EMB_H = 98, 86, 78   # 문장 위치 (이름 칸 끝에 겹침) · 폭 · 높이
 FRAME, BAR0, STEPS, EMB0, DIG0 = 0xE0A0, 0xE0A1, 25, 0xE0BB, 0xE0C0
 DIGITS = "0123456789/,.kM"
-MARGIN, DROP = 4, 30           # 오른쪽 여백 · 아래로 내리는 양 (첫 보스바여도 위가 잘리지 않게)
+MARGIN, DROP = -21, 22           # 오른쪽 여백 · 아래로 내리는 양 (첫 보스바여도 위가 잘리지 않게)
 # 셰이더가 옮길 글자 색 — Java TargetHud 와 같아야 함 (흰 · 금 · 빨강 · 회색)
 MARK = ["fcfcf8", "fce080", "fc6060", "c8c8c4"]
 
@@ -180,7 +180,7 @@ def providers(pack_dir, ns):
         out.append({"type": "bitmap", "file": ns + ":font/target/fill_%02d.png" % s, "ascent": ASC - FILL_Y, "height": FILL_H, "chars": [chr(BAR0 + s)]})
     for i, kind in enumerate(("normal", "elite", "boss")):
         emblem(kind).save(os.path.join(tex, "emblem_%s.png" % kind))
-        out.append({"type": "bitmap", "file": ns + ":font/target/emblem_%s.png" % kind, "ascent": ASC + 16, "height": EMB_H, "chars": [chr(EMB0 + i)]})
+        out.append({"type": "bitmap", "file": ns + ":font/target/emblem_%s.png" % kind, "ascent": ASC + 13, "height": EMB_H, "chars": [chr(EMB0 + i)]})
     vdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla")
     dg, cell = digits(vdir)
     dg.save(os.path.join(tex, "digits.png"))
@@ -216,10 +216,10 @@ def preview(path):
     base_y = 20 + ASC
     bg.alpha_composite(frame(), (10, base_y - ASC))
     bg.alpha_composite(fill(25), (10 + FILL_X, base_y - ASC + FILL_Y))
-    bg.alpha_composite(emblem("normal"), (10 + EMB_X, base_y - ASC - 16))
+    bg.alpha_composite(emblem("normal"), (10 + EMB_X, base_y - ASC - 13))
     dg, cell = digits(vdir)
     txt = "30/30"
-    x = 10 + 84 - len(txt) * 3
+    x = 10 + (BOX_X0 + BOX_X1) // 2 - len(txt) * 3
     for ch in txt:
         i = DIGITS.index(ch)
         bg.alpha_composite(dg.crop((i * cell, 0, (i + 1) * cell, cell)), (x, base_y - ASC + FILL_Y + 1))

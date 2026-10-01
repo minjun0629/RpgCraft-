@@ -36,6 +36,13 @@ def lit(h, k):
     return _hex((r * k, g * k, b * k))
 
 
+def mixc(a, b, t):
+    ra, ga, ba = _rgb(a)
+    rb, gb, bb = _rgb(b)
+    t = max(0.0, min(1.0, t))
+    return _hex((ra + (rb - ra) * t, ga + (gb - ga) * t, ba + (bb - ba) * t))
+
+
 def _lum(h):
     r, g, b = _rgb(h)
     return 0.3 * r + 0.59 * g + 0.11 * b
@@ -248,16 +255,38 @@ def _blade(g, y0, y1, width, thick, P, style, curve=0.0, pri=4, fuller=True):
             w *= max(0.0, 1 - (t - tip) / (1 - tip)) ** 0.85
         return (w / 2, thick / 2 * (1 - 0.3 * t), "diamond", curve * t * t * 3)
 
+    glow = P.get("glow", P["edge"])
+
     def col(x, y, z, u, w):
         t = (y - y0) / L
+        k = 0.42 * t ** 1.4                                    # v5.10.22 끝으로 갈수록 빛나는 그라데이션 (MMORPG 느낌)
         if abs(u) > 0.74 or t > 0.95:
-            return P["edge"]                                   # 날
-        if fuller and abs(u) < 0.22 and 0.04 < t < 0.7:
-            return P["inlay"] if abs(w) > 0.3 else lit(P["inlay"], 0.75)   # 상감 홈
+            return mixc(lit(P["edge"], 1.05), lit(glow, 1.4), k)          # 날
+        if fuller and abs(u) < 0.24 and 0.04 < t < 0.78:
+            rune = int(t * 26) % 3 != 0 and abs(w) > 0.25     # 빛나는 룬 문양
+            return lit(P["inlay"], 1.45) if rune else lit(P["inlay"], 0.7)
         if abs(u) < 0.45:
-            return lit(P["blade"], 1.12)                       # 능선 쪽 광택
-        return P["blade"] if u > 0 else P.get("shade", lit(P["blade"], 0.78))   # 한쪽 면은 그늘
+            return mixc(lit(P["blade"], 1.12), glow, k)        # 능선 쪽 광택
+        return mixc(P["blade"] if u > 0 else P.get("shade", lit(P["blade"], 0.78)), glow, k * 0.8)
     _fill(g, y0, y1, prof, col, pri)
+
+
+def _shards(g, pts, col, size=0.8, pri=7):
+    """공중에 떠 있는 작은 결정 조각 (마름모)"""
+    for (x, y, z) in pts:
+        h = size
+        _fill(g, y - h * 1.6, y + h * 1.6, lambda yy, y=y, h=h, x=x: (h * (1 - abs(yy - y) / (h * 1.6)), h * 0.6 * (1 - abs(yy - y) / (h * 1.6)), "diamond", x - C[0]),
+              lambda xx, yy, zz, u, w, y=y: lit(col, 1.5) if yy > y and abs(u) < 0.5 else lit(col, 1.15), pri)
+
+
+def _wings(g, y, half, P, pri=5):
+    """가드 위로 뻗는 날개 장식 (겹겹이)"""
+    glow = P.get("glow", P["gem"])
+    for sd in (-1, 1):
+        _bar(g, C[0] + sd * 1.2, C[0] + sd * half * 1.15, lambda t: y + 0.6 + 3.2 * t ** 1.6, lambda t: 0.55 - 0.3 * t, lambda t: 0.35,
+             lambda x, yy, z, t, v, w: mixc(P["guard"], lit(glow, 1.3), t ** 1.5), pri)
+        _bar(g, C[0] + sd * 1.0, C[0] + sd * half * 0.8, lambda t: y - 0.2 + 1.6 * t ** 1.4, lambda t: 0.45 - 0.2 * t, lambda t: 0.45,
+             lambda x, yy, z, t, v, w: lit(P["guard"], 0.85), pri)
 
 
 def _cone_y(g, y0, y1, r0, r1, colf, pri=3, shape="round"):
@@ -266,29 +295,36 @@ def _cone_y(g, y0, y1, r0, r1, colf, pri=3, shape="round"):
 
 # ------------------------------------------------------------------ 무기 종류별
 def sword(g, P, s, tier):
-    total = 19.5 + min(4, tier) * 0.35
+    total = 21.5 + min(4, tier) * 0.4
     y0 = 8 - total / 2
     gl = 3.4
     _pommel(g, y0 + 0.9, P, s % 3)
     _grip(g, y0 + 1.6, y0 + 1.6 + gl, 0.75, P)
     gy = y0 + 1.6 + gl + 0.7
-    width = 3.2 + (s >> 3) % 3 * 0.35 + (0.5 if tier >= 5 else 0)
-    _guard(g, gy, width * 1.25 + 0.8, P, (s >> 5) % 4)
-    _blade(g, gy + 0.9, y0 + total, width, 1.5, P, (s >> 7) % 4)
-    if tier >= 4 or (s >> 9) % 3 == 0:   # 칼날 아래 보석 장식
-        g.dot(C[0], gy + 1.6, C[1] + 0.45, P["gem"], 7, 0.55)
-        g.dot(C[0], gy + 1.6, C[1] - 0.45, P["gem"], 7, 0.55)
+    width = 3.7 + (s >> 3) % 3 * 0.4 + (0.5 if tier >= 5 else 0)
+    _guard(g, gy, width * 1.25 + 0.9, P, (s >> 5) % 4)
+    if (s >> 11) % 3 != 0 or tier >= 4:   # 날개 장식 (대부분)
+        _wings(g, gy, width * 1.1 + 0.8, P)
+    _fill(g, gy + 0.9, gy + 2.0, lambda y: (width * 0.42, 0.95, "box"), lambda x, y, z, u, w: P["guard"] if abs(u) > 0.5 else lit(P["guard"], 1.2), 6)   # 칼날 받침 (리카소)
+    g.dot(C[0], gy + 1.45, C[1] + 0.9, lit(P["gem"], 1.3), 8, 0.8)
+    g.dot(C[0], gy + 1.45, C[1] - 0.9, lit(P["gem"], 1.3), 8, 0.8)
+    _blade(g, gy + 1.9, y0 + total, width, 1.7, P, (s >> 7) % 4)
+    if tier >= 3 or (s >> 9) % 3 == 0:   # 칼날 옆에 떠 있는 결정 조각
+        top = y0 + total
+        _shards(g, [(C[0] - width * 0.5 - 1.6, top - 5.5, C[1]), (C[0] + width * 0.5 + 1.6, top - 8.5, C[1])], P.get("glow", P["gem"]), 0.75)
 
 
 def dagger(g, P, s, tier):
-    total = 14.0 + min(4, tier) * 0.3
+    total = 15.5 + min(4, tier) * 0.3
     y0 = 8 - total / 2 - 1.5
     _pommel(g, y0 + 0.8, P, s % 3)
     _grip(g, y0 + 1.4, y0 + 4.2, 0.68, P)
     gy = y0 + 4.8
     _guard(g, gy, 2.4, P, (s >> 4) % 4)
     curve = [0.0, 0.25, -0.25, 0.4][(s >> 6) % 4]
-    _blade(g, gy + 0.9, y0 + total, 2.6, 1.2, P, [0, 1, 0, 1][(s >> 8) % 4], curve=curve)
+    _blade(g, gy + 0.9, y0 + total, 3.0, 1.35, P, [0, 1, 0, 1][(s >> 8) % 4], curve=curve)
+    if (s >> 10) % 2:
+        _wings(g, gy, 2.6, P)
 
 
 def axe(g, P, s, tier):
@@ -298,7 +334,8 @@ def axe(g, P, s, tier):
     g.sphere((C[0], y0, C[1]), 0.85, P["guard"], 4)
     hy = y1 - 3.6                       # 머리 가운데
     double = (s >> 3) % 3 == 0
-    size = 4.6 + min(4, tier) * 0.25
+    size = 5.4 + min(4, tier) * 0.3
+    glow = P.get("glow", P["edge"])
     vs = VL.VS
     for side in ((-1, 1) if double else (-1,)):   # 날은 -x 쪽 (바닐라 도끼처럼 위 왼쪽)
         for i in range(int(size / vs) + 1):
@@ -314,7 +351,8 @@ def axe(g, P, s, tier):
                 if abs(v) > half:
                     continue
                 edge = f > 0.86 or abs(v) > half - 0.4
-                col = P["edge"] if edge else lit(P["blade"], 1.05 - 0.2 * f)
+                rune = 0.3 < f < 0.7 and abs(v) < 0.35 and int(f * 18) % 2 == 0
+                col = mixc(P["edge"], lit(glow, 1.4), 0.35 * f) if edge else lit(P["inlay"], 1.45) if rune else mixc(lit(P["blade"], 1.05 - 0.2 * f), glow, 0.3 * f * f)
                 for k in range(math.floor((C[1] - th) / vs), math.floor((C[1] + th) / vs) + 1):
                     g.put(x, y, (k + 0.5) * vs, col, 5)
     if not double:   # 뒤 가시
@@ -358,6 +396,8 @@ def spear(g, P, s, tier):
     if (s >> 5) % 2:   # 갈고리 날개
         for sx in (-1, 1):
             g.cone((C[0], y1 + 0.8, C[1]), (C[0] + sx * 3.0, y1 + 2.4, C[1]), 0.7, 0.12, P["edge"], 4)
+    if tier >= 3:
+        _shards(g, [(C[0] - 2.6, y1 + 6.0, C[1]), (C[0] + 2.6, y1 + 4.0, C[1])], P.get("glow", P["gem"]), 0.55)
     for k in range(5):   # 날 아래 술
         a = k * 2 * math.pi / 5
         g.tube([(C[0], y1 - 0.8, C[1]), (C[0] + math.cos(a) * 1.4, y1 - 4.0, C[1] + math.sin(a) * 1.4)], [0.35, 0.15], P["gem"], 3)
@@ -371,7 +411,9 @@ def staff(g, P, s, tier):
         _fill(g, yy - 0.3, yy + 0.3, lambda y: (0.85, 0.85, "round"), lambda *a: P["guard"], 3)
     style = s % 3
     top = y1 + 3.0
-    g.sphere((C[0], top, C[1]), 2.3, lambda x, y, z, d: lit(P["gem"], 1.5) if d < 0.18 else lit(P["gem"], 1.15) if d < 0.5 else P["gem"], 4)
+    _fill(g, top - 3.0, top + 3.4, lambda y: (1.9 * (1 - abs(y - top - 0.2) / 3.2), 1.9 * (1 - abs(y - top - 0.2) / 3.2), "diamond"),
+          lambda x, y, z, u, w: lit(P["gem"], 1.55) if abs(u) < 0.35 and y > top else lit(P["gem"], 1.2) if u > 0 else P["gem"], 4)   # v5.10.22 길쭉한 마력 결정
+    _shards(g, [(C[0] - 3.4, top + 1.6, C[1]), (C[0] + 3.4, top - 0.6, C[1]), (C[0] - 0.4, top + 4.6, C[1])], P.get("glow", P["gem"]), 0.6)
     if style == 0:     # 감싸는 발톱
         for k in range(4):
             a = k * math.pi / 2 + 0.4

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.22
+- **무기를 화려한 MMORPG 느낌으로**: 빛나는 그라데이션 · 룬 · 날개 가드 · 떠 있는 결정 조각, 지팡이는 마력 결정.
+
 ## v5.10.21
 - **모든 무기 3D 복셀 모델**: 검 · 단검 · 도끼 · 망치 · 몽둥이 · 창 · 지팡이 · 활 · 방패를 블록을 쌓아 깎은 입체 모델로 (원래 색 유지, 강화 변형 포함). `tools/weapon_vox.py`.
 

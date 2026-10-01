@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.36
+- 사이드바 줄 앞 아이콘 없앰 (글자 · 구분선만).
+
 ## v5.10.35
 - **대미지 스킨** 7종 (시즌 패스 보상, 우클릭 장착 · `/데미지스킨` 교체). 채집 안 되던 돌 · 나무 버그 수정. 펫 등급 합성 5마리.
 

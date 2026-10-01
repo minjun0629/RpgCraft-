@@ -261,21 +261,20 @@ public class HudManager implements Listener {
         }
     }
 
-    private static final String DIV = "&f\uE070", I_JOB = "&f\uE060", I_LV = "&f\uE061", I_MONEY = "&f\uE062", I_POINT = "&f\uE063",
-            I_POWER = "&f\uE064", I_QUEST = "&f\uE065", I_GUILD = "&f\uE066", I_BUFF = "&f\uE067", I_STR = "&f\uE068", I_DEX = "&f\uE069", I_ADV = "&f\uE06A";
+    private static final String DIV = "&f\uE070";   // v5.10.36 줄 앞 아이콘은 빼고 구분선만
 
     private void sidebar4r(Player p, PlayerData d, StatSnapshot s, Scoreboard sb, Guild g, double need) {
         List<String> lines = new ArrayList<>();
         lines.add(DIV);
-        lines.add(I_JOB + " &7직업 &f" + plugin.jobs().title(d));
-        lines.add(I_LV + " &7레벨 &e&lLv." + d.level + " &8(" + String.format("%.1f", d.exp / need * 100) + "%)");
-        lines.add(I_MONEY + " &7소지금 &6" + Text.money(d.money));
-        lines.add(I_POINT + " &7포인트 " + (d.statPoints > 0 ? "&a&l" : "&f") + d.statPoints + (d.statPoints > 0 ? " &8(인벤토리 위)" : ""));
+        lines.add("&7직업 &f" + plugin.jobs().title(d));
+        lines.add("&7레벨 &e&lLv." + d.level + " &8(" + String.format("%.1f", d.exp / need * 100) + "%)");
+        lines.add("&7소지금 &6" + Text.money(d.money));
+        lines.add("&7포인트 " + (d.statPoints > 0 ? "&a&l" : "&f") + d.statPoints + (d.statPoints > 0 ? " &8(인벤토리 위)" : ""));
         lines.add(DIV + "&r");
-        lines.add(I_STR + "&c" + (int) s.str + "  " + I_DEX + "&9" + (int) s.dex + "  " + I_ADV + "&a" + (int) s.adv);
-        lines.add(I_POWER + " &7전투력 &6&l" + Text.num(Power.of(s)));
-        lines.add(I_QUEST + " &7의뢰 &a" + plugin.quests().completedCount(d) + "&8/3 &7· &b" + plugin.quests().weeklyCompleted(d) + "&8/3");
-        lines.add(I_GUILD + " &7길드 " + (g == null ? "&8없음" : "&b" + g.name + " &8Lv." + g.level));
+        lines.add("&7힘 &c" + (int) s.str + " &7민첩 &9" + (int) s.dex + " &7모험 &a" + (int) s.adv);
+        lines.add("&7전투력 &6&l" + Text.num(Power.of(s)));
+        lines.add("&7의뢰 &a" + plugin.quests().completedCount(d) + "&8/3 &7· &b" + plugin.quests().weeklyCompleted(d) + "&8/3");
+        lines.add("&7길드 " + (g == null ? "&8없음" : "&b" + g.name + " &8Lv." + g.level));
         lines.add(DIV + "&r&r");
         StringBuilder buffs = new StringBuilder();
         long now = System.currentTimeMillis();
@@ -286,7 +285,7 @@ public class HudManager implements Listener {
         }
         double wk = plugin.levels().weekendMult();
         if (wk > 1) buffs.insert(0, "&6주말 x" + (wk == Math.floor(wk) ? String.valueOf((int) wk) : String.valueOf(wk)) + " ");
-        lines.add(buffs.length() > 0 ? I_BUFF + " " + buffs.toString().trim() : I_BUFF + " &8버프 없음");
+        lines.add(buffs.length() > 0 ? "&7버프 " + buffs.toString().trim() : "&8버프 없음");
         String gl = plugin.guide() == null ? null : plugin.guide().line(d);
         if (gl != null) lines.add(gl);
         for (int i = 0; i < LINES; i++) {

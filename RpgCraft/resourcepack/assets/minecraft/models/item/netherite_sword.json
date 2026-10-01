@@ -225,6 +225,24 @@
         "custom_model_data": 6317
       },
       "model": "rpgcraft:item/armory2_sword_8_e10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7700
+      },
+      "model": "rpgcraft:item/hjw/hjw_b"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10700
+      },
+      "model": "rpgcraft:item/hjw/hjw_b"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12700
+      },
+      "model": "rpgcraft:item/hjw/hjw_b"
     }
   ]
 }

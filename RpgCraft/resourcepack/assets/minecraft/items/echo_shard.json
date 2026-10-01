@@ -52,6 +52,27 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/crystal_top"
         }
+      },
+      {
+        "threshold": 7700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_d"
+        }
+      },
+      {
+        "threshold": 10700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_d"
+        }
+      },
+      {
+        "threshold": 12700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_d"
+        }
       }
     ],
     "fallback": {

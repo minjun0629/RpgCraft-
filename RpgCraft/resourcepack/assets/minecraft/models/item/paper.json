@@ -3888,6 +3888,222 @@
     },
     {
       "predicate": {
+        "custom_model_data": 12664
+      },
+      "model": "rpgcraft:item/ui/ui_locked"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12665
+      },
+      "model": "rpgcraft:item/ui/ui_check"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12666
+      },
+      "model": "rpgcraft:item/ui/ui_book"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12667
+      },
+      "model": "rpgcraft:item/ui/ui_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12668
+      },
+      "model": "rpgcraft:item/ui/ui_note"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12669
+      },
+      "model": "rpgcraft:item/ui/ui_tag"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12670
+      },
+      "model": "rpgcraft:item/ui/ui_coin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12671
+      },
+      "model": "rpgcraft:item/ui/ui_anvil"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12672
+      },
+      "model": "rpgcraft:item/ui/ui_chest"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12673
+      },
+      "model": "rpgcraft:item/ui/ui_funnel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12674
+      },
+      "model": "rpgcraft:item/ui/ui_clock"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12675
+      },
+      "model": "rpgcraft:item/ui/ui_mount"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12676
+      },
+      "model": "rpgcraft:item/ui/ui_beacon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12677
+      },
+      "model": "rpgcraft:item/ui/ui_skull"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12678
+      },
+      "model": "rpgcraft:item/ui/ui_mob"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12679
+      },
+      "model": "rpgcraft:item/ui/ui_boss"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12680
+      },
+      "model": "rpgcraft:item/ui/ui_upgrade"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12681
+      },
+      "model": "rpgcraft:item/ui/ui_quill"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12682
+      },
+      "model": "rpgcraft:item/ui/ui_map"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12683
+      },
+      "model": "rpgcraft:item/ui/ui_egg"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12684
+      },
+      "model": "rpgcraft:item/ui/ui_dragon_egg"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12685
+      },
+      "model": "rpgcraft:item/ui/ui_spellbook"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12686
+      },
+      "model": "rpgcraft:item/ui/ui_cookie"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12687
+      },
+      "model": "rpgcraft:item/ui/ui_boots"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12688
+      },
+      "model": "rpgcraft:item/ui/ui_feather"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12689
+      },
+      "model": "rpgcraft:item/ui/ui_lantern"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12690
+      },
+      "model": "rpgcraft:item/ui/ui_sign"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12691
+      },
+      "model": "rpgcraft:item/ui/ui_fire"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12692
+      },
+      "model": "rpgcraft:item/ui/ui_exp"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12693
+      },
+      "model": "rpgcraft:item/ui/ui_bomb"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12694
+      },
+      "model": "rpgcraft:item/ui/ui_spawner"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12695
+      },
+      "model": "rpgcraft:item/ui/ui_pickaxe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12696
+      },
+      "model": "rpgcraft:item/ui/ui_crystal"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12697
+      },
+      "model": "rpgcraft:item/ui/ui_ruins"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12698
+      },
+      "model": "rpgcraft:item/ui/ui_table"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12699
+      },
+      "model": "rpgcraft:item/ui/ui_key"
+    },
+    {
+      "predicate": {
         "custom_model_data": 12700
       },
       "model": "rpgcraft:item/ui/ui_season_pass_off"
@@ -4272,6 +4488,222 @@
     },
     {
       "predicate": {
+        "custom_model_data": 12764
+      },
+      "model": "rpgcraft:item/ui/ui_locked_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12765
+      },
+      "model": "rpgcraft:item/ui/ui_check_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12766
+      },
+      "model": "rpgcraft:item/ui/ui_book_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12767
+      },
+      "model": "rpgcraft:item/ui/ui_star_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12768
+      },
+      "model": "rpgcraft:item/ui/ui_note_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12769
+      },
+      "model": "rpgcraft:item/ui/ui_tag_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12770
+      },
+      "model": "rpgcraft:item/ui/ui_coin_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12771
+      },
+      "model": "rpgcraft:item/ui/ui_anvil_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12772
+      },
+      "model": "rpgcraft:item/ui/ui_chest_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12773
+      },
+      "model": "rpgcraft:item/ui/ui_funnel_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12774
+      },
+      "model": "rpgcraft:item/ui/ui_clock_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12775
+      },
+      "model": "rpgcraft:item/ui/ui_mount_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12776
+      },
+      "model": "rpgcraft:item/ui/ui_beacon_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12777
+      },
+      "model": "rpgcraft:item/ui/ui_skull_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12778
+      },
+      "model": "rpgcraft:item/ui/ui_mob_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12779
+      },
+      "model": "rpgcraft:item/ui/ui_boss_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12780
+      },
+      "model": "rpgcraft:item/ui/ui_upgrade_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12781
+      },
+      "model": "rpgcraft:item/ui/ui_quill_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12782
+      },
+      "model": "rpgcraft:item/ui/ui_map_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12783
+      },
+      "model": "rpgcraft:item/ui/ui_egg_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12784
+      },
+      "model": "rpgcraft:item/ui/ui_dragon_egg_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12785
+      },
+      "model": "rpgcraft:item/ui/ui_spellbook_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12786
+      },
+      "model": "rpgcraft:item/ui/ui_cookie_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12787
+      },
+      "model": "rpgcraft:item/ui/ui_boots_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12788
+      },
+      "model": "rpgcraft:item/ui/ui_feather_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12789
+      },
+      "model": "rpgcraft:item/ui/ui_lantern_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12790
+      },
+      "model": "rpgcraft:item/ui/ui_sign_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12791
+      },
+      "model": "rpgcraft:item/ui/ui_fire_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12792
+      },
+      "model": "rpgcraft:item/ui/ui_exp_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12793
+      },
+      "model": "rpgcraft:item/ui/ui_bomb_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12794
+      },
+      "model": "rpgcraft:item/ui/ui_spawner_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12795
+      },
+      "model": "rpgcraft:item/ui/ui_pickaxe_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12796
+      },
+      "model": "rpgcraft:item/ui/ui_crystal_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12797
+      },
+      "model": "rpgcraft:item/ui/ui_ruins_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12798
+      },
+      "model": "rpgcraft:item/ui/ui_table_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12799
+      },
+      "model": "rpgcraft:item/ui/ui_key_off"
+    },
+    {
+      "predicate": {
         "custom_model_data": 12801
       },
       "model": "rpgcraft:item/ui/dmg_skin_gold"
@@ -4311,6 +4743,66 @@
         "custom_model_data": 12807
       },
       "model": "rpgcraft:item/ui/dmg_skin_rainbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13000
+      },
+      "model": "rpgcraft:item/ui/ui_bone"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13001
+      },
+      "model": "rpgcraft:item/ui/ui_totem"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13002
+      },
+      "model": "rpgcraft:item/ui/ui_ingot"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13003
+      },
+      "model": "rpgcraft:item/ui/ui_lightning"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13004
+      },
+      "model": "rpgcraft:item/ui/ui_crown"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13200
+      },
+      "model": "rpgcraft:item/ui/ui_bone_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13201
+      },
+      "model": "rpgcraft:item/ui/ui_totem_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13202
+      },
+      "model": "rpgcraft:item/ui/ui_ingot_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13203
+      },
+      "model": "rpgcraft:item/ui/ui_lightning_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13204
+      },
+      "model": "rpgcraft:item/ui/ui_crown_off"
     },
     {
       "predicate": {

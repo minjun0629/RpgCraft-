@@ -67,16 +67,16 @@ public class ItemRegistry {
         }
         // 히든 직업 전용 무기: 그 히든 직업만 쓸 수 있고, 단계가 오를수록 고유 효과가 강해짐 (히든 직업창에서 제작)
         reg(new ItemTemplate("hjw_a", "명계의 낫", Material.NETHERITE_HOE, Category.WEAPON).weapon(WeaponClass.AXE).grade(Grade.MYTHIC)
-                .stats(StatMap.of(ATK, 9000, MAGIC, 1500, LIFESTEAL, 5, CRIT, 10, LEVEL_REQ, 50)).glow().price(-1, -1)
+                .stats(StatMap.of(ATK, 9000, MAGIC, 1500, LIFESTEAL, 5, CRIT, 10, LEVEL_REQ, 50)).glow().model(7700).price(-1, -1)
                 .desc("[히든 전용] 망령의 길", "영혼 베기: 공격 시 15% 확률로 추가 피해 + 체력 회복"));
         reg(new ItemTemplate("hjw_b", "성운검 스텔라", Material.NETHERITE_SWORD, Category.WEAPON).weapon(WeaponClass.SWORD).grade(Grade.MYTHIC)
-                .stats(StatMap.of(ATK, 9500, CRIT, 20, CRIT_DMG, 60, LEVEL_REQ, 50)).glow().price(-1, -1)
+                .stats(StatMap.of(ATK, 9500, CRIT, 20, CRIT_DMG, 60, LEVEL_REQ, 50)).glow().model(7700).price(-1, -1)
                 .desc("[히든 전용] 별의 길", "별빛 일격: 치명타 때 25% 확률로 별이 떨어져 주변까지 피해"));
         reg(new ItemTemplate("hjw_c", "망자의 홀", Material.BLAZE_ROD, Category.WEAPON).weapon(WeaponClass.CLUB).grade(Grade.MYTHIC)
-                .stats(StatMap.of(ATK, 6000, MAGIC, 2500, HP_PCT, 12, LEVEL_REQ, 50)).glow().price(-1, -1)
+                .stats(StatMap.of(ATK, 6000, MAGIC, 2500, HP_PCT, 12, LEVEL_REQ, 50)).glow().model(7700).price(-1, -1)
                 .desc("[히든 전용] 죽음의 길", "사령의 지휘: 들고 있으면 군단원 공격력 +15% / 단계", "공격 시 20% 확률로 군단 체력 회복"));
         reg(new ItemTemplate("hjw_d", "시간의 바늘", Material.ECHO_SHARD, Category.WEAPON).weapon(WeaponClass.DAGGER).grade(Grade.MYTHIC)
-                .stats(StatMap.of(ATK, 7000, CRIT, 25, DODGE, 6, SPEED, 10, LEVEL_REQ, 50)).glow().price(-1, -1)
+                .stats(StatMap.of(ATK, 7000, CRIT, 25, DODGE, 6, SPEED, 10, LEVEL_REQ, 50)).glow().model(7700).price(-1, -1)
                 .desc("[히든 전용] 시간의 길", "초침: 공격할 때마다 되감기 재사용 대기 -0.25초 / 단계"));
     }
 

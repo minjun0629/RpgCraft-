@@ -540,6 +540,11 @@ def main():
     import dmg_skin   # v5.10.35 대미지 스킨 아이템 아이콘 (PAPER 12801+)
     for cmd, model in dmg_skin.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
         overrides.setdefault("paper", []).append((cmd, model))
+    import hjw_vox   # v5.10.44 히든 직업 전용 무기 (각 재질 CMD 7700, 강화 +3000 · +5000 도 같은 모델)
+    hj_ov, hj_n = hjw_vox.write(PACK, NS, lambda p, o: write_json(p, o, compact=True))
+    elements_total += hj_n
+    for mat, cmd, model in hj_ov:
+        overrides.setdefault(mat, []).append((cmd, model))
     # 보스 3D 모델 (PAPER CustomModelData 9000+)
     for cmd, model in boss_models.write(PACK, NS, lambda p, o: write_json(p, o, compact=True)):
         overrides.setdefault("paper", []).append((cmd, model))

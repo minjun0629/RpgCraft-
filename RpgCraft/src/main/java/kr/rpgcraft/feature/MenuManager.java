@@ -92,7 +92,7 @@ public class MenuManager implements Listener {
     }
 
     private static ItemStack icon(Material m, String name, List<String> lore) {
-        return new ItemBuilder(m).name(name).lore(lore).hideAll().build();
+        return Gui.button(m, name, lore.toArray(new String[0]));   // v5.10.44 디자인 아이콘으로
     }
 
     /** v5.10.34 4R 풍 메뉴 아이콘 (리소스팩 그림, 팩이 없으면 종이) */

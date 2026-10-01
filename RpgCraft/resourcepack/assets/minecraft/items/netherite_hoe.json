@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 7700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_a"
+        }
+      },
+      {
+        "threshold": 10700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_a"
+        }
+      },
+      {
+        "threshold": 12700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_a"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/netherite_hoe"
+    }
+  }
+}

@@ -207,6 +207,7 @@ public class DismantleManager implements Listener {
     }
 
     private static ItemStack icon(Material mat, String name, List<String> lore) {
+        if (kr.rpgcraft.gui.Gui.iconFor(mat, name) != null) return kr.rpgcraft.gui.Gui.button(mat, name, lore.toArray(new String[0]));   // v5.10.44 디자인 아이콘
         ItemStack it = new ItemStack(mat);
         ItemMeta m = it.getItemMeta();
         m.setDisplayName(Text.c(name));

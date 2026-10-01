@@ -10,6 +10,27 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/essence_fire"
         }
+      },
+      {
+        "threshold": 7700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_c"
+        }
+      },
+      {
+        "threshold": 10700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_c"
+        }
+      },
+      {
+        "threshold": 12700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_c"
+        }
       }
     ],
     "fallback": {

@@ -65,11 +65,53 @@ public enum UiIcon {
     WPN_BOW,
     WPN_STAFF,
     WPN_SPEAR,
-    WPN_SPECIAL;
+    WPN_SPECIAL,
+    LOCKED,
+    CHECK,
+    BOOK,
+    STAR,
+    NOTE,
+    TAG,
+    COIN,
+    ANVIL,
+    CHEST,
+    FUNNEL,
+    CLOCK,
+    MOUNT,
+    BEACON,
+    SKULL,
+    MOB,
+    BOSS,
+    UPGRADE,
+    QUILL,
+    MAP,
+    EGG,
+    DRAGON_EGG,
+    SPELLBOOK,
+    COOKIE,
+    BOOTS,
+    FEATHER,
+    LANTERN,
+    SIGN,
+    FIRE,
+    EXP,
+    BOMB,
+    SPAWNER,
+    PICKAXE,
+    CRYSTAL,
+    RUINS,
+    TABLE,
+    KEY,
+    BONE,
+    TOTEM,
+    INGOT,
+    LIGHTNING,
+    CROWN;
 
     public static final int BASE = 12600;
 
     public int cmd(boolean on) {
-        return BASE + ordinal() + (on ? 0 : 100);
+        int i = ordinal();
+        return i < 100 ? BASE + i + (on ? 0 : 100) : 13000 + (i - 100) + (on ? 0 : 200);
     }
 }

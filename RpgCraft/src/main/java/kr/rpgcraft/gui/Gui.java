@@ -118,12 +118,75 @@ public abstract class Gui implements InventoryHolder {
     }
 
     public static ItemStack button(Material m, String name, String... lore) {
+        UiIcon ui = iconFor(m, name);   // v5.10.44 메뉴의 바닐라 아이콘은 모두 4R 풍 그림으로
+        if (ui != null) return ui(ui, true, name, lore);
         return new ItemBuilder(m).name(name).lore(lore).hideAll().build();
+    }
+
+    /** v5.10.44 메뉴 단추에 쓰던 바닐라 재질 → 디자인한 아이콘 (없으면 null = 바닐라 그대로) */
+    public static UiIcon iconFor(Material m, String name) {
+        if (m == null) return null;
+        String n = name == null ? "" : name;
+        return switch (m.name()) {
+            case "ARROW", "SPECTRAL_ARROW" -> n.contains("다음") || n.contains("▶") || n.contains("→") ? UiIcon.NAV_NEXT : UiIcon.NAV_BACK;
+            case "BARRIER", "RED_WOOL", "RED_CONCRETE" -> UiIcon.NAV_CLOSE;
+            case "GRAY_DYE", "BLACK_DYE", "IRON_BARS" -> UiIcon.LOCKED;
+            case "LIME_DYE", "LIME_WOOL", "LIME_CONCRETE", "GREEN_WOOL" -> UiIcon.CHECK;
+            case "BOOK", "KNOWLEDGE_BOOK", "BOOKSHELF" -> UiIcon.BOOK;
+            case "NETHER_STAR" -> UiIcon.STAR;
+            case "PAPER", "FILLED_MAP" -> UiIcon.NOTE;
+            case "NAME_TAG" -> UiIcon.TAG;
+            case "GOLD_INGOT", "GOLD_NUGGET", "GOLD_BLOCK", "SUNFLOWER", "EMERALD", "RAW_GOLD" -> UiIcon.COIN;
+            case "ANVIL", "CHIPPED_ANVIL", "DAMAGED_ANVIL", "SMITHING_TABLE" -> UiIcon.ANVIL;
+            case "CHEST", "BARREL", "CHEST_MINECART", "ENDER_CHEST", "TRAPPED_CHEST", "SHULKER_BOX" -> UiIcon.CHEST;
+            case "HOPPER" -> UiIcon.FUNNEL;
+            case "CLOCK", "COMPASS", "RECOVERY_COMPASS" -> UiIcon.CLOCK;
+            case "SADDLE" -> UiIcon.MOUNT;
+            case "BEACON", "SEA_LANTERN" -> UiIcon.BEACON;
+            case "SKELETON_SKULL" -> UiIcon.SKULL;
+            case "ZOMBIE_HEAD", "CREEPER_HEAD", "SPAWNER" -> m == Material.SPAWNER ? UiIcon.SPAWNER : UiIcon.MOB;
+            case "WITHER_SKELETON_SKULL", "DRAGON_HEAD", "PIGLIN_HEAD" -> UiIcon.BOSS;
+            case "NETHERITE_UPGRADE_SMITHING_TEMPLATE", "EXPERIENCE_BOTTLE" -> m == Material.EXPERIENCE_BOTTLE ? UiIcon.EXP : UiIcon.UPGRADE;
+            case "WRITABLE_BOOK", "WRITTEN_BOOK", "FEATHER" -> m == Material.FEATHER ? UiIcon.FEATHER : UiIcon.QUILL;
+            case "MAP" -> UiIcon.MAP;
+            case "EGG", "TURTLE_EGG", "SNIFFER_EGG" -> UiIcon.EGG;
+            case "DRAGON_EGG" -> UiIcon.DRAGON_EGG;
+            case "ENCHANTED_BOOK" -> UiIcon.SPELLBOOK;
+            case "COOKIE" -> UiIcon.COOKIE;
+            case "LEATHER_BOOTS", "IRON_BOOTS" -> UiIcon.BOOTS;
+            case "SOUL_LANTERN", "LANTERN", "SOUL_TORCH", "TORCH" -> UiIcon.LANTERN;
+            case "OAK_SIGN", "SPRUCE_SIGN", "DARK_OAK_SIGN" -> UiIcon.SIGN;
+            case "CAMPFIRE", "SOUL_CAMPFIRE", "BLAZE_POWDER", "LAVA_BUCKET", "FIRE_CHARGE", "MAGMA_CREAM" -> UiIcon.FIRE;
+            case "TNT" -> UiIcon.BOMB;
+            case "WOODEN_PICKAXE", "STONE_PICKAXE", "IRON_PICKAXE", "DIAMOND_PICKAXE" -> UiIcon.PICKAXE;
+            case "AMETHYST_CLUSTER", "AMETHYST_SHARD", "END_CRYSTAL", "HEART_OF_THE_SEA", "PRISMARINE_CRYSTALS" -> UiIcon.CRYSTAL;
+            case "MOSSY_STONE_BRICKS", "CRACKED_STONE_BRICKS" -> UiIcon.RUINS;
+            case "ENCHANTING_TABLE", "CRAFTING_TABLE", "BREWING_STAND" -> UiIcon.TABLE;
+            case "TRIPWIRE_HOOK" -> UiIcon.KEY;
+            case "BONE", "BONE_MEAL" -> UiIcon.BONE;
+            case "TOTEM_OF_UNDYING" -> UiIcon.TOTEM;
+            case "IRON_INGOT", "RAW_IRON", "COPPER_INGOT" -> UiIcon.INGOT;
+            case "LIGHTNING_ROD" -> UiIcon.LIGHTNING;
+            case "GOLDEN_HELMET" -> UiIcon.CROWN;
+            case "POTION", "SPLASH_POTION", "DRAGON_BREATH", "GLASS_BOTTLE", "HONEY_BOTTLE" -> UiIcon.POTION_BAG;
+            case "IRON_SWORD", "DIAMOND_SWORD", "STONE_SWORD", "WOODEN_SWORD", "GOLDEN_SWORD" -> UiIcon.WPN_SWORD;
+            case "SHEARS" -> UiIcon.WPN_DAGGER;
+            case "IRON_AXE", "DIAMOND_AXE" -> UiIcon.WPN_AXE;
+            case "SHIELD" -> UiIcon.WPN_SHIELD;
+            case "BOW", "CROSSBOW" -> UiIcon.WPN_BOW;
+            case "BLAZE_ROD" -> UiIcon.WPN_STAFF;
+            case "TRIDENT" -> UiIcon.WPN_SPEAR;
+            case "IRON_CHESTPLATE", "ARMOR_STAND", "DIAMOND_CHESTPLATE" -> UiIcon.SHOP_ARMOR_WARRIOR;
+            case "STONE_STAIRS", "PURPUR_STAIRS" -> UiIcon.TOWER;
+            case "BLUE_BANNER", "WHITE_BANNER", "RED_BANNER" -> UiIcon.GUILD;
+            case "COD", "SALMON", "TROPICAL_FISH", "FISHING_ROD" -> UiIcon.SHOP_FISH;
+            default -> null;
+        };
     }
 
     /** v5.10.34 4R 풍 아이콘 단추 (PAPER + UiIcon 그림, on=false 면 회색) */
     public static ItemStack ui(UiIcon icon, boolean on, String name, String... lore) {
-        ItemStack it = button(Material.PAPER, name, lore);
+        ItemStack it = new ItemBuilder(Material.PAPER).name(name).lore(lore).hideAll().build();
         org.bukkit.inventory.meta.ItemMeta m = it.getItemMeta();
         m.setCustomModelData(icon.cmd(on));
         it.setItemMeta(m);

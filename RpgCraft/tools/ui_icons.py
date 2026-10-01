@@ -527,6 +527,286 @@ def sym_wpn_special(d):
     ink(d, many(star(24, 22, 3.6, 1.2, 4), star(9, 8, 2.4, 0.8, 4)), _rgb("e0b0ff"))
 
 
+# ---- v5.10.44 모든 메뉴의 바닐라 아이콘 대체 (Java Gui.button 이 재질 → 아이콘으로 바꿈)
+def sym_locked(d):
+    ink(d, arc(10, 4, 22, 18, 180, 360, 2.4), _rgb("b8bcc8"))
+    ink(d, many(line([(10, 11), (10, 15)], 2.4), line([(22, 11), (22, 15)], 2.4)), _rgb("b8bcc8"))
+    ink(d, rect(7, 14, 25, 28, 2.5), _rgb("d8a840"))
+    ink(d, many(ell(14, 17.5, 18, 21.5), poly((15, 20), (17, 20), (17.6, 25), (14.4, 25))), _rgb("3a2a14"))
+
+
+def sym_check(d):
+    ink(d, ell(5, 5, 27, 27), _rgb("3aa84a"))
+    ink(d, line([(10, 16.5), (14.5, 21), (22.5, 11.5)], 3), INK)
+
+
+def sym_book(d):
+    ink(d, many(poly((4, 9), (15.5, 11), (15.5, 26), (4, 24)), poly((28, 9), (16.5, 11), (16.5, 26), (28, 24))), _rgb("f2e6c8"))
+    ink(d, many(line([(6.5, 14), (13.5, 15)], 0.7), line([(6.5, 17.5), (13.5, 18.5)], 0.7), line([(6.5, 21), (13.5, 22)], 0.7),
+                line([(18.5, 15), (25.5, 14)], 0.7), line([(18.5, 18.5), (25.5, 17.5)], 0.7)), _rgb("9a8460"))
+    ink(d, line([(16, 11), (16, 26.5)], 1), _rgb("8a5a3a"))
+    ink(d, poly((21, 5), (24, 5), (24, 12), (22.5, 10.5), (21, 12)), RED)
+
+
+def sym_star(d):
+    ink(d, star(16, 16, 12.5, 5.2), GOLD)
+    ink(d, star(16, 15.4, 6, 2.6), _rgb("fff6d0"))
+    ink(d, many(star(26, 6, 2.6, 0.8, 4), star(6, 25, 2, 0.7, 4)), INK)
+
+
+def sym_note(d):
+    ink(d, poly((8, 5), (21, 5), (25, 9), (25, 27), (8, 27)), _rgb("f2e6c8"))
+    ink(d, poly((21, 5), (21, 9), (25, 9)), _rgb("c8b48a"))
+    ink(d, many(line([(11, 12), (21, 12)], 0.9), line([(11, 16), (22, 16)], 0.9), line([(11, 20), (19, 20)], 0.9)), _rgb("8a7458"))
+    ink(d, ell(18, 21, 24, 27), RED)
+
+
+def sym_tag(d):
+    ink(d, poly((5, 16), (12, 8), (27, 8), (27, 24), (12, 24)), _rgb("e8d0a0"))
+    ink(d, ell(9, 14, 13, 18), _rgb("6a4a2a"))
+    ink(d, many(line([(16, 13), (24, 13)], 1), line([(16, 17), (24, 17)], 1), line([(16, 21), (21, 21)], 1)), _rgb("8a6a3a"))
+    ink(d, line([(4, 7), (10, 15)], 0.8), _rgb("c8ccd6"))
+
+
+def sym_coin(d):
+    for (x, y) in ((4, 14), (13, 9), (9, 4)):
+        ink(d, ell(x, y + 6, x + 15, y + 14), _rgb("b8842a"))
+        ink(d, ell(x, y + 4, x + 15, y + 12), GOLD)
+        ink(d, ell(x + 3.5, y + 6, x + 11.5, y + 10), _rgb("fff0a0"))
+
+
+def sym_anvil(d):
+    ink(d, poly((4, 9), (24, 9), (28, 12), (22, 13), (20, 17), (12, 17), (10, 13), (4, 12)), _rgb("8a8f9a"))
+    ink(d, many(rect(13, 17, 19, 22), rect(8, 22, 24, 27, 1)), _rgb("5a5e6a"))
+    ink(d, many(star(8, 6, 2.4, 0.8, 4), star(25, 5, 1.8, 0.6, 4)), GOLD)
+
+
+def sym_chest(d):
+    ink(d, rect(5, 8, 27, 15, 3), _rgb("a8703a"))
+    ink(d, rect(5, 15, 27, 27, 1), _rgb("8a5a2a"))
+    ink(d, many(rect(5, 14, 27, 16), rect(9, 8, 11, 27), rect(21, 8, 23, 27)), _rgb("c8a060"))
+    ink(d, rect(14, 12, 18, 18, 1), GOLD)
+    ink(d, ell(15.2, 14, 16.8, 15.6), _rgb("3a2a14"))
+
+
+def sym_funnel(d):
+    ink(d, poly((4, 6), (28, 6), (19, 17), (19, 26), (13, 28), (13, 17)), _rgb("8a8f9a"))
+    ink(d, rect(4, 5, 28, 8, 1), _rgb("b8bcc8"))
+    ink(d, many(ell(8, 9, 12, 13), ell(14, 9, 18, 13), ell(20, 9, 24, 13)), GOLD)
+
+
+def sym_clock(d):
+    ink(d, ell(5, 5, 27, 27), _rgb("d8a840"))
+    ink(d, ell(7.5, 7.5, 24.5, 24.5), _rgb("f4ecd8"))
+    for k in range(12):
+        a = math.radians(k * 30)
+        r0 = 6.4 if k % 3 else 5.6
+        ink(d, line([(16 + math.cos(a) * r0, 16 + math.sin(a) * r0), (16 + math.cos(a) * 7.6, 16 + math.sin(a) * 7.6)], 0.8), _rgb("3a2a14"))
+    ink(d, many(line([(16, 16), (16, 9.5)], 1.4), line([(16, 16), (21, 18.5)], 1.2)), _rgb("2a2030"))
+    ink(d, ell(14.8, 14.8, 17.2, 17.2), RED)
+
+
+def sym_mount(d):
+    ink(d, poly((5, 14), (9, 9), (16, 12), (23, 9), (27, 14), (24, 18), (8, 18)), _rgb("8a4a2a"))
+    ink(d, many(rect(7, 13, 25, 16), ell(13, 9, 19, 13)), _rgb("b06a3a"))
+    ink(d, line([(16, 17), (16, 23)], 1), _rgb("c8ccd6"))
+    ink(d, arc(12, 21, 20, 29, 0, 360, 1.6), _rgb("c8ccd6"))
+
+
+def sym_beacon(d):
+    ink(d, poly((13, 2), (19, 2), (21, 16), (11, 16)), _rgb("c8f8ff"))
+    ink(d, rect(7, 14, 25, 22, 2), _rgb("6ae0e8"))
+    ink(d, rect(11, 16, 21, 20, 1), INK)
+    ink(d, rect(5, 22, 27, 28, 1.5), _rgb("2a2434"))
+
+
+def _skull(d, bone, eye, horns=None):
+    if horns:
+        ink(d, many(poly((7, 12), (2, 3), (10, 9)), poly((25, 12), (30, 3), (22, 9))), horns)
+    ink(d, many(ell(6, 4, 26, 22), rect(10, 18, 22, 27, 2)), bone)
+    ink(d, many(ell(9, 11, 15, 17), ell(17, 11, 23, 17)), eye)
+    ink(d, poly((16, 17), (14.5, 20.5), (17.5, 20.5)), _rgb("2a2430"))
+    ink(d, many(line([(13, 23), (13, 27)], 0.7), line([(16, 23), (16, 27)], 0.7), line([(19, 23), (19, 27)], 0.7)), _rgb("6a6050"))
+
+
+def sym_skull(d):
+    _skull(d, _rgb("e8e2d0"), _rgb("2a2430"))
+
+
+def sym_mob(d):
+    ink(d, rect(6, 5, 26, 27, 2), _rgb("5a9a4a"))
+    ink(d, many(rect(9, 12, 14, 16), rect(18, 12, 23, 16)), _rgb("1a2a14"))
+    ink(d, rect(13, 19, 19, 22), _rgb("2a4a20"))
+    ink(d, many(rect(6, 5, 26, 9, 2)), _rgb("3a6a2a"))
+
+
+def sym_boss(d):
+    _skull(d, _rgb("3a3640"), _rgb("ff4a4a"), _rgb("d8c49a"))
+    ink(d, poly((10, 4), (12, 1), (14, 4), (16, 0.5), (18, 4), (20, 1), (22, 4), (21, 6), (11, 6)), GOLD)
+
+
+def sym_upgrade(d):
+    ink(d, poly((16, 3), (27, 14), (21, 14), (21, 22), (11, 22), (11, 14), (5, 14)), _rgb("ff9a4a"))
+    ink(d, poly((16, 7), (22, 13), (18.5, 13), (18.5, 19), (13.5, 19), (13.5, 13), (10, 13)), _rgb("ffe08a"))
+    ink(d, rect(8, 24, 24, 28, 1), _rgb("5a3a2a"))
+
+
+def sym_quill(d):
+    ink(d, many(rect(6, 8, 22, 28, 1.5)), _rgb("f2e6c8"))
+    ink(d, many(line([(9, 14), (19, 14)], 0.8), line([(9, 18), (19, 18)], 0.8), line([(9, 22), (16, 22)], 0.8)), _rgb("9a8460"))
+    ink(d, poly((17, 21), (27, 3), (29, 5), (19, 23)), INK)
+    ink(d, line([(16.5, 22.5), (19, 20)], 1.2), _rgb("2a2030"))
+
+
+def sym_map(d):
+    ink(d, poly((4, 8), (11, 5), (21, 8), (28, 5), (28, 24), (21, 27), (11, 24), (4, 27)), _rgb("e8d8a8"))
+    ink(d, many(line([(11, 5), (11, 24)], 0.8), line([(21, 8), (21, 27)], 0.8)), _rgb("b8a070"))
+    ink(d, line([(7, 21), (12, 16), (17, 19), (23, 12)], 1), _rgb("8a5a3a"))
+    ink(d, many(line([(21, 10), (25, 14)], 1.4), line([(25, 10), (21, 14)], 1.4)), RED)
+
+
+def sym_egg(d):
+    ink(d, ell(8, 4, 24, 28), _rgb("f4ecd8"))
+    ink(d, many(ell(11, 10, 15, 14), ell(17, 16, 21, 20), ell(12, 20, 15, 23), ell(18, 8, 20, 10)), _rgb("8ab86a"))
+
+
+def sym_dragon_egg(d):
+    ink(d, ell(8, 4, 24, 28), _rgb("3a1a4a"))
+    ink(d, many(ell(10, 9, 14, 13), ell(17, 15, 21, 19), ell(12, 19, 15, 22)), _rgb("c86aff"))
+    ink(d, line([(13, 6), (16, 12), (14, 17), (18, 24)], 0.8), _rgb("ff9aff"))
+
+
+def sym_spellbook(d):
+    ink(d, rect(6, 5, 26, 27, 2), _rgb("6a2a8a"))
+    ink(d, rect(9, 7, 25, 25, 1), _rgb("8a4aaa"))
+    ink(d, rect(6, 5, 9, 27, 1), _rgb("4a1a6a"))
+    ink(d, star(17, 16, 6, 2.2, 6), _rgb("e8c8ff"))
+    ink(d, ell(15.4, 14.4, 18.6, 17.6), INK)
+
+
+def sym_cookie(d):
+    ink(d, ell(5, 5, 27, 27), _rgb("c8884a"))
+    ink(d, ell(7, 7, 25, 25), _rgb("e0a868"))
+    ink(d, many(ell(10, 10, 13, 13), ell(18, 9, 21, 12), ell(14, 16, 17, 19), ell(20, 18, 23, 21), ell(9, 19, 12, 22)), _rgb("4a2a14"))
+
+
+def sym_boots(d):
+    ink(d, poly((9, 4), (17, 4), (17, 18), (27, 21), (27, 27), (7, 27), (9, 18)), _rgb("a86a3a"))
+    ink(d, rect(7, 25, 27, 28, 1), _rgb("5a3a1a"))
+    ink(d, many(poly((3, 10), (8, 12), (3, 14)), poly((2, 16), (8, 17), (3, 19))), _rgb("e8ecf6"))
+
+
+def sym_feather(d):
+    ink(d, poly((24, 3), (28, 6), (20, 19), (11, 25), (8, 24), (12, 15)), INK)
+    ink(d, line([(25.5, 4.5), (6, 28)], 1), _rgb("8a8f9a"))
+    ink(d, many(line([(14, 18), (19, 13)], 0.6), line([(17, 13), (22, 8)], 0.6)), _rgb("c8ccd6"))
+
+
+def sym_lantern(d):
+    ink(d, arc(12, 2, 20, 10, 180, 360, 1.4), _rgb("6a6478"))
+    ink(d, many(rect(9, 7, 23, 10, 1), rect(9, 24, 23, 27, 1)), _rgb("4a4458"))
+    ink(d, rect(10, 10, 22, 24, 1), _rgb("4ae8f0"))
+    ink(d, ell(13, 13, 19, 21), _rgb("e8ffff"))
+    ink(d, many(line([(13, 10), (13, 24)], 0.8), line([(19, 10), (19, 24)], 0.8)), _rgb("4a4458"))
+
+
+def sym_sign(d):
+    ink(d, line([(16, 16), (16, 29)], 2.4), _rgb("6a4a2a"))
+    ink(d, rect(4, 5, 28, 18, 1.5), _rgb("c8985a"))
+    ink(d, many(line([(7, 9), (25, 9)], 0.8), line([(7, 12.5), (25, 12.5)], 0.8), line([(7, 16), (18, 16)], 0.8)), _rgb("6a4a2a"))
+
+
+def sym_fire(d):
+    ink(d, many(line([(6, 27), (26, 23)], 2), line([(6, 23), (26, 27)], 2)), _rgb("8a5a32"))
+    ink(d, poly((16, 3), (24, 14), (23, 22), (16, 25), (9, 22), (8, 14), (12, 11)), _rgb("ff7a2a"))
+    ink(d, poly((16, 10), (20, 17), (19, 22), (16, 23), (13, 22), (12, 17)), _rgb("ffe08a"))
+
+
+def sym_exp(d):
+    ink(d, many(rect(13, 3, 19, 8, 1), ell(7, 8, 25, 28)), _rgb("c8f0d0"))
+    ink(d, ell(9, 13, 23, 26), _rgb("7af04a"))
+    ink(d, many(star(16, 19, 4, 1.4, 4), star(22, 6, 2, 0.7, 4)), _rgb("f8ffd0"))
+
+
+def sym_bomb(d):
+    ink(d, ell(5, 9, 25, 29), _rgb("2a2834"))
+    ink(d, ell(8, 12, 13, 17), _rgb("6a6878"))
+    ink(d, rect(17, 7, 22, 11, 1), _rgb("6a6878"))
+    ink(d, arc(19, 2, 27, 10, 180, 300, 1), _rgb("c8a060"))
+    ink(d, star(26, 4, 3.4, 1.2, 6), _rgb("ffd46a"))
+
+
+def sym_spawner(d):
+    ink(d, rect(5, 5, 27, 27, 1), _rgb("3a4458"))
+    ink(d, many(line([(12, 5), (12, 27)], 1.2), line([(20, 5), (20, 27)], 1.2), line([(5, 12), (27, 12)], 1.2), line([(5, 20), (27, 20)], 1.2)), _rgb("1a1e2a"))
+    ink(d, poly((16, 9), (21, 16), (20, 22), (12, 22), (11, 16)), _rgb("ff8a3a"))
+    ink(d, ell(13.5, 15, 18.5, 21), _rgb("ffe08a"))
+
+
+def sym_pickaxe(d):
+    ink(d, line([(8, 27), (20, 11)], 2), _rgb("a07040"))
+    ink(d, poly((4, 12), (10, 6), (17, 4), (24, 5), (29, 8), (27, 10), (22, 8.5), (17, 8.5), (11, 10.5), (6, 15)), _rgb("c8ccd6"))
+    ink(d, poly((16, 6), (21, 6), (20, 9), (17, 9)), _rgb("8a8f9a"))
+
+
+def sym_crystal(d):
+    ink(d, poly((16, 2), (22, 10), (20, 27), (12, 27), (10, 10)), _rgb("b88aff"))
+    ink(d, poly((16, 2), (17.5, 10), (16, 27), (12, 27), (10, 10)), _rgb("e0c8ff"))
+    ink(d, many(poly((6, 14), (10, 19), (9, 27), (5, 27), (4, 19)), poly((26, 12), (28, 18), (27, 27), (23, 27), (22, 18))), _rgb("8a5ad8"))
+
+
+def sym_ruins(d):
+    ink(d, many(rect(5, 9, 11, 27), rect(21, 13, 27, 27)), _rgb("a8a49a"))
+    ink(d, poly((4, 6), (14, 6), (16, 9), (4, 10)), _rgb("c8c4b8"))
+    ink(d, rect(10, 22, 22, 27), _rgb("8a867a"))
+    ink(d, many(ell(6, 15, 10, 19), ell(22, 20, 26, 24), ell(13, 21, 17, 24)), _rgb("5a8a3a"))
+
+
+def sym_table(d):
+    ink(d, rect(4, 13, 28, 18, 1), _rgb("8a2a2a"))
+    ink(d, rect(7, 18, 25, 28, 1), _rgb("2a2434"))
+    ink(d, many(poly((9, 13), (14, 5), (19, 7), (16, 13))), _rgb("8a5a3a"))
+    ink(d, poly((14, 5), (19, 7), (18, 9), (13, 7)), _rgb("f2e6c8"))
+    ink(d, many(star(23, 6, 2.6, 0.9, 4), star(7, 8, 1.8, 0.6, 4)), _rgb("c8f0ff"))
+
+
+def sym_key(d):
+    ink(d, ell(4, 6, 15, 17), GOLD)
+    ink(d, ell(7, 9, 12, 14), _rgb("6a4a14"))
+    ink(d, line([(13, 14), (27, 26)], 2.4), GOLD)
+    ink(d, many(line([(21, 21), (18, 25)], 1.8), line([(25, 24.5), (22.5, 27.5)], 1.8)), GOLD)
+
+
+def sym_bone(d):
+    ink(d, line([(9, 23), (23, 9)], 3.4), _rgb("e8e2d0"))
+    ink(d, many(ell(4, 19, 10, 25), ell(7, 22, 13, 28), ell(19, 4, 25, 10), ell(22, 7, 28, 13)), _rgb("e8e2d0"))
+
+
+def sym_totem(d):
+    ink(d, many(rect(11, 3, 21, 13, 2), rect(10, 13, 22, 27, 1)), GOLD)
+    ink(d, many(poly((10, 15), (4, 13), (5, 18), (10, 19)), poly((22, 15), (28, 13), (27, 18), (22, 19))), _rgb("e0b040"))
+    ink(d, many(rect(13, 7, 15, 9), rect(17, 7, 19, 9)), _rgb("2a8a4a"))
+    ink(d, rect(13, 17, 19, 23, 1), _rgb("4ae08a"))
+
+
+def sym_ingot(d):
+    ink(d, poly((4, 22), (8, 15), (24, 15), (28, 22)), _rgb("c8ccd6"))
+    ink(d, poly((8, 15), (11, 10), (21, 10), (24, 15)), _rgb("e8ecf6"))
+    ink(d, poly((4, 22), (28, 22), (28, 25), (4, 25)), _rgb("8a8f9a"))
+    ink(d, star(24, 7, 2.6, 0.8, 4), INK)
+
+
+def sym_lightning(d):
+    ink(d, poly((18, 2), (8, 17), (15, 17), (12, 30), (25, 12), (17, 12), (21, 2)), _rgb("ffe84a"))
+    ink(d, poly((18, 4), (12, 14), (16, 14)), _rgb("fff8c0"))
+
+
+def sym_crown(d):
+    ink(d, poly((4, 24), (4, 9), (10, 15), (16, 5), (22, 15), (28, 9), (28, 24)), GOLD)
+    ink(d, rect(4, 22, 28, 27, 1), _rgb("c8942a"))
+    ink(d, many(ell(14, 13, 18, 17), ell(7, 17, 10, 20), ell(22, 17, 25, 20)), RED)
+
+
 # (이름, 바탕, 색, 그림)
 ICONS = [
     ("season_pass", "medal", "3a6ac8", sym_season), ("skill", "medal", "6a3aa8", sym_skill), ("enhance", "medal", "a86a2a", sym_enhance),
@@ -554,6 +834,21 @@ ICONS = [
     ("wpn_sword", "medal", "3a3e4a", sym_wpn_sword), ("wpn_dagger", "medal", "3a3e4a", sym_wpn_dagger), ("wpn_axe", "medal", "3a3e4a", sym_wpn_axe),
     ("wpn_shield", "medal", "3a3e4a", sym_wpn_shield), ("wpn_bow", "medal", "3a3e4a", sym_wpn_bow), ("wpn_staff", "medal", "3a3e4a", sym_wpn_staff),
     ("wpn_spear", "medal", "3a3e4a", sym_wpn_spear), ("wpn_special", "medal", "4a2a6a", sym_wpn_special),
+    # v5.10.44 메뉴 곳곳의 바닐라 아이콘 대체 (뒤에 붙여 기존 번호 유지 · 100번째부터는 13000 + 번호)
+    ("locked", "medal", "3a3a44", sym_locked), ("check", "medal", "2a5a2a", sym_check), ("book", "medal", "5a3a2a", sym_book),
+    ("star", "medal", "6a4a8a", sym_star), ("note", "medal", "5a4a3a", sym_note), ("tag", "medal", "4a3a2a", sym_tag),
+    ("coin", "medal", "6a4a14", sym_coin), ("anvil", "medal", "4a3a2a", sym_anvil), ("chest", "medal", "4a3420", sym_chest),
+    ("funnel", "medal", "3a3e4a", sym_funnel), ("clock", "medal", "3a4a6a", sym_clock), ("mount", "medal", "4a3a24", sym_mount),
+    ("beacon", "medal", "1a4a5a", sym_beacon), ("skull", "medal", "3a3440", sym_skull), ("mob", "medal", "2a3a24", sym_mob),
+    ("boss", "medal", "5a1a1a", sym_boss), ("upgrade", "medal", "5a2a14", sym_upgrade), ("quill", "medal", "3a5a3a", sym_quill),
+    ("map", "medal", "2a5a6a", sym_map), ("egg", "medal", "3a6a4a", sym_egg), ("dragon_egg", "medal", "2a1434", sym_dragon_egg),
+    ("spellbook", "medal", "3a1a4a", sym_spellbook), ("cookie", "medal", "5a3a1a", sym_cookie), ("boots", "medal", "3a5a6a", sym_boots),
+    ("feather", "medal", "3a4a6a", sym_feather), ("lantern", "medal", "1a2a3a", sym_lantern), ("sign", "medal", "4a5a3a", sym_sign),
+    ("fire", "medal", "5a1a10", sym_fire), ("exp", "medal", "2a5a2a", sym_exp), ("bomb", "medal", "6a2a14", sym_bomb),
+    ("spawner", "medal", "2a2434", sym_spawner), ("pickaxe", "medal", "3a5a3a", sym_pickaxe), ("crystal", "medal", "3a2a5a", sym_crystal),
+    ("ruins", "medal", "3a4a3a", sym_ruins), ("table", "medal", "3a2a4a", sym_table), ("key", "medal", "4a3a14", sym_key),
+    ("bone", "medal", "3a3440", sym_bone), ("totem", "medal", "2a4a3a", sym_totem), ("ingot", "medal", "3a3e4a", sym_ingot),
+    ("lightning", "medal", "2a2a5a", sym_lightning), ("crown", "medal", "5a1a2a", sym_crown),
 ]
 
 
@@ -574,6 +869,13 @@ def draw(entry, gray=False):
     return out
 
 
+def cmd_of(i, on=True):
+    """100번째 아이콘부터는 회색(+100) 자리와 겹치므로 13000 + (i-100) (회색 +200)"""
+    if i < 100:
+        return ICON_BASE + i + (0 if on else 100)
+    return 13000 + (i - 100) + (0 if on else 200)
+
+
 def write_icons(pack, ns, write_json):
     """아이콘 텍스처 + 모델. 반환: [(cmd, 모델)] — 순번 i 는 켜진 그림, 100 + i 는 회색(꺼짐)"""
     tex = os.path.join(pack, "assets", ns, "textures", "item", "ui")
@@ -585,7 +887,7 @@ def write_icons(pack, ns, write_json):
             draw(e, gray).save(os.path.join(tex, n + ".png"))
             write_json(os.path.join(pack, "assets", ns, "models", "item", "ui", n + ".json"),
                        {"parent": "minecraft:item/generated", "textures": {"layer0": ns + ":item/ui/" + n}})
-            out.append((ICON_BASE + i + (100 if gray else 0), ns + ":item/ui/" + n))
+            out.append((cmd_of(i, not gray), ns + ":item/ui/" + n))
     return out
 
 
@@ -595,6 +897,6 @@ def write_java(path):
     src = ('package kr.rpgcraft.gui;\n\n/** 자동 생성 (tools/ui_icons.py): 4R 풍 메뉴 아이콘. PAPER CustomModelData = ' + str(ICON_BASE)
            + ' + 순번 (꺼진 회색 그림은 +100) */\npublic enum UiIcon {\n    ' + names + ';\n\n'
            '    public static final int BASE = ' + str(ICON_BASE) + ';\n\n'
-           '    public int cmd(boolean on) {\n        return BASE + ordinal() + (on ? 0 : 100);\n    }\n}\n')
+           '    public int cmd(boolean on) {\n        int i = ordinal();\n        return i < 100 ? BASE + i + (on ? 0 : 100) : 13000 + (i - 100) + (on ? 0 : 200);\n    }\n}\n')
     with open(path, "w", encoding="utf-8") as f:
         f.write(src)

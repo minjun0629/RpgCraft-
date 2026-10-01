@@ -9,6 +9,24 @@
         "custom_model_data": 520
       },
       "model": "rpgcraft:item/essence_fire"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7700
+      },
+      "model": "rpgcraft:item/hjw/hjw_c"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10700
+      },
+      "model": "rpgcraft:item/hjw/hjw_c"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12700
+      },
+      "model": "rpgcraft:item/hjw/hjw_c"
     }
   ]
 }

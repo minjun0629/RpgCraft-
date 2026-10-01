@@ -357,6 +357,16 @@ def _cone_y(g, y0, y1, r0, r1, colf, pri=3, shape="round"):
     _fill(g, y0, y1, lambda y: (r0 + (r1 - r0) * (y - y0) / max(1e-6, y1 - y0),) * 2 + (shape,), colf, pri)
 
 
+# v5.10.24 불꽃 · 가시 칼날은 특별한 무기에만 (전부 불꽃이면 단조로움): 사신수 · 유물 · 붕붕이 · 각 계열 최상위 등급
+FIERY = {"jag": False, "flame": False}
+
+
+def _fiery(name, tier):
+    special = name.startswith(("spirit_", "relic_", "bungbung_"))
+    top = (name.startswith(("armory_", "armory2_", "armory3_")) and tier >= 7) or (name.startswith(("trans_", "bs_")) and tier >= 5)
+    return special or top, special or (top and tier >= 8)
+
+
 # ------------------------------------------------------------------ 무기 종류별
 def sword(g, P, s, tier):
     total = 21.5 + min(4, tier) * 0.4
@@ -367,16 +377,17 @@ def sword(g, P, s, tier):
     gy = y0 + 1.6 + gl + 0.7
     width = 3.7 + (s >> 3) % 3 * 0.4 + (0.5 if tier >= 5 else 0)
     _guard(g, gy, width * 1.25 + 0.9, P, (s >> 5) % 4)
-    if ((s >> 11) % 3 != 0 or tier >= 4) and not (tier >= 2 or (s >> 13) % 2 == 0):   # 날개 장식 (매끈한 칼날만)
+    if ((s >> 11) % 3 != 0 or tier >= 4) and not FIERY["jag"]:   # 날개 장식 (매끈한 칼날만)
         _wings(g, gy, width * 1.1 + 0.8, P)
     _fill(g, gy + 0.9, gy + 2.0, lambda y: (width * 0.42, 0.95, "box"), lambda x, y, z, u, w: P["guard"] if abs(u) > 0.5 else lit(P["guard"], 1.2), 6)   # 칼날 받침 (리카소)
     g.dot(C[0], gy + 1.45, C[1] + 0.9, lit(P["gem"], 1.3), 8, 0.8)
     g.dot(C[0], gy + 1.45, C[1] - 0.9, lit(P["gem"], 1.3), 8, 0.8)
-    jag = tier >= 2 or (s >> 13) % 2 == 0
+    jag = FIERY["jag"]
     if jag:   # v5.10.23 불꽃 · 가시 칼날 + 가드에서 피어오르는 불꽃
         _jagged(g, gy + 1.6, y0 + total + 2.5, width * 1.15, 1.9, P, s, curve=[0, 0.2, -0.15][s % 3], spikes=0.7 + min(4, tier) * 0.15)
-        _flames(g, (C[0] - width * 0.9, gy, C[1]), 3 + min(3, tier), 0.55, P, s, up=1.0, spread=-1.2)
-        if tier >= 3:
+        if FIERY["flame"]:
+            _flames(g, (C[0] - width * 0.9, gy, C[1]), 3 + min(3, tier), 0.55, P, s, up=1.0, spread=-1.2)
+        if FIERY["flame"] and tier >= 3:
             _flames(g, (C[0], y0 + 0.4, C[1]), 3, 0.45, P, s + 7, up=-1.0, spread=0.6)   # 폼멜 아래 불꽃 꼬리
     else:
         _blade(g, gy + 1.9, y0 + total, width, 1.7, P, (s >> 7) % 4)
@@ -393,9 +404,10 @@ def dagger(g, P, s, tier):
     gy = y0 + 4.8
     _guard(g, gy, 2.4, P, (s >> 4) % 4)
     curve = [0.0, 0.25, -0.25, 0.4][(s >> 6) % 4]
-    if tier >= 2 or (s >> 8) % 2:
+    if FIERY["jag"]:
         _jagged(g, gy + 0.7, y0 + total + 1.5, 3.2, 1.5, P, s, curve=curve, spikes=0.8)
-        _flames(g, (C[0] - 2.2, gy, C[1]), 3, 0.45, P, s, up=1.0, spread=-1.0)
+        if FIERY["flame"]:
+            _flames(g, (C[0] - 2.2, gy, C[1]), 3, 0.45, P, s, up=1.0, spread=-1.0)
     else:
         _blade(g, gy + 0.9, y0 + total, 3.0, 1.35, P, [0, 1, 0, 1][(s >> 8) % 4], curve=curve)
 
@@ -465,9 +477,10 @@ def spear(g, P, s, tier):
         _fill(g, yy - 0.35, yy + 0.35, lambda y: (0.78, 0.78, "round"), lambda *a: P["guard"], 3)
     g.sphere((C[0], y0, C[1]), 0.75, P["guard"], 3)
     _fill(g, y1 - 0.6, y1 + 0.8, lambda y: (1.1, 1.1, "box"), lambda *a: P["guard"], 4)   # 날 받침
-    if tier >= 2:
+    if FIERY["jag"]:
         _jagged(g, y1 + 0.4, y1 + 9.5, 4.0, 1.6, P, s, spikes=0.8)
-        _flames(g, (C[0], y1 + 0.2, C[1]), 3, 0.4, P, s, up=-1.0, spread=0.9)
+        if FIERY["flame"]:
+            _flames(g, (C[0], y1 + 0.2, C[1]), 3, 0.4, P, s, up=-1.0, spread=0.9)
     else:
         _blade(g, y1 + 0.6, y1 + 9.0, 3.8, 1.5, P, 1 if (s >> 3) % 2 else 0, fuller=True)
     if (s >> 5) % 2:   # 갈고리 날개
@@ -601,6 +614,7 @@ def build(name, img, keys):
     VL.VS = SIZE_VS
     try:
         g = VL.Grid()
+        FIERY["jag"], FIERY["flame"] = _fiery(name, _tier(name))
         BUILDERS[kind](g, P, _seed(name), _tier(name))
         pal = bm.Palette()
         m = bm.Model(pal)

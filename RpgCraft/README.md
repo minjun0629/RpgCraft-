@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.37
+- 시즌 패스 보상 칸을 실제 아이템 모델로, 레벨 줄 · 단추도 아이콘으로.
+
 ## v5.10.36
 - 사이드바 줄 앞 아이콘 없앰 (글자 · 구분선만).
 

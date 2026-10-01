@@ -799,8 +799,8 @@ def build(name, img, keys):
     for e in els:
         e.pop("_col", None)
         e.pop("_edge", None)
-        if kind == "bow":      # v5.10.34 바닐라 활 그림과 같은 방향 (몸은 왼쪽 위 ↔ 오른쪽 아래, 휜 쪽 = 오른쪽 위 = 쏘는 쪽)
-            e["rotation"] = {"axis": "z", "angle": 45, "origin": [8, 8, 8]}
+        if kind == "bow":      # v5.10.40 손에서 90도 돌려 세워 들고 시위를 잡은 것처럼 (v5.10.34 의 +45 → -45)
+            e["rotation"] = {"axis": "z", "angle": -45, "origin": [8, 8, 8]}
         elif kind != "shield":   # 세로로 깎은 무기를 대각선으로 (손잡이 왼쪽 아래 → 끝 오른쪽 위)
             e["rotation"] = {"axis": "z", "angle": -45, "origin": [8, 8, 8]}
         if kind == "shield":   # v5.10.34 바닐라 방패와 같은 자리 · 크기 (판 가운데 = 원점, 앞면 +z) → 실제 방패 크기로 옆에 듦

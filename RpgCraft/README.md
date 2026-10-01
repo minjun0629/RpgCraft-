@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.40
+- 활을 90도 돌려 세워 듦 (시위를 잡은 것처럼).
+
 ## v5.10.39
 - 여우 · 늑대 뒷다리 모델 수정.
 

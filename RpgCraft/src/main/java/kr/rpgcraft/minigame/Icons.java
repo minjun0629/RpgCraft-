@@ -19,6 +19,11 @@ public final class Icons {
     public static final int TILE = 30, OPEN = 31, FLAG = 40, MINE = 41, MINE_BOOM = 42;
     public static final int CARD = 50, FACE = 51, FACES = 14;
     public static final int COIN = 70, EASY = 80;
+    // v5.10.31 새 미니게임
+    public static final int SNAKE_HEAD = 90, SNAKE_BODY = 94, SNAKE_TAIL = 95, APPLE = 96, APPLE_GOLD = 97, ARROW = 98, ROCK = 102;   // 머리 · 화살표: +0 ↑ +1 → +2 ↓ +3 ←
+    public static final int NOTE = 104, LANE = 108, PAD = 109, PAD_HIT = 113, PAD_PERFECT = 114;   // 음표 · 판정판: 줄마다 +0~3
+    public static final int TILE2048 = 116, EMPTY2048 = 128;   // 2 ~ 4096 (+0 ~ +11)
+    public static final int BIRD = 130, BIRD_FLAP = 131, BIRD_DEAD = 132, PIPE = 133, PIPE_TOP = 134, PIPE_BOTTOM = 135, GROUND = 136, NOTE_ICON = 137, GAME2048 = 138;
 
     /** 지뢰 숫자 1~8 */
     public static int num(int n) {

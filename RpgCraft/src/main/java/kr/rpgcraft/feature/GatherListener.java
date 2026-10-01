@@ -65,12 +65,15 @@ public class GatherListener implements Listener {
         }
         java.util.List<Integer> cds = plugin.getConfig().getIntegerList("gather.cooldown-by-tier");
         int sec = cds.size() >= 3 ? cds.get(Math.max(0, Math.min(2, t.tier - 1))) : new int[]{180, 150, 120}[Math.max(0, Math.min(2, t.tier - 1))];
-        d.cooldown("gather", sec * 1000L);
+        var ms = plugin.mastery();   // v5.10.30 채집 숙련
+        d.cooldown("gather", (long) (sec * 1000L * (ms != null ? ms.gatherCooldownMult(d) : 1)));
         d.counters.merge("gather_count", 1.0, Double::sum);
         if (plugin.questNpcs() != null) plugin.questNpcs().onGather(p);
         ConfigurationSection drops = plugin.getConfig().getConfigurationSection("gather.nodes." + node + ".drops");
-        String id = roll(drops, t.tier);
-        int amount = 1 + (t.tier >= 3 && ThreadLocalRandom.current().nextDouble() < 0.3 ? 1 : 0);
+        String id = roll(drops, t.tier + (ms != null ? ms.gatherTierBonus(d) : 0));
+        int amount = 1 + (t.tier >= 3 && ThreadLocalRandom.current().nextDouble() < 0.3 ? 1 : 0)
+                + (ms != null && ThreadLocalRandom.current().nextDouble() < ms.gatherExtraChance(d) ? 1 : 0);
+        if (ms != null) ms.add(p, MasteryManager.Life.GATHER, 40);
         if (id != null) give(p, plugin.items().create(id, amount));
         double shardChance = plugin.getConfig().getDouble("gather.shard-chance", 0.02);
         if (ThreadLocalRandom.current().nextDouble() < shardChance) {

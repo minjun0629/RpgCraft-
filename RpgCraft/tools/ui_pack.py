@@ -178,8 +178,11 @@ def icons_png(vanilla_path):
     for y in range(0, 54):
         for x in range(16, 256):
             img.putpixel((x, y), (0, 0, 0, 0))
-    # 경험치 바 (배경 y64~68, 채움 y69~73, 폭 182) → 금색 테마
+    # 경험치 바 (배경 y64~68, 채움 y69~73, 폭 182) → v5.10.33 숨김 (경험치는 핫바 왼쪽 HUD 바로)
     for x in range(182):
+        for y in range(10):
+            img.putpixel((x, 64 + y), (0, 0, 0, 0))
+    for x in range(0):
         for y in range(5):
             edge = y in (0, 4) or x in (0, 181)
             img.putpixel((x, 64 + y), (70, 52, 20, 255) if edge else (26, 22, 30, 255))
@@ -285,6 +288,9 @@ def write_hud(pack_dir, write_json):
         n = names.get(ch, ch if ch.isdigit() else ch.lower() + ("_u" if ch.isupper() else "_l"))
         add("d1_" + n, digit_img(ch), ASC_DIG1, DIGITS_ROW1 + i)
         add("d2_" + n, digit_img(ch, (255, 235, 180, 255)), ASC_DIG2, DIGITS_ROW2 + i)
+    import ui4r   # v5.10.33 마크에이지 4R 풍 HUD (핫바 양옆)
+    for name, img, asc, cp in ui4r.hud_providers(icon, digit_img, DIGIT_CHARS):
+        add(name, img, asc, cp)
     write_json(os.path.join(pack_dir, "assets", NS, "font", "hud.json"), {"providers": providers})
     return len(providers)
 
@@ -389,8 +395,8 @@ def write_modern_hud_sprites(pack_dir):
             t = y / 4
             c = (255, 245, 190, 255) if y == 1 else (int(255 - 30 * t), int(222 - 90 * t), int(90 - 60 * t), 255)
             fg.putpixel((x, y), (120, 80, 20, 255) if edge else c)
-    bg.save(os.path.join(base, "experience_bar_background.png"))
-    fg.save(os.path.join(base, "experience_bar_progress.png"))
+    Image.new("RGBA", (182, 5), (0, 0, 0, 0)).save(os.path.join(base, "experience_bar_background.png"))   # v5.10.33 숨김
+    Image.new("RGBA", (182, 5), (0, 0, 0, 0)).save(os.path.join(base, "experience_bar_progress.png"))
 
 
 # ------------------------------------------------------------------ 1.21.4+ 아이템 정의 (items/*.json)

@@ -110,6 +110,74 @@ public final class HudFont {
         return sb.toString();
     }
 
+    // ------------------------------------------------------------------ v5.10.33 마크에이지 4R 풍 HUD (tools/ui4r.py hud_providers)
+    private static final int H4_HP = 0xE400, H4_XP = 0xE420, H4_DA = 0xE450, H4_DB = 0xE470, H4_IA = 0xE490, H4_IB = 0xE4A0;
+    private static final char H4_FRAME_L = '\uE440', H4_FRAME_R = '\uE441', H4_BADGE = '\uE442';
+    private static final int H4_BAR = 82, H4_FL = 118, H4_FR = 104, H4_BW = 26;
+    private static final int I_SWORD = 0, I_CRIT = 1, I_DEF = 2, I_POTION = 3, I_SKILL = 4, I_SKILL_CD = 5, I_QUICK = 6, I_QUICK_CD = 7;
+
+    private static String digits4(String s, boolean top, int[] cursor) {
+        StringBuilder sb = new StringBuilder();
+        int base = top ? H4_DA : H4_DB;
+        for (char c : s.toCharArray()) {
+            int i = CHARS.indexOf(c);
+            if (i < 0) continue;
+            sb.append((char) (base + i));
+            cursor[0] += glyphWidth(c) + 1;
+        }
+        return sb.toString();
+    }
+
+    private static String icon4(int kind, boolean top, int[] cursor) {
+        return glyph((char) ((top ? H4_IA : H4_IB) + kind), ICON_W, cursor);
+    }
+
+    /**
+     * 핫바 왼쪽: [LV 배지] 체력 바 (위) · 경험치 바 (아래), 핫바 오른쪽: ⚔ 공격 ✦ 크리 (✧ 퀵) / 🛡 방어 🧪 포션 ⚡ 강공격.
+     * 바닐라 경험치 바 · 레벨 숫자 · 하트는 숨김 (리소스팩 + HudManager).
+     */
+    public static String build4r(double hp, double maxHp, double xpRatio, int level, int potions, int skillCd, double def, double atk, double crit, int quickCd) {
+        int[] cur = {0};
+        StringBuilder sb = new StringBuilder();
+        int fl = -91 - 4 - H4_FL;                  // 왼쪽 판
+        int badge = fl - 6;                         // 배지는 판 왼쪽 끝에 걸침
+        int bar = badge + H4_BW + 4;                // 바 시작
+        sb.append(moveTo(fl, cur)).append(glyph(H4_FRAME_L, H4_FL, cur));
+        double r = maxHp <= 0 ? 0 : Math.max(0, Math.min(1, hp / maxHp));
+        int hs = (int) Math.ceil(r * 20);
+        if (hp > 0 && hs == 0) hs = 1;
+        int xs = (int) Math.floor(Math.max(0, Math.min(1, xpRatio)) * 20);
+        sb.append(moveTo(bar, cur)).append(glyph((char) (H4_HP + hs), H4_BAR, cur));
+        sb.append(moveTo(bar, cur)).append(glyph((char) (H4_XP + xs), H4_BAR, cur));
+        String hpText = compact(hp) + "/" + compact(maxHp);
+        sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth(hpText) / 2, cur)).append(digits4(hpText, true, cur));
+        String xpText = String.format("%.1f%%", Math.max(0, Math.min(99.9, xpRatio * 100)));
+        sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth(xpText) / 2, cur)).append(digits4(xpText, false, cur));
+        sb.append(moveTo(badge, cur)).append(glyph(H4_BADGE, H4_BW, cur));
+        String lv = String.valueOf(Math.min(9999, level));
+        sb.append(moveTo(badge + H4_BW / 2 - digitsWidth(lv) / 2, cur)).append(digits4(lv, false, cur));
+        // 오른쪽 판
+        int fr = 91 + 4;
+        sb.append(moveTo(fr, cur)).append(glyph(H4_FRAME_R, H4_FR, cur));
+        int x = fr + 8;
+        sb.append(moveTo(x, cur)).append(icon4(I_SWORD, true, cur)).append(digits4(compact(atk), true, cur));
+        sb.append(moveTo(x + 36, cur)).append(icon4(I_CRIT, true, cur)).append(digits4(String.format("%.1f%%", crit), true, cur));
+        if (quickCd >= 0) {
+            sb.append(moveTo(x + 70, cur));
+            if (quickCd > 0) sb.append(icon4(I_QUICK_CD, true, cur)).append(digits4(quickCd + "s", true, cur));
+            else sb.append(icon4(I_QUICK, true, cur));
+        }
+        sb.append(moveTo(x, cur)).append(icon4(I_DEF, false, cur)).append(digits4(String.format("%.1f%%", def), false, cur));
+        sb.append(moveTo(x + 36, cur)).append(icon4(I_POTION, false, cur)).append(digits4(String.valueOf(Math.min(999, potions)), false, cur));
+        if (skillCd >= 0) {
+            sb.append(moveTo(x + 62, cur));
+            if (skillCd > 0) sb.append(icon4(I_SKILL_CD, false, cur)).append(digits4(skillCd + "s", false, cur));
+            else sb.append(icon4(I_SKILL, false, cur));
+        }
+        sb.append(moveTo(0, cur));
+        return sb.toString();
+    }
+
     /**
      * 파티 HUD 에 쓸 이름. 파티 HUD 글꼴(rpgcraft:party0~4)은 화면 위쪽으로 올려 그리느라 영문·숫자 글리프만 있어서
      * /이름변경 으로 바꾼 한글 닉네임은 네모(□)로 깨지고 체력 바 위치도 어긋났다 → 그릴 수 없는 글자가 있으면 계정 이름(항상 영문)으로.

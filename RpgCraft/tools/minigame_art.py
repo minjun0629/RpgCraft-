@@ -270,6 +270,229 @@ ICONS = [   # (이름, 번호, 그림)
 ]
 
 
+# ------------------------------------------------------------------ v5.10.31 뱀 게임
+def _rot(im, d):
+    """d: 0 ↑ 1 → 2 ↓ 3 ← (그림은 → 기준으로 그림)"""
+    return im.rotate({0: 90, 1: 0, 2: -90, 3: 180}[d])
+
+
+def snake_head(d):
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.rounded_rectangle([0, 2, 13, 13], 4, fill=_rgb("3ab84a"))
+    dr.rectangle([0, 2, 6, 13], fill=_rgb("3ab84a"))
+    dr.line([0, 3, 11, 3], fill=_rgb("7ae07a")); dr.line([0, 12, 11, 12], fill=_rgb("1f7a2a"))
+    for (x, y) in ((3, 6), (6, 9), (2, 10)):
+        dr.point((x, y), fill=_rgb("2a9a3a"))
+    dr.rectangle([8, 4, 10, 6], fill=_rgb("ffffff")); dr.point((10, 5), fill=_rgb("111111"))   # 눈
+    dr.rectangle([8, 9, 10, 11], fill=_rgb("ffffff")); dr.point((10, 10), fill=_rgb("111111"))
+    dr.line([13, 7, 15, 7], fill=_rgb("e02a2a")); dr.point((15, 6), fill=_rgb("e02a2a")); dr.point((15, 8), fill=_rgb("e02a2a"))   # 혀
+    return _rot(im, d)
+
+
+def snake_body(tail=False):
+    im = _img(); dr = ImageDraw.Draw(im)
+    if tail:
+        dr.ellipse([3, 3, 12, 12], fill=_rgb("2fa03f")); dr.ellipse([5, 5, 9, 9], fill=_rgb("5ad06a"))
+        return im
+    dr.rounded_rectangle([1, 1, 14, 14], 3, fill=_rgb("2fa03f"))
+    dr.line([2, 2, 13, 2], fill=_rgb("6ad87a")); dr.line([2, 13, 13, 13], fill=_rgb("1a6a24"))
+    for (x, y) in ((4, 4), (9, 4), (6, 8), (11, 9), (3, 11)):
+        dr.rectangle([x, y, x + 1, y + 1], fill=_rgb("f2d23a"))   # 무늬
+    return im
+
+
+def apple(gold=False):
+    im = _img(); dr = ImageDraw.Draw(im)
+    c = _rgb("f2c23a") if gold else _rgb("e0302a")
+    dr.ellipse([2, 4, 13, 15], fill=_shade(c, 0.75)); dr.ellipse([2, 3, 13, 14], fill=c)
+    dr.ellipse([4, 5, 7, 8], fill=_shade(c, 1.45))
+    dr.line([8, 4, 9, 1], fill=_rgb("6a4a2a")); dr.polygon([(9, 2), (13, 0), (12, 3)], fill=_rgb("3ab84a"))
+    if gold:
+        for (x, y) in ((1, 2), (14, 6), (3, 13)):
+            dr.point((x, y), fill=_rgb("ffffff"))
+    return im
+
+
+def arrow(d):
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.rounded_rectangle([0, 0, 15, 15], 3, fill=_rgb("2a3a5a"), outline=_rgb("8ab0ff"))
+    dr.rounded_rectangle([1, 1, 14, 14], 3, outline=_rgb("4a5a8a"))
+    dr.polygon([(12, 8), (6, 3), (6, 6), (3, 6), (3, 10), (6, 10), (6, 13)], fill=_rgb("ffffff"))
+    dr.line([6, 3, 12, 8], fill=_rgb("c8e0ff"))
+    return _rot(im, d)
+
+
+def rock():
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.polygon([(2, 14), (1, 9), (4, 4), (9, 2), (13, 5), (15, 10), (14, 14)], fill=_rgb("7a7a84"))
+    dr.polygon([(4, 5), (9, 3), (11, 6), (6, 8)], fill=_rgb("a8a8b4"))
+    dr.line([6, 9, 9, 12], fill=_rgb("4a4a54")); dr.line([2, 14, 14, 14], fill=_rgb("3a3a44"))
+    return im
+
+
+# ------------------------------------------------------------------ 리듬 게임
+LANE_COLS = ["ff4a6a", "ffd23a", "4aff7a", "4ad8ff"]
+
+
+def note(l):
+    im = _img(); dr = ImageDraw.Draw(im)
+    c = _rgb(LANE_COLS[l])
+    dr.rounded_rectangle([1, 4, 14, 11], 3, fill=_shade(c, 0.55))
+    dr.rounded_rectangle([1, 3, 14, 10], 3, fill=c)
+    dr.line([3, 4, 12, 4], fill=_rgb("ffffff", 220))
+    dr.rounded_rectangle([5, 5, 10, 8], 1, fill=_shade(c, 1.4))
+    return im
+
+
+def lane_target():
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.rounded_rectangle([0, 3, 15, 12], 3, outline=_rgb("c8c8ff", 200))
+    dr.rounded_rectangle([2, 5, 13, 10], 2, outline=_rgb("6a6aa8", 160))
+    return im
+
+
+def pad(l, state=0):
+    """state 0 버튼 · 1 맞음 · 2 퍼펙트"""
+    im = _img(); dr = ImageDraw.Draw(im)
+    if state == 0:
+        c = _rgb(LANE_COLS[l])
+        dr.ellipse([1, 2, 14, 15], fill=_shade(c, 0.45)); dr.ellipse([1, 1, 14, 13], fill=_shade(c, 0.85))
+        dr.ellipse([3, 2, 12, 10], fill=c); dr.arc([3, 2, 12, 10], 200, 300, fill=_rgb("ffffff"))
+        return im
+    c = _rgb("ffffff") if state == 2 else _rgb("a8ffc0")
+    for r, a in ((7.5, 90), (5.5, 170), (3.5, 255)):
+        dr.ellipse([7.5 - r, 7.5 - r, 7.5 + r, 7.5 + r], fill=c[:3] + (a,))
+    if state == 2:
+        for k in range(8):
+            ang = k * math.pi / 4
+            dr.line([7.5 + math.cos(ang) * 4, 7.5 + math.sin(ang) * 4, 7.5 + math.cos(ang) * 7.5, 7.5 + math.sin(ang) * 7.5], fill=_rgb("7ae8ff"))
+    return im
+
+
+def music_icon():
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.ellipse([1, 10, 6, 14], fill=_rgb("ff4a9a")); dr.ellipse([9, 8, 14, 12], fill=_rgb("ff4a9a"))
+    dr.rectangle([5, 2, 6, 12], fill=_rgb("ff4a9a")); dr.rectangle([13, 1, 14, 10], fill=_rgb("ff4a9a"))
+    dr.polygon([(5, 2), (14, 0), (14, 3), (5, 5)], fill=_rgb("ffd23a"))
+    dr.point((2, 11), fill=_rgb("ffc0e0")); dr.point((10, 9), fill=_rgb("ffc0e0"))
+    return im
+
+
+# ------------------------------------------------------------------ 2048
+SMALL = {"0": ["###", "#.#", "#.#", "#.#", "###"], "1": [".#.", "##.", ".#.", ".#.", "###"], "2": ["###", "..#", "###", "#..", "###"],
+         "3": ["###", "..#", "###", "..#", "###"], "4": ["#.#", "#.#", "###", "..#", "..#"], "5": ["###", "#..", "###", "..#", "###"],
+         "6": ["###", "#..", "###", "#.#", "###"], "7": ["###", "..#", ".#.", ".#.", ".#."], "8": ["###", "#.#", "###", "#.#", "###"],
+         "9": ["###", "#.#", "###", "..#", "###"]}
+TILE_COL = ["eee4da", "ede0c8", "f2b179", "f59563", "f67c5f", "f65e3b", "edcf72", "edcc61", "edc850", "edc53f", "edc22e", "3c3a32"]
+
+
+def _text(dr, txt, cx, cy, col, scale=1):
+    w = len(txt) * 4 - 1
+    x0 = int(cx - w * scale / 2 + 0.5)
+    for i, ch in enumerate(txt):
+        for yy, row in enumerate(SMALL[ch]):
+            for xx, v in enumerate(row):
+                if v == "#":
+                    px = x0 + (i * 4 + xx) * scale
+                    py = int(cy - 2.5 * scale + 0.5) + yy * scale
+                    dr.rectangle([px, py, px + scale - 1, py + scale - 1], fill=col)
+
+
+def tile2048(k):
+    """k: 1 = 2 … 12 = 4096"""
+    im = _img(); dr = ImageDraw.Draw(im)
+    c = _rgb(TILE_COL[min(k, 12) - 1])
+    dr.rounded_rectangle([0, 1, 15, 15], 3, fill=_shade(c, 0.7))
+    dr.rounded_rectangle([0, 0, 15, 14], 3, fill=c)
+    if k >= 7:
+        dr.rounded_rectangle([0, 0, 15, 14], 3, outline=_rgb("fff6b0"))
+    txt = str(2 ** k)
+    col = _rgb("776e65") if k <= 2 else _rgb("f9f6f2")
+    _text(dr, txt, 8, 7, col, 2 if len(txt) <= 2 else 1)
+    return im
+
+
+def empty2048():
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.rounded_rectangle([0, 0, 15, 15], 3, fill=_rgb("cdc1b4"))
+    dr.rounded_rectangle([1, 1, 14, 14], 3, outline=_rgb("bbada0"))
+    return im
+
+
+def logo2048():
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.rounded_rectangle([0, 0, 15, 15], 3, fill=_rgb("edc22e"), outline=_rgb("fff6b0"))
+    _text(dr, "2048", 8, 8, _rgb("ffffff"), 1)
+    return im
+
+
+# ------------------------------------------------------------------ 날아라 새
+def bird(state=0):
+    """0 기본 · 1 날갯짓 · 2 부딪힘"""
+    im = _img(); dr = ImageDraw.Draw(im)
+    body = _rgb("ffd23a") if state < 2 else _rgb("c8a83a")
+    dr.ellipse([2, 4, 13, 13], fill=_shade(body, 0.8)); dr.ellipse([2, 3, 13, 12], fill=body)
+    dr.ellipse([3, 8, 9, 12], fill=_rgb("fff0b0"))                         # 배
+    if state == 1:
+        dr.polygon([(3, 7), (7, 7), (5, 1)], fill=_rgb("fff6d0"))            # 날개 위로
+    else:
+        dr.polygon([(2, 8), (7, 8), (4, 12)], fill=_rgb("fff6d0"))           # 날개 아래로
+    dr.ellipse([9, 4, 13, 8], fill=_rgb("ffffff"))
+    if state == 2:
+        dr.line([10, 5, 12, 7], fill=_rgb("111111")); dr.line([12, 5, 10, 7], fill=_rgb("111111"))
+    else:
+        dr.rectangle([11, 5, 12, 7], fill=_rgb("111111"))
+    dr.polygon([(12, 8), (15, 9), (12, 11)], fill=_rgb("ff7a1f")); dr.line([12, 9, 15, 9], fill=_rgb("c84a0a"))
+    return im
+
+
+def pipe(part):
+    """part: body · top(위 기둥의 아래 끝) · bottom(아래 기둥의 위 끝)"""
+    im = _img(); dr = ImageDraw.Draw(im)
+    g, hi, lo = _rgb("4ab83a"), _rgb("9aec6a"), _rgb("2a6a1f")
+    if part == "body":
+        dr.rectangle([2, 0, 13, 15], fill=g); dr.rectangle([3, 0, 4, 15], fill=hi); dr.rectangle([11, 0, 13, 15], fill=lo)
+        dr.line([2, 0, 2, 15], fill=_rgb("1a3a12")); dr.line([13, 0, 13, 15], fill=_rgb("1a3a12"))
+        return im
+    y0, y1 = (0, 9) if part == "top" else (6, 15)
+    dr.rectangle([2, 0, 13, 15], fill=g); dr.rectangle([3, 0, 4, 15], fill=hi); dr.rectangle([11, 0, 13, 15], fill=lo)
+    if part == "top":
+        dr.rectangle([2, 10, 13, 15], fill=(0, 0, 0, 0)); cy0, cy1 = 5, 10
+    else:
+        dr.rectangle([2, 0, 13, 5], fill=(0, 0, 0, 0)); cy0, cy1 = 5, 10
+    dr.rectangle([0, cy0, 15, cy1], fill=g); dr.rectangle([1, cy0, 3, cy1], fill=hi); dr.rectangle([12, cy0, 15, cy1], fill=lo)
+    dr.rectangle([0, cy0, 15, cy1], outline=_rgb("1a3a12"))
+    return im
+
+
+def ground():
+    im = _img(); dr = ImageDraw.Draw(im)
+    dr.rectangle([0, 0, 15, 15], fill=_rgb("ded895"))
+    dr.rectangle([0, 0, 15, 3], fill=_rgb("6ad84a")); dr.line([0, 4, 15, 4], fill=_rgb("3a8a2a"))
+    for x in range(0, 16, 4):
+        dr.line([x, 0, x + 2, 3], fill=_rgb("9aec6a"))
+    for (x, y) in ((3, 8), (10, 11), (6, 13), (13, 7)):
+        dr.point((x, y), fill=_rgb("c8b870"))
+    return im
+
+
+ICONS += [("mg_snake_head_%d" % d, 90 + d, (lambda d=d: snake_head(d))) for d in range(4)] + [
+    ("mg_snake_body", 94, lambda: snake_body()), ("mg_snake_tail", 95, lambda: snake_body(True)),
+    ("mg_apple", 96, lambda: apple()), ("mg_apple_gold", 97, lambda: apple(True)),
+] + [("mg_arrow_%d" % d, 98 + d, (lambda d=d: arrow(d))) for d in range(4)] + [
+    ("mg_rock", 102, rock),
+] + [("mg_note_%d" % l, 104 + l, (lambda l=l: note(l))) for l in range(4)] + [
+    ("mg_lane", 108, lane_target),
+] + [("mg_pad_%d" % l, 109 + l, (lambda l=l: pad(l))) for l in range(4)] + [
+    ("mg_pad_hit", 113, lambda: pad(0, 1)), ("mg_pad_perfect", 114, lambda: pad(0, 2)),
+] + [("mg_2048_%d" % k, 115 + k, (lambda k=k: tile2048(k))) for k in range(1, 13)] + [
+    ("mg_2048_empty", 128, empty2048),
+    ("mg_bird", 130, lambda: bird(0)), ("mg_bird_flap", 131, lambda: bird(1)), ("mg_bird_dead", 132, lambda: bird(2)),
+    ("mg_pipe", 133, lambda: pipe("body")), ("mg_pipe_top", 134, lambda: pipe("top")), ("mg_pipe_bottom", 135, lambda: pipe("bottom")),
+    ("mg_ground", 136, ground), ("mg_music", 137, music_icon), ("mg_2048_logo", 138, logo2048),
+]
+
+
 def write_icons(pack, ns, write_json):
     """아이콘 텍스처 + 모델. 반환: [(cmd, 모델)] (PAPER 에 붙임)"""
     tex = os.path.join(pack, "assets", ns, "textures", "item", "minigame")
@@ -353,10 +576,15 @@ def bg_event(img):
     for i, x in enumerate(range(6, 170, 12)):   # 축제 깃발 줄
         d.polygon([(x, 17), (x + 10, 17), (x + 5, 24)], fill=cols[i % 4])
     d.line([(4, 17), (171, 17)], fill=(80, 60, 40, 255))
-    for (top, bottom), col in zip(((10, 28), (12, 30), (14, 32), (16, 34)), [(200, 136, 74, 255), (224, 96, 42, 255), (106, 138, 176, 255), (200, 58, 106, 255)]):
-        xa, ya = _sx(top); _, yb = _sx(bottom)   # 게임 · 코인 칸을 세로로 묶는 테두리
-        d.rectangle([xa - 3, ya - 3, xa + 20, yb + 20], outline=col)
-        d.rectangle([xa - 2, ya + 19, xa + 19, yb - 2], fill=tuple(int(v * 0.35) for v in col[:3]) + (255,))
+    frame = {10: (200, 136, 74), 12: (224, 96, 42), 14: (106, 138, 176), 16: (200, 58, 106),   # v5.10.31 8종 — 게임마다 색 테두리
+             28: (58, 184, 74), 30: (255, 74, 154), 32: (237, 194, 46), 34: (90, 190, 220)}
+    for idx, col in frame.items():
+        x, y = _sx(idx)
+        d.rounded_rectangle([x - 4, y - 4, x + 21, y + 21], 3, fill=tuple(int(v * 0.35) for v in col) + (255,), outline=col + (255,))
+    y = _sx(19)[1] + 6   # 가운데 띠
+    d.rectangle([6, y, 169, y + 5], fill=(60, 44, 30, 255))
+    for x in range(8, 168, 6):
+        d.point((x, y + 2), fill=(255, 220, 120, 255))
     return img
 
 
@@ -382,10 +610,78 @@ def bg_eshop(img):
     return img
 
 
+def bg_snake(img):
+    _area(img, 5, lambda x, y: (70 + _n(x, y, 4) + (14 if ((x - 7) // 18 + (y - 17) // 18) % 2 == 0 else 0),
+                                150 + _n(x, y, 6) + (16 if ((x - 7) // 18 + (y - 17) // 18) % 2 == 0 else 0), 60 + _n(x, y, 4), 255))
+    d = ImageDraw.Draw(img)
+    d.rectangle([5, 15, 170, 17 + 5 * 18], outline=(120, 80, 40, 255))
+    d.rectangle([4, 14, 171, 17 + 5 * 18 + 1], outline=(201, 161, 59, 255))
+    d.rectangle([4, 17 + 5 * 18 + 2, 171, 17 + 6 * 18 + 1], fill=(34, 40, 60, 255), outline=(110, 130, 200, 255))
+    return img
+
+
+def bg_rhythm(img):
+    def paint(x, y):
+        col = (x - 7) // 18
+        lane = col in (1, 3, 5, 7)
+        base = (18 + _n(x, y, 2), 12 + _n(x, y, 2), 34 + _n(x, y, 3))
+        if lane:
+            k = 1 + (y - 17) / 110.0
+            lc = [(255, 74, 106), (255, 210, 58), (74, 255, 122), (74, 216, 255)][[1, 3, 5, 7].index(col)]
+            base = tuple(int(b + c * 0.10 * k) for b, c in zip(base, lc))
+        return base + (255,)
+    _area(img, 6, paint)
+    d = ImageDraw.Draw(img)
+    for i, col in enumerate((1, 3, 5, 7)):
+        x, _ = _sx(col)
+        lc = [(255, 74, 106, 255), (255, 210, 58, 255), (74, 255, 122, 255), (74, 216, 255, 255)][i]
+        d.line([(x - 1, 17), (x - 1, 17 + 5 * 18)], fill=tuple(int(v * 0.5) for v in lc[:3]) + (255,))
+        d.line([(x + 18, 17), (x + 18, 17 + 5 * 18)], fill=tuple(int(v * 0.5) for v in lc[:3]) + (255,))
+    y = 17 + 4 * 18
+    d.rectangle([5, y - 1, 170, y + 18], outline=(255, 255, 255, 255))   # 판정선
+    d.line([(5, y - 2), (170, y - 2)], fill=(255, 120, 220, 255))
+    for k in range(24):   # 무대 조명 반짝이
+        d.point((10 + (k * 47) % 156, 20 + (k * 31) % 60), fill=(255, 255, 255, 140))
+    d.rectangle([4, 17 + 5 * 18 + 2, 171, 17 + 6 * 18 + 1], fill=(28, 18, 44, 255), outline=(255, 120, 220, 255))
+    return img
+
+
+def bg_2048(img):
+    _area(img, 6, lambda x, y: (250 + _n(x, y, 2) - 6, 248 + _n(x, y, 2) - 8, 239 + _n(x, y, 2) - 8, 255))
+    d = ImageDraw.Draw(img)
+    xa, ya = _sx(10)
+    d.rounded_rectangle([xa - 4, ya - 4, xa + 4 * 18 + 2, ya + 4 * 18 + 2], 4, fill=(187, 173, 160, 255))   # 판
+    xb, yb = _sx(16)
+    d.rounded_rectangle([xb - 22, yb - 4, xb + 40, yb + 3 * 18 + 2], 4, fill=(143, 122, 102, 255))   # 화살표 판
+    x7, y7 = _sx(7)
+    d.rounded_rectangle([x7 - 3, y7 - 3, x7 + 20, y7 + 20], 3, fill=(143, 122, 102, 255))
+    x43, y43 = _sx(43)
+    d.rounded_rectangle([x43 - 3, y43 - 3, x43 + 20, y43 + 20], 3, fill=(143, 122, 102, 255))
+    return img
+
+
+def bg_flappy(img):
+    def sky(x, y):
+        t = (y - 16) / 92.0
+        return (int(112 + 60 * t), int(197 + 30 * t), int(206 + 20 * t), 255)
+    _area(img, 6, sky)
+    d = ImageDraw.Draw(img)
+    for (cx, cy, r) in ((30, 30, 7), (40, 28, 9), (52, 31, 6), (110, 40, 7), (122, 37, 9), (134, 41, 6), (150, 24, 5)):
+        d.ellipse([cx - r, cy - r * 0.6, cx + r, cy + r * 0.6], fill=(250, 250, 255, 255))
+    for i, x in enumerate(range(4, 172, 10)):   # 먼 도시 실루엣
+        h = 10 + (i * 37) % 16
+        d.rectangle([x, 17 + 5 * 18 - h, x + 8, 17 + 5 * 18], fill=(150, 210, 190, 255))
+        for wy in range(17 + 5 * 18 - h + 2, 17 + 5 * 18 - 2, 4):
+            d.point((x + 3, wy), fill=(230, 250, 240, 255))
+    for x in range(4, 172, 14):   # 덤불
+        d.ellipse([x, 17 + 5 * 18 - 6, x + 14, 17 + 5 * 18 + 4], fill=(100, 200, 90, 255))
+    return img
+
+
 # 키: (글리프, 줄 수, 슬롯 테두리를 그릴 칸, 그리기)
 SHOP_ITEMS = set(range(10, 17)) | set(range(19, 26)) | set(range(28, 35)) | set(range(37, 44))
 BACKGROUNDS = {
-    "event": ("\ue009", 6, {10, 12, 14, 16, 28, 30, 32, 34, 40, 49}, bg_event),
+    "event": ("\ue009", 6, {40, 49}, bg_event),
     "mole": ("\ue00a", 6, {47, 49, 51}, bg_mole),
     "breakout": ("\ue00b", 6, set(), bg_breakout),
     "mines": ("\ue00c", 6, set(range(45)) | {47, 49, 51}, bg_mines),
@@ -393,6 +689,10 @@ BACKGROUNDS = {
     "stock": ("\ue00e", 6, {11, 12, 14, 15, 20, 21, 23, 24, 29, 30, 32, 33, 38, 39, 41, 42, 45, 48, 49, 50}, bg_stock),
     "eshop": ("\ue00f", 6, {19, 21, 23, 25, 40, 45, 49}, bg_eshop),
     "eshop_sub": ("\ue010", 6, SHOP_ITEMS | {45, 49}, bg_eshop),
+    "snake": ("\ue017", 6, {45, 46, 48, 50, 52, 53}, bg_snake),        # v5.10.31
+    "rhythm": ("\ue018", 6, {0, 8}, bg_rhythm),
+    "g2048": ("\ue019", 6, {16, 24, 25, 26, 34}, bg_2048),
+    "flappy": ("\ue01a", 6, set(), bg_flappy),
 }
 
 

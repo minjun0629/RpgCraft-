@@ -30,6 +30,7 @@ import armor_art  # noqa: E402
 import ui_pack  # noqa: E402
 import weapon_vox  # noqa: E402  v5.10.21 무기 3D 복셀
 import armor_vox  # noqa: E402  v5.10.28 방어구 3D 복셀
+import ui4r  # noqa: E402  v5.10.32 마크에이지 4R 풍 UI
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACK = os.path.join(ROOT, "resourcepack")
@@ -324,73 +325,13 @@ def _diamond(d, cx, cy, r, c, edge):
 
 
 def _slot(d, x, y, hi, gold):
-    """18x18 슬롯: 안으로 들어간 베벨 + 모서리 둥글게"""
-    base = (52, 45, 64, 255) if hi else (40, 36, 50, 255)
-    d.rectangle([x, y, x + 17, y + 17], fill=base)
-    edge = (201, 161, 59, 255) if gold else (20, 18, 26, 255)
-    d.line([(x + 1, y), (x + 16, y)], fill=edge); d.line([(x + 1, y + 17), (x + 16, y + 17)], fill=edge)
-    d.line([(x, y + 1), (x, y + 16)], fill=edge); d.line([(x + 17, y + 1), (x + 17, y + 16)], fill=edge)
-    d.line([(x + 1, y + 1), (x + 16, y + 1)], fill=(16, 14, 20, 255)); d.line([(x + 1, y + 1), (x + 1, y + 16)], fill=(16, 14, 20, 255))
-    d.line([(x + 2, y + 16), (x + 16, y + 16)], fill=(78, 70, 94, 255)); d.line([(x + 16, y + 2), (x + 16, y + 16)], fill=(78, 70, 94, 255))
-    if gold:
-        _px(d, x + 2, y + 2, (255, 225, 140, 255))
+    """18x18 슬롯 — v5.10.32 마크에이지 4R 풍 (ui4r)"""
+    ui4r.slot(d, x, y, hi, gold)
 
 
 def gui_background(rows, highlight=None):
-    w, h = 176, 114 + rows * 18
-    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    top_h = 17 + rows * 18 + 3
-    gold, gold_d, gold_l = (201, 161, 59, 255), (110, 84, 30, 255), (255, 222, 130, 255)
-    for y in range(top_h):
-        t = y / max(1, top_h)
-        for x in range(w):
-            n = _noise(x, y, 2)
-            c = int(26 + 12 * t) + n
-            _px(d, x, y, (c, int(22 + 9 * t) + n, int(34 + 7 * t) + n, 255))
-    for y in range(2, 14):
-        for x in range(3, w - 3):
-            r, g, b, a = img.getpixel((x, y))
-            _px(d, x, y, (r + 10, g + 8, b + 12, 255))
-    d.rectangle([0, 0, w - 1, top_h - 1], outline=gold)
-    d.rectangle([1, 1, w - 2, top_h - 2], outline=gold_d)
-    d.line([(2, 2), (w - 3, 2)], fill=(255, 222, 130, 90)); d.line([(2, 2), (2, top_h - 3)], fill=(255, 222, 130, 90))
-    d.line([(5, 15), (w - 6, 15)], fill=gold)
-    _diamond(d, w // 2, 15, 2, (120, 220, 255, 255), gold)
-    for cx, cy in ((3, 3), (w - 4, 3), (3, top_h - 4), (w - 4, top_h - 4)):
-        _diamond(d, cx, cy, 2, gold_l, gold_d)
-    if highlight is not None and highlight == MAIN_SLOTS:
-        # 메인 메뉴: 기능 버튼 영역을 금테 그룹 박스로 묶음
-        for (c0, r0, c1, r1) in ((1, 2, 7, 3), (1, 4, 7, 4), (4, 0, 4, 0), (4, 5, 4, 5)):
-            x0, y0 = 7 + c0 * 18 - 2, 17 + r0 * 18 - 2
-            x1, y1 = 7 + (c1 + 1) * 18 + 1, 17 + (r1 + 1) * 18 + 1
-            d.rectangle([x0, y0, x1, y1], fill=(58, 48, 30, 255), outline=gold_d)
-    for r in range(rows):
-        for c in range(9):
-            idx = r * 9 + c
-            hi = highlight is None or idx in highlight
-            if highlight is not None and not hi:
-                continue  # 메인 메뉴의 빈 칸은 슬롯을 그리지 않아 깔끔하게
-            _slot(d, 7 + c * 18, 17 + r * 18, hi, highlight is not None)
-    # 하단 플레이어 인벤토리: 양피지 톤 (바닐라 '인벤토리' 글자가 잘 보이도록 밝게)
-    by = top_h
-    for y in range(by, h):
-        for x in range(w):
-            n = _noise(x, y, 3)
-            _px(d, x, y, (214 + n, 204 + n, 180 + n, 255))
-    d.rectangle([0, by, w - 1, h - 1], outline=(96, 76, 44, 255))
-    d.line([(1, by + 1), (w - 2, by + 1)], fill=(240, 232, 210, 255))
-    def pslot(x, y):
-        d.rectangle([x, y, x + 17, y + 17], fill=(150, 136, 110, 255))
-        d.line([(x, y), (x + 17, y)], fill=(84, 70, 48, 255)); d.line([(x, y), (x, y + 17)], fill=(84, 70, 48, 255))
-        d.line([(x + 17, y + 1), (x + 17, y + 17)], fill=(246, 238, 216, 255)); d.line([(x + 1, y + 17), (x + 17, y + 17)], fill=(246, 238, 216, 255))
-    inv_y = rows * 18 + 31
-    for r in range(3):
-        for c in range(9):
-            pslot(7 + c * 18, inv_y - 1 + r * 18)
-    for c in range(9):
-        pslot(7 + c * 18, rows * 18 + 88)
-    return img
+    """상자 창 배경 — v5.10.32 마크에이지 4R 풍: 회갈색 판 + 은청동 테두리 + 파인 칸 (ui4r)"""
+    return ui4r.gui_background(rows, highlight, MAIN_SLOTS)
 
 
 def pack_icon():
@@ -627,13 +568,16 @@ def main():
     providers.append({"type": "space", "advances": adv})
     for key, (ch, rows) in GUI_GLYPHS.items():
         tex = os.path.join(PACK, "assets", NS, "textures", "gui", key + ".png")
-        if save_png(tex, (lambda rows=rows, key=key: gui_background(rows, MAIN_SLOTS if key == "main" else None))):
-            made += 1
+        os.makedirs(os.path.dirname(tex), exist_ok=True)   # 창 배경은 매번 새로 그림 (디자인이 바뀌어도 예전 그림이 남지 않게)
+        gui_background(rows, MAIN_SLOTS if key == "main" else None).save(tex)
         providers.append({"type": "bitmap", "file": NS + ":gui/" + key + ".png", "ascent": 13, "height": 114 + rows * 18, "chars": [ch]})
     # 메뉴별 전용 배경
     for key, (ch, rows, img) in ui_pack.gui_layout_images(gui_background).items():
         img.save(os.path.join(PACK, "assets", NS, "textures", "gui", key + ".png"))
         providers.append({"type": "bitmap", "file": NS + ":gui/" + key + ".png", "ascent": 13, "height": 114 + rows * 18, "chars": [ch]})
+    # v5.10.32 GUI 머리 장식 (제목 띠 + 날개 검 문장) — 모든 창 제목 앞에 붙음
+    ui4r.header().save(os.path.join(PACK, "assets", NS, "textures", "gui", "header.png"))
+    providers.append({"type": "bitmap", "file": NS + ":gui/header.png", "ascent": ui4r.HEADER_ASCENT, "height": ui4r.HEADER_H, "chars": ["\ue020"]})
     # 로고 · 레벨 배지
     extra, logo_img = ui_pack.default_font_extra(PACK, art.weapon_image("relic_sword", 2))
     providers.extend(extra)
@@ -671,6 +615,7 @@ def main():
     # 1.21.4+ 클라이언트: 새 아이템 정의 형식(items/*.json)으로 커스텀 모델 연결
     ui_pack.write_item_definitions(PACK, overrides, write_json)
 
+    ui4r.write_vanilla(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "widgets.png"))   # v5.10.32 핫바 · 인벤토리 · 상자
     write_bgm()
     validate()
 

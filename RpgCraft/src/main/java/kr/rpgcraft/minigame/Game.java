@@ -7,7 +7,12 @@ public enum Game {
     MOLE("두더지 잡기", Coin.EVENT, Icons.MOLE, "튀어나온 두더지를 클릭! 황금 두더지 +3, 폭탄은 -3", "제한 시간 30초 안에 목표 점수 넘기기"),
     BREAKOUT("벽돌깨기", Coin.EVENT, Icons.BRICK, "맨 아래 줄을 클릭하면 받침대가 그 자리로", "공을 떨어뜨리지 않고 벽돌을 모두 깨기"),
     MINES("지뢰찾기", Coin.EVENT, Icons.FLAG, "좌클릭: 열기 · 우클릭: 깃발", "지뢰를 피해 안전한 칸을 모두 열기"),
-    MEMORY("같은 그림 찾기", Coin.EVENT, Icons.CARD, "카드 두 장을 뒤집어 같은 그림 맞추기", "제한 시간 안에 모든 짝 맞추기");
+    MEMORY("같은 그림 찾기", Coin.EVENT, Icons.CARD, "카드 두 장을 뒤집어 같은 그림 맞추기", "제한 시간 안에 모든 짝 맞추기"),
+    // v5.10.31
+    SNAKE("뱀 게임", Coin.EVENT, Icons.SNAKE_HEAD + 1, "◀ ▲ ▼ ▶ 또는 풀밭 클릭으로 방향 바꾸기", "사과를 먹고 몸에 부딪히지 않기"),
+    RHYTHM("리듬 게임", Coin.EVENT, Icons.NOTE_ICON, "음표가 판정선에 닿을 때 그 줄 클릭 → 노래 연주", "정확도를 목표 이상으로"),
+    G2048("2048", Coin.EVENT, Icons.GAME2048, "▲ ◀ ▶ ▼ 로 밀어 같은 숫자 합치기", "목표 숫자 타일 만들기"),
+    FLAPPY("날아라 새", Coin.EVENT, Icons.BIRD, "아무 칸이나 클릭하면 날아오름", "기둥 사이 틈을 목표 개수만큼 통과");
 
     public final String label, how, goal;
     public final Coin coin;

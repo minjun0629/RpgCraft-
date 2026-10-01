@@ -70,8 +70,13 @@ public class HudManager implements Listener {
             if (!p.isDead() && p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR) plugin.health().sync(p);
 
             double need = plugin.levels().need(d.level);
-            p.setLevel(d.level);
-            p.setExp((float) Math.max(0, Math.min(0.999, d.exp / need)));
+            if (packHud(p, d)) {   // v5.10.33 4R 풍 HUD 가 레벨 · 경험치를 그리므로 바닐라 레벨 숫자는 숨김
+                if (p.getLevel() != 0) p.setLevel(0);
+                if (p.getExp() != 0f) p.setExp(0f);
+            } else {
+                p.setLevel(d.level);
+                p.setExp((float) Math.max(0, Math.min(0.999, d.exp / need)));
+            }
 
             d.counters.put("power", (double) Power.of(s));
             if (packHud(p, d)) {
@@ -138,7 +143,8 @@ public class HudManager implements Listener {
         int strong = plugin.weaponSkills().strongCooldown(p);
         Passive qp = d.quickSkill == null ? null : Passive.find(d.quickSkill);
         int quick = qp == null ? -1 : (int) Math.ceil(d.remaining("active_" + qp.name()) / 1000.0);
-        String hud = kr.rpgcraft.pack.HudFont.build(d.hp, s.maxHp, potions, strong, s.def, s.attack, s.crit, quick);
+        double need = Math.max(1, plugin.levels().need(d.level));
+        String hud = kr.rpgcraft.pack.HudFont.build4r(d.hp, s.maxHp, d.exp / need, d.level, potions, strong, s.def, s.attack, s.crit, quick);   // v5.10.33
         String n = noticeUntil.getOrDefault(p.getUniqueId(), 0L) > System.currentTimeMillis() ? notice.get(p.getUniqueId()) : null;
         kr.rpgcraft.pack.HudFont.send(p, hud, n, partyRows(p));
     }

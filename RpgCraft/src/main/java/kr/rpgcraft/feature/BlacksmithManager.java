@@ -136,7 +136,9 @@ public class BlacksmithManager {
 
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
         int t = r.tier();
-        double roll = 0.75 + rnd.nextDouble() * 0.25;
+        double lo = plugin.mastery() != null ? plugin.mastery().smithMinQuality(d) : 0.75;   // v5.10.30 대장장이 숙련
+        double roll = lo + rnd.nextDouble() * (1 - lo);
+        if (plugin.mastery() != null) plugin.mastery().add(p, MasteryManager.Life.SMITH, 60 * (t + 1));
         StatMap st = new StatMap();
         st.set(Stat.LEVEL_REQ, LEVEL[t]);
         if (r.weapon()) {

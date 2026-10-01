@@ -373,6 +373,7 @@ public class JobManager {
         if (th == Third.ELEMENT_LORD) m *= 1.1;
         if (th == Third.MAGIC_KING && myHp >= 0.5) m *= 1.4;
         else if (th == null && is(p, Sub.ARCHMAGE) && myHp >= 0.6) m *= 1.25;
+        if (plugin.mastery() != null) m *= plugin.mastery().damageMult(p);   // v5.10.30 무기 숙련
         return m;
     }
 

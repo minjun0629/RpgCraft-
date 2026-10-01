@@ -34,6 +34,8 @@ import java.util.concurrent.Executors;
  */
 public class PackManager implements Listener {
     private static final int GUI_WIDTH = 176;
+    private static final int HEADER_WIDTH = 208, HEADER_OVER = 16;   // v5.10.32 머리 장식 글리프 (tools/ui4r.py header)
+    private static final char HEADER = '\uE020';
 
     private final RpgCraft plugin;
     private final File packFile;
@@ -501,6 +503,10 @@ public class PackManager implements Listener {
                 case "stock": return '\uE00E';
                 case "eshop": return '\uE00F';
                 case "eshop_sub": return '\uE010';
+                case "snake": return '\uE017';     // v5.10.31 새 미니게임
+                case "rhythm": return '\uE018';
+                case "g2048": return '\uE019';
+                case "flappy": return '\uE01A';
                 default: break;
             }
         }
@@ -526,7 +532,9 @@ public class PackManager implements Listener {
 
     private static String build(RpgCraft pl, int rows, String bg, String title) {
         String color = Text.c(pl.getConfig().getString("resourcepack.title-color", "&f"));
-        return ChatColor.WHITE + shift(-8) + glyph(rows, bg) + shift(8 - (GUI_WIDTH + 1)) + color + ChatColor.stripColor(title);
+        // v5.10.32 마크에이지 4R 풍: 배경 판 + 위에 뜨는 제목 띠 · 날개 검 문장 (머리 장식 208px, 판보다 16px 넓게 가운데)
+        return ChatColor.WHITE + shift(-8) + glyph(rows, bg) + shift(-(GUI_WIDTH + 1) - HEADER_OVER) + HEADER
+                + shift(8 + HEADER_OVER - (HEADER_WIDTH + 1)) + color + ChatColor.stripColor(title);
     }
 
     /** 오버레이 사용 시 투명 모델이 적용되는 칸 채우기 판유리 */

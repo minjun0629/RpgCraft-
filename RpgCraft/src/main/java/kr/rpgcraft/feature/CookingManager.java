@@ -172,7 +172,7 @@ public class CookingManager implements Listener, CommandExecutor {
     }
 
     private double doubleChance(PlayerData d) {
-        return Math.min(0.25, (int) (d.counter("cook_count") / 50) * 0.05);
+        return Math.min(0.25, (int) (d.counter("cook_count") / 50) * 0.05) + (plugin.mastery() != null ? plugin.mastery().cookDouble(d) : 0);   // + 요리 숙련
     }
 
     private boolean cook(Player p, Recipe r) {
@@ -193,6 +193,7 @@ public class CookingManager implements Listener, CommandExecutor {
         p.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, p.getLocation().add(0, 1.6, 0), 4, 0.2, 0.1, 0.2, 0.01);
         Text.actionBar(p, "&6🍳 " + r.name() + (n > 1 ? " &ex2 &7(솜씨 덕분에 하나 더!)" : "") + " 완성");
         if (plugin.seasonPass() != null) plugin.seasonPass().add(p, 5, "요리");
+        if (plugin.mastery() != null) plugin.mastery().add(p, MasteryManager.Life.COOK, 12);
         return true;
     }
 
@@ -212,7 +213,8 @@ public class CookingManager implements Listener, CommandExecutor {
         Recipe r = RECIPES.get(idx);
         PlayerData d = plugin.data().get(p);
         it.setAmount(it.getAmount() - 1);
-        long until = System.currentTimeMillis() + r.minutes() * 60_000L;
+        double dm = plugin.mastery() != null ? plugin.mastery().cookDuration(d) : 1;   // 요리 숙련: 지속 시간 ↑
+        long until = System.currentTimeMillis() + (long) (r.minutes() * 60_000L * dm);
         d.counters.put("food_key", (double) idx);
         d.counters.put("food_until", (double) until);
         plugin.stats().refresh(p);
@@ -225,6 +227,6 @@ public class CookingManager implements Listener, CommandExecutor {
                 plugin.stats().refresh(p);
                 Text.actionBar(p, "&7" + r.name() + " 효과가 끝났습니다.");
             }
-        }, r.minutes() * 1200L + 20);
+        }, (long) (r.minutes() * 1200L * dm) + 20);
     }
 }

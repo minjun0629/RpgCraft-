@@ -245,6 +245,7 @@ public class MountManager implements Listener, CommandExecutor {
         plugin.data().get(p).cooldown("mount", 1000);
         if (riding.containsKey(p.getUniqueId())) { dismount(p); return; }
         if (plugin.dungeons() != null && plugin.dungeons().runOf(p) != null) { Text.actionBar(p, "&c던전에서는 탈 수 없습니다"); return; }
+        if (plugin.tower() != null && plugin.tower().inRun(p)) { Text.actionBar(p, "&c무한의 탑에서는 탈 수 없습니다"); return; }
         Mount m;
         try { m = Mount.valueOf(id); } catch (IllegalArgumentException ex) { return; }
         markOwned(p, m);

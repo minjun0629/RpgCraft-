@@ -107,10 +107,185 @@ public class PetManager implements Listener, CommandExecutor {
         return i >= 0 && i < Pet.values().length ? Pet.values()[i] : null;
     }
 
-    /** 꺼내 둔 펫의 능력치 (StatCalculator 에서 더함) */
+    /** 꺼내 둔 펫의 능력치 (StatCalculator 에서 더함) — 레벨 · 진화 · 별에 따라 커짐 (v5.10.30) */
     public StatMap bonus(PlayerData d) {
         Pet p = active(d);
-        return p == null || !owns(d, p) ? new StatMap() : p.stats;
+        return p == null || !owns(d, p) ? new StatMap() : p.stats.scaled(mult(d, p));
+    }
+
+    // ------------------------------------------------------------------ v5.10.30 성장 · 진화 · 합성
+    private static final String[] STAGE = {"아기", "성장", "각성"};
+    private static final double[] STAGE_MULT = {1.0, 1.35, 1.8};
+    private static final int[] STAGE_CAP = {10, 20, 30};
+    public static final int MAX_STARS = 5;
+
+    public int level(PlayerData d, Pet p) { return Math.max(1, (int) d.counter("pet_lv_" + p.name())); }
+
+    public int stage(PlayerData d, Pet p) { return Math.min(2, (int) d.counter("pet_stage_" + p.name())); }
+
+    public int stars(PlayerData d, Pet p) { return Math.min(MAX_STARS, (int) d.counter("pet_star_" + p.name())); }
+
+    public int dups(PlayerData d, Pet p) { return (int) d.counter("pet_dup_" + p.name()); }
+
+    private int cap(PlayerData d, Pet p) { return STAGE_CAP[stage(d, p)]; }
+
+    private static double need(int lv) { return 40 + lv * 30.0; }
+
+    public double mult(PlayerData d, Pet p) {
+        return (1 + 0.03 * (level(d, p) - 1)) * STAGE_MULT[stage(d, p)] * (1 + 0.08 * stars(d, p));
+    }
+
+    private String title(PlayerData d, Pet p) {
+        int st = stars(d, p);
+        return (stage(d, p) > 0 ? STAGE[stage(d, p)] + "한 " : "") + p.label + " &7Lv." + level(d, p) + (st > 0 ? " &e" + "★".repeat(st) : "");
+    }
+
+    /** 꺼내 둔 펫에게 경험치 */
+    public void addExp(Player pl, double n) {
+        PlayerData d = plugin.data().get(pl);
+        Pet p = active(d);
+        if (p == null || !owns(d, p) || n <= 0) return;
+        int lv = level(d, p), cap = cap(d, p);
+        if (lv >= cap) return;
+        double xp = d.counter("pet_xp_" + p.name()) + n * plugin.getConfig().getDouble("pets.exp-mult", 1.0);
+        boolean up = false;
+        while (lv < cap && xp >= need(lv)) { xp -= need(lv); lv++; up = true; }
+        d.counters.put("pet_lv_" + p.name(), (double) lv);
+        d.counters.put("pet_xp_" + p.name(), lv >= cap ? 0 : xp);
+        if (up) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ALLAY_ITEM_GIVEN, 1f, 1.4f);
+            Text.msg(pl, "&a♥ " + p.label + "&f이(가) &eLv." + lv + "&f이(가) 되었습니다!" + (lv >= cap && stage(d, p) < 2 ? " &d진화할 수 있습니다! &7(/펫 → 우클릭)" : ""));
+            plugin.stats().refresh(pl);
+        }
+    }
+
+    @EventHandler(priority = org.bukkit.event.EventPriority.MONITOR)
+    public void onKill(org.bukkit.event.entity.EntityDeathEvent e) {
+        Player k = e.getEntity().getKiller();
+        if (k == null || e.getEntity() instanceof Player) return;
+        boolean boss = e.getEntity().getPersistentDataContainer().has(kr.rpgcraft.Keys.BOSS, PersistentDataType.STRING);
+        var t = plugin.tiers() != null ? plugin.tiers().tier(e.getEntity()) : kr.rpgcraft.mob.MonsterTierManager.Tier.NORMAL;
+        addExp(k, boss ? 40 : t == kr.rpgcraft.mob.MonsterTierManager.Tier.MINIBOSS ? 10 : t == kr.rpgcraft.mob.MonsterTierManager.Tier.ELITE ? 4 : 1);
+    }
+
+    /** 먹이: 펫 간식 +60 · 요리 음식 +40 (shift: 가진 만큼) */
+    private void feed(Player pl, Pet p, boolean all) {
+        PlayerData d = plugin.data().get(pl);
+        if (active(d) != p) { Text.actionBar(pl, "&c꺼내 둔 펫에게만 먹이를 줄 수 있습니다"); return; }
+        int fed = 0;
+        for (ItemStack it : pl.getInventory().getStorageContents()) {
+            String id = kr.rpgcraft.item.ItemData.id(it);
+            if (id == null || !(id.equals("pet_snack") || id.startsWith("food_"))) continue;
+            while (it.getAmount() > 0 && level(d, p) < cap(d, p)) {
+                it.setAmount(it.getAmount() - 1);
+                addExp(pl, id.equals("pet_snack") ? 60 : 40);
+                fed++;
+                if (!all) break;
+            }
+            if (!all && fed > 0 || level(d, p) >= cap(d, p)) break;
+        }
+        if (fed == 0) { Text.actionBar(pl, level(d, p) >= cap(d, p) ? "&e지금 단계의 최고 레벨입니다 — 진화하세요" : "&c펫 간식이나 요리 음식이 없습니다 (요리 상점 · /요리)"); return; }
+        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EAT, 1f, 1.4f);
+        Text.actionBar(pl, "&a♥ " + p.label + "에게 먹이 " + fed + "개를 주었습니다");
+    }
+
+    private long evolveCost(PlayerData d, Pet p) {
+        return plugin.getConfig().getLong("pets.evolve-cost", 2_000_000) * (p.grade + 1) * (stage(d, p) + 1);
+    }
+
+    private void evolve(Player pl, Pet p) {
+        PlayerData d = plugin.data().get(pl);
+        int st = stage(d, p);
+        if (st >= 2) { Text.actionBar(pl, "&7이미 마지막 단계입니다"); return; }
+        if (level(d, p) < cap(d, p)) { Text.actionBar(pl, "&cLv." + cap(d, p) + "이 되어야 진화할 수 있습니다"); return; }
+        long cost = evolveCost(d, p);
+        if (!plugin.economy().take(pl, cost)) { Text.actionBar(pl, "&c돈이 부족합니다 (" + Text.money(cost) + ")"); return; }
+        d.counters.put("pet_stage_" + p.name(), st + 1.0);
+        hide(pl);
+        plugin.stats().refresh(pl);
+        pl.playSound(pl.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
+        pl.getWorld().spawnParticle(Particle.TOTEM, pl.getLocation().add(0, 1.5, 0), 60, 0.6, 0.6, 0.6, 0.3);
+        pl.sendTitle(Text.c("&d&l진화!"), Text.c("&f" + p.label + " → &d" + STAGE[st + 1] + " 단계"), 5, 50, 10);
+        if (st + 1 == 2 && p.grade >= 2) Text.announce(Text.PREFIX + Text.c("&d" + Text.name(pl) + "&f님의 " + GRADE[p.grade] + " " + p.label + "&f이(가) &d각성&f했습니다!"));
+    }
+
+    /** 별 합성: 같은 펫(중복으로 얻은 것) 1마리 → 별 +1 (능력치 +8%) */
+    private void star(Player pl, Pet p) {
+        PlayerData d = plugin.data().get(pl);
+        if (dups(d, p) <= 0) { Text.actionBar(pl, "&c합성할 같은 펫이 없습니다 (중복으로 뽑으면 쌓임)"); return; }
+        if (stars(d, p) >= MAX_STARS) { Text.actionBar(pl, "&7별이 가득 찼습니다"); return; }
+        d.counters.put("pet_dup_" + p.name(), dups(d, p) - 1.0);
+        d.counters.put("pet_star_" + p.name(), stars(d, p) + 1.0);
+        plugin.stats().refresh(pl);
+        pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.7f, 1.6f);
+        Text.msg(pl, "&e★ " + p.label + " 별 합성 성공! &f" + "★".repeat(stars(d, p)));
+    }
+
+    /** 등급 합성: 같은 등급의 남는 펫 3마리 → 한 등급 위 펫 알 1개 */
+    private void gradeFuse(Player pl, int grade) {
+        PlayerData d = plugin.data().get(pl);
+        if (grade >= 3) return;
+        int have = 0;
+        for (Pet m : Pet.values()) if (m.grade == grade) have += dups(d, m);
+        if (have < 3) { Text.actionBar(pl, "&c" + Text.strip(Text.c(GRADE[grade])) + " 남는 펫이 3마리 필요합니다 (" + have + "/3)"); return; }
+        int left = 3;
+        for (Pet m : Pet.values()) {
+            if (m.grade != grade) continue;
+            int take = Math.min(left, dups(d, m));
+            d.counters.put("pet_dup_" + m.name(), dups(d, m) - (double) take);
+            left -= take;
+            if (left == 0) break;
+        }
+        List<Pet> pool = new ArrayList<>();
+        for (Pet m : Pet.values()) if (m.grade == grade + 1) pool.add(m);
+        Pet got = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+        for (ItemStack l : pl.getInventory().addItem(egg(got)).values()) pl.getWorld().dropItemNaturally(pl.getLocation(), l);
+        pl.playSound(pl.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2f);
+        pl.sendTitle(Text.c("&d등급 합성!"), Text.c(GRADE[got.grade] + " &f" + got.label), 5, 40, 10);
+        if (got.grade == 3) Text.announce(Text.PREFIX + Text.c("&6&l" + Text.name(pl) + "&f님이 합성으로 전설 펫 &6" + got.label + "&f을(를) 얻었습니다!"));
+    }
+
+    /** 펫 하나의 성장 창 */
+    public void openPet(Player pl, Pet p) {
+        PlayerData d = plugin.data().get(pl);
+        if (!owns(d, p)) return;
+        Gui g = new Gui(4, "&8펫 - " + p.label) {
+        };
+        int lv = level(d, p), cap = cap(d, p), st = stage(d, p);
+        double xp = d.counter("pet_xp_" + p.name());
+        List<String> info = new ArrayList<>();
+        info.add(GRADE[p.grade] + " &7펫 · &d" + STAGE[st] + " 단계");
+        info.add("&f레벨 &e" + lv + " &7/ " + cap + (st < 2 ? " &8(진화하면 " + STAGE_CAP[st + 1] + "까지)" : ""));
+        if (lv < cap) { info.add(Text.bar(xp / need(lv), 20, "&a", "&8")); info.add("&7다음 레벨까지 &f" + (int) xp + " / " + (int) need(lv)); }
+        info.add("&f별 &e" + (stars(d, p) > 0 ? "★".repeat(stars(d, p)) : "없음") + " &7(" + stars(d, p) + "/" + MAX_STARS + ")");
+        info.add("");
+        info.add("&f능력치 &7(×" + String.format("%.2f", mult(d, p)) + ")");
+        StatMap now = p.stats.scaled(mult(d, p));
+        for (Stat s : Stat.values()) if (now.get(s) != 0) info.add("&a" + s.label + " " + Text.signed(Math.round(now.get(s) * 10) / 10.0, s.pct));
+        info.add("");
+        info.add("&7레벨 +3%/Lv · 진화 ×1.35 / ×1.8 · 별 +8%");
+        ItemStack head = Gui.button(Material.PAPER, GRADE[p.grade].substring(0, 2) + "&l" + title(d, p), info.toArray(new String[0]));
+        ItemMeta hm = head.getItemMeta();
+        hm.setCustomModelData(p.cmd());
+        head.setItemMeta(hm);
+        g.set(4, head, null);
+        g.set(19, Gui.button(Material.COOKIE, "&a&l먹이 주기", "&7펫 간식 +60 · 요리 음식 +40 경험치", "&7사냥하면 꺼내 둔 펫도 경험치를 얻음",
+                "&8(일반 1 · 정예 4 · 중간 보스 10 · 보스 40)", "", "&e▶ 클릭: 하나 · 쉬프트: 가진 만큼"), e -> { feed(pl, p, e.isShiftClick()); openPet(pl, p); });
+        g.set(21, Gui.button(st >= 2 ? Material.NETHER_STAR : lv >= cap ? Material.DRAGON_BREATH : Material.GLASS_BOTTLE,
+                st >= 2 ? "&d&l각성 완료" : "&d&l진화 → " + STAGE[st + 1],
+                st >= 2 ? "&7마지막 단계입니다" : "&7조건: Lv." + cap, st >= 2 ? "" : "&7비용: &e" + Text.money(evolveCost(d, p)),
+                st >= 2 ? "" : "&7능력치 ×" + STAGE_MULT[st + 1] + " · 최대 레벨 " + STAGE_CAP[st + 1] + " · 더 커짐",
+                st >= 2 ? "" : lv >= cap ? "&e▶ 클릭하여 진화" : "&8레벨이 부족합니다"), e -> { evolve(pl, p); openPet(pl, p); });
+        g.set(23, Gui.button(Material.NETHER_STAR, "&e&l별 합성", "&7중복으로 얻은 같은 펫 1마리 → 별 +1", "&7별 하나마다 능력치 +8% (최대 " + MAX_STARS + ")",
+                "", "&f남는 같은 펫: &e" + dups(d, p) + "마리", "&e▶ 클릭"), e -> { star(pl, p); openPet(pl, p); });
+        boolean act = active(d) == p;
+        g.set(25, Gui.button(act ? Material.LIME_DYE : Material.GRAY_DYE, act ? "&a함께하는 중 &7(클릭: 넣기)" : "&e▶ 꺼내기"), e -> {
+            setActive(pl, active(plugin.data().get(pl)) == p ? null : p);
+            openPet(pl, p);
+        });
+        g.set(31, Gui.button(Material.ARROW, "&f◀ 펫 도감"), e -> open(pl));
+        g.fill(0, 35);
+        g.open(pl);
     }
 
     private void setActive(Player pl, Pet p) {
@@ -163,10 +338,15 @@ public class PetManager implements Listener, CommandExecutor {
         Pet pet;
         try { pet = Pet.valueOf(id); } catch (IllegalArgumentException ex) { return; }
         it.setAmount(it.getAmount() - 1);
-        if (owns(d, pet)) {   // 중복: 뽑기 비용 일부 환급
-            long back = (long) (plugin.getConfig().getLong("pets.draw-cost", 1500000) * plugin.getConfig().getDouble("pets.duplicate-refund", 0.2));
-            plugin.economy().give(p, back);
-            Text.msg(p, "&7이미 가진 펫이라 &e" + Text.money(back) + "&7을(를) 돌려받았습니다.");
+        if (owns(d, pet)) {   // 중복: 합성 재료로 보관 (v5.10.30 — 별 합성 · 등급 합성). 별이 가득 차고 재료도 넉넉하면 환급
+            if (stars(d, pet) >= MAX_STARS && dups(d, pet) >= 3) {
+                long back = (long) (plugin.getConfig().getLong("pets.draw-cost", 1500000) * plugin.getConfig().getDouble("pets.duplicate-refund", 0.2));
+                plugin.economy().give(p, back);
+                Text.msg(p, "&7별이 가득 찬 펫이라 &e" + Text.money(back) + "&7을(를) 돌려받았습니다.");
+                return;
+            }
+            d.counters.put("pet_dup_" + pet.name(), dups(d, pet) + 1.0);
+            Text.msg(p, "&e" + pet.label + "&f을(를) 합성 재료로 보관했습니다 &7(남는 펫 " + dups(d, pet) + "마리 · /펫 → 우클릭: 별 합성)");
             return;
         }
         d.counters.put("pet_own_" + pet.name(), 1.0);
@@ -204,21 +384,28 @@ public class PetManager implements Listener, CommandExecutor {
             List<String> lore = new ArrayList<>();
             lore.add(GRADE[pet.grade] + " &7펫");
             lore.add("");
-            if (own) lore.addAll(statLines(pet));
-            else lore.add("&8능력치: ???");   // 아직 얻지 못한 펫은 능력치를 가림
+            if (own) {
+                lore.add("&d" + STAGE[stage(d, pet)] + " 단계 &7· Lv." + level(d, pet) + (stars(d, pet) > 0 ? " &e" + "★".repeat(stars(d, pet)) : "")
+                        + (dups(d, pet) > 0 ? " &7· 남는 펫 " + dups(d, pet) : ""));
+                StatMap now = pet.stats.scaled(mult(d, pet));
+                for (Stat s : Stat.values()) if (now.get(s) != 0) lore.add("&a" + s.label + " " + Text.signed(Math.round(now.get(s) * 10) / 10.0, s.pct));
+            } else lore.add("&8능력치: ???");   // 아직 얻지 못한 펫은 능력치를 가림
             lore.add("");
             if (!own) lore.add("&8미보유 — 뽑기로 얻을 수 있습니다");
-            else if (pet == act) lore.add("&a● 함께하는 중 &7(클릭: 넣기)");
-            else lore.add("&e▶ 클릭: 꺼내기");
+            else {
+                lore.add(pet == act ? "&a● 함께하는 중 &7(좌클릭: 넣기)" : "&e▶ 좌클릭: 꺼내기");
+                lore.add("&d▶ 우클릭: 성장 · 진화 · 합성");
+            }
             ItemStack icon;
             if (own) {
-                icon = Gui.button(Material.PAPER, GRADE[pet.grade].substring(0, 2) + "&l" + pet.label, lore.toArray(new String[0]));
+                icon = Gui.button(Material.PAPER, GRADE[pet.grade].substring(0, 2) + "&l" + title(d, pet), lore.toArray(new String[0]));
                 ItemMeta m = icon.getItemMeta();
                 m.setCustomModelData(pet.cmd());
                 icon.setItemMeta(m);
             } else icon = Gui.button(Material.GRAY_DYE, "&8??? " + GRADE[pet.grade].substring(0, 2) + "(" + pet.label + ")", lore.toArray(new String[0]));
             g.set(slot, icon, e -> {
                 if (!own) return;
+                if (e.isRightClick()) { openPet(p, pet); return; }
                 if (pet == active(plugin.data().get(p))) { setActive(p, null); Text.actionBar(p, "&7펫을 넣었습니다"); }
                 else { setActive(p, pet); Text.actionBar(p, "&a" + pet.label + "&f와(과) 함께합니다!"); p.playSound(p.getLocation(), Sound.ENTITY_ALLAY_AMBIENT_WITH_ITEM, 1f, 1.2f); }
                 open(p);
@@ -234,10 +421,20 @@ public class PetManager implements Listener, CommandExecutor {
             lore.add(GRADE[i] + " &7" + String.format(odds(i) < 0.1 ? "%.1f" : "%.0f", odds(i) * 100) + "% &8(" + names + ")");
         }
         lore.add("");
-        lore.add("&7중복 펫은 비용의 " + (int) (plugin.getConfig().getDouble("pets.duplicate-refund", 0.2) * 100) + "% 환급");
+        lore.add("&7중복 펫은 합성 재료로 보관 (별 합성 · 등급 합성)");
         lore.add("&e▶ 클릭하여 뽑기");
         g.set(49, Gui.button(Material.EGG, "&6&l펫 뽑기", lore.toArray(new String[0])), e -> draw(p));
         g.set(45, Gui.button(Material.BARRIER, "&c펫 넣기"), e -> { setActive(p, null); open(p); });
+        for (int gr = 0; gr < 3; gr++) {   // 등급 합성 (v5.10.30)
+            int have = 0, fg = gr;
+            for (Pet m : Pet.values()) if (m.grade == gr) have += dups(d, m);
+            g.set(46 + gr, Gui.button(have >= 3 ? Material.ENCHANTING_TABLE : Material.CRAFTING_TABLE, "&d&l등급 합성 " + GRADE[gr] + " &7→ " + GRADE[gr + 1],
+                    "&7남는 " + Text.strip(Text.c(GRADE[gr])) + " 펫 3마리 → " + Text.strip(Text.c(GRADE[gr + 1])) + " 펫 알 1개", "", "&f가진 재료: &e" + have + " / 3",
+                    have >= 3 ? "&e▶ 클릭" : "&8재료 부족"), e -> { gradeFuse(p, fg); open(p); });
+        }
+        g.set(50, Gui.button(Material.COOKIE, "&a&l펫 간식 사기", "&7요리 재료 상점에서 팝니다", "&e▶ 클릭"), e -> {
+            if (plugin.shops().get("cook") != null) plugin.shops().open(p, "cook", 0);
+        });
         int owned = 0;
         for (Pet pet : Pet.values()) if (owns(d, pet)) owned++;
         g.set(4, Gui.button(Material.BOOK, "&e&l펫 도감 &f" + owned + " / " + Pet.values().length,
@@ -269,13 +466,15 @@ public class PetManager implements Listener, CommandExecutor {
                 Location cl = d.getLocation();
                 if (cl.distanceSquared(want) > 0.0004 || Math.abs(cl.getYaw() - want.getYaw()) > 0.5) d.teleport(want);
                 if (tick % 10 == 0 && d instanceof ItemDisplay idp) {
-                    float sc = (float) plugin.getConfig().getDouble("pets.scale", 0.6);
+                    float sc = (float) (plugin.getConfig().getDouble("pets.scale", 0.6) * (1 + 0.15 * stage(plugin.data().get(p), pet)));
                     float bob = (float) (Math.sin((tick + 10 + p.getEntityId() * 7) / 9.0) * 0.12);
                     idp.setInterpolationDelay(0);
                     idp.setInterpolationDuration(10);
                     idp.setTransformation(new Transformation(new Vector3f(0, bob, 0), new AxisAngle4f((float) Math.PI, 0, 1, 0), new Vector3f(sc), new AxisAngle4f()));
                 }
             }
+            if (stage(plugin.data().get(p), pet) >= 2 && tick % 5 == 0)   // 각성한 펫: 반짝이
+                p.getWorld().spawnParticle(Particle.END_ROD, want.clone().add(0, 0.3, 0), 1, 0.2, 0.2, 0.2, 0.005);
             if (pet.grade >= 2 && tick % 8 == 0)
                 p.getWorld().spawnParticle(Particle.REDSTONE, want.clone().add(0, 0.1, 0), 2, 0.15, 0.1, 0.15, 0, new Particle.DustOptions(TRAIL[pet.grade], 0.8f));
             if (pet == Pet.PHOENIX && tick % 6 == 0) p.getWorld().spawnParticle(Particle.FLAME, want, 1, 0.1, 0.05, 0.1, 0.005);
@@ -301,7 +500,7 @@ public class PetManager implements Listener, CommandExecutor {
             model.setItemMeta(mm);
             x.setItemStack(model);
             x.setPersistent(false);
-            float sc = (float) plugin.getConfig().getDouble("pets.scale", 0.6);
+            float sc = (float) (plugin.getConfig().getDouble("pets.scale", 0.6) * (1 + 0.15 * stage(plugin.data().get(p), pet)));
             x.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f((float) Math.PI, 0, 1, 0), new Vector3f(sc), new AxisAngle4f()));
             x.getPersistentDataContainer().set(ENTITY, PersistentDataType.STRING, p.getUniqueId().toString());
         });

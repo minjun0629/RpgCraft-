@@ -1241,8 +1241,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_0.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1250,8 +1250,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_0.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1259,8 +1259,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_1.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1268,8 +1268,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_1.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1277,8 +1277,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_2.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1286,8 +1286,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_2.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1295,8 +1295,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_3.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1304,8 +1304,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_3.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1313,8 +1313,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_4.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1322,8 +1322,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_4.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1331,8 +1331,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_5.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1340,8 +1340,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_5.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1349,8 +1349,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_6.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1358,8 +1358,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_6.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1367,8 +1367,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_7.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1376,8 +1376,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_7.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1385,8 +1385,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_8.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1394,8 +1394,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_8.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1403,8 +1403,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_9.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1412,8 +1412,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_9.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1421,8 +1421,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_slash.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1430,8 +1430,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_slash.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1439,8 +1439,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_comma.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1448,8 +1448,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_comma.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1457,8 +1457,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_pct.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1466,8 +1466,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_pct.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1475,8 +1475,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_dot.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1484,8 +1484,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_dot.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1493,8 +1493,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_k_l.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1502,8 +1502,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_k_l.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1511,8 +1511,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_m_u.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1520,8 +1520,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_m_u.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1529,8 +1529,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_s_l.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1538,8 +1538,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_s_l.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1547,8 +1547,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_da_plus.png",
-      "ascent": -45,
-      "height": 5,
+      "ascent": -44,
+      "height": 7,
       "chars": [
         ""
       ]
@@ -1556,8 +1556,8 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:hud/h4_db_plus.png",
-      "ascent": -55,
-      "height": 5,
+      "ascent": -54,
+      "height": 7,
       "chars": [
         ""
       ]

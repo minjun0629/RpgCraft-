@@ -21,10 +21,14 @@ FILL_X, FILL_Y, FILL_W, FILL_H = 4, 31, 101, 7
 ASC = 22                       # 글자 기준선 = 틀 위에서 23px (이름 글자가 이름 칸 가운데에 오도록)
 EMB_X, EMB, EMB_H = 98, 86, 78   # 문장 위치 (이름 칸 끝에 겹침) · 폭 · 높이
 FRAME, BAR0, STEPS, EMB0, DIG0 = 0xE0A0, 0xE0A1, 25, 0xE0BB, 0xE0C0
+LV0, LV_CHARS, LV_H = 0xE0D0, "Lv.0123456789", 8   # v5.10.49 이름 칸의 레벨도 4R 풍 글꼴 (글자 색으로 금빛)
 DIGITS = "0123456789/,.kM"
 MARGIN, DROP = -21, 22           # 오른쪽 여백 · 아래로 내리는 양 (첫 보스바여도 위가 잘리지 않게)
 # 셰이더가 옮길 글자 색 — Java TargetHud 와 같아야 함 (흰 · 금 · 빨강 · 회색)
-MARK = ["fcfcf8", "fce080", "fc6060", "c8c8c4"]
+MARK = ["fcfcf8", "fce080", "fc6060", "c8c8c4", "f8fcfc"]
+# v5.10.49 그림(틀 · 바 · 문장) = fcfcf8 (뒤), 글자 · 숫자 · 초상 = 나머지 색 (앞으로 당김) — 같은 문자열이어도 글꼴 그림마다 따로 그려져
+# 바 채움이 숫자 위에 덮이던 문제 (텍스처별로 묶어 그리므로 순서가 보장되지 않음)
+FRONT = ["fce080", "fc6060", "c8c8c4", "f8fcfc"]
 
 SIL, SIL_L, SIL_D, OUT = (198, 202, 212, 255), (240, 242, 248, 255), (112, 116, 128, 255), (24, 22, 26, 255)
 
@@ -92,6 +96,65 @@ def fill(step):
     return img
 
 
+# ------------------------------------------------------------------ v5.10.49 보스 전용 (같은 높이 · 더 넓은 진홍 · 금 틀)
+B_FRAME, B_BAR0 = 0xE0E0, 0xE0E1        # 틀 · 바 채움 (0~25)
+B_BOX_X1, B_FILL_W, B_EXTRA = 156, 151, 50   # 이름 칸 · 바 오른쪽 끝, 바 폭, 일반 틀보다 왼쪽으로 더 나온 폭
+GOLD_, GOLD_L, GOLD_D = (232, 188, 84, 255), (255, 236, 160, 255), (120, 80, 24, 255)
+
+
+def gold_box(img, x0, y0, x1, y1, top, bottom):
+    d = ImageDraw.Draw(img)
+    d.rectangle([x0, y0, x1, y1], fill=OUT)
+    d.rectangle([x0 + 1, y0 + 1, x1 - 1, y1 - 1], fill=GOLD_)
+    d.line([(x0 + 1, y0 + 1), (x1 - 1, y0 + 1)], fill=GOLD_L)
+    d.line([(x0 + 1, y1 - 1), (x1 - 1, y1 - 1)], fill=GOLD_D)
+    d.rectangle([x0 + 2, y0 + 2, x1 - 2, y1 - 2], fill=OUT)
+    h = (y1 - 3) - (y0 + 3)
+    for y in range(y0 + 3, y1 - 2):
+        t = (y - y0 - 3) / max(1, h)
+        d.line([(x0 + 3, y), (x1 - 3, y)], fill=_lerp(top, bottom, t))
+
+
+def boss_frame():
+    W2 = B_BOX_X1 + 4
+    img = Image.new("RGBA", (W2, FRAME_H), (0, 0, 0, 0))
+    gold_box(img, BOX_X0, NAME_Y0, B_BOX_X1, NAME_Y1, (120, 34, 40, 240), (54, 12, 18, 240))
+    d = ImageDraw.Draw(img)
+    d.line([(BOX_X0 + 3, NAME_Y0 + 3), (B_BOX_X1 - 3, NAME_Y0 + 3)], fill=(176, 70, 70, 240))
+    gold_box(img, BOX_X0, BAR_Y0, B_BOX_X1, BAR_Y1, (26, 10, 12, 240), (14, 6, 8, 240))
+    # 왼쪽 끝 해골 · 뿔 장식 + 금 마름모
+    for (x, y, r) in ((BOX_X0 + 6, NAME_Y0, 6), (B_BOX_X1 - 30, NAME_Y0, 7), (B_BOX_X1 - 16, NAME_Y0 + 1, 5)):
+        d.polygon([(x, y - r), (x + r, y), (x, y + r), (x - r, y)], fill=OUT)
+        d.polygon([(x, y - r + 1), (x + r - 1, y), (x, y + r - 1), (x - r + 1, y)], fill=GOLD_)
+        d.polygon([(x, y - r + 2), (x + r - 2, y), (x, y)], fill=GOLD_L)
+    for k in range(1, 10):   # 바 마디 (틀 위 금 눈금)
+        x = 4 + round(k * B_FILL_W / 10)
+        d.line([(x, BAR_Y1 - 1), (x, BAR_Y1)], fill=GOLD_L)
+    d.point((W2 - 1, FRAME_H - 1), fill=(0, 0, 0, 1))
+    return img
+
+
+def boss_fill(step):
+    img = Image.new("RGBA", (B_FILL_W, FILL_H), (0, 0, 0, 0))
+    n = round(B_FILL_W * step / STEPS)
+    left, right = (200, 20, 34), (255, 120, 40)          # 진홍 → 주황
+    for x in range(B_FILL_W):
+        for y in range(FILL_H):
+            if x < n:
+                c = _lerp(left, right, x / (B_FILL_W - 1))
+                k = 1.3 if y <= 1 else 1.0 if y < FILL_H - 2 else 0.7
+                c = tuple(min(255, int(v * k)) for v in c)
+                if x % round(B_FILL_W / 10) == 0 and x > 0:
+                    c = tuple(int(v * 0.6) for v in c)
+                img.putpixel((x, y), c + (255,))
+            elif x == B_FILL_W - 1 and y == 0:
+                img.putpixel((x, y), (0, 0, 0, 1))
+    if 0 < n < B_FILL_W:
+        for y in range(FILL_H):
+            img.putpixel((n - 1, y), (255, 240, 200, 255))
+    return img
+
+
 def emblem(kind):
     S = 4
     N, NH = EMB * S, EMB_H * S
@@ -150,8 +213,8 @@ def emblem(kind):
     return out
 
 
-def digits(vanilla_dir):
-    """바닐라 ascii.png 에서 숫자 · 기호를 흰색으로 가져와 바 안 높이에 놓는 글리프 줄"""
+def digits_old(vanilla_dir):
+    """(v5.10.48 까지) 바닐라 ascii.png 숫자"""
     src = Image.open(os.path.join(vanilla_dir, "ascii.png")).convert("RGBA")
     cell = src.width // 16
     out = Image.new("RGBA", (cell * len(DIGITS), cell), (0, 0, 0, 0))
@@ -181,11 +244,21 @@ def providers(pack_dir, ns):
     for i, kind in enumerate(("normal", "elite", "boss")):
         emblem(kind).save(os.path.join(tex, "emblem_%s.png" % kind))
         out.append({"type": "bitmap", "file": ns + ":font/target/emblem_%s.png" % kind, "ascent": ASC + 13, "height": EMB_H, "chars": [chr(EMB0 + i)]})
-    vdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla")
-    dg, cell = digits(vdir)
-    dg.save(os.path.join(tex, "digits.png"))
-    out.append({"type": "bitmap", "file": ns + ":font/target/digits.png", "ascent": ASC - (FILL_Y + 1), "height": cell,
-                "chars": ["".join(chr(DIG0 + i) for i in range(len(DIGITS)))]})
+    boss_frame().save(os.path.join(tex, "boss_frame.png"))
+    out.append({"type": "bitmap", "file": ns + ":font/target/boss_frame.png", "ascent": ASC, "height": FRAME_H, "chars": [chr(B_FRAME)]})
+    for s in range(STEPS + 1):
+        boss_fill(s).save(os.path.join(tex, "boss_fill_%02d.png" % s))
+        out.append({"type": "bitmap", "file": ns + ":font/target/boss_fill_%02d.png" % s, "ascent": ASC - FILL_Y, "height": FILL_H, "chars": [chr(B_BAR0 + s)]})
+    import num4r   # v5.10.49 마크에이지 4R 풍 숫자 (높이 7 = 바 안쪽 높이)
+    for i, ch in enumerate(LV_CHARS):
+        n = {"L": "lv_l_u", "v": "lv_v_l", ".": "lv_dot"}.get(ch, "lv_" + ch)
+        num4r.glyph(ch, LV_H, stroke=1.0)[0].save(os.path.join(tex, n + ".png"))
+        out.append({"type": "bitmap", "file": ns + ":font/target/" + n + ".png", "ascent": 7, "height": LV_H, "chars": [chr(LV0 + i)]})
+    names = {"/": "slash", ",": "comma", ".": "dot"}
+    for i, ch in enumerate(DIGITS):
+        n = names.get(ch, ch if ch.isdigit() else ch.lower() + ("_u" if ch.isupper() else "_l"))
+        num4r.glyph(ch, FILL_H)[0].save(os.path.join(tex, "d_" + n + ".png"))
+        out.append({"type": "bitmap", "file": ns + ":font/target/d_" + n + ".png", "ascent": ASC - FILL_Y, "height": FILL_H, "chars": [chr(DIG0 + i)]})
     return out
 
 
@@ -195,6 +268,7 @@ def shader_snippet():
         return "vec3(%d.0, %d.0, %d.0)" % tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
     marks = " || ".join("all(lessThan(abs(c255 - %s), vec3(0.6)))" % vec(h) for h in MARK)
     shads = " || ".join("all(lessThan(abs(c255 - %s), vec3(0.6)))" % vec(_shadow(h)) for h in MARK)
+    front = " || ".join("all(lessThan(abs(c255 - %s), vec3(0.6)))" % vec(h) for h in FRONT)
     return """
     // RpgCraft: 4R-style target panel - text in reserved colors is anchored to the top-right of the screen, its shadow hidden.
     if (abs(gl_Position.w - 1.0) < 0.0001) {
@@ -204,9 +278,10 @@ def shader_snippet():
         } else if (%s) {
             gl_Position.x += 1.0 - (%d.0 * 0.5 + %d.0) * ProjMat[0][0];
             gl_Position.y += %d.0 * ProjMat[1][1];
+            if (%s) gl_Position.z -= 0.002;
         }
     }
-""" % (shads, marks, W, MARGIN, DROP)
+""" % (shads, marks, W, MARGIN, DROP, front)
 
 
 def preview(path):
@@ -217,11 +292,21 @@ def preview(path):
     bg.alpha_composite(frame(), (10, base_y - ASC))
     bg.alpha_composite(fill(25), (10 + FILL_X, base_y - ASC + FILL_Y))
     bg.alpha_composite(emblem("normal"), (10 + EMB_X, base_y - ASC - 13))
-    dg, cell = digits(vdir)
+    import num4r
     txt = "30/30"
-    x = 10 + (BOX_X0 + BOX_X1) // 2 - len(txt) * 3
-    for ch in txt:
-        i = DIGITS.index(ch)
-        bg.alpha_composite(dg.crop((i * cell, 0, (i + 1) * cell, cell)), (x, base_y - ASC + FILL_Y + 1))
-        x += 6
-    bg.resize((bg.width * 3, bg.height * 3), Image.NEAREST).save(path)
+    gl = [num4r.glyph(ch, FILL_H) for ch in txt]
+    x = 10 + (BOX_X0 + BOX_X1) // 2 - sum(w + 1 for _, w in gl) // 2
+    for img, w in gl:
+        bg.alpha_composite(img.resize((max(1, round(img.width * FILL_H / img.height)), FILL_H), Image.LANCZOS), (x, base_y - ASC + FILL_Y))
+        x += w + 1
+    # 보스 판 (아래 줄)
+    by = base_y + 62
+    bg2 = Image.new("RGBA", (bg.width, 70), (74, 110, 60, 255))
+    bx = 10
+    bg2.alpha_composite(boss_frame(), (bx, 8))
+    bg2.alpha_composite(boss_fill(17), (bx + FILL_X, 8 + FILL_Y))
+    bg2.alpha_composite(emblem("boss"), (bx + B_BOX_X1 - 8, 8 - 13))
+    full = Image.new("RGBA", (max(bg.width, bx + B_BOX_X1 + 90), bg.height + 70), (74, 110, 60, 255))
+    full.alpha_composite(bg, (0, 0))
+    full.alpha_composite(bg2.crop((0, 0, min(bg2.width, full.width), 70)), (0, bg.height))
+    full.resize((full.width * 3, full.height * 3), Image.NEAREST).save(path)

@@ -24,7 +24,8 @@ public class BossManager {
     private static class Active {
         LivingEntity entity;
         BossDefinition def;
-        BossBar bar;
+        BossBar bar;                // 보스 주변 플레이어 명단 (v5.10.49: 화면에는 안 보임 — 아래 두 바가 보임)
+        BossBar plainBar, panelBar; // v5.10.49 팩 없는 사람: 예전 보스바 · 팩 있는 사람: 오른쪽 위 보스 전용 판
         final Map<Integer, Long> next = new HashMap<>();
         long nextSignature;
         final long born = System.currentTimeMillis();
@@ -151,6 +152,9 @@ public class BossManager {
             if (fr != null) fr.setBaseValue(plugin.getConfig().getDouble("bosses.chase-radius", 48));
             // WHITE 는 나침반 문구 전용 투명 바(리소스팩)라서 보스는 파란 바로
             a.bar = Bukkit.createBossBar(Text.c("&c" + d.name), d.color == org.bukkit.boss.BarColor.WHITE ? org.bukkit.boss.BarColor.BLUE : d.color, BarStyle.SEGMENTED_10);
+            a.bar.setVisible(false);
+            a.plainBar = Bukkit.createBossBar(Text.c("&c" + d.name), d.color == org.bukkit.boss.BarColor.WHITE ? org.bukkit.boss.BarColor.BLUE : d.color, BarStyle.SEGMENTED_10);
+            a.panelBar = Bukkit.createBossBar("", org.bukkit.boss.BarColor.WHITE, BarStyle.SOLID);   // 흰 바 = 리소스팩에서 투명
             long now = System.currentTimeMillis();
             for (int i = 0; i < d.skills.size(); i++) a.next.put(i, now + d.skills.get(i).interval * 1000L);
             active.put(e.getUniqueId(), a);
@@ -188,14 +192,13 @@ public class BossManager {
         while (it.hasNext()) {
             Active a = it.next().getValue();
             if (a.entity == null || a.entity.isDead() || !a.entity.isValid()) {
-                a.bar.removeAll();
+                clearBars(a);
                 it.remove();
                 continue;
             }
             MobManager.MobState s = plugin.mobs().state(a.entity);
             double frac = Math.max(0, Math.min(1, s.hp / s.maxHp));
             phase(a, s, frac);
-            a.bar.setTitle(barTitle(a, s, frac));
             a.bar.setProgress(frac);
             auraTick(a);
             if (now >= a.staggerUntil) holdAltitude(a.entity);
@@ -204,9 +207,10 @@ public class BossManager {
             for (Player p : bl.getWorld().getPlayers()) if (p.getLocation().distanceSquared(bl) < 64 * 64) near.add(p);
             for (Player p : new ArrayList<>(a.bar.getPlayers())) if (!near.contains(p)) a.bar.removePlayer(p);
             for (Player p : near) a.bar.addPlayer(p);
-            a.bar.setVisible(true);
+            a.bar.setVisible(false);
+            showBars(a, s, frac, near);
             if (now - a.born > plugin.getConfig().getLong("bosses.lifetime-minutes", 30) * 60_000) {   // 등장 30분 뒤 사라짐 (주변에 아무도 없어도)
-                a.bar.removeAll();
+                clearBars(a);
                 a.entity.remove();
                 Text.announce(Text.PREFIX + Text.c("&7" + a.def.name + "&7이(가) 사라졌습니다..."));
                 continue;
@@ -231,7 +235,7 @@ public class BossManager {
             if (homeHere && target.getLocation().distanceSquared(a.home) > (leash + 6) * (leash + 6)) continue;   // 등장 위치에서 너무 먼 사람은 노리지 않음
             if (a.entity instanceof Mob mob && (mob.getTarget() == null || !(mob.getTarget() instanceof Player))) mob.setTarget(target);
             if (now - a.born > plugin.getConfig().getLong("bosses.lifetime-minutes", 30) * 60_000) {   // 등장 30분 뒤 사라짐
-                a.bar.removeAll();
+                clearBars(a);
                 a.entity.getWorld().spawnParticle(Particle.SMOKE_LARGE, a.entity.getLocation().add(0, 1, 0), 40, 1, 1, 1, 0.05);
                 a.entity.remove();
                 Text.announce(Text.PREFIX + Text.c("&7" + a.def.name + "&7이(가) 사라졌습니다..."));
@@ -1732,6 +1736,37 @@ public class BossManager {
     private static final String[] PHASE_NAME = {"", "", "분노", "광폭화"};
 
     /** 보스바 제목: 리소스팩 모드면 금속 틀 글리프로 바를 감싸고 이름·체력·단계를 가운데에 */
+    /** v5.10.49 보스 체력 표시: 리소스팩 → 오른쪽 위 보스 전용 판, 팩 없음 → 예전 보스바 */
+    private void showBars(Active a, MobManager.MobState s, double frac, Set<Player> near) {
+        boolean usePanel = plugin.getConfig().getBoolean("bosses.panel", true) && plugin.targetHud() != null;
+        Set<Player> packs = new HashSet<>(), plains = new HashSet<>();
+        for (Player p : near) (usePanel && plugin.pack().hasPack(p) ? packs : plains).add(p);
+        for (Player p : new ArrayList<>(a.plainBar.getPlayers())) if (!plains.contains(p)) a.plainBar.removePlayer(p);
+        for (Player p : new ArrayList<>(a.panelBar.getPlayers())) if (!packs.contains(p)) a.panelBar.removePlayer(p);
+        if (!plains.isEmpty()) {
+            String t = barTitle(a, s, frac);
+            if (!t.equals(a.plainBar.getTitle())) a.plainBar.setTitle(t);
+            a.plainBar.setProgress(frac);
+            for (Player p : plains) a.plainBar.addPlayer(p);
+        }
+        if (!packs.isEmpty()) {
+            String phase = a.phase >= 2 ? PHASE_NAME[a.phase] : "";
+            String t = plugin.targetHud().bossPanel(a.entity, Text.strip(Text.c(s.baseName)), phase, Math.max(0, s.hp), s.maxHp);
+            if (!t.equals(a.panelBar.getTitle())) a.panelBar.setTitle(t);
+            a.panelBar.setProgress(frac);
+            for (Player p : packs) {
+                a.panelBar.addPlayer(p);
+                plugin.targetHud().suppress(p);   // 일반 적 정보와 겹치지 않게
+            }
+        }
+    }
+
+    private void clearBars(Active a) {
+        a.bar.removeAll();
+        if (a.plainBar != null) a.plainBar.removeAll();
+        if (a.panelBar != null) a.panelBar.removeAll();
+    }
+
     private String barTitle(Active a, MobManager.MobState s, double frac) {
         String phase = a.phase >= 2 ? (a.phase == 3 ? " &4&l" : " &6&l") + "[" + PHASE_NAME[a.phase] + "]" : "";
         String text = Text.c("&c&l☠ " + s.baseName + phase + " &f" + Text.num(s.hp) + " &7/ " + Text.num(s.maxHp) + " &8(" + String.format("%.1f", frac * 100) + "%)");
@@ -1828,7 +1863,7 @@ public class BossManager {
         Active a = active.remove(e.getUniqueId());
         if (a != null) {
             victory(a);
-            a.bar.removeAll();
+            clearBars(a);
         }
         BossDefinition d = defs.get(s.bossId);
         if (d == null) return;
@@ -2037,7 +2072,7 @@ public class BossManager {
     public int killAll() {
         int n = 0;
         for (Active a : new ArrayList<>(active.values())) {
-            a.bar.removeAll();
+            clearBars(a);
             if (a.entity != null) a.entity.remove();
             n++;
         }
@@ -2046,6 +2081,6 @@ public class BossManager {
     }
 
     public void shutdown() {
-        for (Active a : active.values()) a.bar.removeAll();
+        for (Active a : active.values()) clearBars(a);
     }
 }

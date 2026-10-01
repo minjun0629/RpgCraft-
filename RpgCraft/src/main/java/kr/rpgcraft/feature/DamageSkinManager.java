@@ -85,11 +85,20 @@ public class DamageSkinManager implements Listener, CommandExecutor {
 
     /** 대미지 숫자 문자열 (공격한 플레이어의 스킨). null 이면 기본 글자로 */
     public String render(Player attacker, double amount, boolean crit) {
-        if (attacker == null || plugin.pack() == null) return null;
+        if (plugin.pack() == null) return null;
         if ("false".equalsIgnoreCase(plugin.getConfig().getString("resourcepack.gui-overlay", "auto"))) return null;
-        Skin s = selected(plugin.data().get(attacker));
-        if (s == Skin.BASIC) return null;
+        Skin s = attacker == null ? Skin.BASIC : selected(plugin.data().get(attacker));
         String num = Text.num(amount);
+        if (s == Skin.BASIC) {   // v5.10.49 기본도 마크에이지 4R 풍 숫자 (tools/num4r.py DMG_N · DMG_C)
+            if (!plugin.getConfig().getBoolean("combat.damage-4r-font", true)) return null;
+            StringBuilder b = new StringBuilder("§f");
+            int base = crit ? 0xE490 : 0xE480;
+            for (char c : num.toCharArray()) {
+                if (c >= '0' && c <= '9') b.append((char) (base + (c - '0')));
+                else if (c == ',') b.append((char) (base + 10));
+            }
+            return b.toString();
+        }
         StringBuilder sb = new StringBuilder("§f");
         int base = s.base() + (crit ? 16 : 0);
         if (crit) sb.append((char) (s.base() + 27));

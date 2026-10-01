@@ -113,7 +113,7 @@ public final class HudFont {
     // ------------------------------------------------------------------ v5.10.33 마크에이지 4R 풍 HUD (tools/ui4r.py hud_providers)
     private static final int H4_HP = 0xE400, H4_XP = 0xE420, H4_DA = 0xE450, H4_DB = 0xE470, H4_IA = 0xE490, H4_IB = 0xE4A0;
     private static final char H4_FRAME_L = '\uE440', H4_FRAME_R = '\uE441', H4_BADGE = '\uE442';
-    private static final int H4_BAR = 82, H4_FL = 118, H4_FR = 104, H4_BW = 26;
+    private static final int H4_BAR = 82, H4_FL = 118, H4_FR = 128, H4_BW = 26;
     private static final int I_SWORD = 0, I_CRIT = 1, I_DEF = 2, I_POTION = 3, I_SKILL = 4, I_SKILL_CD = 5, I_QUICK = 6, I_QUICK_CD = 7;
 
     private static String digits4(String s, boolean top, int[] cursor) {
@@ -123,9 +123,13 @@ public final class HudFont {
             int i = CHARS.indexOf(c);
             if (i < 0) continue;
             sb.append((char) (base + i));
-            cursor[0] += glyphWidth(c) + 1;
+            cursor[0] += Num4R.adv(Num4R.HUD_CHARS, Num4R.HUD_W, c);   // v5.10.49 4R 풍 숫자 폭
         }
         return sb.toString();
+    }
+
+    private static int digitsWidth4(String s) {
+        return Num4R.width(Num4R.HUD_CHARS, Num4R.HUD_W, s);
     }
 
     private static String icon4(int kind, boolean top, int[] cursor) {
@@ -150,28 +154,28 @@ public final class HudFont {
         sb.append(moveTo(bar, cur)).append(glyph((char) (H4_HP + hs), H4_BAR, cur));
         sb.append(moveTo(bar, cur)).append(glyph((char) (H4_XP + xs), H4_BAR, cur));
         String hpText = compact(hp) + "/" + compact(maxHp);
-        sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth(hpText) / 2, cur)).append(digits4(hpText, true, cur));
+        sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth4(hpText) / 2, cur)).append(digits4(hpText, true, cur));
         String xpText = String.format("%.1f%%", Math.max(0, Math.min(99.9, xpRatio * 100)));
-        sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth(xpText) / 2, cur)).append(digits4(xpText, false, cur));
+        sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth4(xpText) / 2, cur)).append(digits4(xpText, false, cur));
         int rs = (int) Math.round(Math.max(0, Math.min(1, xpRatio)) * 24);   // v5.10.45 경험치 고리 (tools/ui4r.py HUD_BADGE_XP)
         sb.append(moveTo(badge, cur)).append(glyph((char) (0xE4C0 + rs), H4_BW, cur));
         String lv = String.valueOf(Math.min(9999, level));
-        sb.append(moveTo(badge + H4_BW / 2 - digitsWidth(lv) / 2, cur)).append(digits4(lv, false, cur));
+        sb.append(moveTo(badge + H4_BW / 2 - digitsWidth4(lv) / 2, cur)).append(digits4(lv, false, cur));
         // 오른쪽 판
         int fr = 91 + 4;
         sb.append(moveTo(fr, cur)).append(glyph(H4_FRAME_R, H4_FR, cur));
         int x = fr + 8;
         sb.append(moveTo(x, cur)).append(icon4(I_SWORD, true, cur)).append(digits4(compact(atk), true, cur));
-        sb.append(moveTo(x + 36, cur)).append(icon4(I_CRIT, true, cur)).append(digits4(String.format("%.1f%%", crit), true, cur));
+        sb.append(moveTo(x + 40, cur)).append(icon4(I_CRIT, true, cur)).append(digits4(String.format("%.1f%%", crit), true, cur));
         if (quickCd >= 0) {
-            sb.append(moveTo(x + 70, cur));
+            sb.append(moveTo(x + 82, cur));
             if (quickCd > 0) sb.append(icon4(I_QUICK_CD, true, cur)).append(digits4(quickCd + "s", true, cur));
             else sb.append(icon4(I_QUICK, true, cur));
         }
         sb.append(moveTo(x, cur)).append(icon4(I_DEF, false, cur)).append(digits4(String.format("%.1f%%", def), false, cur));
-        sb.append(moveTo(x + 36, cur)).append(icon4(I_POTION, false, cur)).append(digits4(String.valueOf(Math.min(999, potions)), false, cur));
+        sb.append(moveTo(x + 40, cur)).append(icon4(I_POTION, false, cur)).append(digits4(String.valueOf(Math.min(999, potions)), false, cur));
         if (skillCd >= 0) {
-            sb.append(moveTo(x + 62, cur));
+            sb.append(moveTo(x + 82, cur));
             if (skillCd > 0) sb.append(icon4(I_SKILL_CD, false, cur)).append(digits4(skillCd + "s", false, cur));
             else sb.append(icon4(I_SKILL, false, cur));
         }

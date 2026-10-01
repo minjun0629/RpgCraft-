@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/relic_axe",
   "textures": {
-    "0": "rpgcraft:item/relic_axe_e7",
-    "particle": "rpgcraft:item/relic_axe_e7"
+    "0": "rpgcraft:item/wvox/relic_axe_e7",
+    "particle": "rpgcraft:item/wvox/relic_axe_e7"
   }
 }

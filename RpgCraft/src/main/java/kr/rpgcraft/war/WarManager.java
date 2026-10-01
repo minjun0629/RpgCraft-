@@ -147,6 +147,10 @@ public class WarManager {
         else { z1 = base.getBlockZ() - wd / 2; z2 = z1 + wd - 1; x1 = fx > 0 ? base.getBlockX() : base.getBlockX() - t + 1; x2 = x1 + t - 1; }
         World w = p.getWorld();
         int y1 = base.getBlockY(), y2 = y1 + h - 1;
+        // v5.10.15 성문 · 뚫린 입구 앞이면 그 입구 크기에 딱 맞춰 막음 (소형: 너비 7 · 높이 9 까지, 대형: 너비 11 · 높이 13 까지)
+        int[] fit = fitOpening(w, p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ(), fx, fz, alongX, large ? 11 : 7, large ? 13 : 9);
+        boolean fitted = fit != null;
+        if (fitted) { x1 = fit[0]; y1 = fit[1]; z1 = fit[2]; x2 = fit[3]; y2 = fit[4]; z2 = fit[5]; h = y2 - y1 + 1; }
         Location min = new Location(w, x1, y1, z1), max2 = new Location(w, x2, y2, z2);
         // 자리 확인: 모두 성 안 · 빈 공간(풀 · 꽃 정도는 괜찮음) · 다른 성벽 · 신호기와 겹치지 않음 · 사람이 서 있지 않음
         String bad = null;
@@ -156,7 +160,9 @@ public class WarManager {
                 for (int y = y1; y <= y2; y++) {
                     Block b = w.getBlockAt(x, y, z);
                     if (!b.isPassable() || b.isLiquid()) { bad = "막힌 곳이 있습니다 (" + x + ", " + y + ", " + z + ")"; break; }
-                    if (castleAt(b.getLocation()) != null) { bad = "다른 성벽 · 신호기와 겹칩니다"; break; }
+                    if (c.isBeacon(b.getLocation())) { bad = "신호기와 겹칩니다"; break; }
+                    Castle.Wall on = c.wallAt(b.getLocation());
+                    if (on != null && (!fitted || on.id.startsWith("guild"))) { bad = "다른 성벽과 겹칩니다"; break; }
                 }
             }
         if (bad == null)
@@ -171,7 +177,8 @@ public class WarManager {
             long now = System.currentTimeMillis();
             if (prev == null || now - prev.at() > 5000 || !prev.castle().equals(c.id) || !prev.min().equals(min) || !prev.max().equals(max2)) {
                 wallPlans.put(p.getUniqueId(), new WallPlan(c.id, min, max2, now));
-                Text.actionBar(p, "&a초록 테두리 자리에 성벽을 세웁니다. &e5초 안에 한 번 더 우클릭 &7(자리를 옮기면 다시 미리보기)");
+                Text.actionBar(p, (fitted ? "&b성문 크기에 맞춤 (" + (Math.abs(alongX ? x2 - x1 : z2 - z1) + 1) + "×" + h + ") &a" : "&a초록 테두리 자리에 성벽을 세웁니다. ")
+                        + "&e5초 안에 한 번 더 우클릭 &7(자리를 옮기면 다시 미리보기)");
                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.4f);
                 return;
             }
@@ -185,7 +192,8 @@ public class WarManager {
                 for (int y = y1; y <= y2; y++) {
                     int along = alongX ? x - x1 : z - z1;
                     Material m;
-                    if (y == y2) m = along % 2 == 0 ? Material.STONE_BRICKS : Material.AIR;
+                    if (y == y2 && !fitted) m = along % 2 == 0 ? Material.STONE_BRICKS : Material.AIR;
+                    else if (fitted && y == y2) m = Material.STONE_BRICKS;
                     else if (y == y1) m = Material.CHISELED_STONE_BRICKS;
                     else { double q = r.nextDouble(); m = q < 0.12 ? Material.MOSSY_STONE_BRICKS : q < 0.24 ? Material.CRACKED_STONE_BRICKS : Material.STONE_BRICKS; }
                     w.getBlockAt(x, y, z).setType(m, false);
@@ -193,11 +201,53 @@ public class WarManager {
         int n = 1;
         while (true) { String cand = "guild" + n; if (c.walls.stream().noneMatch(x -> x.id.equals(cand))) break; n++; }
         double hp = large ? plugin.getConfig().getDouble("war.guild-wall-hp-large", 60000) : plugin.getConfig().getDouble("war.guild-wall-hp-small", 30000);
-        addWall(c, "guild" + n, min, new Location(w, x2, y2 - 1, z2), hp);   // 톱니 윗줄 사이 빈칸은 성벽 범위에서 뺌
+        addWall(c, "guild" + n, min, new Location(w, x2, fitted ? y2 : y2 - 1, z2), hp);   // 톱니 윗줄 사이 빈칸은 성벽 범위에서 뺌 (성문 막이는 꽉 채움)
         Location mid = min.clone().add((x2 - x1) / 2.0 + 0.5, h / 2.0, (z2 - z1) / 2.0 + 0.5);
         w.spawnParticle(Particle.BLOCK_CRACK, mid, 60, (x2 - x1) / 2.0, h / 2.0, (z2 - z1) / 2.0, Material.STONE_BRICKS.createBlockData());
         w.playSound(mid, Sound.BLOCK_ANVIL_LAND, 1f, 0.6f);
         Text.msg(p, "&a" + c.name + "에 성벽 &eguild" + n + " &a을(를) 세웠습니다. &7(체력 " + Text.num(hp) + " · 이 성의 길드 성벽 " + (mine + 1) + "/" + max + ")");
+    }
+
+    /**
+     * v5.10.15 앞쪽(최대 8칸)에서 양옆 · 위가 막힌 통로(성문)를 찾아 그 크기를 돌려줌 {x1,y1,z1,x2,y2,z2}, 없거나 너무 크면 null.
+     * 통로 깊이(성벽 두께)만큼 꽉 채움 (최대 6칸)
+     */
+    private static int[] fitOpening(World w, int px, int py, int pz, int fx, int fz, boolean alongX, int maxW, int maxH) {
+        int ax = alongX ? 1 : 0, az = alongX ? 0 : 1;
+        for (int s = 1; s <= 8; s++) {
+            int cx = px + fx * s, cz = pz + fz * s;
+            if (!open(w, cx, py, cz)) continue;
+            int l = 0, r = 0;
+            while (l <= maxW && open(w, cx - ax * (l + 1), py, cz - az * (l + 1))) l++;
+            while (r <= maxW && open(w, cx + ax * (r + 1), py, cz + az * (r + 1))) r++;
+            int width = l + r + 1;
+            if (width > maxW || width < 2) continue;
+            int h = 0;
+            while (h <= maxH && open(w, cx, py + h, cz)) h++;
+            if (h > maxH || h < 2) continue;
+            // 양옆 기둥이 입구 높이만큼 막혀 있어야 성문으로 봄
+            boolean framed = true;
+            for (int y = py; y < py + h && framed; y++)
+                framed = !open(w, cx - ax * (l + 1), y, cz - az * (l + 1)) && !open(w, cx + ax * (r + 1), y, cz + az * (r + 1));
+            if (!framed) continue;
+            int depth = 0;   // 양옆과 위가 막힌 채로 이어지는 만큼 (성벽 두께)
+            while (depth < 6) {
+                int dx = cx + fx * depth, dz = cz + fz * depth;
+                if (!open(w, dx, py, dz) || open(w, dx - ax * (l + 1), py, dz - az * (l + 1)) || open(w, dx + ax * (r + 1), py, dz + az * (r + 1)) || open(w, dx, py + h, dz)) break;
+                depth++;
+            }
+            if (depth == 0) continue;
+            int ex = cx + fx * (depth - 1), ez = cz + fz * (depth - 1);
+            int x1 = Math.min(cx - ax * l, ex - ax * l), x2 = Math.max(cx + ax * r, ex + ax * r);
+            int z1 = Math.min(cz - az * l, ez - az * l), z2 = Math.max(cz + az * r, ez + az * r);
+            return new int[]{x1, py, z1, x2, py + h - 1, z2};
+        }
+        return null;
+    }
+
+    private static boolean open(World w, int x, int y, int z) {
+        Block b = w.getBlockAt(x, y, z);
+        return b.isPassable() && !b.isLiquid();
     }
 
     private void outline(Location min, Location max, Color col) {
@@ -264,8 +314,52 @@ public class WarManager {
         return false;
     }
 
+    // ------------------------------------------------------------------ v5.10.20 성 소유 혜택
+    /** 길드가 가진 성 수 */
+    public int ownedCount(String guild) {
+        int n = 0;
+        for (Castle c : castles.values()) if (guild != null && guild.equals(c.owner)) n++;
+        return n;
+    }
+
+    /** 성을 가진 길드의 길드원 버프 (성 하나당, 최대 2개까지 겹침) */
+    public kr.rpgcraft.stat.StatMap castleBonus(UUID id) {
+        kr.rpgcraft.stat.StatMap m = new kr.rpgcraft.stat.StatMap();
+        Guild g = plugin.guilds().of(id);
+        if (g == null) return m;
+        int n = Math.min(plugin.getConfig().getInt("war.castle-buff-max-stack", 2), ownedCount(g.name));
+        if (n <= 0) return m;
+        var cf = plugin.getConfig();
+        double atk = cf.getDouble("war.castle-buff.atk-pct", 5) * n;
+        m.add(kr.rpgcraft.stat.Stat.STR_PCT, atk).add(kr.rpgcraft.stat.Stat.DEX_PCT, atk).add(kr.rpgcraft.stat.Stat.ADV_PCT, atk);
+        m.add(kr.rpgcraft.stat.Stat.HP_PCT, cf.getDouble("war.castle-buff.hp-pct", 5) * n);
+        m.add(kr.rpgcraft.stat.Stat.EXP_PCT, cf.getDouble("war.castle-buff.exp-pct", 10) * n);
+        return m;
+    }
+
+    /** 하루에 한 번 성 수입 (길드 금고 + 길드 경험치) */
+    private void payCastles() {
+        String today = java.time.LocalDate.now().toString();
+        long income = plugin.getConfig().getLong("war.castle-daily-income", 3_000_000);
+        boolean changed = false;
+        for (Castle c : castles.values()) {
+            if (c.owner == null || today.equals(c.paidDay) || wars.containsKey(c.id)) continue;
+            Guild g = plugin.guilds().get(c.owner);
+            c.paidDay = today;
+            changed = true;
+            if (g == null) continue;
+            g.bank += income;
+            plugin.guilds().addExp(g, plugin.getConfig().getLong("war.castle-daily-guild-exp", 500));
+            g.broadcast(Text.PREFIX + Text.c("&6🏰 " + c.name + " 성 수입 &e+" + Text.money(income) + " &7(길드 금고) · 길드 경험치 +" + plugin.getConfig().getLong("war.castle-daily-guild-exp", 500)));
+        }
+        if (changed) { save(); plugin.guilds().save(); }
+    }
+
+    private long nextPay;
+
     private void tick() {
         long now = System.currentTimeMillis();
+        if (now >= nextPay) { nextPay = now + 60_000; payCastles(); }
         for (War w : new ArrayList<>(wars.values())) {
             for (Player o : Bukkit.getOnlinePlayers()) if (!w.bar.getPlayers().contains(o)) w.bar.addPlayer(o);
             if (!w.started) {
@@ -347,15 +441,138 @@ public class WarManager {
             return true;
         }
         long now = System.currentTimeMillis();
+        if (plugin.getConfig().getBoolean("war.wall-game", true)) {   // v5.10.15 타이밍 미니게임으로만 성벽 피해
+            wallGame(p, c, w, wall, block, tool, now);
+            return true;
+        }
         if (hitCooldown.getOrDefault(p.getUniqueId(), 0L) > now) return true;
         hitCooldown.put(p.getUniqueId(), now + plugin.getConfig().getLong("war.hit-interval-ms", 400));
         double dmg = ItemData.value(tool) * plugin.getConfig().getDouble("war.wall-damage-mult", 1.0);
+        damageWall(p, c, w, wall, block, dmg, "");
+        return true;
+    }
+
+    private void damageWall(Player p, Castle c, War w, Castle.Wall wall, Block block, double dmg, String extra) {
+        Guild owner = c.owner == null ? null : plugin.guilds().get(c.owner);   // v5.10.20 길드 스킬 견고한 성벽
+        if (owner != null && owner.skill("BULWARK") > 0) dmg *= 1 - 0.06 * owner.skill("BULWARK");
         wall.hp -= dmg;
         block.getWorld().spawnParticle(Particle.BLOCK_CRACK, block.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3, block.getBlockData());
         block.getWorld().playSound(block.getLocation(), Sound.BLOCK_STONE_HIT, 1f, 0.8f);
-        Text.actionBar(p, "&e성벽 " + wall.id + " &c❤ " + Text.num(Math.max(0, wall.hp)) + " / " + Text.num(wall.maxHp) + " &7(-" + Text.num(dmg) + ")");
+        Text.actionBar(p, extra + "&e성벽 " + wall.id + " &c❤ " + Text.num(Math.max(0, wall.hp)) + " / " + Text.num(wall.maxHp) + " &7(-" + Text.num(dmg) + ")");
         if (wall.hp <= 0) breakWall(c, w, wall);
-        return true;
+    }
+
+    // ------------------------------------------------------------------ v5.10.15 성벽 부수기 미니게임 (타이밍 게이지)
+    private static final int BAR = 31;
+
+    private static final class WallGame {
+        String castle, wall;
+        Location block;
+        long start, lastClick, lockUntil, showUntil;
+        int combo, zone, half, perfect;
+        double speed;   // 칸 / 틱
+        int tier;
+    }
+
+    private final Map<UUID, WallGame> games = new HashMap<>();
+    private org.bukkit.scheduler.BukkitTask gameTask;
+
+    /** 좌클릭 1번: 게이지 시작 / 게이지가 떠 있을 때 좌클릭: 표시가 초록 칸이면 명중 (금색 칸 = 치명타) */
+    private void wallGame(Player p, Castle c, War w, Castle.Wall wall, Block block, ItemStack tool, long now) {
+        WallGame g = games.get(p.getUniqueId());
+        int tier = Math.max(1, ItemData.template(tool) == null ? 1 : ItemData.template(tool).tier);
+        if (g == null || !g.castle.equals(c.id) || now - g.lastClick > 5000) {
+            g = new WallGame();
+            g.castle = c.id;
+            g.tier = tier;
+            g.start = now;
+            games.put(p.getUniqueId(), g);
+            g.wall = wall.id;
+            g.block = block.getLocation();
+            g.lastClick = now;
+            newZone(g);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1f, 1.2f);
+            ensureGameTask();
+            return;
+        }
+        g.wall = wall.id;
+        g.block = block.getLocation();
+        g.tier = tier;
+        if (now < g.lockUntil || now - g.lastClick < 150) return;   // 빗나간 뒤 잠깐 · 너무 빠른 연타
+        g.lastClick = now;
+        int pos = marker(g, now);
+        int d = Math.abs(pos - g.zone);
+        double base = ItemData.value(tool) * plugin.getConfig().getDouble("war.wall-damage-mult", 1.0);
+        if (d <= g.perfect) {
+            g.combo++;
+            double dmg = base * plugin.getConfig().getDouble("war.wall-game-perfect-mult", 2.5) * comboMult(g);
+            p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.7f, 1.6f);
+            block.getWorld().spawnParticle(Particle.CRIT, block.getLocation().add(0.5, 0.5, 0.5), 20, 0.4, 0.4, 0.4, 0.2);
+            damageWall(p, c, w, wall, block, dmg, "&6&l완벽! &e콤보 " + g.combo + " &8| ");
+            g.showUntil = now + 450;
+        } else if (d <= g.half) {
+            g.combo++;
+            double dmg = base * plugin.getConfig().getDouble("war.wall-game-hit-mult", 1.5) * comboMult(g);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.0f + Math.min(1f, g.combo * 0.08f));
+            damageWall(p, c, w, wall, block, dmg, "&a명중 &e콤보 " + g.combo + " &8| ");
+            g.showUntil = now + 450;
+        } else {
+            g.combo = 0;
+            g.lockUntil = now + 900;
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.6f);
+            Text.actionBar(p, "&c빗나감! &7(잠깐 쉬었다가 다시)");
+        }
+        newZone(g);
+    }
+
+    private double comboMult(WallGame g) {
+        return Math.min(2.0, 1 + 0.1 * Math.max(0, g.combo - 1));
+    }
+
+    /** 성공 칸을 새 자리에 · 도구가 좋을수록 넓고, 콤보가 쌓일수록 표시가 빨라짐 */
+    private void newZone(WallGame g) {
+        java.util.concurrent.ThreadLocalRandom r = java.util.concurrent.ThreadLocalRandom.current();
+        g.half = g.tier >= 3 ? 3 : g.tier == 2 ? 2 : 1;
+        g.perfect = 0;
+        g.zone = r.nextInt(g.half + 2, BAR - g.half - 2);
+        g.speed = Math.min(2.2, 0.9 + 0.06 * g.combo);
+    }
+
+    /** 표시 위치: 게이지를 왕복 (0 ~ BAR-1) */
+    private static int marker(WallGame g, long now) {
+        double t = (now - g.start) / 50.0 * g.speed;
+        int period = (BAR - 1) * 2;
+        int k = (int) (t % period);
+        return k < BAR ? k : period - k;
+    }
+
+    private void ensureGameTask() {
+        if (gameTask != null) return;
+        gameTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            long now = System.currentTimeMillis();
+            for (Iterator<Map.Entry<UUID, WallGame>> it = games.entrySet().iterator(); it.hasNext(); ) {
+                Map.Entry<UUID, WallGame> en = it.next();
+                Player p = Bukkit.getPlayer(en.getKey());
+                WallGame g = en.getValue();
+                War w = wars.get(g.castle);
+                if (p == null || w == null || !w.started || now - g.lastClick > 5000
+                        || !p.getWorld().equals(g.block.getWorld()) || p.getLocation().distanceSquared(g.block) > 64) { it.remove(); continue; }
+                if (now < g.lockUntil) continue;
+                if (now < g.showUntil) continue;   // 방금 맞힌 결과 글자를 잠깐 보여 줌
+                int pos = marker(g, now);
+                StringBuilder sb = new StringBuilder("&8[");
+                for (int i = 0; i < BAR; i++) {
+                    int d = Math.abs(i - g.zone);
+                    if (i == pos) sb.append("&f&l|");
+                    else if (d <= g.perfect) sb.append("&6|");
+                    else if (d <= g.half) sb.append("&a|");
+                    else sb.append("&7|");
+                }
+                sb.append("&8] &e콤보 ").append(g.combo).append(" &7좌클릭!");
+                Text.actionBar(p, sb.toString());
+            }
+            if (games.isEmpty()) { gameTask.cancel(); gameTask = null; }
+        }, 1L, 1L);
     }
 
     private void breakWall(Castle c, War w, Castle.Wall wall) {
@@ -416,6 +633,15 @@ public class WarManager {
         }
         long reward = plugin.getConfig().getLong("war.win-reward", 10_000_000);
         if (att != null) att.bank += reward;
+        c.paidDay = java.time.LocalDate.now().toString();   // v5.10.20 점령한 날은 수입이 이미 들어온 것으로 (바로 또 받지 않게)
+        if (att != null) {
+            plugin.guilds().addExp(att, plugin.getConfig().getLong("war.win-guild-exp", 2000));
+            for (Player o : att.online()) {
+                if (plugin.seasonPass() != null) plugin.seasonPass().add(o, 300, "공성전 승리");
+                plugin.stats().refresh(o);   // 성 소유 버프
+            }
+        }
+        if (def != null) for (Player o : def.online()) plugin.stats().refresh(o);
         end(w);
         save();
         plugin.guilds().save();
@@ -648,6 +874,7 @@ public class WarManager {
             c.beacon = Locs.parse(s.getString("beacon"));
             c.attackerSpawn = Locs.parse(s.getString("attacker-spawn"));
             c.defenderSpawn = Locs.parse(s.getString("defender-spawn"));
+            c.paidDay = s.getString("paid-day");
             c.center = Locs.parse(s.getString("area.center"));
             c.r = s.getInt("area.r");
             c.down = s.getInt("area.down");
@@ -677,6 +904,7 @@ public class WarManager {
             y.set(c.id + ".beacon", c.beacon == null ? null : Locs.block(c.beacon));
             y.set(c.id + ".attacker-spawn", c.attackerSpawn == null ? null : Locs.full(c.attackerSpawn));
             y.set(c.id + ".defender-spawn", c.defenderSpawn == null ? null : Locs.full(c.defenderSpawn));
+            y.set(c.id + ".paid-day", c.paidDay);
             y.set(c.id + ".area", null);
             if (c.center != null && c.r > 0) {
                 y.set(c.id + ".area.center", Locs.block(c.center));

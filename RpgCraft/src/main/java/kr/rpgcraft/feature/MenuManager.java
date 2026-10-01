@@ -241,7 +241,9 @@ public class MenuManager implements Listener {
                     e -> plugin.accessories().open(p));
             set(43, icon(Material.SUNFLOWER, "&6&l행운의 룰렛", List.of("&7게임 머니로 배율에 도전!", "&7×0 ~ ×10", "&e▶ 클릭")), e -> plugin.casino().open(p));
             set(39, icon(Material.COMPARATOR, "&7&l설정", List.of("&7사이드바 · HUD · 대미지 표시 · 효과음", "&e▶ 클릭")), e -> new SettingsGui(p).open(p));
-            set(40, icon(Material.IRON_SWORD, "&6&l직업", List.of("&7현재: &f" + plugin.jobs().title(d), "&7Lv.10 기초 직업 · Lv.40 전직", "&e▶ 클릭")), e -> plugin.jobs().open(p));
+            boolean hj = kr.rpgcraft.world.HiddenJobManager.of(d) != null;   // v5.10.17 히든 직업이면 아이콘 · 설명도 다르게
+            set(40, icon(hj ? Material.WITHER_SKELETON_SKULL : Material.IRON_SWORD, hj ? "&5&l✦ 히든 직업" : "&6&l직업",
+                    hj ? List.of("&7현재: &5" + plugin.jobs().title(d), "&8숨겨진 길을 걷는 자", "&e▶ 클릭") : List.of("&7현재: &f" + plugin.jobs().title(d), "&7Lv.10 기초 직업 · Lv.40 전직", "&e▶ 클릭")), e -> plugin.jobs().open(p));
             set(41, icon(Material.OAK_SIGN, "&f&l도움말", List.of("&7조작키와 시스템 안내", "&e▶ 클릭")), e -> new HelpGui(p).open(p));
             set(49, Gui.button(Material.BARRIER, "&c닫기"), e -> p.closeInventory());
             border(this, 6);

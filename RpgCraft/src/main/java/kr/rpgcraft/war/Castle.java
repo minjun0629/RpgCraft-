@@ -42,6 +42,8 @@ public class Castle {
     /** v5.10.10 자동으로 지은 성의 부지 (철거할 때 씀): 한가운데 · 가로세로 반지름 · 아래/위 높이 (r = 0 이면 모름) */
     public Location center;
     public int r, down, up;
+    /** v5.10.20 마지막으로 성 수입을 준 날 (yyyy-MM-dd) */
+    public String paidDay;
     public final List<Wall> walls = new ArrayList<>();
 
     public Castle(String id, String name) {
@@ -49,9 +51,11 @@ public class Castle {
         this.name = name;
     }
 
+    /** 이 블록이 속한 성벽. 겹치면 가장 작은 성벽 (v5.10.15: 성문을 막은 길드 성벽이 큰 성벽 구간 안에 있어도 그 성벽이 맞음) */
     public Wall wallAt(Location l) {
-        for (Wall w : walls) if (w.contains(l)) return w;
-        return null;
+        Wall best = null;
+        for (Wall w : walls) if (w.contains(l) && (best == null || w.volume() < best.volume())) best = w;
+        return best;
     }
 
     public int brokenWalls() {

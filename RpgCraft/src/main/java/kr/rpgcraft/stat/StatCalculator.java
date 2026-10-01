@@ -111,6 +111,11 @@ public class StatCalculator {
             if (plugin.accessories() != null) pre.addAll(plugin.accessories().bonus(d));
             pre.addAll(plugin.jobs().bonus(d));
             String problem = requirementProblem(d, ItemData.baseStats(main), true, 0, 0, 0);   // 직접 찍은 스탯만
+            if (problem == null && mt.id.startsWith("hjw_")) {   // v5.10.20 히든 직업 전용 무기
+                var hj = kr.rpgcraft.world.HiddenJobManager.of(d);
+                String want = mt.id.substring(4, 5).toUpperCase(java.util.Locale.ROOT);
+                if (hj == null || !hj.line().equals(want)) problem = "히든 직업 전용 무기";
+            }
             if (problem == null) {
                 t.addAll(withoutReq(ItemData.effectiveStats(main)));
                 if (mt.weaponClass == kr.rpgcraft.item.WeaponClass.SPEAR)   // 창 방어 관통 너프
@@ -193,6 +198,9 @@ public class StatCalculator {
         if (d.counter("buff_speed") > nowMs) t.add(SPEED, 15);
         if (d.counter("buff_exp") > nowMs) t.add(EXP_PCT, 50);
         t.addAll(plugin.guilds().totemStats(p.getUniqueId()));
+        t.addAll(plugin.guilds().skillStats(p.getUniqueId()));   // v5.10.20 길드 스킬
+        if (plugin.wars() != null) t.addAll(plugin.wars().castleBonus(p.getUniqueId()));   // v5.10.20 성 소유 혜택
+        if (plugin.cooking() != null) t.addAll(plugin.cooking().bonus(d));   // v5.10.20 요리 버프
 
         s.str = Math.max(0, (d.str + t.get(STR)) * (1 + t.get(STR_PCT) / 100));
         s.dex = Math.max(0, (d.dex + t.get(DEX)) * (1 + t.get(DEX_PCT) / 100));

@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/shield_20",
   "textures": {
-    "0": "rpgcraft:item/shield_20_e7",
-    "particle": "rpgcraft:item/shield_20_e7"
+    "0": "rpgcraft:item/wvox/shield_20_e7",
+    "particle": "rpgcraft:item/wvox/shield_20_e7"
   }
 }

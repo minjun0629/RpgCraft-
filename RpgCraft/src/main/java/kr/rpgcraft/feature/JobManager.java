@@ -175,6 +175,7 @@ public class JobManager {
         PlayerData d = plugin.data().get(p);
         JobSkill js = jobSkill(base(d), sub(d));
         var hj = kr.rpgcraft.world.HiddenJobManager.of(d);
+        if (hj != null && hj.line().equals("D") && plugin.chrono() != null) return plugin.chrono().rewind(p);   // v5.10.18 시간술사: 되감기
         if (hj != null) js = hj.line().equals("A")
                 ? new JobSkill(hj.tier() >= 3 ? "명계 강림" : "영혼 수확", kr.rpgcraft.feature.SkillBook.Shape.PULL, kr.rpgcraft.feature.SkillBook.Effect.DARK, 2.4 + hj.tier() * 0.5, 9 + hj.tier(), 11)
                 : hj.line().equals("C")
@@ -412,6 +413,7 @@ public class JobManager {
 
     // ------------------------------------------------------------------ GUI
     public void open(Player p) {
+        if (hidden(plugin.data().get(p)) && plugin.hiddenJobs() != null) { plugin.hiddenJobs().openJobWindow(p); return; }   // v5.10.17 히든 직업 전용 직업창
         new JobGui(p).open(p);
     }
 

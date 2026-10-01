@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.10.14'
+version: '5.10.29'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -158,6 +158,15 @@ commands:
   legion:
     description: 네크로맨서 군단
     aliases: [군단]
+  mail:
+    description: 우편함
+    aliases: [우편, 우편함]
+  seasonpass:
+    description: 시즌 패스
+    aliases: [시즌패스, 패스, 배틀패스]
+  cook:
+    description: 요리
+    aliases: [요리]
   limitbreak:
     description: 한계 돌파
     aliases: [한계돌파]

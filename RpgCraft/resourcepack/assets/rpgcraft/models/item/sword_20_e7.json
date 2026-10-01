@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/sword_20",
   "textures": {
-    "0": "rpgcraft:item/sword_20_e7",
-    "particle": "rpgcraft:item/sword_20_e7"
+    "0": "rpgcraft:item/wvox/sword_20_e7",
+    "particle": "rpgcraft:item/wvox/sword_20_e7"
   }
 }

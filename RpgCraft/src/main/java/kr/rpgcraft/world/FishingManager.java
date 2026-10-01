@@ -233,6 +233,7 @@ public class FishingManager implements Listener {
         double gradeMul = switch (t.grade) { case RARE -> 1.3; case UNIQUE -> 1.6; case LEGEND -> 2.0; default -> 1.0; };
         plugin.levels().addExp(p, plugin.levels().need(lv) * pct * gradeMul);
         plugin.data().get(p).counters.merge("fish_caught", 1.0, Double::sum);
+        if (plugin.seasonPass() != null) plugin.seasonPass().add(p, 3, "낚시");   // v5.10.20
         if (plugin.questNpcs() != null) plugin.questNpcs().onFish(p);
         if (plugin.seaMonsters() != null) plugin.seaMonsters().onFishCatch(p, hookAt);   // 바다 낚시: 아주 낮은 확률로 메갈로돈 · 크라켄 (v5.4.32)
     }

@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/pender_spear",
   "textures": {
-    "0": "rpgcraft:item/pender_spear_e7",
-    "particle": "rpgcraft:item/pender_spear_e7"
+    "0": "rpgcraft:item/wvox/pender_spear_e7",
+    "particle": "rpgcraft:item/wvox/pender_spear_e7"
   }
 }

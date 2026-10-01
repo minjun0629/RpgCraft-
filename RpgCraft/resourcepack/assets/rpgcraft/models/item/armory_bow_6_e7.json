@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/armory_bow_6",
   "textures": {
-    "0": "rpgcraft:item/armory_bow_6_e7",
-    "particle": "rpgcraft:item/armory_bow_6_e7"
+    "0": "rpgcraft:item/wvox/armory_bow_6_e7",
+    "particle": "rpgcraft:item/wvox/armory_bow_6_e7"
   }
 }

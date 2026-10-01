@@ -185,7 +185,9 @@ guild:
   allow-player-create: true  # false 면 rpgcraft.guild.create 권한자만 생성 (원작은 스트리머가 길드장 지정)
   create-cost: 1000000
   levelup-cost-base: 5000000 # 레벨업 비용 = base * 현재 레벨 (길드 금고에서 차감)
-  max-level: 5
+  max-level: 10              # v5.10.20 5 → 10 (레벨업에 길드 경험치도 필요)
+  exp-per-level: 3000        # v5.10.20 다음 레벨 길드 경험치 = 이 값 × 레벨² (길드원 사냥 1 · 커스텀 2 · 보스 100 · 공성전 승리 · 성 수입)
+  skill-reset-cost: 10000000 # 길드 스킬 초기화 비용 (길드 금고)
 
 war:
   demolish-on-disband: true  # v5.10.10 길드가 사라지면 그 길드가 차지한 공성 성도 허물고 짓기 전 땅으로 (false = 소유만 비움)
@@ -201,9 +203,20 @@ war:
   castle-spawn-safe-radius: 300   # v5.10.12 월드 스폰에서 이 거리(칸) 안에는 castle build 로 성을 지을 수 없음 (성 끝자락 포함, 0 = 제한 없음)
   castle-wall-hp-large: 60000   # /rpg관리 castle build 로 지은 대형 성의 성벽 구간 체력
   castle-build-blocks-per-tick: 20000   # 대형 성을 지을 때 한 틱에 놓는 블록 수 (낮출수록 천천히 · 렉 적게)
+  wall-game: true            # v5.10.15 성벽은 채집도구 타이밍 미니게임으로만 깎임 (false = 예전처럼 때리는 대로)
+  wall-game-hit-mult: 1.5    # 초록 칸 명중 시 (도구 수치 × 이 배율 × 콤보 배율, 콤보는 최대 ×2)
+  wall-game-perfect-mult: 2.5   # 가운데 금색 칸 (완벽)
   wall-damage-mult: 1.0      # 채집도구 성벽 대미지 배율 (도구: 15 / 70 / 100)
   hit-interval-ms: 400
   repair-seconds: 10         # [위키] 성벽 수리 망치 쉬프트 10초
+  castle-daily-income: 3000000   # v5.10.20 성 하나당 하루 수입 (성을 가진 길드 금고로, 하루 한 번)
+  castle-daily-guild-exp: 500    # 성 수입 때 길드 경험치
+  win-guild-exp: 2000            # 공성전 승리 길드 경험치
+  castle-buff-max-stack: 2       # 성 소유 버프가 겹치는 성 수
+  castle-buff:                   # 성을 가진 길드의 길드원 버프 (성 하나당)
+    atk-pct: 5                   # 힘 · 민첩 · 모험 %
+    hp-pct: 5
+    exp-pct: 10
   declares-per-round: 1
   loot-percent: 30           # 승리 시 패배 길드 금고 약탈 %
   win-reward: 10000000       # 승리 길드 금고 보상
@@ -351,6 +364,21 @@ necromancer:                 # v5.10.9 히든 직업 네크로맨서 (C 계열) 
   upgrade-essence: 150       # 강화 비용 (× 다음 강화 수치)
   summon-cooldown: 20        # 군단을 거둔 뒤 다시 부를 수 있을 때까지 (초)
   model-scale: 0.9           # 군단원 모델 크기 (원래 몬스터 대비)
+
+season-pass:                 # v5.10.20 시즌 패스 (/시즌패스) — 회차가 바뀌면 새 시즌
+  enabled: true
+  exp-per-level: 150         # 패스 1레벨에 필요한 경험치 (사냥 1 · 커스텀 2 · 보스 100 · 낚시 3 · 미니게임 15 · 요리 5 · 공성전 승리 300)
+  exp-mult: 1.0
+  premium-cost: 30000000     # 프리미엄 패스 가격 (시즌마다)
+
+mail:                        # v5.10.20 우편함 (/우편)
+  fee: 1000                  # 플레이어가 보낼 때 수수료
+  expire-days: 30            # 받지 않은 우편이 사라지기까지
+
+hidden-weapon:               # v5.10.20 히든 직업 전용 무기 제작 (히든 직업창)
+  money: 30000000
+  cores: 20                  # 마력 핵
+  crystals: 10               # 상급 결정
 
 pets:
   draw-cost: 1500000         # 펫 뽑기 1회 비용

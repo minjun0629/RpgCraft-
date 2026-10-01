@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/bs_axe_1",
   "textures": {
-    "0": "rpgcraft:item/bs_axe_1_e7",
-    "particle": "rpgcraft:item/bs_axe_1_e7"
+    "0": "rpgcraft:item/wvox/bs_axe_1_e7",
+    "particle": "rpgcraft:item/wvox/bs_axe_1_e7"
   }
 }

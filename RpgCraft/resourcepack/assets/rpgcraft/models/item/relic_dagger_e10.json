@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/relic_dagger",
   "textures": {
-    "0": "rpgcraft:item/relic_dagger_e10",
-    "particle": "rpgcraft:item/relic_dagger_e10"
+    "0": "rpgcraft:item/wvox/relic_dagger_e10",
+    "particle": "rpgcraft:item/wvox/relic_dagger_e10"
   }
 }

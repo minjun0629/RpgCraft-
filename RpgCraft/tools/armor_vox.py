@@ -71,9 +71,64 @@ def _shell(g, c, r, colf, pri=3, inner=0.6, clip=None, pw=2):
 
 
 # ------------------------------------------------------------------ 투구
+def _helm(g, colf, rx, rz, yb, ry, y0, open_f, t=1.0, pw=3.0, flare=0.16, pri=3):
+    """투구 몸통: 아래는 각진 원통 · 위는 둥근 돔. 뒤 · 옆 아랫단은 목 가리개처럼 벌어짐.
+    open_f(x,y,z) 가 True 면 비움 (얼굴 구멍). colf(x,y,z,inner) — inner 는 안쪽 면(어두운 안감)"""
+    for i in range(math.floor((8 - rx * 1.4) / VS), math.floor((8 + rx * 1.4) / VS) + 1):
+        for j in range(math.floor(y0 / VS), math.floor((yb + ry) / VS) + 1):
+            for k in range(math.floor((8 - rz * 1.4) / VS), math.floor((8 + rz * 1.4) / VS) + 1):
+                x, y, z = (i + 0.5) * VS, (j + 0.5) * VS, (k + 0.5) * VS
+                if y < y0:
+                    continue
+                f = 1 + flare * max(0.0, (y0 + 2.6 - y) / 2.6) * (1.0 if z < 9.0 else 0.4)
+
+                def dd(rx_, rz_, ry_):
+                    h = (abs(x - 8) / (rx_ * f)) ** pw + (abs(z - 8) / (rz_ * f)) ** pw
+                    return h ** (2 / pw) + (max(0.0, y - yb) / ry_) ** 2
+                if dd(rx, rz, ry) > 1:
+                    continue
+                din = dd(rx - t, rz - t, ry - t)
+                if din <= 1 and y > y0 + 0.01:
+                    continue
+                if open_f(x, y, z):
+                    continue
+                g.put(x, y, z, colf(x, y, z, din < 1.35), pri)
+
+
+def _hood(g, S):
+    body, rim, gem = S["body"], S["rim"], S["gem"]
+    shade = lit(body, 0.42)
+    # 어깨까지 덮는 짧은 망토 (두건 아래단)
+    _shell(g, (8, 3.4, 7.6), (6.6, 1.6, 6.0), lambda x, y, z, d: rim if y < 2.4 else lit(_pat(S, x, y, z, body), 0.92), 2, inner=0.55,
+           clip=lambda x, y, z: y < 4.6 and not (z > 10.5 and abs(x - 8) < 1.2))
+    # 두건: 앞이 크게 열리고, 뒤로 뾰족한 끝
+    hole = lambda x, y, z: z > 8.6 and ((x - 8) / 3.3) ** 2 + ((y - 8.2) / 3.6) ** 2 < 1
+    edge = lambda x, y, z: z > 8.2 and ((x - 8) / 3.9) ** 2 + ((y - 8.2) / 4.2) ** 2 < 1
+    _shell(g, (8, 8.4, 7.6), (5.0, 5.6, 5.4), lambda x, y, z, d: shade if d < 0.78 else rim if edge(x, y, z) else _pat(S, x, y, z, body), 3,
+           inner=0.6, clip=lambda x, y, z: y > 3.6 and not hole(x, y, z))
+    g.tube([(8, 12.4, 5.0), (8, 14.4, 3.4), (8, 15.0, 1.6), (8, 14.2, 0.4)], [2.4, 1.6, 0.8, 0.2],
+           lambda x, y, z, d, f: lit(_pat(S, x, y, z, body), 0.92), 3, smooth=True, squash=(0.7, 1))
+    # 그늘진 얼굴 속 + 아래를 가린 복면
+    _shell(g, (8, 8.0, 8.0), (3.3, 3.6, 0.5), lambda *a: "14101a", 1, inner=0.0)
+    _shell(g, (8, 5.6, 8.4), (3.9, 1.5, 3.4), lambda x, y, z, d: lit(rim, 0.75) if int(y / VS) % 2 else lit(rim, 0.9), 4, inner=0.55,
+           clip=lambda x, y, z: z > 8.6)
+
+
+def _cap(g, S):
+    """모험가 가죽 모자: 둥근 정수리 + 귀덮개 + 앞 챙"""
+    body, rim, gem = S["body"], S["rim"], S["gem"]
+    open_f = lambda x, y, z: (z > 8.8 and y < 9.4) or (y < 7.4 and abs(x - 8) < 3.4) or (y < 6.0 and z < 4.8)
+    _helm(g, lambda x, y, z, inner: lit(body, 0.45) if inner else rim if y < 9.9 and z > 8.4 else _pat(S, x, y, z, body),
+          4.7, 5.0, 8.6, 5.2, 3.6, open_f, pw=2.4, flare=0.0)
+    g.slab((8, 9.4, 12.6), (8, 9.1, 14.6), (7.4, 0, 0), 0.5, lambda x, y, z, u, v: rim if abs(v) > 0.88 or u > 0.8 else lit(body, 0.85), 4)   # 챙
+    for sx in (-1, 1):   # 귀덮개 끈 · 단추
+        g.box((8 + sx * 4.6, 3.6, 7.6), (8 + sx * 5.0, 4.6, 8.4), lit(rim, 0.8), 5)
+        g.dot(8 + sx * 4.9, 6.2, 8.0, lit(rim, 1.2), 5, 0.6)
+    _shell(g, (8, 13.7, 8), (0.6, 0.4, 0.6), lambda *a: rim, 5, inner=0.0)
+
+
 def helmet(g, S):
-    body, rim, gem, deco = S["body"], S["rim"], S["gem"], S["deco"]
-    cloth = S["pat"] in CLOTH
+    body, rim, gem, deco, pat = S["body"], S["rim"], S["gem"], S["deco"], S["pat"]
     if deco == "hat":   # 마녀 모자: 넓은 챙 + 휜 고깔
         _shell(g, (8, 5.2, 8), (7.2, 0.7, 7.2), lambda x, y, z, d: _pat(S, x, y, z, body), 3, inner=0.0)
         pts = [(8, 5.6, 8), (8, 9.5, 7.6), (8.6, 12.5, 6.8), (10.4, 14.6, 5.4)]
@@ -81,27 +136,39 @@ def helmet(g, S):
         _shell(g, (8, 6.6, 8), (4.2, 0.6, 4.2), lambda *a: rim, 4, inner=0.0)
         g.dot(8, 6.6, 12.2, gem, 6, 1.0)
         return
-    face = lambda x, y, z: not (z > 9.6 and 4.4 < y < 9.2 and abs(x - 8) < (3.0 if cloth else 2.4))
-    _shell(g, (8, 8.4, 8), (5.2, 5.6, 5.2), lambda x, y, z, d: _pat(S, x, y, z, body if y > 6.2 else lit(body, 0.85)), 3, inner=0.55,
-           clip=lambda x, y, z: y > 3.0 and face(x, y, z))
-    if cloth:   # 두건: 뒤로 늘어진 천 · 그늘진 얼굴
-        _shell(g, (8, 6.5, 7.2), (5.6, 5.0, 5.4), lambda x, y, z, d: lit(_pat(S, x, y, z, body), 0.9), 2, inner=0.8,
-               clip=lambda x, y, z: z < 8.0 and y < 8.5 and y > 1.2)
-        _shell(g, (8, 6.8, 9.2), (3.0, 2.6, 0.6), lambda *a: "14101a", 1, inner=0.0)
-        g.dot(6.9, 7.2, 9.9, lit(gem, 1.3), 6, 0.6)
-        g.dot(9.1, 7.2, 9.9, lit(gem, 1.3), 6, 0.6)
-    else:       # 금속 투구: 테두리 띠 · 코 가리개 · 눈 틈 · 가운데 능선
-        _shell(g, (8, 6.0, 8), (5.5, 0.7, 5.5), lambda x, y, z, d: rim, 4, inner=0.0, clip=face)
-        g.box((7.4, 4.2, 12.4), (8.6, 8.6, 13.3), rim, 5)
-        _shell(g, (8, 9.2, 8), (0.6, 5.3, 5.3), lambda x, y, z, d: lit(rim, 1.15), 5, inner=0.75, clip=lambda x, y, z: y > 8.0)
-        for sx in (-1, 1):
-            g.box((8 + sx * 1.0, 7.0, 12.9), (8 + sx * 2.6, 7.6, 13.3), "1a1620", 6)
-        g.dot(8, 11.4, 13.2, gem, 7, 0.9)
+    if deco == "hood":
+        _hood(g, S)
+        return
+    if pat == "patch":
+        _cap(g, S)
+    else:
+        # 금속 투구. 판금은 T자 얼굴 틈 (코 가리개), 나머지는 볼 가리개가 있는 열린 얼굴
+        tee = pat == "plate"
+        if tee:
+            hole = lambda x, y, z, m=0.0: z > 8.6 and ((7.9 - m < y < 9.3 + m and abs(x - 8) < 3.5 + m) or (3.0 < y < 9.3 + m and 0.55 - m < abs(x - 8) < 1.6 + m))
+        else:
+            hole = lambda x, y, z, m=0.0: z > 8.6 and 3.0 < y < 9.5 + m and abs(x - 8) < 2.7 + m - max(0.0, (6.0 - y) * 0.3)
+        brow = lambda y, z: z > 7.0 and 9.6 < y < 10.5
+
+        def colf(x, y, z, inner):
+            if inner:
+                return lit(body, 0.4)
+            if y < 4.0 or hole(x, y, z, 0.55) or brow(y, z):
+                return rim
+            return _pat(S, x, y, z, body if y > 6.0 else lit(body, 0.9))
+        _helm(g, colf, 4.6, 5.0, 9.0, 5.2, 3.4, hole)
+        # 머리 꼭대기 능선 · 리벳 · 이마 보석
+        arc = [(8, 9.0 + 5.4 * math.sin(a), 8 + 5.4 * math.cos(a)) for a in [math.pi * (0.12 + 0.76 * t / 8) for t in range(9)]]
+        g.tube(arc, [0.5] * 9, lit(rim, 1.15), 5)
+        for k in range(10):
+            a = k * math.pi / 5
+            g.dot(8 + math.cos(a) * 4.75, 3.8, 8 + math.sin(a) * 5.15, lit(rim, 1.3), 5, 0.5)
+        g.dot(8, 10.6, 13.0, gem, 7, 0.9)
     if deco == "crest":     # 투구 꼭대기 볏 (깃털)
         for k in range(10):
             t = k / 9
             z = 12.5 - t * 9.0
-            y = 13.8 + math.sin(t * math.pi) * 1.6
+            y = 14.4 + math.sin(t * math.pi) * 2.0
             g.box((7.4, 12.5, z - 0.5), (8.6, y, z + 0.5), mixc(gem, lit(gem, 0.6), t), 6)
     elif deco == "wings":   # 옆머리 날개
         for sx in (-1, 1):

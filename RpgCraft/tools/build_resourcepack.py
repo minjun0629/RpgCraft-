@@ -540,6 +540,9 @@ def main():
     import dmg_skin   # v5.10.35 대미지 스킨 아이템 아이콘 (PAPER 12801+)
     for cmd, model in dmg_skin.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
         overrides.setdefault("paper", []).append((cmd, model))
+    import board_art   # v5.10.45 보드게임 그림 (PAPER 13400+)
+    for cmd, model in board_art.write_icons(PACK, NS, lambda p, o: write_json(p, o)):
+        overrides.setdefault("paper", []).append((cmd, model))
     import hjw_vox   # v5.10.44 히든 직업 전용 무기 (각 재질 CMD 7700, 강화 +3000 · +5000 도 같은 모델)
     hj_ov, hj_n = hjw_vox.write(PACK, NS, lambda p, o: write_json(p, o, compact=True))
     elements_total += hj_n
@@ -605,6 +608,8 @@ def main():
     providers.append(ui_pack.boss_frame_provider(PACK))   # 보스바 장식 틀
     providers.extend(ui4r.sidebar_providers(PACK, NS))   # v5.10.34 사이드바 아이콘 · 구분선
     providers.append(ui4r.compass_provider(PACK, NS))   # v5.10.34 나침반 틀
+    import target_hud   # v5.10.45 대상 정보 틀 · 체력 바 (보스바 제목)
+    providers.extend(target_hud.providers(PACK, NS))
     import dmg_skin   # v5.10.35 대미지 스킨 숫자 글꼴
     providers.extend(dmg_skin.providers(PACK, NS))
     # 바닐라 기본 폰트 참조 (다른 팩과 합쳐지지 않는 환경에서도 글자가 깨지지 않도록)
@@ -633,7 +638,8 @@ def main():
     # 1.20.2+ 클라이언트: 하트/배고픔/갑옷/산소 스프라이트 숨김 + 금색 경험치 바 (1.20.1 은 icons.png 사용)
     ui_pack.write_modern_hud_sprites(PACK)
     # 1.20.1 사이드바 오른쪽 빨간 점수 숫자 숨김 (화면 가장 오른쪽 끝의 빨간 GUI 글자만)
-    ui_pack.write_score_shader(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "rendertype_text.vsh"))
+    import target_hud   # v5.10.45 4R 풍 대상 정보 (오른쪽 위)
+    ui_pack.write_score_shader(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "rendertype_text.vsh"), target_hud.shader_snippet())
     # 보스 체력바 디자인 (1.20.1 bars.png + 1.20.2+ 스프라이트). WHITE 는 나침반 문구용 투명 바
     ui_pack.write_boss_bars(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "bars.png"))
     ui_pack.boss_bar_preview(os.path.join(ROOT, "dist", "bossbar-preview.png"))

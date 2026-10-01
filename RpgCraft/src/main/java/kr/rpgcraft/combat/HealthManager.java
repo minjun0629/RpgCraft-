@@ -55,8 +55,12 @@ public class HealthManager {
 
     public void set(LivingEntity e, double v) {
         v = Math.max(0, Math.min(max(e), v));
-        if (e instanceof Player p) plugin.data().get(p).hp = v;
-        else {
+        if (e instanceof Player p) {
+            PlayerData pd = plugin.data().get(p);
+            boolean changed = Math.abs(pd.hp - v) > 0.001;
+            pd.hp = v;
+            if (changed && plugin.hud() != null) plugin.hud().hpChanged(p);   // v5.10.45 체력 표시 즉시 갱신
+        } else {
             MobManager.MobState s = plugin.mobs().state(e);
             if (v < s.hp) s.shownUntil = System.currentTimeMillis() + 6000;
             s.hp = v;

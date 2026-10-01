@@ -392,7 +392,7 @@ public class StructureManager implements Listener {
         rm.save();
         String rn = r.name;
         TextDisplay label = w.spawn(loc(0, 3, 0).add(0.5, 0, 0.5), TextDisplay.class, td -> {
-            td.setText(Text.c("&6&l" + rn + "\n&7필요 모험 &e" + adv + "\n&8금 블록을 밟으면 시작"));
+            td.setText(Text.c("&6&l" + rn + "\n&7필요 " + Exploration.label() + " &e" + adv + "\n&8금 블록을 밟으면 시작"));
             td.setBillboard(Display.Billboard.CENTER);
         });
         return "유적 '" + id + "' [" + t.label() + "] (" + steps + "발판, 필요 모험 " + adv + ", 금 블록 = 시작, 다이아 블록 = 도착)";
@@ -1180,10 +1180,10 @@ public class StructureManager implements Listener {
         if (!(e.getInventory().getHolder() instanceof Chest c) || !(e.getPlayer() instanceof Player p)) return;
         Integer req = c.getPersistentDataContainer().get(REQ_ADV, org.bukkit.persistence.PersistentDataType.INTEGER);
         if (req == null || p.hasPermission("rpgcraft.admin") && p.getGameMode() == GameMode.CREATIVE) return;
-        double adv = plugin.data().get(p).stats.adv;
-        if (adv < req) {
+        var pd = plugin.data().get(p);
+        if (!Exploration.meets(pd, req)) {   // v5.10.45 모험 대신 탐험도로도
             e.setCancelled(true);
-            Text.actionBar(p, "&c모험 " + req + " 이상만 열 수 있는 상자입니다. &7(현재 " + (int) adv + ")");
+            Text.actionBar(p, "&c" + Exploration.label() + " " + req + " 이상만 열 수 있는 상자입니다. &7(현재 " + Exploration.value(pd) + " · /숙련)");
             p.playSound(p.getLocation(), Sound.BLOCK_CHEST_LOCKED, 1f, 1f);
         }
     }
@@ -1204,7 +1204,10 @@ public class StructureManager implements Listener {
             PersonalChest holder = new PersonalChest();
             inv = Bukkit.createInventory(holder, 27, Text.c("&8보물 상자 &7(나만의 전리품)"));
             holder.inv = inv;
-            if (d.counters.putIfAbsent("pchest_" + locKey, 1.0) == null) fillLoot(inv, tier);  // 처음 여는 사람에게만 새로 채움
+            if (d.counters.putIfAbsent("pchest_" + locKey, 1.0) == null) {   // 처음 여는 사람에게만 새로 채움
+                fillLoot(inv, tier);
+                d.addCounter("chests_opened", 1);   // v5.10.45 탐험도
+            }
             personal.put(key, inv);
         }
         Bukkit.getScheduler().runTask(plugin, () -> {

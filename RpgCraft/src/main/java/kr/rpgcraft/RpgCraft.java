@@ -114,6 +114,9 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.SummonAltar altar;
     private kr.rpgcraft.economy.StockManager stocks;
     private kr.rpgcraft.minigame.MiniGameManager minigames;
+    private kr.rpgcraft.board.BoardManager boards;
+    private kr.rpgcraft.feature.TargetHud targetHud;
+    private kr.rpgcraft.feature.MobFightStick mobFight;   // v5.10.45 오른쪽 위 대상 정보   // v5.10.45 보드게임 · 야차 명성
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
@@ -224,6 +227,11 @@ public final class RpgCraft extends JavaPlugin {
         command("stock", stocks);   // /주식 (v5.6.0)
         minigames = new kr.rpgcraft.minigame.MiniGameManager(this);
         command("minigame", minigames);   // /미니게임 : 미니게임 · 미니게임 상점 (v5.6.0)
+        boards = new kr.rpgcraft.board.BoardManager(this);   // v5.10.45 /보드게임 (윷놀이 · 부루마블 · 인디언 포커) + 야차 명성
+        command("board", boards);
+        targetHud = new kr.rpgcraft.feature.TargetHud(this);
+        mobFight = new kr.rpgcraft.feature.MobFightStick(this);   // v5.10.45 관리자 몬스터 결투 막대기
+        command("commands", new kr.rpgcraft.command.CommandList(this));   // v5.10.45 /명령어
         duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
         Bukkit.getPluginManager().registerEvents(duels, this);
         command("duel", duels);
@@ -276,6 +284,8 @@ public final class RpgCraft extends JavaPlugin {
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
         if (tower != null) tower.shutdown();   // v5.10.30
+        if (boards != null) boards.shutdown();   // v5.10.45
+        if (targetHud != null) targetHud.shutdown();
         if (invStats != null) invStats.shutdown();
         if (bossModels != null) bossModels.shutdown();
         if (mobModels != null) mobModels.shutdown();
@@ -510,6 +520,9 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.SummonAltar altar() { return altar; }
     public kr.rpgcraft.economy.StockManager stocks() { return stocks; }
     public kr.rpgcraft.minigame.MiniGameManager minigames() { return minigames; }
+    public kr.rpgcraft.board.BoardManager boards() { return boards; }
+    public kr.rpgcraft.feature.TargetHud targetHud() { return targetHud; }
+    public kr.rpgcraft.feature.MobFightStick mobFight() { return mobFight; }
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }

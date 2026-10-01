@@ -53,6 +53,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 heal [플레이어]");
         Text.msg(s, "&e/rpg관리 starter [플레이어] &7- 기본 지급품 다시 주기");
         Text.msg(s, "&e/rpg관리 enhance <수치> [플레이어] &7- 손에 든 장비의 강화 수치 설정");
+        Text.msg(s, "&e/rpg관리 싸움막대 &7- 몬스터 두 마리를 좌클릭하면 서로 싸우는 막대기");
         Text.msg(s, "&e/rpg관리 stock <종목> <가격> &7- 주식 가격 직접 지정");
         Text.msg(s, "&e/rpg관리 coin <플레이어> <수> &7- 미니게임 코인 지급 (음수면 회수)");
         Text.msg(s, "&e/rpg관리 castle build <1|2|3> <id> &7- 내 자리에 대형 공성 성 (1 왕성 · 2 흑요 요새 · 3 백악 성채, 성벽 · 신호기 자동 등록, 스폰 300칸 안은 불가)");
@@ -252,6 +253,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     if (p == null) { Text.msg(s, "&c접속 중인 플레이어를 입력하세요."); return true; }
                     int n = kr.rpgcraft.data.ResetPending.giveStarter(plugin, p);
                     Text.msg(s, "&a" + p.getName() + " 에게 기본 지급품 " + n + "종을 주었습니다.");
+                }
+                case "mobfight", "싸움막대", "몬스터결투" -> {   // v5.10.45 몬스터 두 마리를 좌클릭하면 서로 싸우는 막대기
+                    if (!(s instanceof Player pp)) { Text.msg(s, "&c게임 안에서만 쓸 수 있습니다."); return true; }
+                    for (ItemStack left : pp.getInventory().addItem(plugin.mobFight().stick()).values()) pp.getWorld().dropItemNaturally(pp.getLocation(), left);
+                    Text.msg(s, "&a몬스터 결투 막대기를 받았습니다. &7몬스터 두 마리를 차례로 좌클릭하세요.");
                 }
                 case "boss" -> boss(s, a);
                 case "npc" -> {

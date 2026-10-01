@@ -331,6 +331,7 @@ def generic54_png():
 # Java kr.rpgcraft.pack.HudFont.build4r 와 글리프 번호 · 폭 · 높이가 같아야 함
 HUD_HP, HUD_XP = 0xE400, 0xE420            # 0 ~ 20 단계
 HUD_FRAME_L, HUD_FRAME_R, HUD_BADGE = 0xE440, 0xE441, 0xE442
+HUD_BADGE_XP, BADGE_XP_STEPS = 0xE4C0, 24   # v5.10.45 경험치가 고리로 차오르는 배지 (0 ~ 24 단계)
 HUD_DIG_A, HUD_DIG_B = 0xE450, 0xE470      # 위 줄(흰색) · 아래 줄(크림색) 숫자
 HUD_ICON_A, HUD_ICON_B = 0xE490, 0xE4A0    # 위 줄 · 아래 줄 아이콘 (ICON_KINDS 순서)
 ICON_KINDS = ["sword", "crit", "def", "potion", "skill", "skill_cd", "quick", "quick_cd"]
@@ -386,12 +387,23 @@ def hud_frame(w, left):
 LV_TXT = {"L": ["10", "10", "10", "10", "11"], "V": ["101", "101", "101", "101", "010"]}
 
 
-def hud_badge():
-    """둥근 레벨 배지 26x26: 은 고리 · 청동 안 고리 · 'LV' 글자 (숫자는 아래 줄 숫자 글리프로)"""
+def hud_badge(xp=None):
+    """둥근 레벨 배지 26x26: 은 고리 · 청동 안 고리 · 'LV' 글자 (숫자는 아래 줄 숫자 글리프로).
+    v5.10.45 xp(0~1) 를 주면 바깥 고리가 12시부터 시계 방향으로 경험치만큼 금빛으로 차오름"""
     img = Image.new("RGBA", (BADGE_W, BADGE_W), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     d.ellipse([0, 0, 25, 25], fill=F_OUT)
-    d.ellipse([1, 1, 24, 24], fill=(196, 198, 208, 255))
+    d.ellipse([1, 1, 24, 24], fill=(196, 198, 208, 255) if xp is None else (74, 70, 80, 255))
+    if xp is not None and xp > 0:
+        if xp >= 0.999:
+            d.ellipse([1, 1, 24, 24], fill=(255, 206, 84, 255))
+        else:
+            d.pieslice([1, 1, 24, 24], -90, -90 + 360 * xp, fill=(255, 206, 84, 255))
+            # 차오른 끝에 반짝임
+            import math as _m
+            a = _m.radians(-90 + 360 * xp)
+            ex, ey = 12.5 + _m.cos(a) * 10.6, 12.5 + _m.sin(a) * 10.6
+            d.ellipse([ex - 1.2, ey - 1.2, ex + 1.2, ey + 1.2], fill=(255, 250, 220, 255))
     d.ellipse([3, 3, 22, 22], fill=(110, 92, 64, 255))
     d.ellipse([4, 4, 21, 21], fill=(30, 27, 30, 255))
     d.arc([4, 4, 21, 21], 200, 320, fill=(70, 66, 74, 255))
@@ -415,6 +427,8 @@ def hud_providers(icon_fn, digit_fn, chars):
     out.append(("h4_frame_l", hud_frame(FRAME_LW, True), ASC_FRAME, HUD_FRAME_L))
     out.append(("h4_frame_r", hud_frame(FRAME_RW, False), ASC_FRAME, HUD_FRAME_R))
     out.append(("h4_badge", hud_badge(), ASC_BADGE, HUD_BADGE))
+    for k in range(BADGE_XP_STEPS + 1):
+        out.append(("h4_badge_xp%02d" % k, hud_badge(k / BADGE_XP_STEPS), ASC_BADGE, HUD_BADGE_XP + k))
     names = {"/": "slash", ",": "comma", "%": "pct", ".": "dot", "+": "plus"}
     for i, ch in enumerate(chars):
         n = names.get(ch, ch if ch.isdigit() else ch.lower() + ("_u" if ch.isupper() else "_l"))

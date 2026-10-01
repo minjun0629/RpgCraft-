@@ -50,6 +50,7 @@ public class HudManager implements Listener {
             float walk = (float) Math.max(0.05, Math.min(1.0, 0.2 * (1 + s.speed / 100.0)));
             if (Math.abs(p.getWalkSpeed() - walk) > 0.001) p.setWalkSpeed(walk);
 
+            trackWalk(p, d);   // v5.10.45 탐험도 (걸은 거리)
             if (p.isSprinting()) {
                 if (d.runStart == 0) d.runStart = now;
                 if (second) plugin.passives().track(p, "sprint_seconds", 1);
@@ -79,19 +80,7 @@ public class HudManager implements Listener {
             }
 
             d.counters.put("power", (double) Power.of(s));
-            if (packHud(p, d)) {
-                drawPackHud(p, d, s);
-            } else if (d.actionBarLock < now && Setting.HUD.get(d)) {
-                double r = s.maxHp <= 0 ? 0 : Math.max(0, Math.min(1, d.hp / s.maxHp));
-                int full = (int) Math.round(r * 12);
-                String hc = r > 0.5 ? "&c" : r > 0.25 ? "&6" : "&4";
-                String quick = d.quickSkill == null ? "" : quickState(d);
-                Text.actionBar(p, hc + "❤ " + Text.num(d.hp) + " " + hc + "▮".repeat(full) + "&8" + "▮".repeat(12 - full)
-                        + "  &6⚔ " + Text.num(s.attack) + (s.holdingBow ? " &e➶ " + Text.num(s.ranged) : "")
-                        + "  &e✦ " + String.format("%.1f", s.crit) + "%"
-                        + "  &b🛡 " + String.format("%.1f", s.def) + "%" + quick
-                        + (s.weaponOk ? "" : "  &c[무기 조건 미충족]"));
-            }
+            drawHud(p, d, s, now);
             if (tick % 8 == 0) { // 4초마다: 가진 아이템을 도감에 기록
                 for (org.bukkit.inventory.ItemStack it : p.getInventory().getContents()) d.markSeen(kr.rpgcraft.item.ItemData.id(it));
             }
@@ -100,6 +89,50 @@ public class HudManager implements Listener {
                 if (tick % 4 == 0) updateTab(p, d, s);
             }
         }
+    }
+
+    // v5.10.45 맞으면 바로 체력 표시 (예전엔 0.5초 주기라 늦게 깎여 포션 타이밍을 놓쳤음)
+    private final java.util.Set<UUID> hpDirty = new java.util.HashSet<>();
+
+    /** 체력이 바뀌면 다음 틱에 HUD 를 바로 다시 그림 (한 틱에 여러 번 맞아도 한 번만) */
+    public void hpChanged(Player p) {
+        if (!hpDirty.add(p.getUniqueId())) return;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            hpDirty.remove(p.getUniqueId());
+            if (!p.isOnline() || !plugin.data().isLoaded(p.getUniqueId())) return;
+            PlayerData d = plugin.data().get(p);
+            drawHud(p, d, d.stats, System.currentTimeMillis());
+        });
+    }
+
+    private void drawHud(Player p, PlayerData d, StatSnapshot s, long now) {
+        if (packHud(p, d)) {
+            drawPackHud(p, d, s);
+        } else if (d.actionBarLock < now && Setting.HUD.get(d)) {
+            double r = s.maxHp <= 0 ? 0 : Math.max(0, Math.min(1, d.hp / s.maxHp));
+            int full = (int) Math.round(r * 12);
+            String hc = r > 0.5 ? "&c" : r > 0.25 ? "&6" : "&4";
+            String quick = d.quickSkill == null ? "" : quickState(d);
+            Text.actionBar(p, hc + "❤ " + Text.num(d.hp) + " " + hc + "▮".repeat(full) + "&8" + "▮".repeat(12 - full)
+                    + "  &6⚔ " + Text.num(s.attack) + (s.holdingBow ? " &e➶ " + Text.num(s.ranged) : "")
+                    + "  &e✦ " + String.format("%.1f", s.crit) + "%"
+                    + "  &b🛡 " + String.format("%.1f", s.def) + "%" + quick
+                    + (s.weaponOk ? "" : "  &c[무기 조건 미충족]"));
+        }
+    }
+
+    private final Map<UUID, org.bukkit.Location> lastWalk = new HashMap<>();
+
+    /** 0.5초마다 움직인 거리 (순간이동 · 탈것 · 비행 · 관전은 제외) */
+    private void trackWalk(Player p, PlayerData d) {
+        org.bukkit.Location now = p.getLocation();
+        org.bukkit.Location prev = lastWalk.put(p.getUniqueId(), now);
+        if (prev == null || prev.getWorld() != now.getWorld() || p.isInsideVehicle() || p.isFlying() || p.isGliding()
+                || p.getGameMode() == GameMode.SPECTATOR || p.getGameMode() == GameMode.CREATIVE) return;
+        double dx = now.getX() - prev.getX(), dz = now.getZ() - prev.getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist < 0.2 || dist > 8) return;   // 가만히 · 순간이동
+        d.addCounter("walk_blocks", dist);
     }
 
     private final Map<UUID, String> notice = new HashMap<>();
@@ -269,7 +302,7 @@ public class HudManager implements Listener {
         lines.add("&7직업 &f" + plugin.jobs().title(d));
         lines.add("&7레벨 &e&lLv." + d.level + " &8(" + String.format("%.1f", d.exp / need * 100) + "%)");
         lines.add("&7소지금 &6" + Text.money(d.money));
-        lines.add("&7포인트 " + (d.statPoints > 0 ? "&a&l" : "&f") + d.statPoints + (d.statPoints > 0 ? " &8(인벤토리 위)" : ""));
+        lines.add("&7포인트 " + (d.statPoints > 0 ? "&a&l" : "&f") + d.statPoints);
         lines.add(DIV + "&r");
         lines.add("&7힘 &c" + (int) s.str + " &7민첩 &9" + (int) s.dex + " &7모험 &a" + (int) s.adv);
         lines.add("&7전투력 &6&l" + Text.num(Power.of(s)));

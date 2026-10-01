@@ -51,7 +51,16 @@ public class CombatListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onProvoke(EntityDamageByEntityEvent e) {
         Entity src = e.getDamager() instanceof Projectile pr && pr.getShooter() instanceof Entity sh ? sh : e.getDamager();
-        if (src instanceof Player && !(e.getEntity() instanceof Player)) PROVOKED.put(e.getEntity().getUniqueId(), System.currentTimeMillis());
+        if (src instanceof Player pl && !(e.getEntity() instanceof Player)) {
+            PROVOKED.put(e.getEntity().getUniqueId(), System.currentTimeMillis());
+            // v5.10.45 반격: 대미지를 0 으로 바꿔 처리하다 보니 바닐라가 "누가 때렸는지" 를 기억하지 못해 몬스터가 맞고도 가만히 있었음 → 직접 노리게
+            if (e.getEntity() instanceof org.bukkit.entity.Mob m && !plugin.combat().isNpc(m) && pl.getGameMode() != org.bukkit.GameMode.CREATIVE
+                    && pl.getGameMode() != org.bukkit.GameMode.SPECTATOR && !kr.rpgcraft.world.NecromancyManager.isMinion(m)
+                    && !(m instanceof org.bukkit.entity.Tameable t && t.isTamed()) && plugin.getConfig().getBoolean("mobs.retaliate", true))
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (m.isValid() && !m.isDead() && pl.isOnline() && !pl.isDead() && m.hasAI() && m.getWorld().equals(pl.getWorld())) m.setTarget(pl);
+                });
+        }
     }
 
     /** 몬스터끼리는 서로 노리거나 때리지 않음 */
@@ -59,7 +68,8 @@ public class CombatListener implements Listener {
     public void onMobInfight(org.bukkit.event.entity.EntityTargetLivingEntityEvent e) {
         if (!(e.getTarget() instanceof Player) && e.getTarget() != null && !(e.getEntity() instanceof Player)
                 && !(e.getEntity() instanceof org.bukkit.entity.Tameable t && t.isTamed())
-                && !kr.rpgcraft.world.NecromancyManager.isMinion(e.getTarget())) e.setCancelled(true);   // v5.10.9 네크로맨서 군단원은 몬스터가 노릴 수 있음
+                && !kr.rpgcraft.world.NecromancyManager.isMinion(e.getTarget())
+                && !kr.rpgcraft.feature.MobFightStick.fighting(e.getEntity(), e.getTarget())) e.setCancelled(true);   // v5.10.9 · v5.10.45 결투 막대기로 붙인 짝은 예외 네크로맨서 군단원은 몬스터가 노릴 수 있음
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -67,6 +77,7 @@ public class CombatListener implements Listener {
         if (e.getEntity() instanceof Player || !(e.getEntity() instanceof LivingEntity) || kr.rpgcraft.world.NecromancyManager.isMinion(e.getEntity())) return;
         Entity src = e.getDamager() instanceof Projectile pr && pr.getShooter() instanceof Entity sh ? sh : e.getDamager();
         if (src instanceof Player || src instanceof org.bukkit.entity.Tameable t && t.isTamed()) return;
+        if (kr.rpgcraft.feature.MobFightStick.fighting(src, e.getEntity())) return;   // v5.10.45 관리자 몬스터 결투
         if (src instanceof LivingEntity) e.setCancelled(true);
     }
 
@@ -137,7 +148,8 @@ public class CombatListener implements Listener {
                     return;
                 }
                 if (src instanceof LivingEntity shooter) {
-                    if (!(victim instanceof Player) && plugin.mobs().tracked(victim) && shooter instanceof Enemy && victim instanceof Enemy) {
+                    if (!(victim instanceof Player) && plugin.mobs().tracked(victim) && shooter instanceof Enemy && victim instanceof Enemy
+                            && !kr.rpgcraft.feature.MobFightStick.fighting(shooter, victim)) {
                         e.setCancelled(true); // 몬스터끼리 오사 방지
                         return;
                     }
@@ -197,6 +209,8 @@ public class CombatListener implements Listener {
     private void finish(EntityDamageEvent e, LivingEntity victim, double amount, Player attacker, Entity source, boolean crit) {
         if (amount > 0) plugin.combat().indicator(victim, amount, crit, attacker);
         if (attacker != null && victim instanceof Player vp && !vp.equals(attacker)) plugin.combat().markPvp(attacker, vp);
+        if (attacker == null && victim instanceof Player hp && source instanceof LivingEntity sm && !(source instanceof Player) && plugin.targetHud() != null)
+            plugin.targetHud().mark(hp, sm);   // v5.10.45 나를 때린 몬스터도 오른쪽 위에
         boolean lethal = amount > 0 && plugin.health().damage(victim, amount, attacker);
         if (lethal) {
             e.setDamage(victim.getHealth() + 100000);

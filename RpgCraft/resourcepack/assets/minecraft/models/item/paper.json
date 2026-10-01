@@ -4806,6 +4806,504 @@
     },
     {
       "predicate": {
+        "custom_model_data": 13400
+      },
+      "model": "rpgcraft:item/board/yut_station"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13401
+      },
+      "model": "rpgcraft:item/board/yut_corner"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13402
+      },
+      "model": "rpgcraft:item/board/yut_center"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13403
+      },
+      "model": "rpgcraft:item/board/yut_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13404
+      },
+      "model": "rpgcraft:item/board/yut_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13405
+      },
+      "model": "rpgcraft:item/board/yut_both"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13406
+      },
+      "model": "rpgcraft:item/board/yut_res0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13407
+      },
+      "model": "rpgcraft:item/board/yut_res1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13408
+      },
+      "model": "rpgcraft:item/board/yut_res2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13409
+      },
+      "model": "rpgcraft:item/board/yut_res3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13410
+      },
+      "model": "rpgcraft:item/board/yut_res4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13411
+      },
+      "model": "rpgcraft:item/board/yut_res5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13412
+      },
+      "model": "rpgcraft:item/board/yut_throw"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13413
+      },
+      "model": "rpgcraft:item/board/yut_home_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13414
+      },
+      "model": "rpgcraft:item/board/yut_home_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13415
+      },
+      "model": "rpgcraft:item/board/yut_goal"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13416
+      },
+      "model": "rpgcraft:item/board/yut_select"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13420
+      },
+      "model": "rpgcraft:item/board/city0"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13421
+      },
+      "model": "rpgcraft:item/board/city1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13422
+      },
+      "model": "rpgcraft:item/board/city2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13423
+      },
+      "model": "rpgcraft:item/board/city3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13424
+      },
+      "model": "rpgcraft:item/board/city4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13425
+      },
+      "model": "rpgcraft:item/board/city5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13426
+      },
+      "model": "rpgcraft:item/board/city6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13427
+      },
+      "model": "rpgcraft:item/board/city7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13428
+      },
+      "model": "rpgcraft:item/board/city0_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13429
+      },
+      "model": "rpgcraft:item/board/city1_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13430
+      },
+      "model": "rpgcraft:item/board/city2_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13431
+      },
+      "model": "rpgcraft:item/board/city3_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13432
+      },
+      "model": "rpgcraft:item/board/city4_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13433
+      },
+      "model": "rpgcraft:item/board/city5_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13434
+      },
+      "model": "rpgcraft:item/board/city6_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13435
+      },
+      "model": "rpgcraft:item/board/city7_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13436
+      },
+      "model": "rpgcraft:item/board/city0_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13437
+      },
+      "model": "rpgcraft:item/board/city1_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13438
+      },
+      "model": "rpgcraft:item/board/city2_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13439
+      },
+      "model": "rpgcraft:item/board/city3_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13440
+      },
+      "model": "rpgcraft:item/board/city4_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13441
+      },
+      "model": "rpgcraft:item/board/city5_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13442
+      },
+      "model": "rpgcraft:item/board/city6_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13443
+      },
+      "model": "rpgcraft:item/board/city7_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13444
+      },
+      "model": "rpgcraft:item/board/start"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13445
+      },
+      "model": "rpgcraft:item/board/island"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13446
+      },
+      "model": "rpgcraft:item/board/chance"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13447
+      },
+      "model": "rpgcraft:item/board/travel"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13448
+      },
+      "model": "rpgcraft:item/board/fund"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13449
+      },
+      "model": "rpgcraft:item/board/tok_me"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13450
+      },
+      "model": "rpgcraft:item/board/tok_ai"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13451
+      },
+      "model": "rpgcraft:item/board/tok_both"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13452
+      },
+      "model": "rpgcraft:item/board/dice1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13453
+      },
+      "model": "rpgcraft:item/board/dice2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13454
+      },
+      "model": "rpgcraft:item/board/dice3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13455
+      },
+      "model": "rpgcraft:item/board/dice4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13456
+      },
+      "model": "rpgcraft:item/board/dice5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13457
+      },
+      "model": "rpgcraft:item/board/dice6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13458
+      },
+      "model": "rpgcraft:item/board/roll"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13459
+      },
+      "model": "rpgcraft:item/board/money"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13460
+      },
+      "model": "rpgcraft:item/board/card_back"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13461
+      },
+      "model": "rpgcraft:item/board/card1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13462
+      },
+      "model": "rpgcraft:item/board/card2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13463
+      },
+      "model": "rpgcraft:item/board/card3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13464
+      },
+      "model": "rpgcraft:item/board/card4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13465
+      },
+      "model": "rpgcraft:item/board/card5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13466
+      },
+      "model": "rpgcraft:item/board/card6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13467
+      },
+      "model": "rpgcraft:item/board/card7"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13468
+      },
+      "model": "rpgcraft:item/board/card8"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13469
+      },
+      "model": "rpgcraft:item/board/card9"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13470
+      },
+      "model": "rpgcraft:item/board/card10"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13471
+      },
+      "model": "rpgcraft:item/board/chip"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13472
+      },
+      "model": "rpgcraft:item/board/call"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13473
+      },
+      "model": "rpgcraft:item/board/fold"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13480
+      },
+      "model": "rpgcraft:item/board/tier_bronze"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13481
+      },
+      "model": "rpgcraft:item/board/tier_silver"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13482
+      },
+      "model": "rpgcraft:item/board/tier_gold"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13483
+      },
+      "model": "rpgcraft:item/board/tier_platinum"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13484
+      },
+      "model": "rpgcraft:item/board/tier_diamond"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13485
+      },
+      "model": "rpgcraft:item/board/tier_master"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13486
+      },
+      "model": "rpgcraft:item/board/tier_grandmaster"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13487
+      },
+      "model": "rpgcraft:item/board/board_chip"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13488
+      },
+      "model": "rpgcraft:item/board/hub_yut"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13489
+      },
+      "model": "rpgcraft:item/board/hub_marble"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13490
+      },
+      "model": "rpgcraft:item/board/hub_poker"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13491
+      },
+      "model": "rpgcraft:item/board/hub_duel"
+    },
+    {
+      "predicate": {
         "custom_model_data": 16000
       },
       "model": "rpgcraft:mob/jelly_slime_undead"

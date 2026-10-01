@@ -105,6 +105,7 @@ public class MobManager implements Listener {
             s = init(le);   // 서버 재시작 · 청크 로드로 아직 추적되지 않던 몬스터
         }
         if (s.bossId != null) return;
+        if (!overheadName()) return;   // v5.10.46 머리 위 이름표 끔
         if (s.shownUntil == 0 && le.isCustomNameVisible()) return;   // 다른 기능이 항상 보이게 해 둔 이름표 (웨이브 몬스터 · 허수아비)
         boolean was = s.shownUntil > System.currentTimeMillis();
         s.shownUntil = Math.max(s.shownUntil, until);
@@ -186,7 +187,7 @@ public class MobManager implements Listener {
     public void updateName(LivingEntity e, MobState s) {
         if (e instanceof Player) return;
         if (s.bossId != null) {
-            e.setCustomName(Text.c("&4&l[보스] &c" + s.baseName + " &f" + Text.num(s.hp)));
+            e.setCustomName(Text.c("&4&l[보스] &c" + s.baseName));   // v5.10.45 체력은 오른쪽 위 대상 정보에
             e.setCustomNameVisible(true);
             return;
         }
@@ -194,8 +195,14 @@ public class MobManager implements Listener {
         int full = (int) Math.ceil(ratio * 10);
         String col = ratio > 0.5 ? "&a" : ratio > 0.2 ? "&e" : "&c";
         String lvCol = s.minionOf != null ? "&5" : s.level >= 90 ? "&4" : s.level >= 60 ? "&c" : s.level >= 30 ? "&6" : "&7";
-        e.setCustomName(Text.c(lvCol + "Lv." + s.level + " &f" + s.baseName + " " + col + "▌".repeat(full) + "&8" + "▌".repeat(10 - full)));
-        e.setCustomNameVisible(s.shownUntil > System.currentTimeMillis());
+        boolean overheadBar = plugin.getConfig().getBoolean("mobs.overhead-hp-bar", false);   // v5.10.45 4R 처럼 체력은 오른쪽 위 대상 정보에 (머리 위엔 이름만)
+        e.setCustomName(Text.c(lvCol + "Lv." + s.level + " &f" + s.baseName + (overheadBar ? " " + col + "▌".repeat(full) + "&8" + "▌".repeat(10 - full) : "")));
+        e.setCustomNameVisible(overheadName() && s.shownUntil > System.currentTimeMillis());
+    }
+
+    /** v5.10.46 머리 위 이름표 (기본 끔: 이름 · 레벨 · 체력은 오른쪽 위 대상 정보에) */
+    private boolean overheadName() {
+        return plugin.getConfig().getBoolean("mobs.overhead-name", false);
     }
 
     public int computeLevel(Location l) {

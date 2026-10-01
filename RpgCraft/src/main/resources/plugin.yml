@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.10.44'
+version: '5.10.46'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -87,6 +87,12 @@ commands:
   minigame:
     description: 미니게임 광장 (미니게임 · 미니게임 상점)
     aliases: [미니게임, 미니게임상점, 미겜]
+  commands:
+    description: 모든 명령어 목록 (클릭하면 입력)
+    aliases: [명령어, 명령어목록, 도움말명령어, cmds]
+  board:
+    description: 보드게임 · 오락실 (윷놀이 · 부루마블 · 인디언 포커 · 보드 칩 상점)
+    aliases: [보드게임, 오락실, 보드]
   duel:
     description: 야차 (1대1 결투)
     aliases: [야차]

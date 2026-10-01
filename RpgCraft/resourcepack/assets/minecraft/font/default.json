@@ -476,271 +476,280 @@
     {
       "type": "bitmap",
       "file": "rpgcraft:font/target/frame.png",
-      "ascent": 11,
-      "height": 30,
+      "ascent": 23,
+      "height": 46,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_00.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_00.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_01.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_01.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_02.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_02.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_03.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_03.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_04.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_04.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_05.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_05.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_06.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_06.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_07.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_07.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_08.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_08.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_09.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_09.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_10.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_10.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_11.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_11.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_12.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_12.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_13.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_13.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_14.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_14.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_15.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_15.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_16.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_16.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_17.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_17.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_18.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_18.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_19.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_19.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_20.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_20.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_21.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_21.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_22.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_22.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_23.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_23.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_24.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_24.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/bar_25.png",
-      "ascent": -5,
-      "height": 6,
+      "file": "rpgcraft:font/target/fill_25.png",
+      "ascent": -11,
+      "height": 9,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/icon_normal.png",
-      "ascent": 3,
-      "height": 13,
+      "file": "rpgcraft:font/target/emblem_normal.png",
+      "ascent": 39,
+      "height": 78,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/icon_elite.png",
-      "ascent": 3,
-      "height": 13,
+      "file": "rpgcraft:font/target/emblem_elite.png",
+      "ascent": 39,
+      "height": 78,
       "chars": [
         ""
       ]
     },
     {
       "type": "bitmap",
-      "file": "rpgcraft:font/target/icon_boss.png",
-      "ascent": 3,
-      "height": 13,
+      "file": "rpgcraft:font/target/emblem_boss.png",
+      "ascent": 39,
+      "height": 78,
       "chars": [
         ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:font/target/digits.png",
+      "ascent": -12,
+      "height": 8,
+      "chars": [
+        ""
       ]
     },
     {

@@ -123,6 +123,8 @@ def _tier(name):
 
 
 def kind_of(name):
+    if name.startswith(("fish_", "loot_", "mat_", "herb_", "wood_", "ore_", "ing_", "food_", "pet_", "mg_", "ui_")):   # v5.10.38 물고기 이름(무지개 송어=rainbow · 황새치=swordfish)이 무기로 잘못 잡히던 문제
+        return None
     if "shield" in name:
         return "shield"
     if "bow" in name:
@@ -570,52 +572,44 @@ def hammer(g, P, s, tier):
 
 
 def club(g, P, s, tier):
-    """v5.10.34 갈색 몽둥이: 결 · 옹이가 보이는 나무 머리 + 쇠띠 두 줄 · 리벳 + 박힌 쇠 징 + 가죽 감은 손잡이 · 쇠 폼멜"""
+    """v5.10.41 갈색 몽둥이: 가시 · 쇠붙이 없이 투박한 나무 막대기 — 살짝 휜 굵은 가지 · 거친 나무껍질 · 옹이 · 잘린 잔가지 · 닳은 끝 · 천으로 감은 손잡이"""
     wood = P["blade"]
-    iron, iron_d, iron_l = "7c818c", "4a4e58", "c8ccd6"
-    y0, y1 = 2.6, 15.6
+    bark, bark_d, inner = lit(wood, 0.82), lit(wood, 0.6), lit(wood, 1.25)
+    y0, y1 = -2.2, 15.4
+    bend = lambda y: 0.55 * math.sin((y - y0) / (y1 - y0) * math.pi)   # 살짝 휜 가지
 
     def radius(y):
         t = (y - y0) / (y1 - y0)
-        return 0.95 + 1.55 * t ** 0.8
+        return 0.8 + 1.15 * t ** 1.3 + 0.12 * math.sin(y * 1.7 + (s % 5))   # 위로 갈수록 굵고 울퉁불퉁
 
-    def grain(x, y, z, u, w):
+    def col(x, y, z, u, w):
         ang = math.atan2(w, u)
-        stripe = math.sin(ang * 7 + y * 0.35 + (s % 7)) * 0.5 + 0.5    # 세로 나뭇결
-        k = 0.78 + 0.22 * stripe + 0.06 * (VL.rnd(int(y * 3), int(ang * 5)) - 0.5)
-        if y > y1 - 0.7:
-            k *= 1.12                                                 # 둥근 끝 (밝게 닳음)
-        return lit(wood, k)
-    _fill(g, y0, y1, lambda y: (radius(y), radius(y) * 0.95, "round"), grain, 2)
-    g.sphere((C[0], y1, C[1]), radius(y1) * 0.92, lambda x, y, z, d: lit(wood, 1.05 - 0.15 * d), 2)   # 둥근 머리 끝
-    for (yy, a) in ((6.2, 0.8), (11.6, 3.6), (8.4, 5.1)):            # 옹이
+        groove = math.sin(ang * 9 + y * 0.25 + (s % 7)) > 0.55             # 세로로 갈라진 나무껍질 홈
+        k = 0.92 + 0.12 * (VL.rnd(int(y * 2.5), int(ang * 6)) - 0.5)
+        return bark_d if groove else lit(bark, k)
+    _fill(g, y0, y1, lambda y: (radius(y), radius(y) * 0.95, "round", bend(y)), col, 2)
+    top = (C[0] + bend(y1), y1, C[1])
+    g.sphere(top, radius(y1) * 0.9, lambda x, y, z, d: inner if y > y1 + 0.25 else bark, 2)   # 닳아서 속살이 보이는 끝
+    for k in range(3):   # 끝의 나이테
+        g.dot(top[0] + (k - 1) * 0.5, y1 + radius(y1) * 0.85, top[2] + 0.2 * k, lit(wood, 1.05 - 0.12 * k), 3, 0.35)
+    for (yy, a) in ((5.4, 0.9), (9.8, 3.8), (12.6, 2.2)):   # 옹이 (튀어나온 둥근 혹 + 어두운 가운데)
         r = radius(yy)
-        cx, cz = C[0] + math.cos(a) * r, C[1] + math.sin(a) * r
-        g.sphere((cx, yy, cz), 0.55, lambda *q: lit(wood, 0.45), 4)
-        g.dot(cx, yy, cz, lit(wood, 0.3), 5, 0.3)
-    for yy in (8.6, 13.4):                                            # 쇠띠 + 리벳
-        r = radius(yy) + 0.35
-        _fill(g, yy - 0.45, yy + 0.45, lambda y, r=r: (r, r * 0.95, "round"), lambda x, y, z, u, w: iron if y > yy - 0.2 else iron_d, 4)
-        for k in range(6):
-            a = k * math.pi / 3 + 0.3
-            g.dot(C[0] + math.cos(a) * (r + 0.1), yy, C[1] + math.sin(a) * (r + 0.1) * 0.95, iron_l, 5, 0.35)
-    for row, yy in enumerate((10.4, 12.0, 14.6)):                     # 박힌 쇠 징
+        cx, cz = C[0] + bend(yy) + math.cos(a) * r, C[1] + math.sin(a) * r
+        g.sphere((cx, yy, cz), 0.62, lambda *q: bark, 3)
+        g.dot(cx + math.cos(a) * 0.35, yy, cz + math.sin(a) * 0.35, bark_d, 4, 0.32)
+    for (yy, a, ln) in ((7.6, 2.6, 1.8), (11.2, 0.4, 1.3)):   # 잘린 잔가지
         r = radius(yy)
-        for k in range(6):
-            a = k * math.pi / 3 + (row % 2) * math.pi / 6
-            ux, uz = math.cos(a), math.sin(a)
-            base = (C[0] + ux * (r - 0.1), yy, C[1] + uz * (r - 0.1) * 0.95)
-            tip = (C[0] + ux * (r + 1.3), yy + 0.25, C[1] + uz * (r + 1.3) * 0.95)
-            g.cone(base, tip, 0.42, 0.08, lambda x, y, z, f: iron_l if f > 0.6 else iron, 5)
-    for (yy, a) in ((5.0, 2.2), (7.2, 0.2)):                          # 깎인 자국
-        r = radius(yy)
-        g.box((C[0] + math.cos(a) * r - 0.2, yy - 0.6, C[1] + math.sin(a) * r - 0.2), (C[0] + math.cos(a) * r + 0.2, yy + 0.6, C[1] + math.sin(a) * r + 0.2), lit(wood, 0.55), 4)
-    # 손잡이: 비스듬히 감은 가죽 + 위아래 쇠고리 + 손목끈 + 쇠 폼멜
-    _grip(g, -1.4, y0 + 0.1, 0.82, P)
-    _fill(g, y0 - 0.1, y0 + 0.5, lambda y: (1.15, 1.1, "round"), lambda *q: iron_d, 4)
-    g.sphere((C[0], -2.0, C[1]), 1.05, lambda x, y, z, d: iron_l if d < 0.25 else iron, 4)
-    g.tube([(C[0] - 0.9, -1.2, C[1]), (C[0] - 2.2, -2.8, C[1] + 0.3), (C[0] - 1.6, -4.4, C[1]), (C[0] - 0.4, -3.2, C[1] - 0.2)], [0.22, 0.2, 0.2, 0.2],
-           lit(P["grip"], 0.6), 3, smooth=True)
+        base = (C[0] + bend(yy) + math.cos(a) * (r - 0.2), yy, C[1] + math.sin(a) * (r - 0.2))
+        tip = (base[0] + math.cos(a) * ln, yy + ln * 0.7, base[2] + math.sin(a) * ln)
+        g.cone(base, tip, 0.45, 0.32, lambda *q: bark, 3)
+        g.dot(*tip, inner, 4, 0.3)   # 잘린 면
+    # 손잡이: 거친 천을 감고 끈으로 묶음
+    def wrap(x, y, z, u, w):
+        return lit(P["grip"], 0.75) if int((y * 2.0 + math.atan2(w, u) * 0.5) % 2) else P["grip"]
+    _fill(g, y0, 3.2, lambda y: (radius(y) + 0.22, radius(y) * 0.95 + 0.22, "round", bend(y)), wrap, 3)
+    for yy in (y0 + 0.3, 3.0):
+        _fill(g, yy - 0.25, yy + 0.25, lambda y: (radius(y) + 0.38, radius(y) * 0.95 + 0.38, "round", bend(y)), lambda *q: lit(P["grip"], 0.55), 4)
+    g.tube([(C[0] - 0.7, 3.0, C[1] + 0.5), (C[0] - 1.6, 1.8, C[1] + 0.9), (C[0] - 1.3, 0.6, C[1] + 0.6)], [0.18, 0.16, 0.12], lit(P["grip"], 0.55), 4, smooth=True)   # 늘어진 끈 끝
 
 
 def spear(g, P, s, tier):
@@ -797,8 +791,8 @@ def build(name, img, keys):
     for e in els:
         e.pop("_col", None)
         e.pop("_edge", None)
-        if kind == "bow":      # v5.10.34 바닐라 활 그림과 같은 방향 (몸은 왼쪽 위 ↔ 오른쪽 아래, 휜 쪽 = 오른쪽 위 = 쏘는 쪽)
-            e["rotation"] = {"axis": "z", "angle": 45, "origin": [8, 8, 8]}
+        if kind == "bow":      # v5.10.40 손에서 90도 돌려 세워 들고 시위를 잡은 것처럼 (v5.10.34 의 +45 → -45)
+            e["rotation"] = {"axis": "z", "angle": -45, "origin": [8, 8, 8]}
         elif kind != "shield":   # 세로로 깎은 무기를 대각선으로 (손잡이 왼쪽 아래 → 끝 오른쪽 위)
             e["rotation"] = {"axis": "z", "angle": -45, "origin": [8, 8, 8]}
         if kind == "shield":   # v5.10.34 바닐라 방패와 같은 자리 · 크기 (판 가운데 = 원점, 앞면 +z) → 실제 방패 크기로 옆에 듦

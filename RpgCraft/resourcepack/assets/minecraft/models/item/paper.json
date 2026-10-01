@@ -3756,6 +3756,138 @@
     },
     {
       "predicate": {
+        "custom_model_data": 12642
+      },
+      "model": "rpgcraft:item/ui/ui_shop_general"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12643
+      },
+      "model": "rpgcraft:item/ui/ui_shop_weapon"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12644
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_warrior"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12645
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_assassin"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12646
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_adventurer"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12647
+      },
+      "model": "rpgcraft:item/ui/ui_shop_special"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12648
+      },
+      "model": "rpgcraft:item/ui/ui_shop_wandering"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12649
+      },
+      "model": "rpgcraft:item/ui/ui_shop_war"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12650
+      },
+      "model": "rpgcraft:item/ui/ui_shop_loot"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12651
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_set"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12652
+      },
+      "model": "rpgcraft:item/ui/ui_shop_scroll"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12653
+      },
+      "model": "rpgcraft:item/ui/ui_shop_fish"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12654
+      },
+      "model": "rpgcraft:item/ui/ui_shop_transcend"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12655
+      },
+      "model": "rpgcraft:item/ui/ui_shop_cook"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12656
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12657
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12658
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12659
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_shield"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12660
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_bow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12661
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_staff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12662
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_spear"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12663
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_special"
+    },
+    {
+      "predicate": {
         "custom_model_data": 12700
       },
       "model": "rpgcraft:item/ui/ui_season_pass_off"
@@ -4005,6 +4137,138 @@
         "custom_model_data": 12741
       },
       "model": "rpgcraft:item/ui/ui_nav_close_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12742
+      },
+      "model": "rpgcraft:item/ui/ui_shop_general_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12743
+      },
+      "model": "rpgcraft:item/ui/ui_shop_weapon_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12744
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_warrior_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12745
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_assassin_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12746
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_adventurer_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12747
+      },
+      "model": "rpgcraft:item/ui/ui_shop_special_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12748
+      },
+      "model": "rpgcraft:item/ui/ui_shop_wandering_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12749
+      },
+      "model": "rpgcraft:item/ui/ui_shop_war_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12750
+      },
+      "model": "rpgcraft:item/ui/ui_shop_loot_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12751
+      },
+      "model": "rpgcraft:item/ui/ui_shop_armor_set_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12752
+      },
+      "model": "rpgcraft:item/ui/ui_shop_scroll_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12753
+      },
+      "model": "rpgcraft:item/ui/ui_shop_fish_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12754
+      },
+      "model": "rpgcraft:item/ui/ui_shop_transcend_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12755
+      },
+      "model": "rpgcraft:item/ui/ui_shop_cook_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12756
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_sword_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12757
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_dagger_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12758
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_axe_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12759
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_shield_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12760
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_bow_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12761
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_staff_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12762
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_spear_off"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12763
+      },
+      "model": "rpgcraft:item/ui/ui_wpn_special_off"
     },
     {
       "predicate": {

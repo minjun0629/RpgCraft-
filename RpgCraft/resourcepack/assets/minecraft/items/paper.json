@@ -4380,6 +4380,160 @@
         }
       },
       {
+        "threshold": 12642,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_general"
+        }
+      },
+      {
+        "threshold": 12643,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_weapon"
+        }
+      },
+      {
+        "threshold": 12644,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_warrior"
+        }
+      },
+      {
+        "threshold": 12645,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_assassin"
+        }
+      },
+      {
+        "threshold": 12646,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_adventurer"
+        }
+      },
+      {
+        "threshold": 12647,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_special"
+        }
+      },
+      {
+        "threshold": 12648,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_wandering"
+        }
+      },
+      {
+        "threshold": 12649,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_war"
+        }
+      },
+      {
+        "threshold": 12650,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_loot"
+        }
+      },
+      {
+        "threshold": 12651,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_set"
+        }
+      },
+      {
+        "threshold": 12652,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_scroll"
+        }
+      },
+      {
+        "threshold": 12653,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_fish"
+        }
+      },
+      {
+        "threshold": 12654,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_transcend"
+        }
+      },
+      {
+        "threshold": 12655,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_cook"
+        }
+      },
+      {
+        "threshold": 12656,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_sword"
+        }
+      },
+      {
+        "threshold": 12657,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_dagger"
+        }
+      },
+      {
+        "threshold": 12658,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_axe"
+        }
+      },
+      {
+        "threshold": 12659,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_shield"
+        }
+      },
+      {
+        "threshold": 12660,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_bow"
+        }
+      },
+      {
+        "threshold": 12661,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_staff"
+        }
+      },
+      {
+        "threshold": 12662,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_spear"
+        }
+      },
+      {
+        "threshold": 12663,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_special"
+        }
+      },
+      {
         "threshold": 12700,
         "model": {
           "type": "minecraft:model",
@@ -4671,6 +4825,160 @@
         "model": {
           "type": "minecraft:model",
           "model": "rpgcraft:item/ui/ui_nav_close_off"
+        }
+      },
+      {
+        "threshold": 12742,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_general_off"
+        }
+      },
+      {
+        "threshold": 12743,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_weapon_off"
+        }
+      },
+      {
+        "threshold": 12744,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_warrior_off"
+        }
+      },
+      {
+        "threshold": 12745,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_assassin_off"
+        }
+      },
+      {
+        "threshold": 12746,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_adventurer_off"
+        }
+      },
+      {
+        "threshold": 12747,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_special_off"
+        }
+      },
+      {
+        "threshold": 12748,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_wandering_off"
+        }
+      },
+      {
+        "threshold": 12749,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_war_off"
+        }
+      },
+      {
+        "threshold": 12750,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_loot_off"
+        }
+      },
+      {
+        "threshold": 12751,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_armor_set_off"
+        }
+      },
+      {
+        "threshold": 12752,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_scroll_off"
+        }
+      },
+      {
+        "threshold": 12753,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_fish_off"
+        }
+      },
+      {
+        "threshold": 12754,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_transcend_off"
+        }
+      },
+      {
+        "threshold": 12755,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_shop_cook_off"
+        }
+      },
+      {
+        "threshold": 12756,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_sword_off"
+        }
+      },
+      {
+        "threshold": 12757,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_dagger_off"
+        }
+      },
+      {
+        "threshold": 12758,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_axe_off"
+        }
+      },
+      {
+        "threshold": 12759,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_shield_off"
+        }
+      },
+      {
+        "threshold": 12760,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_bow_off"
+        }
+      },
+      {
+        "threshold": 12761,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_staff_off"
+        }
+      },
+      {
+        "threshold": 12762,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_spear_off"
+        }
+      },
+      {
+        "threshold": 12763,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_wpn_special_off"
         }
       },
       {

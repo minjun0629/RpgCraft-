@@ -26,7 +26,8 @@ import java.util.List;
 
 /**
  * v5.10.35 대미지 스킨 (메이플스토리 느낌). 시즌 패스에서 스킨 아이템을 얻어 우클릭하면 등록 · 장착,
- * /데미지스킨 에서 가진 스킨으로 바꿈. 내가 준 대미지 숫자를 모두가 그 스킨으로 본다 (리소스팩 필수 모드에서만 — 팩이 없으면 네모로 보이므로).
+ * /데미지스킨 에서 가진 스킨으로 바꿈. 내가 준 대미지 숫자를 리소스팩을 적용한 모든 플레이어가 그 스킨으로 본다
+ * (v5.10.42 팩 필수 모드가 아니어도 적용 — 팩이 없는 사람에게는 기본 숫자를 따로 보여 줌).
  * 글리프 번호는 tools/dmg_skin.py 와 같아야 함.
  */
 public class DamageSkinManager implements Listener, CommandExecutor {
@@ -74,9 +75,18 @@ public class DamageSkinManager implements Listener, CommandExecutor {
         return i > 0 && i < Skin.values().length && owns(d, Skin.values()[i]) ? Skin.values()[i] : Skin.BASIC;
     }
 
+    /** 이 플레이어 화면에 스킨 글자를 보여도 되는지 (리소스팩을 적용한 사람만 — 없으면 네모로 보이므로) */
+    public boolean canSee(Player viewer) {
+        if (plugin.pack() == null) return false;
+        String mode = plugin.getConfig().getString("resourcepack.gui-overlay", "auto");
+        if ("false".equalsIgnoreCase(mode)) return false;
+        return "true".equalsIgnoreCase(mode) || plugin.pack().overlay() || plugin.pack().hasPack(viewer);
+    }
+
     /** 대미지 숫자 문자열 (공격한 플레이어의 스킨). null 이면 기본 글자로 */
     public String render(Player attacker, double amount, boolean crit) {
-        if (attacker == null || plugin.pack() == null || !plugin.pack().overlay()) return null;
+        if (attacker == null || plugin.pack() == null) return null;
+        if ("false".equalsIgnoreCase(plugin.getConfig().getString("resourcepack.gui-overlay", "auto"))) return null;
         Skin s = selected(plugin.data().get(attacker));
         if (s == Skin.BASIC) return null;
         String num = Text.num(amount);

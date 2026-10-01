@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -55,6 +56,7 @@ public class MobModelManager implements Listener {
         float k, h, yaw = Float.NaN, speed, headYaw;
         double phase, lastX, lastZ;
         int attack = -1, hurt = -1, age, nextAt;
+        boolean flash;   // v5.10.38 크리퍼 폭발 징조 깜빡임
         final int seed;
 
         Rig(Def def, int seed) {
@@ -469,6 +471,38 @@ public class MobModelManager implements Listener {
             sy *= 1 - 0.05f * hurt;
             r.hurt += step;
             if (r.hurt > 6) r.hurt = -1;
+        }
+        // v5.10.38 크리퍼 폭발 징조: 모델이 부풀며 하얗게 깜빡이고(점점 빠르게) 연기 · 불똥 · 폭발 범위 빨간 원
+        if (mob instanceof Creeper cr) {
+            int fuse = cr.getFuseTicks();
+            boolean want = false;
+            if (fuse > 0) {
+                float q = Math.min(1f, fuse / (float) Math.max(1, cr.getMaxFuseTicks()));
+                float pulse = (float) Math.sin(fuse * (0.6 + q * 1.4));
+                sx *= 1 + 0.28f * q + 0.04f * pulse;
+                sy *= 1 + 0.14f * q + 0.03f * pulse;
+                want = (fuse / Math.max(1, (int) (4 - q * 3))) % 2 == 0;
+                World w = mob.getWorld();
+                Location head = l.clone().add(0, mob.getHeight() + 0.2, 0);
+                w.spawnParticle(Particle.SMOKE_NORMAL, head, 2, 0.15, 0.1, 0.15, 0.01);
+                if (q > 0.5) w.spawnParticle(Particle.FLAME, head, 1, 0.2, 0.1, 0.2, 0.01);
+                if (fuse % 3 == 0) {
+                    double rad = cr.getExplosionRadius() * (cr.isPowered() ? 2 : 1) + 0.5;
+                    Particle.DustOptions dust = new Particle.DustOptions(org.bukkit.Color.fromRGB(255, (int) (200 * (1 - q)), 40), 1.4f);
+                    for (int i = 0; i < 24; i++) {
+                        double a = i * Math.PI * 2 / 24;
+                        w.spawnParticle(Particle.REDSTONE, l.clone().add(Math.cos(a) * rad, 0.15, Math.sin(a) * rad), 1, 0, 0, 0, 0, dust);
+                    }
+                }
+            }
+            if (want != r.flash) {
+                r.flash = want;
+                for (ItemDisplay d : ds) {
+                    d.setGlowColorOverride(org.bukkit.Color.WHITE);
+                    d.setGlowing(want);
+                    d.setBrightness(want ? new Display.Brightness(15, 15) : null);
+                }
+            }
         }
         float grow = r.age >= 10 ? 1 : ease(r.age / 10f);   // 등장: 땅에서 솟아남
         float sink = (1 - grow) * -0.6f * k;

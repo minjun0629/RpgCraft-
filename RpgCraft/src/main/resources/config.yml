@@ -308,6 +308,9 @@ trade:
 escape:
   cooldown-seconds: 120
 
+showoff:                    # /자랑 (손에 든 아이템을 채팅에 자랑, 아이템 보기 버튼)
+  cooldown-seconds: 30
+
 custom-mobs:                # 커스텀 몬스터 (mobs.yml)
   enabled: true
   chance: 0.3                # 자연 스폰 몬스터가 커스텀 몬스터로 바뀔 확률

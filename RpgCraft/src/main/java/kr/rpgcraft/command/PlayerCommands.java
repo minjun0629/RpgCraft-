@@ -27,9 +27,11 @@ import java.util.List;
 /** 일반 플레이어 명령어 모음 (명령어 이름으로 분기) */
 public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit.event.Listener {
     private final RpgCraft plugin;
+    private final kr.rpgcraft.feature.ShowOff showOff;
 
     public PlayerCommands(RpgCraft plugin) {
         this.plugin = plugin;
+        this.showOff = new kr.rpgcraft.feature.ShowOff(plugin);
     }
 
     @Override
@@ -86,6 +88,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                     default -> plugin.trades().request(p, a[0]);
                 }
             }
+            case "showoff" -> showOff.handle(p, a);   // v5.10.54 /자랑
             case "escape" -> escape(p);
             case "casino" -> plugin.casino().open(p);
             case "call" -> callAdmin(p, String.join(" ", a));

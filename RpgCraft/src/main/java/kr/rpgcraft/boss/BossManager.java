@@ -186,8 +186,26 @@ public class BossManager {
         return true;
     }
 
+    /** v5.10.50 플레이어마다 보스 판은 하나만 (가장 가까운 보스) — 보스 둘이면 판 두 개가 겹쳐 보였음 */
+    private final Map<UUID, UUID> panelBoss = new HashMap<>();
+
+    private void choosePanelBosses() {
+        panelBoss.clear();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            UUID best = null;
+            double bd = 64 * 64;
+            for (Active a : active.values()) {
+                if (a.entity == null || !a.entity.isValid() || a.entity.getWorld() != p.getWorld()) continue;
+                double d = a.entity.getLocation().distanceSquared(p.getLocation());
+                if (d < bd) { bd = d; best = a.entity.getUniqueId(); }
+            }
+            if (best != null) panelBoss.put(p.getUniqueId(), best);
+        }
+    }
+
     private void tick() {
         long now = System.currentTimeMillis();
+        choosePanelBosses();
         Iterator<Map.Entry<UUID, Active>> it = active.entrySet().iterator();
         while (it.hasNext()) {
             Active a = it.next().getValue();
@@ -1740,7 +1758,11 @@ public class BossManager {
     private void showBars(Active a, MobManager.MobState s, double frac, Set<Player> near) {
         boolean usePanel = plugin.getConfig().getBoolean("bosses.panel", true) && plugin.targetHud() != null;
         Set<Player> packs = new HashSet<>(), plains = new HashSet<>();
-        for (Player p : near) (usePanel && plugin.pack().hasPack(p) ? packs : plains).add(p);
+        for (Player p : near) {
+            if (usePanel && plugin.pack().hasPack(p)) {
+                if (a.entity.getUniqueId().equals(panelBoss.get(p.getUniqueId()))) packs.add(p);   // 가장 가까운 보스 판만
+            } else plains.add(p);
+        }
         for (Player p : new ArrayList<>(a.plainBar.getPlayers())) if (!plains.contains(p)) a.plainBar.removePlayer(p);
         for (Player p : new ArrayList<>(a.panelBar.getPlayers())) if (!packs.contains(p)) a.panelBar.removePlayer(p);
         if (!plains.isEmpty()) {

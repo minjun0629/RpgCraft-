@@ -42,4 +42,11 @@ void main() {
             if (all(lessThan(abs(c255 - vec3(252.0, 224.0, 128.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(252.0, 96.0, 96.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(200.0, 200.0, 196.0)), vec3(0.6))) || all(lessThan(abs(c255 - vec3(248.0, 252.0, 252.0)), vec3(0.6)))) gl_Position.z -= 0.002;
         }
     }
+
+    // RpgCraft: HUD frames / bars drawn in reserved colors are pushed back so icons and numbers stay on top.
+    if (abs(gl_Position.w - 1.0) < 0.0001) {
+        vec3 h255 = Color.rgb * 255.0;
+        if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 252.0)), vec3(0.6)))) gl_Position.z += 0.002;
+        else if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 250.0)), vec3(0.6)))) gl_Position.z += 0.001;
+    }
 }

@@ -643,8 +643,9 @@ def main():
     # 1.20.2+ 클라이언트: 하트/배고픔/갑옷/산소 스프라이트 숨김 + 금색 경험치 바 (1.20.1 은 icons.png 사용)
     ui_pack.write_modern_hud_sprites(PACK)
     # 1.20.1 사이드바 오른쪽 빨간 점수 숫자 숨김 (화면 가장 오른쪽 끝의 빨간 GUI 글자만)
+    import ui4r   # v5.10.50 HUD 판 · 바 뒤로
     import target_hud   # v5.10.45 4R 풍 대상 정보 (오른쪽 위)
-    ui_pack.write_score_shader(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "rendertype_text.vsh"), target_hud.shader_snippet())
+    ui_pack.write_score_shader(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "rendertype_text.vsh"), target_hud.shader_snippet() + ui4r.hud_shader_snippet())
     # 보스 체력바 디자인 (1.20.1 bars.png + 1.20.2+ 스프라이트). WHITE 는 나침반 문구용 투명 바
     ui_pack.write_boss_bars(PACK, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla", "bars.png"))
     ui_pack.boss_bar_preview(os.path.join(ROOT, "dist", "bossbar-preview.png"))

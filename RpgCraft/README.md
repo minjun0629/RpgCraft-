@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.50
+- HUD 판 · 바가 아이콘 · 숫자를 가리던 문제 수정 (셰이더로 판을 뒤로).
+
 ## v5.10.49
 - 적 정보 숫자 깨짐 수정 · 문장 안 몬스터 초상 · 보스 전용 체력 판 · HUD · 대미지 숫자를 4R 풍 기울임 숫자 글꼴로.
 

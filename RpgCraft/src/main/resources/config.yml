@@ -312,6 +312,7 @@ kingdom:                    # v5.10.56 스폰 왕국 (/rpg관리 kingdom build c
   no-mobs: true             # 왕국 안 (스폰 둘레 half 칸) 에서는 몬스터가 자연적으로 생기지 않음 (짓기 전에도 스폰 둘레에 적용)
   half: 500                 # 반너비 (1000 x 1000)
   ms-per-tick: 30           # 짓는 동안 한 틱에 쓸 시간 (클수록 빨리 짓지만 서버가 느려짐)
+  level-from-wall: true     # 왕국을 지은 월드: 몬스터 레벨을 스폰이 아니라 왕국 부지 끝(성 밖)부터 셈 → 성 밖 바로 앞이 Lv.1, mobs.level.blocks-per-level 칸마다 +1
 
 showoff:                    # /자랑 (손에 든 아이템을 채팅에 자랑, 아이템 보기 버튼)
   cooldown-seconds: 30

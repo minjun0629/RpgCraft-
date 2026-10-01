@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.57
+- 왕국을 지은 월드는 몬스터 레벨을 성 밖(왕국 부지 끝)부터 Lv.1 로 셈.
+
 ## v5.10.56
 - 스폰 왕국 1000 x 1000 (`/rpg관리 kingdom build confirm`) · 스폰 둘레 몬스터 금지 · 시장 상점 NPC · 모험가 광장 의뢰 NPC.
 

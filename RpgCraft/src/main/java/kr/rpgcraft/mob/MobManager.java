@@ -215,6 +215,13 @@ public class MobManager implements Listener {
         int spread = c.getInt("mobs.level.random-spread", 2);
         Location spawn = l.getWorld().getSpawnLocation();
         double dist = Math.hypot(l.getX() - spawn.getX(), l.getZ() - spawn.getZ());
+        // v5.10.57 스폰 왕국을 지었으면 성 밖(왕국 부지 끝)부터 Lv.1 → 멀어질수록 올라감 (네모 부지 바깥까지의 거리)
+        if (w.equals(c.getString("kingdom.world", "")) && c.getBoolean("kingdom.level-from-wall", true)) {
+            int half = c.getInt("kingdom.half", 500);
+            double dx = Math.max(0, Math.abs(l.getX() - c.getDouble("kingdom.x")) - half);
+            double dz = Math.max(0, Math.abs(l.getZ() - c.getDouble("kingdom.z")) - half);
+            dist = Math.hypot(dx, dz);
+        }
         int lv = base + (int) (dist / Math.max(1, per)) + ThreadLocalRandom.current().nextInt(-spread, spread + 1);
         return Math.max(1, Math.min(max, lv));
     }

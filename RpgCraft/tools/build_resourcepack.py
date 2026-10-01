@@ -29,6 +29,7 @@ import boss_models  # noqa: E402
 import armor_art  # noqa: E402
 import ui_pack  # noqa: E402
 import weapon_vox  # noqa: E402  v5.10.21 무기 3D 복셀
+import armor_vox  # noqa: E402  v5.10.28 방어구 3D 복셀
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACK = os.path.join(ROOT, "resourcepack")
@@ -549,7 +550,15 @@ def main():
                 made += 1
             textures += 1
             path = os.path.join(PACK, "assets", NS, "models", "item", mname + ".json")
-            if not FLAT and weapon_vox.kind_of(name):   # v5.10.21 무기: 블록을 쌓아 깎은 3D 모델 (팔레트 텍스처, 강화 변형은 팔레트만 더 화려하게)
+            if not FLAT and name in armor_vox.MAP and st == 0:   # v5.10.28 방어구: 블록을 쌓아 깎은 3D 모델
+                av = armor_vox.build(name)
+                els, acols, adisp = av
+                elements_total += len(els)
+                atex = os.path.join(PACK, "assets", NS, "textures", "item", "avox", mname + ".png")
+                os.makedirs(os.path.dirname(atex), exist_ok=True)
+                weapon_vox.palette_image(acols).save(atex)
+                write_json(path, armor_vox.model_json(NS + ":item/avox/" + mname, els, adisp), compact=True)
+            elif not FLAT and weapon_vox.kind_of(name):   # v5.10.21 무기: 블록을 쌓아 깎은 3D 모델 (팔레트 텍스처, 강화 변형은 팔레트만 더 화려하게)
                 if st == 0:
                     img(0)
                     wv = weapon_vox.build(name, Image.open(tex).convert("RGBA"), dict(getattr(art, "LAST_KEYS", {}) or {}))

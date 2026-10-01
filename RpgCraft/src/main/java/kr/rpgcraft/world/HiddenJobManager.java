@@ -69,6 +69,51 @@ public class HiddenJobManager implements Listener {
         this.data = YamlConfiguration.loadConfiguration(file);
         Bukkit.getScheduler().runTaskLater(plugin, this::ensurePlaced, 260L);
         Bukkit.getScheduler().runTaskLater(plugin, () -> respawnMissing(null), 460L);   // 사라진 NPC 는 원래 자리에 다시
+        Bukkit.getScheduler().runTaskTimer(plugin, this::weaponAura, 60L, 4L);   // v5.10.44 전용 무기를 든 손에 서린 기운
+    }
+
+    private long auraTick;
+
+    /** v5.10.44 히든 전용 무기를 손에 들면 무기마다 다른 기운이 피어오름 (모두에게 보임) */
+    private void weaponAura() {
+        if (!plugin.getConfig().getBoolean("hidden-weapon.aura", true)) return;
+        auraTick++;
+        java.util.concurrent.ThreadLocalRandom r = java.util.concurrent.ThreadLocalRandom.current();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            String id = ItemData.id(p.getInventory().getItemInMainHand());
+            if (id == null || !id.startsWith("hjw_") || p.getGameMode() == GameMode.SPECTATOR) continue;
+            Location eye = p.getEyeLocation();
+            org.bukkit.util.Vector fwd = eye.getDirection().setY(0);
+            if (fwd.lengthSquared() < 1e-4) fwd = new org.bukkit.util.Vector(0, 0, 1);
+            fwd.normalize();
+            org.bukkit.util.Vector right = new org.bukkit.util.Vector(-fwd.getZ(), 0, fwd.getX());
+            Location hand = p.getLocation().add(0, 1.0, 0).add(right.clone().multiply(0.45)).add(fwd.clone().multiply(0.25));
+            Location tip = hand.clone().add(0, 1.1, 0).add(fwd.clone().multiply(0.35));
+            World w = p.getWorld();
+            switch (id) {
+                case "hjw_a" -> {   // 명계의 낫: 청록 영혼불 · 영혼
+                    w.spawnParticle(Particle.SOUL_FIRE_FLAME, tip, 2, 0.35, 0.3, 0.35, 0.01);
+                    w.spawnParticle(Particle.REDSTONE, tip, 3, 0.4, 0.4, 0.4, 0, new Particle.DustOptions(Color.fromRGB(0x4AF8E0), 0.9f));
+                    if (auraTick % 5 == 0) w.spawnParticle(Particle.SOUL, hand.clone().add(r.nextDouble(-0.4, 0.4), 0.4, r.nextDouble(-0.4, 0.4)), 1, 0, 0, 0, 0.02);
+                }
+                case "hjw_b" -> {   // 성운검: 별가루 · 성운빛
+                    w.spawnParticle(Particle.END_ROD, tip, 1, 0.3, 0.45, 0.3, 0.005);
+                    w.spawnParticle(Particle.REDSTONE, tip, 2, 0.35, 0.5, 0.35, 0, new Particle.DustOptions(Color.fromRGB(0x8A5AFF), 1.0f));
+                    w.spawnParticle(Particle.REDSTONE, tip, 1, 0.35, 0.5, 0.35, 0, new Particle.DustOptions(Color.fromRGB(0xFF6AD8), 0.8f));
+                    if (auraTick % 3 == 0) w.spawnParticle(Particle.FIREWORKS_SPARK, tip, 1, 0.3, 0.4, 0.3, 0.01);
+                }
+                case "hjw_c" -> {   // 망자의 홀: 초록 영혼 · 보랏빛 룬
+                    w.spawnParticle(Particle.REDSTONE, tip, 3, 0.3, 0.3, 0.3, 0, new Particle.DustOptions(Color.fromRGB(0x7AFF5A), 1.0f));
+                    w.spawnParticle(Particle.REDSTONE, tip, 1, 0.45, 0.35, 0.45, 0, new Particle.DustOptions(Color.fromRGB(0xA060FF), 0.8f));
+                    if (auraTick % 4 == 0) w.spawnParticle(Particle.SCULK_SOUL, tip, 1, 0.2, 0.2, 0.2, 0.01);
+                }
+                default -> {        // 시간의 바늘: 청록 시간 조각 · 불꽃 튐
+                    w.spawnParticle(Particle.REDSTONE, tip, 2, 0.3, 0.45, 0.3, 0, new Particle.DustOptions(Color.fromRGB(0x5AF0FF), 0.9f));
+                    w.spawnParticle(Particle.REDSTONE, tip, 1, 0.3, 0.45, 0.3, 0, new Particle.DustOptions(Color.fromRGB(0xFFD870), 0.8f));
+                    if (auraTick % 3 == 0) w.spawnParticle(Particle.ELECTRIC_SPARK, tip, 1, 0.25, 0.4, 0.25, 0.02);
+                }
+            }
+        }
     }
 
     public static Tier of(PlayerData d) {
@@ -335,7 +380,13 @@ public class HiddenJobManager implements Listener {
             wl.add(" &f" + Text.money(money));
             wl.add("");
             wl.add("&e▶ 쉬프트 클릭하여 제작");
-            g.set(22, Gui.button(wt == null ? Material.NETHERITE_SWORD : wt.material, "&5&l전용 무기: " + WEAPON_NAME[li], wl.toArray(new String[0])), e -> {
+            ItemStack wIcon = new kr.rpgcraft.util.ItemBuilder(wt == null ? Material.NETHERITE_SWORD : wt.material).name("&5&l전용 무기: " + WEAPON_NAME[li]).lore(wl.toArray(new String[0])).hideAll().build();
+            if (wt != null && wt.modelData > 0) {   // v5.10.44 전용 무기 3D 모델 그대로 보여 줌
+                var wm = wIcon.getItemMeta();
+                wm.setCustomModelData(wt.modelData);
+                wIcon.setItemMeta(wm);
+            }
+            g.set(22, wIcon, e -> {
                 if (!e.isShiftClick()) return;
                 p.closeInventory();
                 craftWeapon(p, cur);

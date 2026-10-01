@@ -262,6 +262,27 @@
           "type": "minecraft:model",
           "model": "rpgcraft:item/armory2_sword_8_e10"
         }
+      },
+      {
+        "threshold": 7700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_b"
+        }
+      },
+      {
+        "threshold": 10700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_b"
+        }
+      },
+      {
+        "threshold": 12700,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hjw/hjw_b"
+        }
       }
     ],
     "fallback": {

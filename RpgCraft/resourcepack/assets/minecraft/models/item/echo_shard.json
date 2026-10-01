@@ -45,6 +45,24 @@
         "custom_model_data": 1498
       },
       "model": "rpgcraft:item/crystal_top"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7700
+      },
+      "model": "rpgcraft:item/hjw/hjw_d"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10700
+      },
+      "model": "rpgcraft:item/hjw/hjw_d"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12700
+      },
+      "model": "rpgcraft:item/hjw/hjw_d"
     }
   ]
 }

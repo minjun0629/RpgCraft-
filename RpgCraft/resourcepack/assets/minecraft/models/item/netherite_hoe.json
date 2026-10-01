@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/netherite_hoe"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 7700
+      },
+      "model": "rpgcraft:item/hjw/hjw_a"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10700
+      },
+      "model": "rpgcraft:item/hjw/hjw_a"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12700
+      },
+      "model": "rpgcraft:item/hjw/hjw_a"
+    }
+  ]
+}

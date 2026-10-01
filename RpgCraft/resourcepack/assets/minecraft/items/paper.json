@@ -4534,6 +4534,258 @@
         }
       },
       {
+        "threshold": 12664,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_locked"
+        }
+      },
+      {
+        "threshold": 12665,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_check"
+        }
+      },
+      {
+        "threshold": 12666,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_book"
+        }
+      },
+      {
+        "threshold": 12667,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_star"
+        }
+      },
+      {
+        "threshold": 12668,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_note"
+        }
+      },
+      {
+        "threshold": 12669,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_tag"
+        }
+      },
+      {
+        "threshold": 12670,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_coin"
+        }
+      },
+      {
+        "threshold": 12671,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_anvil"
+        }
+      },
+      {
+        "threshold": 12672,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_chest"
+        }
+      },
+      {
+        "threshold": 12673,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_funnel"
+        }
+      },
+      {
+        "threshold": 12674,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_clock"
+        }
+      },
+      {
+        "threshold": 12675,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_mount"
+        }
+      },
+      {
+        "threshold": 12676,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_beacon"
+        }
+      },
+      {
+        "threshold": 12677,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_skull"
+        }
+      },
+      {
+        "threshold": 12678,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_mob"
+        }
+      },
+      {
+        "threshold": 12679,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_boss"
+        }
+      },
+      {
+        "threshold": 12680,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_upgrade"
+        }
+      },
+      {
+        "threshold": 12681,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_quill"
+        }
+      },
+      {
+        "threshold": 12682,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_map"
+        }
+      },
+      {
+        "threshold": 12683,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_egg"
+        }
+      },
+      {
+        "threshold": 12684,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_dragon_egg"
+        }
+      },
+      {
+        "threshold": 12685,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_spellbook"
+        }
+      },
+      {
+        "threshold": 12686,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_cookie"
+        }
+      },
+      {
+        "threshold": 12687,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_boots"
+        }
+      },
+      {
+        "threshold": 12688,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_feather"
+        }
+      },
+      {
+        "threshold": 12689,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_lantern"
+        }
+      },
+      {
+        "threshold": 12690,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_sign"
+        }
+      },
+      {
+        "threshold": 12691,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_fire"
+        }
+      },
+      {
+        "threshold": 12692,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_exp"
+        }
+      },
+      {
+        "threshold": 12693,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_bomb"
+        }
+      },
+      {
+        "threshold": 12694,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_spawner"
+        }
+      },
+      {
+        "threshold": 12695,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_pickaxe"
+        }
+      },
+      {
+        "threshold": 12696,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_crystal"
+        }
+      },
+      {
+        "threshold": 12697,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_ruins"
+        }
+      },
+      {
+        "threshold": 12698,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_table"
+        }
+      },
+      {
+        "threshold": 12699,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_key"
+        }
+      },
+      {
         "threshold": 12700,
         "model": {
           "type": "minecraft:model",
@@ -4982,6 +5234,258 @@
         }
       },
       {
+        "threshold": 12764,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_locked_off"
+        }
+      },
+      {
+        "threshold": 12765,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_check_off"
+        }
+      },
+      {
+        "threshold": 12766,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_book_off"
+        }
+      },
+      {
+        "threshold": 12767,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_star_off"
+        }
+      },
+      {
+        "threshold": 12768,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_note_off"
+        }
+      },
+      {
+        "threshold": 12769,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_tag_off"
+        }
+      },
+      {
+        "threshold": 12770,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_coin_off"
+        }
+      },
+      {
+        "threshold": 12771,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_anvil_off"
+        }
+      },
+      {
+        "threshold": 12772,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_chest_off"
+        }
+      },
+      {
+        "threshold": 12773,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_funnel_off"
+        }
+      },
+      {
+        "threshold": 12774,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_clock_off"
+        }
+      },
+      {
+        "threshold": 12775,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_mount_off"
+        }
+      },
+      {
+        "threshold": 12776,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_beacon_off"
+        }
+      },
+      {
+        "threshold": 12777,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_skull_off"
+        }
+      },
+      {
+        "threshold": 12778,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_mob_off"
+        }
+      },
+      {
+        "threshold": 12779,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_boss_off"
+        }
+      },
+      {
+        "threshold": 12780,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_upgrade_off"
+        }
+      },
+      {
+        "threshold": 12781,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_quill_off"
+        }
+      },
+      {
+        "threshold": 12782,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_map_off"
+        }
+      },
+      {
+        "threshold": 12783,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_egg_off"
+        }
+      },
+      {
+        "threshold": 12784,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_dragon_egg_off"
+        }
+      },
+      {
+        "threshold": 12785,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_spellbook_off"
+        }
+      },
+      {
+        "threshold": 12786,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_cookie_off"
+        }
+      },
+      {
+        "threshold": 12787,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_boots_off"
+        }
+      },
+      {
+        "threshold": 12788,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_feather_off"
+        }
+      },
+      {
+        "threshold": 12789,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_lantern_off"
+        }
+      },
+      {
+        "threshold": 12790,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_sign_off"
+        }
+      },
+      {
+        "threshold": 12791,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_fire_off"
+        }
+      },
+      {
+        "threshold": 12792,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_exp_off"
+        }
+      },
+      {
+        "threshold": 12793,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_bomb_off"
+        }
+      },
+      {
+        "threshold": 12794,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_spawner_off"
+        }
+      },
+      {
+        "threshold": 12795,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_pickaxe_off"
+        }
+      },
+      {
+        "threshold": 12796,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_crystal_off"
+        }
+      },
+      {
+        "threshold": 12797,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_ruins_off"
+        }
+      },
+      {
+        "threshold": 12798,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_table_off"
+        }
+      },
+      {
+        "threshold": 12799,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_key_off"
+        }
+      },
+      {
         "threshold": 12801,
         "model": {
           "type": "minecraft:model",
@@ -5028,6 +5532,76 @@
         "model": {
           "type": "minecraft:model",
           "model": "rpgcraft:item/ui/dmg_skin_rainbow"
+        }
+      },
+      {
+        "threshold": 13000,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_bone"
+        }
+      },
+      {
+        "threshold": 13001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_totem"
+        }
+      },
+      {
+        "threshold": 13002,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_ingot"
+        }
+      },
+      {
+        "threshold": 13003,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_lightning"
+        }
+      },
+      {
+        "threshold": 13004,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_crown"
+        }
+      },
+      {
+        "threshold": 13200,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_bone_off"
+        }
+      },
+      {
+        "threshold": 13201,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_totem_off"
+        }
+      },
+      {
+        "threshold": 13202,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_ingot_off"
+        }
+      },
+      {
+        "threshold": 13203,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_lightning_off"
+        }
+      },
+      {
+        "threshold": 13204,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/ui/ui_crown_off"
         }
       },
       {

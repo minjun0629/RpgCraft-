@@ -92,7 +92,7 @@ public class GatherListener implements Listener {
         String id = roll(drops, t.tier + (ms != null ? ms.gatherTierBonus(d) : 0));
         int amount = 1 + (t.tier >= 3 && ThreadLocalRandom.current().nextDouble() < 0.3 ? 1 : 0)
                 + (ms != null && ThreadLocalRandom.current().nextDouble() < ms.gatherExtraChance(d) ? 1 : 0);
-        if (ms != null) ms.add(p, MasteryManager.Life.GATHER, 40);
+        if (ms != null) ms.add(p, MasteryManager.Life.GATHER, plugin.getConfig().getDouble("mastery.gather-exp", 8));   // v5.10.44 40 → 8 (거의 캘 때마다 오르던 문제)
         if (id != null) give(p, plugin.items().create(id, amount));
         double shardChance = plugin.getConfig().getDouble("gather.shard-chance", 0.02);
         if (ThreadLocalRandom.current().nextDouble() < shardChance) {

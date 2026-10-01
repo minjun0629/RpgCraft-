@@ -28,6 +28,8 @@ import spirit_art  # noqa: E402
 import boss_models  # noqa: E402
 import armor_art  # noqa: E402
 import ui_pack  # noqa: E402
+import spirit_vox  # noqa: E402  v5.10.53 사신수 무기 전용 3D
+SPIRIT_COLS = {}
 import weapon_vox  # noqa: E402  v5.10.21 무기 3D 복셀
 import armor_vox  # noqa: E402  v5.10.28 방어구 3D 복셀
 import ui4r  # noqa: E402  v5.10.32 마크에이지 4R 풍 UI
@@ -502,6 +504,17 @@ def main():
                 os.makedirs(os.path.dirname(atex), exist_ok=True)
                 weapon_vox.palette_image(acols).save(atex)
                 write_json(path, armor_vox.model_json(NS + ":item/avox/" + mname, els, adisp), compact=True)
+            elif not FLAT and name in spirit_vox.BUILDERS:   # v5.10.53 사신수 무기: 손으로 조각한 전용 모델 (강화 변형은 팔레트만 더 화려하게)
+                if st == 0:
+                    els, scols, sdisp = spirit_vox.build(name)
+                    SPIRIT_COLS[name] = scols
+                    elements_total += len(els)
+                    write_json(path, spirit_vox.model_json(NS + ":item/svox/" + mname, els, sdisp), compact=True)
+                stex = os.path.join(PACK, "assets", NS, "textures", "item", "svox", mname + ".png")
+                os.makedirs(os.path.dirname(stex), exist_ok=True)
+                weapon_vox.palette_image(weapon_vox.stage_colors(SPIRIT_COLS[name], st)).save(stex)
+                if st > 0:
+                    write_json(path, {"parent": NS + ":item/" + name, "textures": {"0": NS + ":item/svox/" + mname, "particle": NS + ":item/svox/" + mname}})
             elif not FLAT and weapon_vox.kind_of(name):   # v5.10.21 무기: 블록을 쌓아 깎은 3D 모델 (팔레트 텍스처, 강화 변형은 팔레트만 더 화려하게)
                 if st == 0:
                     img(0)

@@ -16,7 +16,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -243,6 +245,20 @@ public class SpiritManager implements Listener {
         return null;
     }
 
+    /** v5.10.53 기운 조합 창: 바닐라 재질 대신 실제 아이템 (전용 3D 모델) 그대로 보여 줌 */
+    private ItemStack show(String id, String name, String... lore) {
+        ItemStack it = plugin.items().create(id, 1);
+        ItemMeta m = it.getItemMeta();
+        if (m == null) return it;
+        m.setDisplayName(Text.c(name));
+        List<String> l = new ArrayList<>();
+        for (String s : lore) l.add(Text.c(s));
+        m.setLore(l);
+        m.addItemFlags(ItemFlag.values());
+        it.setItemMeta(m);
+        return it;
+    }
+
     private class EssenceGui extends Gui {
         EssenceGui(Player p) {
             super(6, "&d기운 조합 (사신수 / 사흉수)", "spirit");
@@ -253,7 +269,7 @@ public class SpiritManager implements Listener {
             for (int i = 0; i < els.length; i++) {
                 String el = els[i];
                 ItemTemplate crystal = plugin.items().get("crystal_" + el);
-                set(1 + i, button(crystal.material, "&d" + crystal.name + " 교환",
+                set(1 + i, show("crystal_" + el, "&d" + crystal.name + " 교환",
                         "&f" + plugin.items().get("shard_" + el).name + " " + em.count(p, "shard_" + el) + "/" + need, "&e클릭하여 교환"), e -> {
                     if (!em.take(p, "shard_" + el, need)) {
                         Text.msg(p, "&c기운 파편이 부족합니다.");
@@ -272,7 +288,7 @@ public class SpiritManager implements Listener {
                 String essence = "essence_" + be[0];
                 WeaponClass wc = WeaponClass.valueOf(be[3]);
                 ItemTemplate wt = plugin.items().get("spirit_" + be[2]);
-                set(10 + b * 2, button(wt.material, "&c" + wt.name, "&f" + plugin.items().get(essence).name + " " + em.count(p, essence) + "/" + essW,
+                set(10 + b * 2, show(wt.id, "&c" + wt.name, "&f" + plugin.items().get(essence).name + " " + em.count(p, essence) + "/" + essW,
                         "&f+ 초월 " + (wc == WeaponClass.SPEAR ? "무기(종류 무관)" : wc.label) + " 1개 " + (findUnique(p, wc, null) != null ? "&a✔" : "&c✘"),
                         "", "&d" + skillLabel(wt.skill), "&e클릭하여 조합"), e -> {
                     ItemStack base = findUnique(p, wc, null);
@@ -292,7 +308,7 @@ public class SpiritManager implements Listener {
                 for (int s = 0; s < 4; s++) {
                     ArmorSlot slot = ArmorSlot.values()[s];
                     ItemTemplate at = plugin.items().get("spirit_" + be[2] + "_a" + s);
-                    set((b < 2 ? 18 : 27) + (b % 2 == 0 ? 0 : 5) + s, button(at.material, "&6" + at.name,
+                    set((b < 2 ? 18 : 27) + (b % 2 == 0 ? 0 : 5) + s, show(at.id, "&6" + at.name,
                             "&f" + plugin.items().get(essence).name + " " + em.count(p, essence) + "/" + essA,
                             "&f+ 초월 " + slot.label + " 1개 " + (findUnique(p, null, slot) != null ? "&a✔" : "&c✘"), "&e클릭하여 조합"), e -> {
                         ItemStack base = findUnique(p, null, slot);
@@ -314,7 +330,7 @@ public class SpiritManager implements Listener {
             for (int s = 0; s < 4; s++) {
                 ArmorSlot slot = ArmorSlot.values()[s];
                 ItemTemplate ft = plugin.items().get("fiend_" + FIENDS[s]);
-                set(38 + s, button(ft.material, "&8&l" + ft.name, "&f어둠(흑룡)의 기운 " + em.count(p, "essence_dark") + "/" + essA,
+                set(38 + s, show(ft.id, "&8&l" + ft.name, "&f어둠(흑룡)의 기운 " + em.count(p, "essence_dark") + "/" + essA,
                         "&f+ 초월 " + slot.label + " 1개 " + (findUnique(p, null, slot) != null ? "&a✔" : "&c✘"), "&e클릭하여 조합"), e -> {
                     ItemStack base = findUnique(p, null, slot);
                     if (base == null || em.count(p, "essence_dark") < essA) {

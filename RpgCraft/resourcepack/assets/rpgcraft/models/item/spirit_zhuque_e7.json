@@ -1,7 +1,7 @@
 {
   "parent": "rpgcraft:item/spirit_zhuque",
   "textures": {
-    "0": "rpgcraft:item/wvox/spirit_zhuque_e7",
-    "particle": "rpgcraft:item/wvox/spirit_zhuque_e7"
+    "0": "rpgcraft:item/svox/spirit_zhuque_e7",
+    "particle": "rpgcraft:item/svox/spirit_zhuque_e7"
   }
 }

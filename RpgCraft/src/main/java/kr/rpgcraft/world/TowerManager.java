@@ -128,13 +128,14 @@ public class TowerManager implements Listener, CommandExecutor {
             UUID u = rank.get(i).getKey();
             int floor = rank.get(i).getValue();
             if (floor < 5 || plugin.mail() == null) continue;
-            long money = (long) floor * plugin.getConfig().getLong("tower.weekly-money-per-floor", 20000);
+            long money = (long) floor * plugin.getConfig().getLong("tower.weekly-money-per-floor", 14000);
             List<ItemStack> items = new ArrayList<>();
             String place;
-            if (i == 0) { money += 15_000_000; add(items, "cube_master", 3); place = "1위"; }
-            else if (i == 1) { money += 10_000_000; add(items, "cube_master", 2); place = "2위"; }
-            else if (i == 2) { money += 5_000_000; add(items, "cube_master", 1); place = "3위"; }
-            else if (i < 10) { money += 2_500_000; add(items, "cube_red", 3); place = (i + 1) + "위"; }
+            // v5.10.53 순위 보상 약 30% 줄임
+            if (i == 0) { money += 10_000_000; add(items, "cube_master", 2); place = "1위"; }
+            else if (i == 1) { money += 7_000_000; add(items, "cube_master", 1); place = "2위"; }
+            else if (i == 2) { money += 3_500_000; add(items, "cube_master", 1); place = "3위"; }
+            else if (i < 10) { money += 1_700_000; add(items, "cube_red", 2); place = (i + 1) + "위"; }
             else place = (i + 1) + "위";
             plugin.mail().send(u, "&5무한의 탑", "지난주 무한의 탑 " + place + " (최고 " + floor + "층) 보상", money, items);
         }
@@ -325,11 +326,11 @@ public class TowerManager implements Listener, CommandExecutor {
         PlayerData d = plugin.data().get(p);
         int f = run.floor;
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.7f, 1.4f);
-        plugin.levels().addExp(p, plugin.levels().need(d.level) * plugin.getConfig().getDouble("tower.exp-ratio-per-floor", 0.015) * (f % 10 == 0 ? 3 : 1));
+        plugin.levels().addExp(p, plugin.levels().need(d.level) * plugin.getConfig().getDouble("tower.exp-ratio-per-floor", 0.011) * (f % 10 == 0 ? 3 : 1));
         if (plugin.seasonPass() != null) plugin.seasonPass().add(p, f % 10 == 0 ? 20 : 4, "무한의 탑");
         if (f > best(d)) {   // 처음 오른 층 보상
             d.counters.put("tower_best", (double) f);
-            long money = (long) (f * plugin.getConfig().getLong("tower.money-per-floor", 8000) * (f % 10 == 0 ? 3 : 1));
+            long money = (long) (f * plugin.getConfig().getLong("tower.money-per-floor", 5500) * (f % 10 == 0 ? 3 : 1));
             plugin.economy().give(p, money);
             String msg = "&d✦ 최고 기록 " + f + "층! &e+" + Text.money(money);
             if (f % 10 == 0) {
@@ -434,9 +435,9 @@ public class TowerManager implements Listener, CommandExecutor {
         if (cp > 0) g.set(22, Gui.button(Material.PURPUR_STAIRS, "&d&l" + (cp + 1) + "층부터 도전 &7(체크포인트)", "&710층마다 체크포인트가 생깁니다",
                 "&7몬스터 Lv." + level(cp + 1) + "부터", "", "&e▶ 클릭"), e -> { p.closeInventory(); start(p, cp + 1); });
         else g.set(22, Gui.button(Material.GRAY_DYE, "&8체크포인트 없음", "&710층을 넘으면 그 다음 층부터 시작할 수 있습니다"), null);
-        List<String> rw = new ArrayList<>(List.of("&7처음 오른 층마다 &e" + Text.money(plugin.getConfig().getLong("tower.money-per-floor", 8000)) + " × 층",
-                "&710층마다 3배 + 결정 · 룬 · 주문서", "", "&f주간 순위 보상 &7(월요일 우편)", "&61위 &f1500만 + 마스터 큐브 3", "&e2위 &f1천만 + 마스터 큐브 2",
-                "&e3위 &f5백만 + 마스터 큐브 1", "&f4~10위 &f250만 + 레드 큐브 3", "&7모두: 최고 층 × " + Text.money(plugin.getConfig().getLong("tower.weekly-money-per-floor", 20000))));
+        List<String> rw = new ArrayList<>(List.of("&7처음 오른 층마다 &e" + Text.money(plugin.getConfig().getLong("tower.money-per-floor", 5500)) + " × 층",
+                "&710층마다 3배 + 결정 · 룬 · 주문서", "", "&f주간 순위 보상 &7(월요일 우편)", "&61위 &f1천만 + 마스터 큐브 2", "&e2위 &f700만 + 마스터 큐브 1",
+                "&e3위 &f350만 + 마스터 큐브 1", "&f4~10위 &f170만 + 레드 큐브 2", "&7모두: 최고 층 × " + Text.money(plugin.getConfig().getLong("tower.weekly-money-per-floor", 14000))));
         g.set(24, Gui.button(Material.CHEST, "&6&l보상", rw.toArray(new String[0])), null);
         List<String> rk = new ArrayList<>();
         List<Map.Entry<UUID, Integer>> rank = ranking();

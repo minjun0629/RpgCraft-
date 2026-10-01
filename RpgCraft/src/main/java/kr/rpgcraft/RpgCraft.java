@@ -331,6 +331,14 @@ public final class RpgCraft extends JavaPlugin {
         if (!getConfig().contains("server-list.show-ip", true)) { getConfig().set("server-list.auto-address", false); getConfig().set("server-list.show-ip", false); }   // 서버 목록에 IP 표시 끔 — 한 번만 (v5.6.4)
         if (getConfig().getInt("bosses.stagger-ticks", 0) == 24) getConfig().set("bosses.stagger-ticks", 0);   // 보스 경직 없앰 (v5.7.3)
         if (getConfig().getBoolean("migrated.boss-hitbox-off", false) && !getConfig().getBoolean("migrated.boss-hitbox-on", false)) { getConfig().set("boss-models.hitbox", true); getConfig().set("migrated.boss-hitbox-on", true); }   // v5.10.4 v5.10.3 에서 끈 보스 판정 상자 되돌림 (한 번만)
+        if (!getConfig().getBoolean("migrated.tower-nerf-5_10_53", false)) {   // v5.10.53 무한의 탑 보상 약 30% 줄임 (이미 있는 config 도 한 번만)
+            long mpf = getConfig().getLong("tower.money-per-floor", 5500), wpf = getConfig().getLong("tower.weekly-money-per-floor", 14000);
+            double epf = getConfig().getDouble("tower.exp-ratio-per-floor", 0.011);
+            if (mpf > 5500) getConfig().set("tower.money-per-floor", Math.round(mpf * 0.7));          // 새 기본값보다 높을 때만 (새로 만든 config 는 그대로)
+            if (wpf > 14000) getConfig().set("tower.weekly-money-per-floor", Math.round(wpf * 0.7));
+            if (epf > 0.011) getConfig().set("tower.exp-ratio-per-floor", Math.round(epf * 0.7 * 10000) / 10000.0);
+            getConfig().set("migrated.tower-nerf-5_10_53", true);
+        }
         if (Math.abs(getConfig().getDouble("mob-models.view-range", 0.6) - 1.0) < 1e-9) getConfig().set("mob-models.view-range", 0.6);   // v5.10.2 프레임
         if (getConfig().getInt("vfx.max-new-per-tick", 12) == 18) getConfig().set("vfx.max-new-per-tick", 12);
         if (getConfig().getInt("vfx.max-active", 48) == 70) getConfig().set("vfx.max-active", 48);

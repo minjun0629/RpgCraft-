@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.53
+- 사신수 · 사흉수 무기 · 방어구 전용 3D 디자인 · 기운 조합 창에 실제 아이템 표시 · 보스 결투 능력치 승부 · 활 세로로 들기 · 무한의 탑 보상 조금 줄임.
+
 ## v5.10.52
 - HUD 바 · 배지가 판 그림자(어두운 상자)에 가려지던 문제 수정.
 

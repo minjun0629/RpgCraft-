@@ -73,25 +73,36 @@ public class SeasonPassManager implements Listener, CommandExecutor {
 
     // ------------------------------------------------------------------ 보상표
     private Reward free(int lv) {
-        if (lv == MAX) return item("rune_mid", 1, Material.FIREWORK_STAR, 5_000_000);
-        if (lv % 10 == 0) return item("ticket_protect", 1, Material.PAPER, 1_000_000);
-        if (lv % 5 == 0) return item("crystal_high", 2, Material.AMETHYST_SHARD, 300_000);
-        return new Reward(Text.money(20_000L * lv), Material.GOLD_NUGGET, 20_000L * lv, null, 0);
+        // v5.10.34 돈 보상 없음 — 모두 아이템
+        if (lv == 15) return item("dmg_skin_gold", 1);   // v5.10.35 대미지 스킨
+        if (lv == 35) return item("dmg_skin_ice", 1);
+        if (lv == MAX) return item("rune_mid", 1);
+        if (lv % 10 == 0) return item("ticket_protect", 1);
+        if (lv % 5 == 0) return item("crystal_high", 2);
+        if (lv % 3 == 0) return item("scroll_exp", 1);
+        if (lv % 2 == 0) return item("crystal_mid", 1);
+        return item("potion_2", 5);
     }
 
     private Reward premium(int lv) {
-        if (lv == MAX) return item("cube_master", 3, Material.LIGHT_BLUE_DYE, 50_000_000);
-        if (lv % 10 == 0) return item("cube_master", 1, Material.LIGHT_BLUE_DYE, 10_000_000);
-        if (lv % 5 == 0) return item("ticket_rate10", 1, Material.PAPER, 2_000_000);
-        if (lv % 3 == 0) return item("cube_red", 1, Material.RED_DYE, 500_000);
-        if (lv % 2 == 0) return item("potential_scroll", 1, Material.PAPER, 300_000);
-        return new Reward(Text.money(60_000L * lv), Material.GOLD_INGOT, 60_000L * lv, null, 0);
+        if (lv == MAX) return item("dmg_skin_rainbow", 1);   // v5.10.35 대미지 스킨
+        if (lv == 49) return item("cube_master", 3);
+        if (lv == 20) return item("dmg_skin_fire", 1);
+        if (lv == 30) return item("dmg_skin_arcane", 1);
+        if (lv == 40) return item("dmg_skin_candy", 1);
+        if (lv == 45) return item("dmg_skin_toxic", 1);
+        if (lv % 10 == 0) return item("cube_master", 1);
+        if (lv % 5 == 0) return item("ticket_rate10", 1);
+        if (lv % 3 == 0) return item("cube_red", 1);
+        if (lv % 2 == 0) return item("potential_scroll", 1);
+        return item("crystal_mid", 2);
     }
 
-    /** 아이템 보상 (그 아이템이 없으면 같은 값어치의 돈) */
-    private Reward item(String id, int n, Material icon, long fallback) {
+    /** 아이템 보상 (v5.10.34 돈 보상 없음 — 그 아이템이 없으면 하급 결정) */
+    private Reward item(String id, int n) {
         var t = plugin.items().get(id);
-        if (t == null) return new Reward(Text.money(fallback), Material.GOLD_INGOT, fallback, null, 0);
+        if (t == null && !id.equals("crystal_low")) return item("crystal_low", n);
+        if (t == null) return new Reward("보상 없음", Material.BARRIER, 0, null, 0);
         return new Reward(Text.strip(Text.c(t.name)) + " x" + n, t.material, 0, id, n);
     }
 

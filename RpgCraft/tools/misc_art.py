@@ -691,3 +691,113 @@ def sea(spec):
     if grade in ("UNIQUE", "LEGEND"):
         _sparkle(d, 200, 60, 14 if grade == "LEGEND" else 10, _c("fff3b0") if grade == "LEGEND" else (255, 255, 255, 255))
     return _done(img)
+
+
+# ------------------------------------------------------------------ v5.10.34 히든 전직서 (계열 · 단계마다 다른 그림)
+HJ_THEME = {   # 계열: (빛 색, 종이 색(3단계), 문장)
+    "A": ("4ae8c8", "1c3a36", "soul"),     # 망령: 청록 영혼 불꽃
+    "B": ("8ab0ff", "1a2350", "star"),     # 별: 남색 바탕 + 금빛 별
+    "C": ("b06aff", "24142e", "skull"),    # 네크로맨서: 보라 해골
+    "D": ("5ad8ff", "3a2a14", "hourglass"),   # 시간술사: 모래시계 + 시계 고리
+}
+
+
+def _hj_emblem(d, kind, cx, cy, r, col, gold):
+    c = _c(col)
+    if kind == "soul":
+        pts = []
+        for k in range(24):   # 위로 흔들리는 불꽃
+            t = k / 23
+            a = math.pi * 2 * t
+            rr = r * (0.75 + 0.25 * math.sin(a * 3))
+            pts.append((cx + math.sin(a) * rr * 0.8, cy + r * 0.35 - (1 - math.cos(a)) * rr * 0.9 + (r * 0.4 if 0.4 < t < 0.6 else 0)))
+        d.polygon([(cx - r * 0.7, cy + r * 0.6), (cx - r * 0.5, cy - r * 0.3), (cx - r * 0.15, cy - r * 0.05), (cx, cy - r * 1.05),
+                   (cx + r * 0.2, cy - r * 0.15), (cx + r * 0.55, cy - r * 0.45), (cx + r * 0.7, cy + r * 0.6), (cx, cy + r * 0.85)], fill=c)
+        d.polygon([(cx - r * 0.35, cy + r * 0.5), (cx - r * 0.2, cy), (cx, cy - r * 0.45), (cx + r * 0.25, cy + r * 0.05), (cx + r * 0.35, cy + r * 0.5), (cx, cy + r * 0.65)],
+                  fill=_c("e8fff8"))
+        for ex in (-0.18, 0.18):
+            d.ellipse((cx + ex * r - r * 0.09, cy + r * 0.12, cx + ex * r + r * 0.09, cy + r * 0.32), fill=_c("103a32"))
+    elif kind == "star":
+        for (dx, dy, s) in ((0, 0, 1.0), (-0.75, -0.6, 0.28), (0.7, -0.7, 0.22), (0.75, 0.55, 0.25)):
+            pts = []
+            for k in range(16):
+                a = math.radians(-90 + k * 22.5)
+                rr = r * s * (1.0 if k % 2 == 0 else 0.38) * (1.0 if k % 4 == 0 else 0.62 if k % 2 == 0 else 1)
+                pts.append((cx + dx * r + math.cos(a) * rr, cy + dy * r + math.sin(a) * rr))
+            d.polygon(pts, fill=_c("ffe48a") if s == 1.0 else c)
+        d.ellipse((cx - r * 0.18, cy - r * 0.18, cx + r * 0.18, cy + r * 0.18), fill=_c("ffffff"))
+    elif kind == "skull":
+        bone = _c("ece4d4")
+        for sx in (-1, 1):   # 엇갈린 뼈
+            d.line((cx - sx * r * 0.95, cy - r * 0.2, cx + sx * r * 0.95, cy + r * 0.95), fill=bone, width=int(r * 0.22))
+            for (bx, by) in ((cx - sx * r * 0.95, cy - r * 0.2), (cx + sx * r * 0.95, cy + r * 0.95)):
+                d.ellipse((bx - r * 0.16, by - r * 0.16, bx + r * 0.16, by + r * 0.16), fill=bone)
+        d.ellipse((cx - r * 0.62, cy - r * 0.85, cx + r * 0.62, cy + r * 0.3), fill=bone)
+        d.rounded_rectangle((cx - r * 0.36, cy + r * 0.1, cx + r * 0.36, cy + r * 0.55), r * 0.08, fill=bone)
+        for ex in (-0.26, 0.26):
+            d.ellipse((cx + ex * r - r * 0.17, cy - r * 0.42, cx + ex * r + r * 0.17, cy - r * 0.08), fill=_c("1a0a24"))
+            d.ellipse((cx + ex * r - r * 0.07, cy - r * 0.32, cx + ex * r + r * 0.07, cy - r * 0.18), fill=c)
+        for k in range(3):
+            x = cx + (k - 1) * r * 0.2
+            d.line((x, cy + r * 0.32, x, cy + r * 0.55), fill=_c("1a0a24"), width=max(2, int(r * 0.06)))
+    else:   # 모래시계 + 시계 고리
+        ring = _c("d8b060") if gold else c
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=ring, width=int(r * 0.12))
+        for k in range(12):
+            a = math.radians(k * 30)
+            d.line((cx + math.cos(a) * r * 0.78, cy + math.sin(a) * r * 0.78, cx + math.cos(a) * r * 0.92, cy + math.sin(a) * r * 0.92), fill=ring, width=max(2, int(r * 0.06)))
+        w, h = r * 0.48, r * 0.7
+        d.rectangle((cx - w - r * 0.1, cy - h - r * 0.1, cx + w + r * 0.1, cy - h), fill=_c("8a6030"))
+        d.rectangle((cx - w - r * 0.1, cy + h, cx + w + r * 0.1, cy + h + r * 0.1), fill=_c("8a6030"))
+        d.polygon([(cx - w, cy - h), (cx + w, cy - h), (cx + r * 0.08, cy), (cx + w, cy + h), (cx - w, cy + h), (cx - r * 0.08, cy)], fill=_c("dff6ff", 210))
+        d.polygon([(cx - w * 0.6, cy - h * 0.55), (cx + w * 0.6, cy - h * 0.55), (cx, cy - r * 0.04)], fill=_c("ffd070"))
+        d.polygon([(cx - w * 0.9, cy + h), (cx + w * 0.9, cy + h), (cx, cy + h * 0.45)], fill=_c("ffd070"))
+        d.line((cx, cy, cx, cy + h * 0.5), fill=_c("ffd070"), width=max(2, int(r * 0.05)))
+
+
+def hj_scroll(line, tier):
+    col, dark, kind = HJ_THEME[line]
+    img = _new()
+    d = ImageDraw.Draw(img)
+    gold, silver, wood = _c("e8c060"), _c("d8dce6"), _c("8a5a32")
+    rod = gold if tier >= 3 else silver if tier == 2 else wood
+    rod_d = _mix(rod, _c("000000"), 0.4)
+    if tier >= 3:   # 오라
+        for k in range(10, 0, -1):
+            a = int(10 + 9 * (10 - k))
+            d.ellipse((128 - 100 - k * 4, 128 - 100 - k * 4, 128 + 100 + k * 4, 128 + 100 + k * 4), fill=_c(col, max(0, 34 - k * 3)))
+    paper = _c("f0dfb4") if tier == 1 else _c("e2cfa0") if tier == 2 else _c(dark)
+    edge = _c("c8a870") if tier == 1 else silver if tier == 2 else gold
+    d.rounded_rectangle((56, 44, 200, 212), 10, fill=paper)          # 종이
+    d.rounded_rectangle((56, 44, 200, 212), 10, outline=edge, width=5 if tier >= 2 else 3)
+    if tier >= 2:   # 안쪽 장식 테 + 모서리 마름모
+        d.rounded_rectangle((70, 58, 186, 198), 6, outline=_mix(edge, paper, 0.5), width=3)
+        for (x, y) in ((70, 58), (186, 58), (70, 198), (186, 198)):
+            d.polygon([(x, y - 8), (x + 8, y), (x, y + 8), (x - 8, y)], fill=edge)
+    if tier == 1:
+        for y in range(72, 196, 16):
+            d.line((76, y, 180, y), fill=_c("d8c090"), width=2)
+    for x in (52, 204):                                                # 위아래 말린 막대 (세로 두루마리)
+        pass
+    for y in (40, 216):                                                # 가로 막대 (위 · 아래)
+        d.rounded_rectangle((44, y - 12, 212, y + 12), 12, fill=rod)
+        d.rounded_rectangle((44, y - 12, 212, y - 4), 8, fill=_mix(rod, _c("ffffff"), 0.35))
+        for x in (36, 220):                                            # 막대 끝 장식
+            d.ellipse((x - 14, y - 14, x + 14, y + 14), fill=rod_d)
+            d.ellipse((x - 9, y - 9, x + 9, y + 9), fill=rod)
+            if tier >= 3:
+                d.ellipse((x - 5, y - 5, x + 5, y + 5), fill=_c(col))
+    # 가운데 문장 원판
+    seal = _mix(_c(col), _c("000000"), 0.65) if tier >= 2 else _mix(_c(col), _c("000000"), 0.5)
+    d.ellipse((80, 76, 176, 172), fill=seal)
+    d.ellipse((80, 76, 176, 172), outline=edge if tier >= 2 else _c(col), width=6)
+    _hj_emblem(d, kind, 128, 124, 34, col, tier >= 3)
+    # 단계 표시: 아래 리본에 보석 n 개
+    for k in range(tier):
+        x = 128 + (k - (tier - 1) / 2) * 26
+        d.polygon([(x, 180), (x + 9, 189), (x, 198), (x - 9, 189)], fill=_c(col) if tier < 3 else _c("ff5a7a"), outline=edge)
+    if tier >= 3:
+        _sparkle(d, 70, 70, 12, _c("fff6c8"))
+        _sparkle(d, 190, 92, 9, _c(col))
+        _sparkle(d, 176, 186, 8, _c("fff6c8"))
+    return _done(img)

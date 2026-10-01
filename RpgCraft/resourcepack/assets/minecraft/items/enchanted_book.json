@@ -1,0 +1,97 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 2100,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_a1"
+        }
+      },
+      {
+        "threshold": 2101,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_a2"
+        }
+      },
+      {
+        "threshold": 2102,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_a3"
+        }
+      },
+      {
+        "threshold": 2103,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_b1"
+        }
+      },
+      {
+        "threshold": 2104,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_b2"
+        }
+      },
+      {
+        "threshold": 2105,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_b3"
+        }
+      },
+      {
+        "threshold": 2106,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_c1"
+        }
+      },
+      {
+        "threshold": 2107,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_c2"
+        }
+      },
+      {
+        "threshold": 2108,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_c3"
+        }
+      },
+      {
+        "threshold": 2109,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_d1"
+        }
+      },
+      {
+        "threshold": 2110,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_d2"
+        }
+      },
+      {
+        "threshold": 2111,
+        "model": {
+          "type": "minecraft:model",
+          "model": "rpgcraft:item/hj_scroll_d3"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/enchanted_book"
+    }
+  }
+}

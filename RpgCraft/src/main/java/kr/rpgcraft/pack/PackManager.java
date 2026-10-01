@@ -507,6 +507,7 @@ public class PackManager implements Listener {
                 case "rhythm": return '\uE018';
                 case "g2048": return '\uE019';
                 case "flappy": return '\uE01A';
+                case "inspect": return '\uE01B';   // v5.10.34 플레이어 정보창
                 default: break;
             }
         }

@@ -456,12 +456,19 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
         }
 
         void add(Player p, InventoryClickEvent e, int which) {
+            if (allocateStat(p, which, e.isShiftClick(), e.isRightClick())) render(p);
+        }
+    }
+
+    /** 스탯 분배 (스탯 창 · v5.10.34 인벤토리 위 스탯 칸 공용). 좌클릭 +1 · 우클릭 +10 · 쉬프트 전부. 분배했으면 true */
+    public boolean allocateStat(Player p, int which, boolean all, boolean ten) {
+        {
             PlayerData d = plugin.data().get(p);
-            int n = e.isShiftClick() ? d.statPoints : e.isRightClick() ? 10 : 1;
+            int n = all ? d.statPoints : ten ? 10 : 1;
             n = Math.min(n, d.statPoints);
             if (n <= 0) {
                 Text.msg(p, "&c스탯 포인트가 없습니다.");
-                return;
+                return false;
             }
             d.statPoints -= n;
             int beforeStr = d.str, beforeDex = d.dex, beforeAdv = d.adv;
@@ -488,7 +495,8 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 p.sendTitle("", Text.c("&b모험 " + step * 50 + " 달성 &7(체력 +" + 3 * step + "% · 방어력 +" + step + ")" + extra), 5, 40, 10);
                 p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.2f);
             }
-            render(p);
+            if (plugin.invStats() != null) plugin.invStats().refreshSoon(p);
+            return true;
         }
     }
 

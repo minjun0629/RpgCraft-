@@ -570,13 +570,52 @@ def hammer(g, P, s, tier):
 
 
 def club(g, P, s, tier):
-    _cone_y(g, -2.0, 16.0, 0.7, 2.2, lambda x, y, z, u, w: lit(P["blade"], 0.85 + 0.15 * (int(y * 1.3 + u * 2) % 2)), 2)
-    _grip(g, -1.6, 2.4, 0.78, P)
-    for k in range(7):
-        a = k * 2.1
-        y = 8.5 + k * 1.05
-        r = 0.7 + 1.5 * (y + 2) / 18
-        g.cone((C[0] + math.cos(a) * r, y, C[1] + math.sin(a) * r), (C[0] + math.cos(a) * (r + 1.1), y + 0.3, C[1] + math.sin(a) * (r + 1.1)), 0.35, 0.08, P["edge"], 4)
+    """v5.10.34 갈색 몽둥이: 결 · 옹이가 보이는 나무 머리 + 쇠띠 두 줄 · 리벳 + 박힌 쇠 징 + 가죽 감은 손잡이 · 쇠 폼멜"""
+    wood = P["blade"]
+    iron, iron_d, iron_l = "7c818c", "4a4e58", "c8ccd6"
+    y0, y1 = 2.6, 15.6
+
+    def radius(y):
+        t = (y - y0) / (y1 - y0)
+        return 0.95 + 1.55 * t ** 0.8
+
+    def grain(x, y, z, u, w):
+        ang = math.atan2(w, u)
+        stripe = math.sin(ang * 7 + y * 0.35 + (s % 7)) * 0.5 + 0.5    # 세로 나뭇결
+        k = 0.78 + 0.22 * stripe + 0.06 * (VL.rnd(int(y * 3), int(ang * 5)) - 0.5)
+        if y > y1 - 0.7:
+            k *= 1.12                                                 # 둥근 끝 (밝게 닳음)
+        return lit(wood, k)
+    _fill(g, y0, y1, lambda y: (radius(y), radius(y) * 0.95, "round"), grain, 2)
+    g.sphere((C[0], y1, C[1]), radius(y1) * 0.92, lambda x, y, z, d: lit(wood, 1.05 - 0.15 * d), 2)   # 둥근 머리 끝
+    for (yy, a) in ((6.2, 0.8), (11.6, 3.6), (8.4, 5.1)):            # 옹이
+        r = radius(yy)
+        cx, cz = C[0] + math.cos(a) * r, C[1] + math.sin(a) * r
+        g.sphere((cx, yy, cz), 0.55, lambda *q: lit(wood, 0.45), 4)
+        g.dot(cx, yy, cz, lit(wood, 0.3), 5, 0.3)
+    for yy in (8.6, 13.4):                                            # 쇠띠 + 리벳
+        r = radius(yy) + 0.35
+        _fill(g, yy - 0.45, yy + 0.45, lambda y, r=r: (r, r * 0.95, "round"), lambda x, y, z, u, w: iron if y > yy - 0.2 else iron_d, 4)
+        for k in range(6):
+            a = k * math.pi / 3 + 0.3
+            g.dot(C[0] + math.cos(a) * (r + 0.1), yy, C[1] + math.sin(a) * (r + 0.1) * 0.95, iron_l, 5, 0.35)
+    for row, yy in enumerate((10.4, 12.0, 14.6)):                     # 박힌 쇠 징
+        r = radius(yy)
+        for k in range(6):
+            a = k * math.pi / 3 + (row % 2) * math.pi / 6
+            ux, uz = math.cos(a), math.sin(a)
+            base = (C[0] + ux * (r - 0.1), yy, C[1] + uz * (r - 0.1) * 0.95)
+            tip = (C[0] + ux * (r + 1.3), yy + 0.25, C[1] + uz * (r + 1.3) * 0.95)
+            g.cone(base, tip, 0.42, 0.08, lambda x, y, z, f: iron_l if f > 0.6 else iron, 5)
+    for (yy, a) in ((5.0, 2.2), (7.2, 0.2)):                          # 깎인 자국
+        r = radius(yy)
+        g.box((C[0] + math.cos(a) * r - 0.2, yy - 0.6, C[1] + math.sin(a) * r - 0.2), (C[0] + math.cos(a) * r + 0.2, yy + 0.6, C[1] + math.sin(a) * r + 0.2), lit(wood, 0.55), 4)
+    # 손잡이: 비스듬히 감은 가죽 + 위아래 쇠고리 + 손목끈 + 쇠 폼멜
+    _grip(g, -1.4, y0 + 0.1, 0.82, P)
+    _fill(g, y0 - 0.1, y0 + 0.5, lambda y: (1.15, 1.1, "round"), lambda *q: iron_d, 4)
+    g.sphere((C[0], -2.0, C[1]), 1.05, lambda x, y, z, d: iron_l if d < 0.25 else iron, 4)
+    g.tube([(C[0] - 0.9, -1.2, C[1]), (C[0] - 2.2, -2.8, C[1] + 0.3), (C[0] - 1.6, -4.4, C[1]), (C[0] - 0.4, -3.2, C[1] - 0.2)], [0.22, 0.2, 0.2, 0.2],
+           lit(P["grip"], 0.6), 3, smooth=True)
 
 
 def spear(g, P, s, tier):
@@ -703,16 +742,32 @@ DISPLAY_HELD = {
     "head": {"rotation": [0, 180, 0], "translation": [0, 13, 7], "scale": [1, 1, 1]},
     "fixed": {"rotation": [0, 180, 0], "scale": [1, 1, 1]},
 }
-DISPLAY_SHIELD = {   # 바닐라 item/generated 와 같은 위치 (예전 방패 모델과 같게)
-    "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 3, 1], "scale": [0.55, 0.55, 0.55]},
-    "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 3, 1], "scale": [0.55, 0.55, 0.55]},
+SHIELD_SCALE = 1.4   # 판 14 x 16 → 약 20 x 22 (바닐라 방패 12 x 22 와 비슷한 실제 크기)
+# 바닐라 shield.json / shield_blocking.json 과 같은 손 위치 (판이 몸 옆에서 바깥을 봄)
+DISPLAY_SHIELD = {
+    "thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [10, 6, -4], "scale": [1, 1, 1]},
+    "thirdperson_lefthand": {"rotation": [0, 90, 0], "translation": [10, 6, 12], "scale": [1, 1, 1]},
+    "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [-10, 2, -10], "scale": [1.25, 1.25, 1.25]},
+    "firstperson_lefthand": {"rotation": [0, 180, 5], "translation": [10, 0, -10], "scale": [1.25, 1.25, 1.25]},
+    "gui": {"rotation": [15, -25, -5], "translation": [2, 3, 0], "scale": [0.65, 0.65, 0.65]},
+    "fixed": {"rotation": [0, 180, 0], "translation": [-4.5, 4.5, -5], "scale": [0.55, 0.55, 0.55]},
+    "ground": {"rotation": [0, 0, 0], "translation": [2, 4, 2], "scale": [0.25, 0.25, 0.25]},
+    "head": {"rotation": [0, 180, 0], "translation": [0, 13, 7], "scale": [1, 1, 1]},
+}
+DISPLAY_SHIELD_BLOCKING = {
+    "thirdperson_righthand": {"rotation": [45, 135, 0], "translation": [3.51, 11, -2], "scale": [1, 1, 1]},
+    "thirdperson_lefthand": {"rotation": [45, 135, 0], "translation": [13.51, 3, 5], "scale": [1, 1, 1]},
+    "firstperson_righthand": {"rotation": [0, 180, -5], "translation": [-15, 5, -11], "scale": [1.25, 1.25, 1.25]},
+    "firstperson_lefthand": {"rotation": [0, 180, -5], "translation": [5, 5, -11], "scale": [1.25, 1.25, 1.25]},
+    "gui": {"rotation": [15, -25, -5], "translation": [2, 3, 0], "scale": [0.65, 0.65, 0.65]},
+}
+# 바닐라 bow.json 과 같은 손 위치
+DISPLAY_BOW = dict(DISPLAY_HELD, **{
+    "thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
+    "thirdperson_lefthand": {"rotation": [-80, -280, 40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
     "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
     "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
-    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.5, 0.5, 0.5]},
-    "gui": {"rotation": [0, 0, 0], "scale": [0.92, 0.92, 0.92]},
-    "head": {"rotation": [0, 180, 0], "translation": [0, 13, 7], "scale": [1, 1, 1]},
-    "fixed": {"rotation": [0, 180, 0], "scale": [1, 1, 1]},
-}
+})
 
 
 def build(name, img, keys):
@@ -742,8 +797,14 @@ def build(name, img, keys):
     for e in els:
         e.pop("_col", None)
         e.pop("_edge", None)
-        if kind != "shield":   # 세로로 깎은 무기를 대각선으로 (손잡이 왼쪽 아래 → 끝 오른쪽 위)
+        if kind == "bow":      # v5.10.34 바닐라 활 그림과 같은 방향 (몸은 왼쪽 위 ↔ 오른쪽 아래, 휜 쪽 = 오른쪽 위 = 쏘는 쪽)
+            e["rotation"] = {"axis": "z", "angle": 45, "origin": [8, 8, 8]}
+        elif kind != "shield":   # 세로로 깎은 무기를 대각선으로 (손잡이 왼쪽 아래 → 끝 오른쪽 위)
             e["rotation"] = {"axis": "z", "angle": -45, "origin": [8, 8, 8]}
+        if kind == "shield":   # v5.10.34 바닐라 방패와 같은 자리 · 크기 (판 가운데 = 원점, 앞면 +z) → 실제 방패 크기로 옆에 듦
+            for key in ("from", "to"):
+                c = e[key]
+                e[key] = [(c[0] - 8) * SHIELD_SCALE, (c[1] - 8.5) * SHIELD_SCALE, (c[2] - 7.4) * SHIELD_SCALE + 1.0]
         for key in ("from", "to"):
             e[key] = [max(-16, min(32, round(c, 4))) for c in e[key]]
     if len(pal.colors) > 256:
@@ -754,7 +815,7 @@ def build(name, img, keys):
 def model_json(texture, els, kind):
     return {"credit": "RpgCraft weapon voxels", "texture_size": [16, 16], "gui_light": "front",
             "textures": {"0": texture, "particle": texture}, "elements": els,
-            "display": DISPLAY_SHIELD if kind == "shield" else DISPLAY_HELD}
+            "display": DISPLAY_SHIELD if kind == "shield" else DISPLAY_BOW if kind == "bow" else DISPLAY_HELD}
 
 
 def palette_image(colors):

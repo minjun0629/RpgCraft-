@@ -101,6 +101,8 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.CookingManager cooking;
     private kr.rpgcraft.feature.MasteryManager mastery;
     private kr.rpgcraft.world.TowerManager tower;
+    private kr.rpgcraft.feature.InvStatManager invStats;
+    private kr.rpgcraft.feature.DamageSkinManager damageSkins;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
     private kr.rpgcraft.world.AuctionManager auction;
     private PartyManager party;
@@ -207,6 +209,9 @@ public final class RpgCraft extends JavaPlugin {
         command("mastery", mastery);
         tower = new kr.rpgcraft.world.TowerManager(this);   // v5.10.30 무한의 탑
         command("tower", tower);
+        invStats = new kr.rpgcraft.feature.InvStatManager(this);   // v5.10.34 인벤토리 위 스탯 칸
+        damageSkins = new kr.rpgcraft.feature.DamageSkinManager(this);   // v5.10.35 대미지 스킨
+        command("damageskin", damageSkins);
         auction = new kr.rpgcraft.world.AuctionManager(this);
         command("auction", auction);
         hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
@@ -271,6 +276,7 @@ public final class RpgCraft extends JavaPlugin {
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
         if (tower != null) tower.shutdown();   // v5.10.30
+        if (invStats != null) invStats.shutdown();
         if (bossModels != null) bossModels.shutdown();
         if (mobModels != null) mobModels.shutdown();
         if (altar != null) altar.shutdown();
@@ -491,6 +497,8 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.CookingManager cooking() { return cooking; }
     public kr.rpgcraft.feature.MasteryManager mastery() { return mastery; }
     public kr.rpgcraft.world.TowerManager tower() { return tower; }
+    public kr.rpgcraft.feature.InvStatManager invStats() { return invStats; }
+    public kr.rpgcraft.feature.DamageSkinManager damageSkins() { return damageSkins; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }
     public kr.rpgcraft.world.AuctionManager auction() { return auction; }
     public PartyManager party() { return party; }

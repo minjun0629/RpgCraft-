@@ -916,6 +916,228 @@ def deep_horror(g):
         g.dot(*p, GLOW, 6, 0.6)
 
 
+
+# ================================================================== v5.10.34 바닐라 몬스터 · 야생 동물 (아머러스 워크샵 느낌)
+def vn_zombie(g):
+    SKIN = "5a9a4a"
+    B = figure(g, s=1.0, w=1.0, skin=SKIN, top="2a8a8a", legs="3a3a8a", boots="4a4a5a", arms=SKIN, hands=SKIN, eye="1a1a1a")
+    for k in range(6):   # 찢어진 셔츠 · 썩은 자국
+        g.dot(8 + (rnd(k, 1) - 0.5) * 5, 13 + rnd(k, 2) * 6, 10.6, hx("2a8a8a", 0.6), 6, 0.6)
+    for sx in (-1, 1):
+        g.dot(B.head[0] + sx * 1.6, B.head[1] + 1.4, B.head[2] + 2.4, hx(SKIN, 0.7), 8, 0.5)
+    g.ellipsoid(add(B.head, (0, 1.6, -0.2)), (2.5, 0.7, 2.5), lambda x, y, z, d: "3a6a2a" if d > 0.4 else None, 7)   # 정수리 그늘
+
+
+def vn_husk(g):
+    SKIN = "b8a070"
+    B = figure(g, s=1.05, w=1.05, skin=SKIN, top="7a6a4a", legs="5a4a30", boots="3a2a18", arms=SKIN, hands=SKIN, eye="3a2a10")
+    for k in range(8):   # 해진 천 조각
+        a = k * 0.8
+        p = (8 + math.cos(a) * 3.0, 9 + (k % 4) * 1.4, 8 + math.sin(a) * 2.2)
+        g.slab(p, add(p, (math.cos(a) * 0.6, -2.4, math.sin(a) * 0.6)), (0.8, 0, 0.3), 0.3, "8a7a54", 4)
+
+
+def vn_drowned(g):
+    SKIN = "4a8a8a"
+    B = figure(g, s=1.0, w=1.0, skin=SKIN, top="3a6a7a", legs="2a4a5a", boots="2a3a40", arms=SKIN, hands=SKIN, eye="7fe8ff")
+    for k in range(7):   # 해초
+        p = (8 + (rnd(k, 3) - 0.5) * 6, 18 - k * 1.6, 10.4)
+        g.tube([p, add(p, (0.4, -2.6, 0.3))], [0.35, 0.2], "3a8a3a", 6)
+    spear(g, B.hand_r, 22, "6a8a8a", "7fd8e8", prongs=3)
+
+
+def vn_skeleton(g):
+    B = skeleton(g, eye="1a1a1a")
+    bow(g, B.hand_l, 14, "8a6a3a", "e8e4d8")
+
+
+def vn_stray(g):
+    B = skeleton(g, bone="c8d8e0", eye="1a2a3a", glow="7fe8ff")
+    hood(g, B, "5a6a70", depth=1.6, point=False)
+    cape(g, B, "4a5a64", "8aa8b8", length=7.0, width=4.0, ragged=True)
+    bow(g, B.hand_l, 14, "6a7a80", "d8f0ff")
+
+
+def vn_wither_skeleton(g):
+    B = skeleton(g, bone="2a2a2e", s=1.2, eye="0a0a0a", glow="ff3a2a")
+    sword(g, B.hand_r, 11, "4a4a50", "8a8a90", "3a2a1a")
+
+
+def vn_creeper(g):
+    G1, G2, G3 = "4aa84a", "2a7a2a", "8ad88a"
+    col = lambda x, y, z, d=0: [G1, G2, G3, G1][int(x * 1.7 + y * 2.3 + z * 1.3) % 4]
+    g.box((5.6, 6, 6.6), (10.4, 18, 9.4), col, 3)                      # 몸
+    g.box((4.8, 18, 5.2), (11.2, 24.5, 10.8), col, 3)                   # 머리
+    for (x0, x1) in ((5.6, 7.4), (8.6, 10.4)):                          # 얼굴 (검은 눈 · 입)
+        g.box((x0, 21.5, 10.7), (x1, 23.2, 11.0), "1a1a1a", 6)
+    g.box((7.2, 19.0, 10.7), (8.8, 21.6, 11.0), "1a1a1a", 6)
+    g.box((6.4, 18.4, 10.7), (9.6, 19.6, 11.0), "1a1a1a", 6)
+    for (zz, name) in ((10.8, "leg_f"), (5.2, "leg_b")):               # 네 다리
+        for sx in (-1, 1):
+            with g.parting(name + ("l" if sx < 0 else "r")):
+                g.box((8 + sx * 1.8 - 1.4, 0, zz - 1.4), (8 + sx * 1.8 + 1.4, 6.2, zz + 1.4), col, 3)
+            g.rig[name + ("l" if sx < 0 else "r")] = (8 + sx * 1.8, 6.0, zz)
+    g.kind = "quad"
+
+
+def vn_spider(g):
+    spider(g, "3a3030", "2a2222", "2a2424", "e02a2a")
+
+
+def vn_cave_spider(g):
+    spider(g, "1f3a44", "163038", "1a2a30", "e02a2a", big=0.75, abd_mark="4ad8e0")
+
+
+def vn_enderman(g):
+    B = figure(g, s=1.45, w=0.62, bulk=0.55, skin="161616", top="161616", legs="161616", boots="101010", arms="161616", hands="161616", face=False)
+    hc = B.head
+    for sx in (-1, 1):
+        g.box((hc[0] + sx * 1.3 - 0.9, hc[1] + 0.1, hc[2] + 2.3), (hc[0] + sx * 1.3 + 0.9, hc[1] + 0.7, hc[2] + 2.8), "e080ff", 9)
+        g.dot(hc[0] + sx * 1.3, hc[1] + 0.4, hc[2] + 2.8, "ffffff", 10, 0.3)
+    floaters(g, [(4, 30, 8), (13, 26, 6), (6, 18, 11)], "c060ff", r=0.4)
+
+
+def vn_witch(g):
+    witch_(g, "3a2a4a", "5a3a6a", "a8b890", "7dff6a")
+
+
+def vn_pillager(g):
+    SKIN = "a8a8a0"
+    B = figure(g, s=1.0, w=1.0, skin=SKIN, top="4a4a54", legs="3a3a44", boots="2a2a30", arms="5a5a64", hands=SKIN, eye="1a3a2a")
+    g.cone(add(B.head, (0, -0.4, 2.3)), add(B.head, (0, -1.6, 3.8)), 0.7, 0.3, hx(SKIN, 0.85), 8)   # 큰 코
+    g.ellipsoid(add(B.head, (0, 0.8, 0)), (2.5, 0.6, 2.5), lambda x, y, z, d: "2a2a30" if y > B.head[1] + 1.2 else None, 7)
+    bow(g, B.hand_l, 10, "6a4a2a", "c8c8c0", bend=1.6)
+    g.tube([(5.4, 19, 9.8), (10.6, 12, 10.0)], [0.35, 0.35], "6a4a2a", 6)
+
+
+def vn_vindicator(g):
+    SKIN = "a8a8a0"
+    B = figure(g, s=1.0, w=1.05, skin=SKIN, top="3a3a44", legs="2a2a34", boots="1a1a20", arms="3a3a44", hands=SKIN, eye="1a3a2a")
+    g.cone(add(B.head, (0, -0.4, 2.3)), add(B.head, (0, -1.6, 3.8)), 0.7, 0.3, hx(SKIN, 0.85), 8)
+    axe(g, B.hand_r, 9, "6a4a2a", "8a8f96", "d8dce6", size=3.0, double=False)
+
+
+def vn_slime(g):
+    slime(g, "6ad86a", "3a9a3a")
+
+
+def vn_magma_cube(g):
+    slime(g, "5a1a0a", "ffb030", eye="ffd84a", r=7.0)
+    for k in range(6):
+        y = 2 + k * 2.0
+        g.ellipsoid((8, y, 8), (7.1, 0.4, 7.1), lambda x, y_, z, d: "ff7a1f" if d > 0.85 else None, 4, inner=0.8)
+
+
+def vn_phantom(g):
+    flyer(g, "3a4a6a", "4a5a7a", "5a6a8a", "7dff6a", span=18, head_kind="maw")
+
+
+# ---- 야생 동물
+def an_cow(g):
+    B = quad(g, "5a3a24", "e8e4dc", "2a2420", L=18, H=10, W=10, leg=6, hump=0.9, leg_r=1.6, fur2="4a3020")
+    for k in range(6):   # 흰 얼룩
+        p = (8 + (rnd(k, 4) - 0.5) * 9, B.cy + (rnd(k, 5) - 0.3) * 6, B.z0 + 3 + k * 2.4)
+        g.ellipsoid(p, (2.0, 1.6, 2.0), "e8e4dc", 3)
+    hc = beast_head(g, B, "5a3a24", "e8d0c0", "1a1a1a", size=1.0, horns="d8d0c0", open_mouth=False)
+    g.ellipsoid(add(hc, (0, -2.6, 3.6)), (1.4, 1.0, 1.0), "f0b0b8", 6)   # 젖
+    g.tube([B.tail, add(B.tail, (0, -4, -0.8))], [0.4, 0.3], "4a3020", 4)
+
+
+def an_pig(g):
+    B = quad(g, "f0a0a8", "f8b8c0", "c87880", L=15, H=9, W=9.5, leg=3.6, hump=0.6, leg_r=1.4, fur2="e090a0")
+    hc = beast_head(g, B, "f0a0a8", "f8b8c0", "1a1a1a", size=0.95, open_mouth=False)
+    g.box(add(hc, (-1.6, -1.8, 5.0)), add(hc, (1.6, 0.2, 6.0)), "e88890", 6)   # 납작 코
+    for sx in (-1, 1):
+        g.dot(hc[0] + sx * 0.7, hc[1] - 0.8, hc[2] + 6.0, "8a3a4a", 7, 0.4)
+    g.tube([B.tail, add(B.tail, (0.6, 0.8, -0.8)), add(B.tail, (-0.4, 1.2, -1.2))], [0.35, 0.3, 0.2], "e090a0", 4, smooth=True)
+
+
+def an_sheep(g):
+    B = quad(g, "f0ece4", "e8e4dc", "3a3a3a", L=16, H=10, W=11, leg=5, hump=0.7, leg_r=1.3, fur2="d8d4cc")
+    for k in range(22):   # 몽실몽실 양털
+        p = (8 + (rnd(k, 1) - 0.5) * 10, B.cy + (rnd(k, 2) - 0.3) * 8, B.z0 + 1 + rnd(k, 3) * 15)
+        g.sphere(p, 2.0, lambda x, y, z, d: "fffcf4" if d < 0.5 else "e8e4dc", 3)
+    for leg_name in ("leg_fl", "leg_fr", "leg_bl", "leg_br"):
+        pass
+    beast_head(g, B, "d8c8b8", "d8c8b8", "1a1a1a", size=0.9, open_mouth=False)
+
+
+def an_chicken(g):
+    g.ellipsoid((8, 6.0, 8), (3.0, 3.0, 4.0), lambda x, y, z, d: tex("f4f4f0", x, y, z, 0.05), 3)   # 몸
+    hc = (8, 10.2, 11.0)
+    with g.parting("head"):
+        g.ellipsoid(hc, (1.8, 2.4, 1.8), "f4f4f0", 4)
+        g.box((7.0, 10.0, 12.6), (9.0, 10.8, 14.0), "f0b030", 5)            # 부리
+        g.box((7.5, 8.4, 12.2), (8.5, 9.8, 12.8), "e02a2a", 5)              # 턱볏
+        g.box((7.4, 12.4, 10.2), (8.6, 13.4, 11.8), "e02a2a", 5)            # 볏
+        for sx in (-1, 1):
+            g.dot(8 + sx * 1.6, 10.8, 12.0, "1a1a1a", 6, 0.4)
+    g.rig["head"] = (8, 8.4, 10.4)
+    for sx in (-1, 1):   # 날개 · 다리
+        g.ellipsoid((8 + sx * 3.0, 6.2, 7.6), (0.6, 2.0, 3.0), "e4e4e0", 4)
+        with g.parting("leg_" + ("l" if sx < 0 else "r")):
+            g.tube([(8 + sx * 1.2, 3.4, 8), (8 + sx * 1.2, 0.4, 8.4)], [0.3, 0.3], "f0b030", 3)
+            g.box((8 + sx * 1.2 - 0.8, 0, 8.0), (8 + sx * 1.2 + 0.8, 0.4, 9.6), "f0b030", 3)
+        g.rig["leg_" + ("l" if sx < 0 else "r")] = (8 + sx * 1.2, 3.4, 8)
+    g.cone((8, 7.0, 4.2), (8, 9.0, 3.0), 1.4, 0.4, "e8e8e4", 3)          # 꼬리깃
+    g.kind = "biped_small"
+
+
+def an_rabbit(g):
+    g.ellipsoid((8, 4.0, 7.4), (2.6, 2.6, 3.2), lambda x, y, z, d: tex("a8865a", x, y, z, 0.06), 3)
+    hc = (8, 6.6, 10.6)
+    with g.parting("head"):
+        g.ellipsoid(hc, (1.8, 1.7, 1.8), "a8865a", 4)
+        for sx in (-1, 1):
+            g.slab(add(hc, (sx * 0.8, 1.2, -0.6)), add(hc, (sx * 1.0, 4.8, -1.2)), (0, 0, 1.0), 0.5, "a8865a", 4)
+            g.slab(add(hc, (sx * 0.8, 1.6, -0.5)), add(hc, (sx * 1.0, 4.2, -1.0)), (0, 0, 0.5), 0.55, "e8b8b0", 5)
+            g.dot(hc[0] + sx * 1.1, hc[1] + 0.4, hc[2] + 1.5, "1a1a1a", 6, 0.35)
+        g.dot(hc[0], hc[1] - 0.4, hc[2] + 1.8, "e88890", 6, 0.35)
+    g.rig["head"] = (8, 5.4, 9.6)
+    g.sphere((8, 5.0, 4.0), 1.1, "f4f0e8", 4)   # 꼬리
+    for sx in (-1, 1):
+        g.ellipsoid((8 + sx * 2.0, 1.4, 6.4), (0.9, 1.2, 2.4), "987650", 3)
+        g.box((8 + sx * 1.0 - 0.5, 0, 9.2), (8 + sx * 1.0 + 0.5, 2.0, 10.2), "987650", 3)
+    g.kind = "solid"
+
+
+def an_wolf(g):
+    B = quad(g, "d8d4cc", "f0ece4", "8a8480", L=16, H=7, W=7, leg=6, hump=1.2, leg_r=1.0, fur2="b8b4ac")
+    hc = beast_head(g, B, "d8d4cc", "c8c4bc", "1a1a1a", size=0.85, open_mouth=False)
+    g.dot(hc[0], hc[1] - 1.0, hc[2] + 4.6, "1a1a1a", 7, 0.6)
+    for i in range(6):   # 목 갈기
+        g.sphere((8, B.cy + 2.0, B.front_z - 1 - i * 0.8), 2.6 - i * 0.2, "e8e4dc", 3)
+    g.tube([B.tail, add(B.tail, (0, 1.0, -2.6)), add(B.tail, (0, -1.4, -5.0))], [1.0, 1.0, 0.6], "c8c4bc", 4, smooth=True)
+
+
+def an_fox(g):
+    B = quad(g, "e2843a", "f4f0e8", "2a2420", L=14, H=6, W=6, leg=4, hump=0.8, leg_r=0.9, fur2="c86a28")
+    hc = beast_head(g, B, "e2843a", "f4f0e8", "1a1a1a", size=0.8, open_mouth=False)
+    g.dot(hc[0], hc[1] - 1.0, hc[2] + 4.2, "1a1a1a", 7, 0.5)
+    g.tube([B.tail, add(B.tail, (0, 0.6, -3.0)), add(B.tail, (0, -1.0, -6.0))], [1.3, 1.6, 0.8], lambda x, y, z, d, f: "f4f0e8" if f > 1.6 else "e2843a", 4, smooth=True)
+
+
+def an_goat(g):
+    B = quad(g, "e8e4dc", "f4f0e8", "4a4440", L=16, H=9, W=8.5, leg=6, hump=0.9, leg_r=1.2, fur2="d8d4cc")
+    hc = beast_head(g, B, "e8e4dc", "e8e4dc", "c8a030", size=0.85, horns="a8a090", open_mouth=False)
+    g.cone(add(hc, (0, -2.6, 3.6)), add(hc, (0, -4.6, 3.4)), 0.7, 0.2, "d8d4cc", 6)   # 수염
+
+
+def an_polar_bear(g):
+    B = quad(g, "f4f4ee", "e8e8e2", "2a2a2a", L=20, H=12, W=12, leg=6, hump=1.1, leg_r=2.2, fur2="e4e4de")
+    hc = beast_head(g, B, "f4f4ee", "e8e8e2", "1a1a1a", size=1.1, open_mouth=False)
+    g.dot(hc[0], hc[1] - 1.2, hc[2] + 5.8, "1a1a1a", 7, 0.7)
+
+
+VANILLA = {
+    "vn_zombie": vn_zombie, "vn_husk": vn_husk, "vn_drowned": vn_drowned, "vn_skeleton": vn_skeleton, "vn_stray": vn_stray,
+    "vn_wither_skeleton": vn_wither_skeleton, "vn_creeper": vn_creeper, "vn_spider": vn_spider, "vn_cave_spider": vn_cave_spider,
+    "vn_enderman": vn_enderman, "vn_witch": vn_witch, "vn_pillager": vn_pillager, "vn_vindicator": vn_vindicator,
+    "vn_slime": vn_slime, "vn_magma_cube": vn_magma_cube, "vn_phantom": vn_phantom,
+    "an_cow": an_cow, "an_pig": an_pig, "an_sheep": an_sheep, "an_chicken": an_chicken, "an_rabbit": an_rabbit,
+    "an_wolf": an_wolf, "an_fox": an_fox, "an_goat": an_goat, "an_polar_bear": an_polar_bear,
+}
+
 # ================================================================== 목록
 BUILDERS = {
     "jelly_slime": jelly_slime, "goblin": goblin, "rotten_farmer": rotten_farmer, "forest_bandit": forest_bandit,
@@ -936,12 +1158,14 @@ BUILDERS = {
     "sand_wraith": sand_wraith, "canyon_raider": canyon_raider, "cave_brute": cave_brute, "storm_caller": storm_caller,
     "magma_sentinel": magma_sentinel, "deep_horror": deep_horror, "grave_knight": grave_knight, "ancient_ravager": ancient_ravager,
 }
+BUILDERS.update(VANILLA)   # v5.10.34 바닐라 몬스터 · 동물 (뒤에 붙여 기존 번호 유지)
 ORDER = list(BUILDERS)   # 순서 = CustomModelData (9100 + i). 새 몬스터는 뒤에 붙여야 기존 번호가 유지됨
 
 # 몹 판정 상자와 모양이 크게 다른 것: 표시 크기 배율 (플러그인이 몹 키 × 배율로 그림)
 SIZE = {"night_hunter": 2.2, "void_phantom": 2.6, "storm_herald": 2.6, "storm_harpy": 3.0, "soul_wisp": 1.0, "thorn_sprite": 1.3,
         "fallen_seraph": 2.2, "silverfish_swarm": 2.6, "end_crawler": 2.2, "bomber": 1.0, "magma_brute": 1.0,
-        "sand_scorpion": 1.4, "venom_spider": 1.5, "nightmare_spider": 1.3, "void_hound": 1.3, "ember_imp": 0.9}
+        "sand_scorpion": 1.4, "venom_spider": 1.5, "nightmare_spider": 1.3, "void_hound": 1.3, "ember_imp": 0.9,
+        "vn_spider": 1.5, "vn_cave_spider": 1.5, "vn_phantom": 2.2, "vn_slime": 1.0, "vn_magma_cube": 1.0}
 
 
 PART_ORDER = ["body", "head", "arm_l", "arm_r", "leg_l", "leg_r", "leg_fl", "leg_fr", "leg_bl", "leg_br", "wing_l", "wing_r"]

@@ -284,12 +284,20 @@ def inventory_png():
     slot(d, 76, 61, True, True)                        # 보조 손
     d.rectangle([25, 7, 75, 78], fill=(30, 27, 25, 255), outline=F_IN)   # 캐릭터 창
     d.line([(26, 77), (74, 77)], fill=SLOT_HI); d.line([(74, 8), (74, 77)], fill=SLOT_HI)
+    # v5.10.34 제작 칸 → 스탯 칸 (힘 · 민첩 / 모험 · 포인트, 결과 칸 = 능력치): 은 테두리 판 + 마름모
+    d.rectangle([93, 5, 172, 57], fill=(62, 55, 50, 255), outline=F_OUT)
+    d.line([(94, 6), (171, 6)], fill=F_MID)
+    d.line([(94, 56), (171, 56)], fill=F_LO)
+    d.rectangle([95, 8, 170, 13], fill=(48, 42, 38, 255))
+    for x in range(100, 166, 6):
+        diamond(d, x, 10, 1, fill=BRONZE, edge=F_LO, cross=False)
+    for cx, cy in ((93, 5), (172, 5), (93, 57), (172, 57)):
+        diamond(d, cx, cy, 2, cross=False)
     for r in range(2):
         for c in range(2):
-            slot(d, 97 + c * 18, 17 + r * 18)          # 제작 2x2
-    d.polygon([(135, 31), (143, 35), (135, 39)], fill=F_HI)   # 화살표
-    d.line([(130, 35), (135, 35)], fill=F_HI)
-    big_slot(d, 148, 22)                               # 결과 칸
+            slot(d, 97 + c * 18, 17 + r * 18, True, True)   # 스탯 칸 (청동 모서리)
+    diamond(d, 140, 35, 3)
+    big_slot(d, 148, 22)                               # 능력치 칸
     divider(d, 5, 170, 79)
     for r in range(3):
         for c in range(9):
@@ -416,3 +424,91 @@ def hud_providers(icon_fn, digit_fn, chars):
         out.append(("h4_ia_" + k, icon_fn(k), ASC_TOP, HUD_ICON_A + i))
         out.append(("h4_ib_" + k, icon_fn(k), ASC_BOT, HUD_ICON_B + i))
     return out
+
+
+# ------------------------------------------------------------------ v5.10.34 사이드바 아이콘 · 구분선 (기본 폰트 ~)
+SB_ICONS = {   # 9x9 픽셀: 문자 → 색
+    "job": (["........#", ".......#.", "#....##..", ".#..##...", "..###....", "..##.....", ".#..#....", "#....#...", "........."], {"#": (230, 232, 240)}),
+    "level": (["....#....", "...###...", "#########", ".#######.", "..#####..", ".###.###.", ".##...##.", ".........", "........."], {"#": (255, 214, 90)}),
+    "money": (["..#####..", ".#ooooo#.", "#oo#oooo#", "#oo#oooo#", "#ooo##oo#", "#oooo#oo#", "#ooo#ooo#", ".#ooooo#.", "..#####.."], {"#": (150, 100, 20), "o": (255, 206, 70)}),
+    "point": (["....#....", "...###...", "..##o##..", ".##ooo##.", "##ooooo##", ".##ooo##.", "..##o##..", "...###...", "....#...."], {"#": (90, 200, 255), "o": (200, 240, 255)}),
+    "power": (["....#....", "...##....", "...###...", "..####.#.", ".#######.", ".##oo###.", ".#oooo##.", "..#oo##..", "...###..."], {"#": (255, 110, 50), "o": (255, 220, 120)}),
+    "quest": ([".#######.", "#ooooooo#", ".#ooooo#.", ".#o###o#.", ".#ooooo#.", ".#o###o#.", ".#ooooo#.", "#ooooooo#", ".#######."], {"#": (150, 110, 60), "o": (240, 226, 190)}),
+    "guild": (["#........", "#######..", "#ooooo#..", "#oo#oo#..", "#o###o#..", "#ooooo#..", "#######..", "#........", "#........"], {"#": (200, 170, 100), "o": (90, 140, 255)}),
+    "buff": (["...###...", "...#.#...", "..#####..", ".#ooooo#.", "#ooooooo#", "#ooooooo#", "#ooooooo#", ".#ooooo#.", "..#####.."], {"#": (200, 200, 220), "o": (220, 110, 255)}),
+    "str": (["........#", ".......#.", "......#..", ".#...#...", "..#.#....", "...#.....", "..#.#....", ".#.......", "........."], {"#": (255, 90, 90)}),
+    "dex": (["......##.", ".....###.", "....###..", "...###...", "..###....", ".###.....", ".##......", "#........", "........."], {"#": (110, 170, 255)}),
+    "adv": ([".........", "..####...", "..#oo#...", "..#oo#...", "..#oo###.", "..#ooooo#", "..#######", ".........", "........."], {"#": (60, 150, 60), "o": (140, 230, 120)}),
+}
+SB_BASE = 0xE060
+SB_ORDER = ["job", "level", "money", "point", "power", "quest", "guild", "buff", "str", "dex", "adv"]
+SB_DIVIDER = 0xE070
+
+
+def _sb_icon(key):
+    rows, pal = SB_ICONS[key]
+    img = Image.new("RGBA", (9, 9), (0, 0, 0, 0))
+    for y, r in enumerate(rows):
+        for x, ch in enumerate(r):
+            if ch in pal:
+                img.putpixel((x, y), pal[ch] + (255,))
+    out = img.copy()   # 어두운 외곽선
+    for y in range(9):
+        for x in range(9):
+            if img.getpixel((x, y))[3] == 0 and any(0 <= x + dx < 9 and 0 <= y + dy < 9 and img.getpixel((x + dx, y + dy))[3] > 0 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                out.putpixel((x, y), (16, 12, 18, 200))
+    return out
+
+
+def sb_divider():
+    """사이드바 구분선 (폭 104): 은 선 + 가운데 마름모 + 양끝 작은 마름모"""
+    img = Image.new("RGBA", (104, 7), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.line([(6, 3), (97, 3)], fill=(150, 140, 126, 255))
+    d.line([(6, 4), (97, 4)], fill=(60, 54, 50, 255))
+    diamond(d, 52, 3, 3)
+    diamond(d, 3, 3, 2, cross=False)
+    diamond(d, 100, 3, 2, cross=False)
+    return img
+
+
+def sidebar_providers(pack_dir, ns):
+    tex = os.path.join(pack_dir, "assets", ns, "textures", "font")
+    os.makedirs(tex, exist_ok=True)
+    prov = []
+    for i, k in enumerate(SB_ORDER):
+        _sb_icon(k).save(os.path.join(tex, "sb_" + k + ".png"))
+        prov.append({"type": "bitmap", "file": ns + ":font/sb_" + k + ".png", "ascent": 7, "height": 8, "chars": [chr(SB_BASE + i)]})
+    sb_divider().save(os.path.join(tex, "sb_divider.png"))
+    prov.append({"type": "bitmap", "file": ns + ":font/sb_divider.png", "ascent": 5, "height": 7, "chars": [chr(SB_DIVIDER)]})
+    return prov
+
+
+# ------------------------------------------------------------------ v5.10.34 나침반 틀 (보스바 제목, 기본 폰트 )
+COMPASS_W, COMPASS_CH = 232, 0xE073
+
+
+def compass_frame():
+    img = Image.new("RGBA", (COMPASS_W, 15), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    x0, x1 = 10, COMPASS_W - 11
+    d.rectangle([x0, 1, x1, 12], fill=(34, 30, 28, 170))
+    d.line([(x0, 1), (x1, 1)], fill=F_OUT)
+    d.line([(x0, 2), (x1, 2)], fill=F_MID)
+    d.line([(x0, 11), (x1, 11)], fill=F_LO)
+    d.line([(x0, 12), (x1, 12)], fill=F_OUT)
+    for side in (-1, 1):
+        ex = x0 if side < 0 else x1
+        d.polygon([(ex, 1), (ex, 12), (ex - side * 6, 6)], fill=F_MID, outline=F_OUT)
+        diamond(d, ex - side * 6, 6, 4)
+    c = COMPASS_W // 2   # 가운데 아래 금빛 바늘
+    d.polygon([(c - 3, 12), (c + 3, 12), (c, 15)], fill=(232, 192, 96, 255))
+    d.polygon([(c - 3, 1), (c + 3, 1), (c, -2)], fill=(232, 192, 96, 255))
+    return img
+
+
+def compass_provider(pack_dir, ns):
+    tex = os.path.join(pack_dir, "assets", ns, "textures", "font")
+    os.makedirs(tex, exist_ok=True)
+    compass_frame().save(os.path.join(tex, "compass_frame.png"))
+    return {"type": "bitmap", "file": ns + ":font/compass_frame.png", "ascent": 10, "height": 15, "chars": [chr(COMPASS_CH)]}

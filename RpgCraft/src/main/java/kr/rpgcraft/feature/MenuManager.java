@@ -94,8 +94,13 @@ public class MenuManager implements Listener {
         return new ItemBuilder(m).name(name).lore(lore).hideAll().build();
     }
 
+    /** v5.10.34 4R 풍 메뉴 아이콘 (리소스팩 그림, 팩이 없으면 종이) */
+    private static ItemStack icon(kr.rpgcraft.gui.UiIcon ui, String name, List<String> lore) {
+        return Gui.ui(ui, true, name, lore.toArray(new String[0]));
+    }
+
     private void back(Gui g, int slot, Player p) {
-        g.set(slot, Gui.button(Material.ARROW, "&f◀ 메인 메뉴"), e -> open(p));
+        g.set(slot, Gui.ui(kr.rpgcraft.gui.UiIcon.NAV_BACK, true, "&f◀ 메인 메뉴"), e -> open(p));
     }
 
     private static String bar(double ratio, int len) {
@@ -197,22 +202,22 @@ public class MenuManager implements Listener {
                     "&7회피 " + String.format("%.1f", s.dodge) + "%  &7방어 관통 " + String.format("%.1f", s.armorPen) + "%",
                     "&c힘 " + (int) s.str + "  &a민첩 " + (int) s.dex + "  &b모험 " + (int) s.adv)));
 
-            ItemStack stat = icon(Material.NETHER_STAR, "&e&l스탯", List.of("&7힘 / 민첩 / 모험 분배", "",
-                    d.statPoints > 0 ? "&a남은 포인트 " + d.statPoints + " !" : "&7남은 포인트 0", "&e▶ 클릭"));
-            stat.setAmount(Math.max(1, Math.min(64, d.statPoints)));
-            set(19, stat, e -> p.performCommand("stat"));
-            set(20, icon(Material.ENCHANTED_BOOK, "&d&l특수 스킬", List.of("&7히든/던전/??? 패시브와 액티브", "&7보유 " + d.passives.size() + "개",
+            // v5.10.34 스탯은 인벤토리(E) 위 칸으로 옮기고 이 자리에 시즌 패스
+            int spLv = plugin.seasonPass() == null ? 0 : plugin.seasonPass().level(d);
+            set(19, icon(kr.rpgcraft.gui.UiIcon.SEASON_PASS, "&b&l시즌 패스", List.of("&7시즌 " + plugin.rounds().round() + " · &e" + spLv + "레벨",
+                    "&7사냥 · 낚시 · 요리 · 미니게임으로 경험치", "&8스탯은 인벤토리(E) 위 칸에서", "&e▶ 클릭")), e -> { if (plugin.seasonPass() != null) plugin.seasonPass().open(p, -1); });
+            set(20, icon(kr.rpgcraft.gui.UiIcon.SKILL, "&d&l특수 스킬", List.of("&7히든/던전/??? 패시브와 액티브", "&7보유 " + d.passives.size() + "개",
                     "&7퀵 스킬: &f" + quickName(d), "&e▶ 클릭")), e -> plugin.passives().open(p));
-            set(21, icon(Material.ANVIL, "&6&l강화", List.of("&7+8부터 파괴 위험", "&7파괴 방지권 / 확률 증가권 사용 가능", "&e▶ 클릭")), e -> plugin.enhance().open(p));
-            set(22, icon(Material.FIREWORK_STAR, "&5&l룬", List.of("&e▶ 좌클릭: 룬 장착", "&e▶ 우클릭: 룬 합성")), e -> {
+            set(21, icon(kr.rpgcraft.gui.UiIcon.ENHANCE, "&6&l강화", List.of("&7+8부터 파괴 위험", "&7파괴 방지권 / 확률 증가권 사용 가능", "&e▶ 클릭")), e -> plugin.enhance().open(p));
+            set(22, icon(kr.rpgcraft.gui.UiIcon.RUNE, "&5&l룬", List.of("&e▶ 좌클릭: 룬 장착", "&e▶ 우클릭: 룬 합성")), e -> {
                 if (e.isRightClick()) plugin.runeFusion().open(p);
                 else plugin.runes().open(p);
             });
             int potions = d.potionBag.values().stream().mapToInt(Integer::intValue).sum();
-            set(23, icon(Material.POTION, "&c&l포션가방", List.of("&7보관 중 " + potions + "개", "&7F 키로 즉시 사용", "&e▶ 클릭")), e -> plugin.potions().open(p));
-            set(24, icon(Material.AMETHYST_CLUSTER, "&d&l기운 조합", List.of("&7기운 파편 → 결정 → 기운", "&7사신수 무기 · 사흉수 갑주", "&e▶ 클릭")), e -> plugin.spirits().open(p));
-            if (d.blacksmith) set(25, icon(Material.SMITHING_TABLE, "&6&l대장장이 제작", List.of("&7유니크 무기/방어구 제작", "&e▶ 클릭")), e -> plugin.blacksmith().open(p));
-            else set(25, icon(Material.SMITHING_TABLE, "&7&l대장장이 전직", List.of("&7레벨 " + plugin.getConfig().getInt("blacksmith.required-level", 20)
+            set(23, icon(kr.rpgcraft.gui.UiIcon.POTION_BAG, "&c&l포션가방", List.of("&7보관 중 " + potions + "개", "&7F 키로 즉시 사용", "&e▶ 클릭")), e -> plugin.potions().open(p));
+            set(24, icon(kr.rpgcraft.gui.UiIcon.AURA, "&d&l기운 조합", List.of("&7기운 파편 → 결정 → 기운", "&7사신수 무기 · 사흉수 갑주", "&e▶ 클릭")), e -> plugin.spirits().open(p));
+            if (d.blacksmith) set(25, icon(kr.rpgcraft.gui.UiIcon.SMITH, "&6&l대장장이 제작", List.of("&7유니크 무기/방어구 제작", "&e▶ 클릭")), e -> plugin.blacksmith().open(p));
+            else set(25, icon(kr.rpgcraft.gui.UiIcon.SMITH, "&7&l대장장이 전직", List.of("&7레벨 " + plugin.getConfig().getInt("blacksmith.required-level", 20)
                     + " · " + Text.money(plugin.getConfig().getLong("blacksmith.cost", 1_000_000)), "&7유니크 장비 제작 · 강화 확률 +5%", "&e▶ 쉬프트 클릭으로 전직")), e -> {
                 if (e.isShiftClick()) {
                     plugin.blacksmith().changeJob(p);
@@ -221,33 +226,33 @@ public class MenuManager implements Listener {
             });
 
             int done = plugin.quests().completedCount(d);
-            ItemStack quest = icon(Material.WRITABLE_BOOK, "&a&l일일 · 주간 의뢰", List.of("&7일일: 매일 자정 · 주간: 매주 월요일 (한국 시간)", "&f일일 " + done + "/3 &7· &b주간 " + plugin.quests().weeklyCompleted(d) + "/3", "&e▶ 클릭"));
+            ItemStack quest = icon(kr.rpgcraft.gui.UiIcon.QUEST, "&a&l일일 · 주간 의뢰", List.of("&7일일: 매일 자정 · 주간: 매주 월요일 (한국 시간)", "&f일일 " + done + "/3 &7· &b주간 " + plugin.quests().weeklyCompleted(d) + "/3", "&e▶ 클릭"));
             if (done > 0) quest.setAmount(done);
             set(28, quest, e -> new QuestGui(p).open(p));
-            set(29, icon(Material.EMERALD, "&a&l상점", List.of("&7이용 가능한 상점 목록", "&e▶ 클릭")), e -> new ShopListGui(p).open(p));
-            set(30, icon(Material.ENDER_PEARL, "&3&l워프", List.of("&7" + warps.size() + "개 지역", "&73초 시전 후 이동 (움직이거나 피격 시 취소)", "&e▶ 클릭")), e -> new WarpGui(p).open(p));
-            set(31, icon(Material.WHITE_BANNER, "&b&l길드", List.of(g == null ? "&7소속 길드 없음" : "&f" + g.name + " &7Lv." + g.level + " · " + g.members.size() + "명", "&e▶ 클릭")),
+            set(29, icon(kr.rpgcraft.gui.UiIcon.SHOP, "&a&l상점", List.of("&7이용 가능한 상점 목록", "&e▶ 클릭")), e -> new ShopListGui(p).open(p));
+            set(30, icon(kr.rpgcraft.gui.UiIcon.WARP, "&3&l워프", List.of("&7" + warps.size() + "개 지역", "&73초 시전 후 이동 (움직이거나 피격 시 취소)", "&e▶ 클릭")), e -> new WarpGui(p).open(p));
+            set(31, icon(kr.rpgcraft.gui.UiIcon.GUILD, "&b&l길드", List.of(g == null ? "&7소속 길드 없음" : "&f" + g.name + " &7Lv." + g.level + " · " + g.members.size() + "명", "&e▶ 클릭")),
                     e -> new GuildGui(p).open(p));
-            set(32, icon(Material.NETHER_STAR, "&d&l잠재능력", List.of("&e▶ 클릭")), e -> plugin.potentials().open(p));   // 공성전은 길드 메뉴에서
-            set(33, icon(Material.GOLDEN_HELMET, "&6&l랭킹", List.of("&7레벨 · 전투력 · 재산 · 길드", "&e▶ 클릭")), e -> new RankGui(p, 0).open(p));
-            set(34, icon(Material.BOOKSHELF, "&f&l도감", List.of("&7모든 아이템과 보스 정보", "&7획득처 · 드롭 확률", "&e▶ 클릭")), e -> new CodexGui(p).open(p));
+            set(32, icon(kr.rpgcraft.gui.UiIcon.POTENTIAL, "&d&l잠재능력", List.of("&e▶ 클릭")), e -> plugin.potentials().open(p));   // 공성전은 길드 메뉴에서
+            set(33, icon(kr.rpgcraft.gui.UiIcon.RANKING, "&6&l랭킹", List.of("&7레벨 · 전투력 · 재산 · 길드", "&e▶ 클릭")), e -> new RankGui(p, 0).open(p));
+            set(34, icon(kr.rpgcraft.gui.UiIcon.CODEX, "&f&l도감", List.of("&7모든 아이템과 보스 정보", "&7획득처 · 드롭 확률", "&e▶ 클릭")), e -> new CodexGui(p).open(p));
 
             var cm = plugin.content();
-            set(37, icon(Material.NAME_TAG, "&b&l업적 · 칭호", List.of("&7목표를 달성하고 칭호를 얻으세요", "&7현재 칭호: &f" + (cm.title(d).isEmpty() ? "없음" : cm.title(d)), "&e▶ 클릭")),
+            set(37, icon(kr.rpgcraft.gui.UiIcon.ACHIEVEMENT, "&b&l업적 · 칭호", List.of("&7목표를 달성하고 칭호를 얻으세요", "&7현재 칭호: &f" + (cm.title(d).isEmpty() ? "없음" : cm.title(d)), "&e▶ 클릭")),
                     e -> cm.new AchGui(p).open(p));
-            set(38, icon(cm.canClaim(d) ? Material.CHEST_MINECART : Material.MINECART, cm.canClaim(d) ? "&a&l출석 보상 &e(받기 가능!)" : "&7&l출석 보상",
+            set(38, icon(kr.rpgcraft.gui.UiIcon.ATTENDANCE, cm.canClaim(d) ? "&a&l출석 보상 &e(받기 가능!)" : "&7&l출석 보상",
                     List.of("&7연속 " + cm.streak(d) + "일", "&e▶ 클릭")), e -> cm.new AttendGui(p).open(p));
-            set(42, icon(Material.HEART_OF_THE_SEA, "&6&l장신구", List.of("&7반지 · 목걸이 · 귀걸이 장착", "&7무작위 옵션으로 추가 스펙업", "&e▶ 클릭")),
+            set(42, icon(kr.rpgcraft.gui.UiIcon.ACCESSORY, "&6&l장신구", List.of("&7반지 · 목걸이 · 귀걸이 장착", "&7무작위 옵션으로 추가 스펙업", "&e▶ 클릭")),
                     e -> plugin.accessories().open(p));
-            set(43, icon(Material.SUNFLOWER, "&6&l행운의 룰렛", List.of("&7게임 머니로 배율에 도전!", "&7×0 ~ ×10", "&e▶ 클릭")), e -> plugin.casino().open(p));
-            set(39, icon(Material.COMPARATOR, "&7&l설정", List.of("&7사이드바 · HUD · 대미지 표시 · 효과음", "&e▶ 클릭")), e -> new SettingsGui(p).open(p));
+            set(43, icon(kr.rpgcraft.gui.UiIcon.ROULETTE, "&6&l행운의 룰렛", List.of("&7게임 머니로 배율에 도전!", "&7×0 ~ ×10", "&e▶ 클릭")), e -> plugin.casino().open(p));
+            set(39, icon(kr.rpgcraft.gui.UiIcon.SETTINGS, "&7&l설정", List.of("&7사이드바 · HUD · 대미지 표시 · 효과음", "&e▶ 클릭")), e -> new SettingsGui(p).open(p));
             boolean hj = kr.rpgcraft.world.HiddenJobManager.of(d) != null;   // v5.10.17 히든 직업이면 아이콘 · 설명도 다르게
-            set(40, icon(hj ? Material.WITHER_SKELETON_SKULL : Material.IRON_SWORD, hj ? "&5&l✦ 히든 직업" : "&6&l직업",
+            set(40, icon(hj ? kr.rpgcraft.gui.UiIcon.HIDDEN_JOB : kr.rpgcraft.gui.UiIcon.JOB, hj ? "&5&l✦ 히든 직업" : "&6&l직업",
                     hj ? List.of("&7현재: &5" + plugin.jobs().title(d), "&8숨겨진 길을 걷는 자", "&e▶ 클릭") : List.of("&7현재: &f" + plugin.jobs().title(d), "&7Lv.10 기초 직업 · Lv.40 전직", "&e▶ 클릭")), e -> plugin.jobs().open(p));
-            set(41, icon(Material.OAK_SIGN, "&f&l도움말", List.of("&7조작키와 시스템 안내", "&e▶ 클릭")), e -> new HelpGui(p).open(p));
-            set(47, icon(Material.END_CRYSTAL, "&5&l무한의 탑", List.of("&7최고 " + (int) d.counter("tower_best") + "층", "&e▶ 클릭")), e -> plugin.tower().open(p));   // v5.10.30
-            set(51, icon(Material.EXPERIENCE_BOTTLE, "&b&l숙련도", List.of("&7생활 · 전투 · 직업 (최대 50)", "&e▶ 클릭")), e -> plugin.mastery().open(p));   // v5.10.30
-            set(49, Gui.button(Material.BARRIER, "&c닫기"), e -> p.closeInventory());
+            set(41, icon(kr.rpgcraft.gui.UiIcon.HELP, "&f&l도움말", List.of("&7조작키와 시스템 안내", "&e▶ 클릭")), e -> new HelpGui(p).open(p));
+            set(47, icon(kr.rpgcraft.gui.UiIcon.TOWER, "&5&l무한의 탑", List.of("&7최고 " + (int) d.counter("tower_best") + "층", "&e▶ 클릭")), e -> plugin.tower().open(p));   // v5.10.30
+            set(51, icon(kr.rpgcraft.gui.UiIcon.MASTERY, "&b&l숙련도", List.of("&7생활 · 전투 · 직업 (최대 50)", "&e▶ 클릭")), e -> plugin.mastery().open(p));   // v5.10.30
+            set(49, Gui.ui(kr.rpgcraft.gui.UiIcon.NAV_CLOSE, true, "&c닫기"), e -> p.closeInventory());
             border(this, 6);
             // UI 설명 제거: 값(숫자)이나 ▶ 가 있는 줄만 남긴다
             for (int i = 0; i < 54; i++) {
@@ -983,12 +988,14 @@ public class MenuManager implements Listener {
             for (Setting s : all) {
                 int slot = slots[idx++];
                 boolean on = s.get(d);
-                set(slot, icon(on ? s.icon : Material.GRAY_DYE, (on ? "&a&l" : "&7&l") + s.label + (on ? " ON" : " OFF"),
-                        List.of("&7" + s.desc, "", "&e▶ 클릭하여 전환")), e -> {
+                set(slot, Gui.ui(kr.rpgcraft.gui.UiIcon.valueOf("OPT_" + s.name()), on, (on ? "&a&l" : "&7&l") + s.label + (on ? " ON" : " OFF"),
+                        "&7" + s.desc, "", "&e▶ 클릭하여 전환"), e -> {
                     if (s == Setting.PVP && s.get(d) && plugin.combat().inPvp(p)) {   // 싸우다가 끄고 도망가기 방지
                         Text.actionBar(p, "&cPvP 전투 중에는 끌 수 없습니다. &7(15초 뒤 다시)");
                         return;
                     }
+                    if (d.onCooldown("opt_toggle")) return;   // v5.10.34 빠른 연타로 두 번 바뀌지 않게
+                    d.cooldown("opt_toggle", 300);
                     boolean now = s.toggle(d);
                     plugin.data().save(d);   // 나갔다 와도 유지
                     if (s == Setting.SIDEBAR) plugin.hud().applySidebar(p);

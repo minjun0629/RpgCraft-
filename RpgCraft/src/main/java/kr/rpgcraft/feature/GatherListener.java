@@ -34,19 +34,38 @@ public class GatherListener implements Listener {
         this.plugin = plugin;
     }
 
+    private static final java.util.Set<String> STONES = java.util.Set.of("STONE", "COBBLESTONE", "MOSSY_COBBLESTONE", "DEEPSLATE", "COBBLED_DEEPSLATE",
+            "GRANITE", "DIORITE", "ANDESITE", "TUFF", "CALCITE", "DRIPSTONE_BLOCK", "BLACKSTONE", "BASALT", "NETHERRACK", "END_STONE",
+            "SANDSTONE", "RED_SANDSTONE", "SMOOTH_BASALT", "AMETHYST_BLOCK", "RAW_IRON_BLOCK", "RAW_COPPER_BLOCK");
+    private static final java.util.Set<String> SOILS = java.util.Set.of("DIRT", "GRASS_BLOCK", "COARSE_DIRT", "PODZOL", "ROOTED_DIRT", "MYCELIUM",
+            "MUD", "DIRT_PATH", "MOSS_BLOCK", "MUDDY_MANGROVE_ROOTS", "FARMLAND", "CRIMSON_NYLIUM", "WARPED_NYLIUM");
+
+    /**
+     * 채집 포인트 종류. config 목록에 없어도 이름으로 판별 (v5.10.35: 화강암 · 안산암 · 섬록암 · 조약돌 · 응회암 · 구리/석탄/레드스톤 광석 ·
+     * 나무껍질(_WOOD) · 벗긴 원목 · 진홍/뒤틀린 줄기 등이 채집되지 않던 버그 — 서버의 config.yml 은 예전 목록이 남아 있어서 코드에서 처리)
+     */
     private String nodeOf(Material m) {
         ConfigurationSection nodes = plugin.getConfig().getConfigurationSection("gather.nodes");
-        if (nodes == null) return null;
-        for (String k : nodes.getKeys(false)) {
-            for (String b : nodes.getStringList(k + ".blocks")) {
-                Material bm = Material.matchMaterial(b);
-                if (bm == m) return k;
+        if (nodes != null) {
+            for (String k : nodes.getKeys(false)) {
+                for (String b : nodes.getStringList(k + ".blocks")) {
+                    Material bm = Material.matchMaterial(b);
+                    if (bm == m) return k;
+                }
             }
         }
+        String n = m.name();
+        if (n.endsWith("_LOG") || n.endsWith("_WOOD") || n.endsWith("_STEM") || n.endsWith("_HYPHAE")) return has(nodes, "wood");
+        if (n.endsWith("_ORE") || STONES.contains(n)) return has(nodes, "ore");
+        if (SOILS.contains(n)) return has(nodes, "herb");
         return null;
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    private static String has(ConfigurationSection nodes, String k) {
+        return nodes == null || nodes.isConfigurationSection(k) ? k : null;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)   // v5.10.35 다른 보호 처리보다 먼저 (보호 구역 안의 채집 포인트도 채집)
     public void onBreak(BlockBreakEvent e) {
         Player p = e.getPlayer();
         ItemStack tool = p.getInventory().getItemInMainHand();

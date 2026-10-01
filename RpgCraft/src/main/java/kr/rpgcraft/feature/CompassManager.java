@@ -98,10 +98,14 @@ public class CompassManager implements Listener {
                     }
                 }
             }
-            if (mark == null) mark = i == 0 ? "§e§l│" : "§8·";
+            if (mark == null) mark = i == 0 ? "§e§l│" : plugin.pack().hasPack(p) ? "§7|" : "§8·";
             sb.append(mark).append(i < 12 ? " " : "");
         }
-        return sb.toString();
+        if (!plugin.pack().hasPack(p)) return sb.toString();
+        // v5.10.34 마크에이지 4R 풍 틀 (은 테두리 · 양끝 마름모 · 가운데 금빛 바늘). 전체 폭 = 틀 폭 → 틀은 화면 가운데, 방위는 그 안 가운데
+        String text = sb.toString();
+        int fw = 232, adv = fw + 1, n = kr.rpgcraft.pack.HudFont.textWidth(text);
+        return "§f" + '\uE073' + kr.rpgcraft.pack.PackManager.shift(fw / 2 - n / 2 - adv) + text + kr.rpgcraft.pack.PackManager.shift(fw / 2 - (n - n / 2));
     }
 
     @EventHandler

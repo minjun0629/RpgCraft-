@@ -30,6 +30,7 @@ player:
   lock-food: true            # 배고픔 고정
   starting-money: 0          # 처음엔 0원부터
   exp-gain-mult: 0.8         # 모든 경험치 획득 배율
+  lifesteal-mult: 0.85       # v5.10.34 모든 흡혈량 배율 (소폭 너프)
   item-hp-mult: 0.4          # 장비·룬·장신구·패시브의 체력(고정·%) 효과 배율 (크게 너프)
   rune-hp-mult: 1.5          # 룬의 체력 효과만 추가로 ×1.5
   speed-mult: 0.7            # 이동속도 증가 효과 배율
@@ -100,6 +101,7 @@ mobs:
   overlevel-free: 20            # 나보다 20레벨 넘게 낮은 몬스터는 경험치 1레벨당 -3% (최소 10%)            # false: 낮에 좀비·스켈레톤 등이 햇빛에 타지 않음
   creeper-hp-mult: 0.35      # 크리퍼 체력 배율 (자폭해도 마지막으로 때린 플레이어가 보상 획득)
   creeper-exp-mult: 1.5
+  normal-exp-mult: 0.75      # v5.10.34 일반(정예 · 중간 보스 아닌) 몬스터 경험치 배율
   elite-chance: 0.07         # 정예 몬스터 확률 (밤 ×1.5, 핏빛 달 ×3)
   miniboss-chance: 0.012     # 중간 보스 확률
   miniboss-legend-seal-chance: 0.002
@@ -387,9 +389,10 @@ pets:
   scale: 0.6                 # 펫 모델 크기
   exp-mult: 1.0              # v5.10.30 펫 경험치 배율 (사냥 1 · 정예 4 · 중간 보스 10 · 보스 40 · 간식 60 · 요리 40)
   evolve-cost: 2000000       # 진화 비용 기준 (× 등급+1 × 다음 단계)
+  fuse-count: 5              # v5.10.35 등급 합성에 필요한 같은 등급의 남는 펫 수 (3 → 5)
 
 mastery:                     # v5.10.30 숙련도 (/숙련) — 생활 · 전투 · 직업 각각 최대 50
-  exp-mult: 1.0
+  exp-mult: 0.6              # v5.10.34 1.0 → 0.6 (덜 오르게)
   weapon-dmg-per-level: 0.004   # 무기 숙련 1레벨마다 그 무기로 주는 피해 +0.4% (50레벨 +20%)
 
 tower:                       # v5.10.30 무한의 탑 (/탑)
@@ -402,9 +405,9 @@ tower:                       # v5.10.30 무한의 탑 (/탑)
   base-level: 8              # 1층 몬스터 레벨 = base + 층 × level-per-floor
   level-per-floor: 3.0
   max-level: 400
-  money-per-floor: 15000     # 처음 오른 층 보상 = 층 × 이 값 (10층마다 3배 + 아이템)
+  money-per-floor: 8000      # 처음 오른 층 보상 = 층 × 이 값 (10층마다 3배 + 아이템) — v5.10.34 15000 → 8000
   exp-ratio-per-floor: 0.015 # 층을 넘을 때마다 레벨업 경험치의 1.5% (보스 층 3배)
-  weekly-money-per-floor: 40000   # 주간 보상: 최고 층 × 이 값 + 순위 보상 (우편)
+  weekly-money-per-floor: 20000   # 주간 보상: 최고 층 × 이 값 + 순위 보상 (우편) — v5.10.34 40000 → 20000
 
 server-list:                 # 서버 목록 (멀티플레이 화면)
   enabled: true
@@ -635,6 +638,9 @@ mob-models:                 # v5.9.0 일반 몬스터 3D 모델 (mobs.yml 커스
   animate-range: 40          # 이 거리 안에 플레이어가 있을 때만 움직임 계산 (렉 줄이기)
   view-range: 0.6            # 모델이 보이는 거리 배율 (1.0 = 약 64블록, v5.10.2: 0.6 ≈ 38블록 — 낮추면 프레임↑)
   require-matching-pack: true  # 외부 리소스팩(resourcepack.url)이 플러그인 내장 팩과 다르면 모델을 끔 (예전 팩이면 여러 마리가 겹쳐 보임)
+  vanilla: true              # v5.10.34 바닐라 몬스터 · 야생 동물도 블록을 쌓은 모델로 (좀비 · 스켈레톤 · 크리퍼 · 거미 · 소 · 돼지 · 양 · 닭 …)
+  vanilla-range: 40          # 플레이어가 이 거리 안에 있는 바닐라 몹에만 모델을 붙임 (멀어지면 +24 블록에서 뗌)
+  vanilla-types: {}          # 특정 종류만 끄기: 예) vanilla-types: { an_sheep: false, vn_slime: false }
 boss-models:                # 보스 3D 모델 (리소스팩)
   enabled: true
   yaw-offset: 0              # 모델이 뒤를 보고 있으면 180 으로

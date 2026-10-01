@@ -27,9 +27,10 @@ import java.util.UUID;
  *  팩 없음: 빨간 보스바 + 글자.
  */
 public class TargetHud implements Listener {
-    private static final char FRAME = '', BAR0 = '', ICON0 = '';
-    private static final int W = 164, BAR_X = 34, STEPS = 25, ICON_X = 8;
-    // tools/target_hud.py MARK 와 같아야 함 (흰 · 금 · 빨강 · 회색)
+    // tools/target_hud.py 와 같아야 함 (v5.10.47 마크에이지 4R 참고 화면대로: 이름 칸 + 보라→파랑 바 + 날개 문장)
+    private static final char FRAME = '\uE0A0', BAR0 = '\uE0A1', EMB0 = '\uE0BB', DIG0 = '\uE0C0';
+    private static final String DIGITS = "0123456789/,.kM";
+    private static final int W = 236, FRAME_ADV = 171, FILL_X = 4, FILL_ADV = 162, EMB_X = 150, EMB_ADV = 87, CENTER = 84, INNER = 150, STEPS = 25;
     private static final String WHITE = hex("fcfcf8"), GOLD = hex("fce080"), RED = hex("fc6060"), GRAY = hex("c8c8c4");
 
     private record Target(UUID mob, long until, boolean look) {}
@@ -104,7 +105,7 @@ public class TargetHud implements Listener {
         b.setColor(pack ? BarColor.WHITE : BarColor.RED);
         b.setProgress(ratio);
         String hp = Text.num(Math.max(0, alive ? s.hp : 0)) + "/" + Text.num(s.maxHp);
-        String title = pack ? panel(s.level, name, hp, ratio, boss, elite)
+        String title = pack ? panel(s.level, name, alive ? s.hp : 0, s.maxHp, ratio, boss, elite)
                 : Text.c((boss ? "&4&l[보스] " : elite ? "&c[정예] " : "") + "&6Lv." + s.level + " &f" + name + " &c" + hp);
         if (!title.equals(b.getTitle())) b.setTitle(title);
     }
@@ -125,34 +126,51 @@ public class TargetHud implements Listener {
         return sb + "..";
     }
 
-    /** 폭이 정확히 W 인 패널 문자열 (보스바가 가운데 정렬 → 셰이더가 오른쪽 끝으로) */
-    private static String panel(int level, String name, String hp, double ratio, boolean boss, boolean elite) {
+    /** 바 안 숫자 (전용 글리프) */
+    private static String digitGlyphs(String hp) {
         StringBuilder sb = new StringBuilder();
-        int cur = 0;
+        for (char c : hp.toCharArray()) {
+            int i = DIGITS.indexOf(c);
+            if (i >= 0) sb.append((char) (DIG0 + i));
+        }
+        return sb.toString();
+    }
+
+    private static int digitWidth(String hp) {
+        int w = 0;
+        for (char c : hp.toCharArray()) if (DIGITS.indexOf(c) >= 0) w += AsciiWidths.of(c);
+        return w;
+    }
+
+    /** 폭이 정확히 W 인 패널 문자열 (보스바가 가운데 정렬 → 셰이더가 오른쪽 위로) */
+    private static String panel(int level, String name, double hp, double maxHp, double ratio, boolean boss, boolean elite) {
+        StringBuilder sb = new StringBuilder();
         sb.append(WHITE).append(FRAME);
-        cur += W + 1;
-        sb.append(PackManager.shift(ICON_X - cur)).append(boss ? (char) (ICON0 + 2) : elite ? (char) (ICON0 + 1) : ICON0);
-        cur = ICON_X + 14;
+        int cur = FRAME_ADV;
         int step = (int) Math.round(ratio * STEPS);
         if (ratio > 0 && step == 0) step = 1;
-        sb.append(PackManager.shift(BAR_X - cur)).append((char) (BAR0 + step));
-        cur = BAR_X + 125;
-        // 이름 줄: [정예] Lv.12 이름 ................ 1.2만/3만
+        sb.append(PackManager.shift(FILL_X - cur)).append((char) (BAR0 + step));
+        cur = FILL_X + FILL_ADV;
+        // 바 안 가운데: 30/30 (너무 길면 k · M 으로 줄임)
+        String hpText = Text.num(Math.max(0, hp)) + "/" + Text.num(maxHp);
+        if (digitWidth(hpText) > INNER - 6) hpText = kr.rpgcraft.pack.HudFont.compact(hp) + "/" + kr.rpgcraft.pack.HudFont.compact(maxHp);
+        int hw = digitWidth(hpText);
+        int hx = CENTER - hw / 2;
+        sb.append(PackManager.shift(hx - cur)).append(WHITE).append(digitGlyphs(hpText));
+        cur = hx + hw;
+        // 이름 칸 가운데: (정예 · 보스) Lv.12 이름
         String tag = boss ? "보스 " : elite ? "정예 " : "";
         String lv = "Lv." + level + " ";
-        int hpW = width(hp);
-        int nameMax = (W - 8) - BAR_X - hpW - 6 - width(tag) - width(lv);
-        String nm = fit(name, Math.max(18, nameMax));
-        sb.append(PackManager.shift(BAR_X - cur));
-        cur = BAR_X;
-        if (!tag.isEmpty()) { sb.append(RED).append(tag); cur += width(tag); }
-        sb.append(GOLD).append(lv);
-        cur += width(lv);
-        sb.append(WHITE).append(nm);
-        cur += width(nm);
-        int hpX = W - 8 - hpW;
-        sb.append(PackManager.shift(hpX - cur)).append(GRAY).append(hp);
-        cur = hpX + hpW;
+        String nm = fit(name, Math.max(18, INNER - width(tag) - width(lv)));
+        int nw = width(tag) + width(lv) + width(nm);
+        int nx = CENTER - nw / 2;
+        sb.append(PackManager.shift(nx - cur));
+        if (!tag.isEmpty()) sb.append(RED).append(tag);
+        sb.append(GOLD).append(lv).append(WHITE).append(nm);
+        cur = nx + nw;
+        // 오른쪽 문장 (일반 · 정예 · 보스)
+        sb.append(WHITE).append(PackManager.shift(EMB_X - cur)).append((char) (EMB0 + (boss ? 2 : elite ? 1 : 0)));
+        cur = EMB_X + EMB_ADV;
         sb.append(PackManager.shift(W - cur));
         return sb.toString();
     }

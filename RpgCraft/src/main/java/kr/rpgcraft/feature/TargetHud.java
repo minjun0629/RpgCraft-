@@ -32,7 +32,7 @@ public class TargetHud implements Listener {
     // tools/target_hud.py MARK 와 같아야 함 (흰 · 금 · 빨강 · 회색)
     private static final String WHITE = hex("fcfcf8"), GOLD = hex("fce080"), RED = hex("fc6060"), GRAY = hex("c8c8c4");
 
-    private record Target(UUID mob, long until) {}
+    private record Target(UUID mob, long until, boolean look) {}
 
     private final RpgCraft plugin;
     private final Map<UUID, Target> targets = new HashMap<>();
@@ -57,12 +57,24 @@ public class TargetHud implements Listener {
     /** 플레이어가 몬스터를 때렸거나 몬스터에게 맞았을 때 */
     public void mark(Player p, LivingEntity mob) {
         if (!enabled() || p == null || mob == null || mob instanceof Player || !plugin.mobs().tracked(mob)) return;
-        targets.put(p.getUniqueId(), new Target(mob.getUniqueId(), System.currentTimeMillis() + 5000));
+        targets.put(p.getUniqueId(), new Target(mob.getUniqueId(), System.currentTimeMillis() + 5000, false));
         update(p);
     }
 
     private void tick() {
-        for (Player p : Bukkit.getOnlinePlayers()) if (targets.containsKey(p.getUniqueId()) || bars.containsKey(p.getUniqueId())) update(p);
+        long now = System.currentTimeMillis();
+        double look = plugin.getConfig().getDouble("mobs.target-hud-look", 24);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            Target cur = targets.get(p.getUniqueId());
+            // v5.10.46 싸우는 중이 아니면 바라보는 몬스터의 이름 · 레벨 · 체력 (머리 위 이름표 대신)
+            if (enabled() && look > 0 && (cur == null || cur.look() || cur.until() - now < 3500)) {
+                var hit = p.getWorld().rayTraceEntities(p.getEyeLocation(), p.getEyeLocation().getDirection(), look, 0.4,
+                        en -> en != p && en instanceof LivingEntity && !(en instanceof Player) && plugin.mobs().tracked(en));
+                if (hit != null && hit.getHitEntity() instanceof LivingEntity le && (cur == null || cur.look() || !le.getUniqueId().equals(cur.mob())))
+                    targets.put(p.getUniqueId(), new Target(le.getUniqueId(), now + 1200, true));
+            }
+            if (targets.containsKey(p.getUniqueId()) || bars.containsKey(p.getUniqueId())) update(p);
+        }
     }
 
     private void update(Player p) {

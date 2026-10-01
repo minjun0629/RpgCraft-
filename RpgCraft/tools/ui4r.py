@@ -432,6 +432,19 @@ def hud_badge(xp=None):
     return img
 
 
+def hud_shader_snippet():
+    """v5.10.50 HUD 판 · 바가 아이콘 · 숫자를 덮던 문제: 글꼴 그림은 텍스처별로 묶여 그려져 순서가 보장되지 않음
+    → 판(fefefc) · 바 · 배지(fefefa) 색으로 그린 글자는 셰이더가 뒤로 밀어 항상 아래에 깔리게 (Java HudFont 와 같은 색)"""
+    return """
+    // RpgCraft: HUD frames / bars drawn in reserved colors are pushed back so icons and numbers stay on top.
+    if (abs(gl_Position.w - 1.0) < 0.0001) {
+        vec3 h255 = Color.rgb * 255.0;
+        if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 252.0)), vec3(0.6)))) gl_Position.z += 0.002;
+        else if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 250.0)), vec3(0.6)))) gl_Position.z += 0.001;
+    }
+"""
+
+
 def hud_providers(icon_fn, digit_fn, chars):
     """[(이름, 이미지, ascent, 글자 번호)] — ui_pack.write_hud 가 hud.json 에 추가"""
     out = []

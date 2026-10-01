@@ -47,7 +47,7 @@ def glyph(ch, height, fill=(255, 255, 255), fill2=None, outline=(30, 18, 40), st
     bb = img.getbbox()
     if bb is None:
         return img.crop((0, 0, 1, H)), 1
-    img = img.crop((0, max(0, pad - st), bb[2], max(0, pad - st) + H + 2 * st))
+    img = img.crop((bb[0], max(0, pad - st), bb[2], max(0, pad - st) + H + 2 * st))   # v5.10.50 왼쪽 여백도 잘라 글자 간격을 좁게
     img = img.resize((max(1, int(img.width * squeeze)), H), Image.LANCZOS)
     img.putpixel((img.width - 1, 0), (0, 0, 0, 1))   # 폭 고정
     # 마인크래프트 비트맵: 화면 폭 = round(텍스처 폭 * height / 텍스처 높이), 다음 글자까지 = 화면 폭 + 1

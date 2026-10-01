@@ -132,6 +132,13 @@ public final class HudFont {
         return Num4R.width(Num4R.HUD_CHARS, Num4R.HUD_W, s);
     }
 
+    /** v5.10.50 뒤에 깔 그림 (판 = BACK2 · 바 · 배지 = BACK1, tools/ui4r.py hud_shader_snippet 와 같은 색), 다음 글자는 다시 흰색 */
+    private static final String BACK2 = "§x§f§e§f§e§f§c", BACK1 = "§x§f§e§f§e§f§a", FRONT = "§f";
+
+    private static String back(String color, char g, int width, int[] cursor) {
+        return color + glyph(g, width, cursor) + FRONT;
+    }
+
     private static String icon4(int kind, boolean top, int[] cursor) {
         return glyph((char) ((top ? H4_IA : H4_IB) + kind), ICON_W, cursor);
     }
@@ -146,24 +153,24 @@ public final class HudFont {
         int fl = -91 - 4 - H4_FL;                  // 왼쪽 판
         int badge = fl - 6;                         // 배지는 판 왼쪽 끝에 걸침
         int bar = badge + H4_BW + 4;                // 바 시작
-        sb.append(moveTo(fl, cur)).append(glyph(H4_FRAME_L, H4_FL, cur));
+        sb.append(moveTo(fl, cur)).append(back(BACK2, H4_FRAME_L, H4_FL, cur));
         double r = maxHp <= 0 ? 0 : Math.max(0, Math.min(1, hp / maxHp));
         int hs = (int) Math.ceil(r * 20);
         if (hp > 0 && hs == 0) hs = 1;
         int xs = (int) Math.floor(Math.max(0, Math.min(1, xpRatio)) * 20);
-        sb.append(moveTo(bar, cur)).append(glyph((char) (H4_HP + hs), H4_BAR, cur));
-        sb.append(moveTo(bar, cur)).append(glyph((char) (H4_XP + xs), H4_BAR, cur));
+        sb.append(moveTo(bar, cur)).append(back(BACK1, (char) (H4_HP + hs), H4_BAR, cur));
+        sb.append(moveTo(bar, cur)).append(back(BACK1, (char) (H4_XP + xs), H4_BAR, cur));
         String hpText = compact(hp) + "/" + compact(maxHp);
         sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth4(hpText) / 2, cur)).append(digits4(hpText, true, cur));
         String xpText = String.format("%.1f%%", Math.max(0, Math.min(99.9, xpRatio * 100)));
         sb.append(moveTo(bar + H4_BAR / 2 - digitsWidth4(xpText) / 2, cur)).append(digits4(xpText, false, cur));
         int rs = (int) Math.round(Math.max(0, Math.min(1, xpRatio)) * 24);   // v5.10.45 경험치 고리 (tools/ui4r.py HUD_BADGE_XP)
-        sb.append(moveTo(badge, cur)).append(glyph((char) (0xE4C0 + rs), H4_BW, cur));
+        sb.append(moveTo(badge, cur)).append(back(BACK1, (char) (0xE4C0 + rs), H4_BW, cur));
         String lv = String.valueOf(Math.min(9999, level));
         sb.append(moveTo(badge + H4_BW / 2 - digitsWidth4(lv) / 2, cur)).append(digits4(lv, false, cur));
         // 오른쪽 판
         int fr = 91 + 4;
-        sb.append(moveTo(fr, cur)).append(glyph(H4_FRAME_R, H4_FR, cur));
+        sb.append(moveTo(fr, cur)).append(back(BACK2, H4_FRAME_R, H4_FR, cur));
         int x = fr + 8;
         sb.append(moveTo(x, cur)).append(icon4(I_SWORD, true, cur)).append(digits4(compact(atk), true, cur));
         sb.append(moveTo(x + 40, cur)).append(icon4(I_CRIT, true, cur)).append(digits4(String.format("%.1f%%", crit), true, cur));

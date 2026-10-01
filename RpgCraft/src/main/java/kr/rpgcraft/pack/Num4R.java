@@ -5,9 +5,9 @@ public final class Num4R {
     private Num4R() {}
 
     public static final String HUD_CHARS = "0123456789/,%.kMs+";
-    public static final int[] HUD_W = {6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 3, 8, 3, 6, 8, 6, 6};
+    public static final int[] HUD_W = {5, 5, 6, 5, 6, 6, 5, 5, 6, 6, 5, 3, 7, 3, 6, 7, 5, 5};
     public static final String LV_CHARS = "Lv.0123456789";
-    public static final int[] LV_W = {6, 7, 4, 6, 6, 6, 6, 6, 6, 6, 7, 6, 6};
+    public static final int[] LV_W = {6, 6, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
 
     /** 표에 있는 글자의 다음 글자까지 거리 (없으면 0) */
     public static int adv(String chars, int[] w, char c) {

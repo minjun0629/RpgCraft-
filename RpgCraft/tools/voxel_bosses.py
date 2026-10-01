@@ -1053,9 +1053,14 @@ BUILDERS = {"witch": witch, "dwarf_king": dwarf_king, "kain": kain, "thunder_god
             "field_boar_king": field_boar_king, "field_frost_bear": field_frost_bear, "field_bandit_lord": field_bandit_lord,
             "field_ravager": field_ravager, "field_ancient_golem": field_ancient_golem, "field_swamp_witch": field_swamp_witch,
             "field_flame_knight": field_flame_knight, "field_deep_warden": field_deep_warden, "field_frost_lich": field_frost_lich}
+import creature_vox as _cv   # noqa: E402  v5.10.55 탈것 · 펫 (boss_models.write 가 복셀 경로로 그리게 등록)
+BUILDERS.update({k: None for k in _cv.BUILDERS})
 
 
 def build(bid, m):
+    import creature_vox   # v5.10.55 탈것 · 펫은 creature_vox 가 전용 복셀 크기로 조각
+    if bid in creature_vox.BUILDERS:
+        return creature_vox.build(bid, m)
     g = Grid()
     BUILDERS[bid](g)
     return emit(g, m)

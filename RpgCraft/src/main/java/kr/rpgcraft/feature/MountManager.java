@@ -34,10 +34,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MountManager implements Listener, CommandExecutor {
     public enum Mount {
         // model, 이름, 등급, 안장 높이(모델 단위, 1/16블록)
-        WOLF("mount_wolf", "잿빛 늑대", 0, 12), LIZARD("mount_lizard", "사막 도마뱀", 0, 8),
-        WARHORSE("mount_warhorse", "기사의 군마", 1, 15.9), ICEBEAR("mount_icebear", "빙하 곰", 1, 13.5),
-        LION("mount_lion", "불꽃 사자", 2, 13.5), PANTHER("mount_panther", "그림자 표범", 2, 12),
-        GRIFFIN("mount_griffin", "황금 그리핀", 3, 14), DRAGON("mount_dragon", "심연의 용", 3, 14);
+        // v5.10.55 복셀 모델로 바꾸며 안장 높이(모델 단위)를 tools/creature_vox.py 가 잰 값으로
+        WOLF("mount_wolf", "잿빛 늑대", 0, 16.2), LIZARD("mount_lizard", "사막 도마뱀", 0, 13.2),
+        WARHORSE("mount_warhorse", "기사의 군마", 1, 18.7), ICEBEAR("mount_icebear", "빙하 곰", 1, 17.7),
+        LION("mount_lion", "불꽃 사자", 2, 16.2), PANTHER("mount_panther", "그림자 표범", 2, 15.2),
+        GRIFFIN("mount_griffin", "황금 그리핀", 3, 17.2), DRAGON("mount_dragon", "심연의 용", 3, 19.7);
 
         public final String model, label;
         public final int grade;
@@ -256,7 +257,7 @@ public class MountManager implements Listener, CommandExecutor {
     private float scaleOf(Mount m) {
         double seat = plugin.getConfig().getDouble("mounts.seat-height", 1.45);
         double sc = seat * 16 / m.saddle * plugin.getConfig().getDouble("mounts.scale-mult", 1.0);
-        return (float) Math.max(1.2, Math.min(2.6, sc));
+        return (float) Math.max(1.0, Math.min(2.6, sc));
     }
 
     private void summon(Player p, Mount m) {

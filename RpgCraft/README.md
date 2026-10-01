@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.55
+- 탈것 8종 · 펫 12종 모델을 곡선 복셀로 새로 조각 (탈것 안장 높이도 새 모델에 맞춤).
+
 ## v5.10.54
 - /자랑: 손에 든 아이템을 채팅에 자랑 (마우스를 올리면 정보, [아이템 보기] 버튼으로 보기 창).
 

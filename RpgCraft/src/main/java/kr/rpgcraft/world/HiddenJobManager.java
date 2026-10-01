@@ -291,8 +291,13 @@ public class HiddenJobManager implements Listener {
             boolean done = t.tier() <= cur.tier(), next = t.tier() == cur.tier() + 1;
             lore.add("&8" + t.tier() + "단계");
             lore.add("");
-            lore.add("&7보너스: " + bonusLine(t.bonus()));
-            lore.add("&7효과: &f" + PERK[li][t.tier() - 1]);
+            if (done) {   // v5.10.43 아직 오르지 않은 단계의 보너스 · 효과는 비밀
+                lore.add("&7보너스: " + bonusLine(t.bonus()));
+                lore.add("&7효과: &f" + PERK[li][t.tier() - 1]);
+            } else {
+                lore.add("&7보너스: &8???");
+                lore.add("&7효과: &8??? &7(승급하면 밝혀진다)");
+            }
             lore.add("");
             Material m;
             String name;

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.52
+- HUD 바 · 배지가 판 그림자(어두운 상자)에 가려지던 문제 수정.
+
 ## v5.10.51
 - 결투 막대기로 붙인 보스끼리도 끝이 나게 (한 대에 최대 체력 4% 이상, 보스 AI 가 플레이어로 눈 돌리지 않음).
 

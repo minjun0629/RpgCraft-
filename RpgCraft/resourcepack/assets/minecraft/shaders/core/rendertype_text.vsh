@@ -43,10 +43,11 @@ void main() {
         }
     }
 
-    // RpgCraft: HUD frames / bars drawn in reserved colors are pushed back so icons and numbers stay on top.
+    // RpgCraft: HUD frames / bars drawn in reserved colors are pushed back so icons and numbers stay on top; their shadows are hidden.
     if (abs(gl_Position.w - 1.0) < 0.0001) {
         vec3 h255 = Color.rgb * 255.0;
-        if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 252.0)), vec3(0.6)))) gl_Position.z += 0.002;
-        else if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 250.0)), vec3(0.6)))) gl_Position.z += 0.001;
+        if (all(lessThan(abs(h255 - vec3(62.0, 62.0, 61.0)), vec3(0.6))) || all(lessThan(abs(h255 - vec3(61.0, 61.0, 60.0)), vec3(0.6)))) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+        else if (all(lessThan(abs(h255 - vec3(248.0, 248.0, 244.0)), vec3(0.6)))) gl_Position.z += 0.002;
+        else if (all(lessThan(abs(h255 - vec3(244.0, 244.0, 240.0)), vec3(0.6)))) gl_Position.z += 0.001;
     }
 }

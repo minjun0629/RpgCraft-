@@ -435,12 +435,15 @@ def hud_badge(xp=None):
 def hud_shader_snippet():
     """v5.10.50 HUD 판 · 바가 아이콘 · 숫자를 덮던 문제: 글꼴 그림은 텍스처별로 묶여 그려져 순서가 보장되지 않음
     → 판(fefefc) · 바 · 배지(fefefa) 색으로 그린 글자는 셰이더가 뒤로 밀어 항상 아래에 깔리게 (Java HudFont 와 같은 색)"""
+    # v5.10.52 판 · 바의 그림자(글자 그림자 = 색/4)는 뒤로 밀리지 않아 어두운 상자로 바 · 배지를 덮었음
+    # → 그림자 색이 겹치지 않는 색(f8f8f4 · f4f4f0, 그림자 3e3e3d · 3d3d3c)으로 바꾸고 그림자는 숨김
     return """
-    // RpgCraft: HUD frames / bars drawn in reserved colors are pushed back so icons and numbers stay on top.
+    // RpgCraft: HUD frames / bars drawn in reserved colors are pushed back so icons and numbers stay on top; their shadows are hidden.
     if (abs(gl_Position.w - 1.0) < 0.0001) {
         vec3 h255 = Color.rgb * 255.0;
-        if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 252.0)), vec3(0.6)))) gl_Position.z += 0.002;
-        else if (all(lessThan(abs(h255 - vec3(254.0, 254.0, 250.0)), vec3(0.6)))) gl_Position.z += 0.001;
+        if (all(lessThan(abs(h255 - vec3(62.0, 62.0, 61.0)), vec3(0.6))) || all(lessThan(abs(h255 - vec3(61.0, 61.0, 60.0)), vec3(0.6)))) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+        else if (all(lessThan(abs(h255 - vec3(248.0, 248.0, 244.0)), vec3(0.6)))) gl_Position.z += 0.002;
+        else if (all(lessThan(abs(h255 - vec3(244.0, 244.0, 240.0)), vec3(0.6)))) gl_Position.z += 0.001;
     }
 """
 

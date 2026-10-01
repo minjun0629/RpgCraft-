@@ -15,7 +15,7 @@ import math
 import voxel_lib as VL
 import boss_models as bm
 
-SIZE_VS = 0.32         # v5.10.26 더 촘촘하게 (0.5 → 0.32, 블록 수 약 2.5배)
+SIZE_VS = 0.38         # v5.10.26 더 촘촘하게 (0.5 → 0.32, 블록 수 약 2.5배)
 C = (8.0, 8.0)         # 가운데 (x, z)
 
 
@@ -256,8 +256,15 @@ def _blade(g, y0, y1, width, thick, P, style, curve=0.0, pri=4, fuller=True):
         return (w / 2, thick / 2 * (1 - 0.3 * t), "diamond", curve * t * t * 3)
 
     glow = P.get("glow", P["edge"])
+    themed = THEME["name"] is not None
 
     def col(x, y, z, u, w):
+        c0 = col0(x, y, z, u, w)
+        if themed and abs(u) <= 0.74:   # v5.10.27 테마 무기: 어두운 속 · 거친 결
+            c0 = lit(c0, 0.5 + 0.35 * abs(u) + (0.1 if VL.rnd(int(x / VL.VS), int(y / VL.VS), int(z / VL.VS)) > 0.7 else 0))
+        return c0
+
+    def col0(x, y, z, u, w):
         t = (y - y0) / L
         k = 0.42 * t ** 1.4                                    # v5.10.22 끝으로 갈수록 빛나는 그라데이션 (MMORPG 느낌)
         if abs(u) > 0.74 or t > 0.95:
@@ -369,6 +376,103 @@ def _fiery(name, tier):
     return special or top, special or (top and tier >= 8)
 
 
+# ------------------------------------------------------------------ v5.10.27 속성 테마 장식 (참고: 마크에이지 4R 무기)
+ANCH = {}
+THEME = {"name": None}
+
+NAME_THEME = {"witch": "abyss", "harpy": "frost", "sea": "frost", "bungbung": "inferno", "dwarf": "dragon", "pender": "nature",
+              "spirit_qinglong": "dragon", "spirit_baihu": "holy", "spirit_zhuque": "inferno", "spirit_xuanwu": "nature",
+              "relic": "abyss", "trans": "holy"}
+
+
+def theme_of(name, P, tier):
+    for k, v in NAME_THEME.items():
+        if name.startswith(k):
+            return v
+    if not name.startswith(("armory", "bs_")) or tier < 3:
+        return None   # 기본 무기 · 낮은 등급은 깔끔하게
+    r, g, b = (c / 255 for c in _rgb(P.get("glow", P["gem"])))
+    h, l, sat = colorsys.rgb_to_hls(r, g, b)
+    if sat < 0.25:
+        return None
+    deg = h * 360
+    return "inferno" if deg < 35 or deg >= 335 else "holy" if deg < 70 else "nature" if deg < 160 else "frost" if deg < 250 else "abyss"
+
+
+def _spike(g, base, tip, r0, col0, col1, pri=6):
+    """납작한 가시 (뿌리 어둡게 → 끝 밝게)"""
+    g.tube([base, tip], [r0, 0.08], lambda x, y, z, d, f: mixc(col0, col1, f), pri, squash=(1, 0.45))
+
+
+def decorate(g, P, s, tier):
+    th, a = THEME["name"], ANCH
+    if not th or not a:
+        return
+    gy, top, w = a["gy"], a["top"], a["w"]
+    glow = P.get("glow", P["gem"])
+    dark = lit(P["blade"], 0.45)
+    L = top - gy
+    if th == "abyss":      # 칼등을 따라 돋은 가시 · 옆으로 휜 갈고리 날 · 붉은 눈
+        n = 6 + min(3, tier)
+        for k in range(n):
+            t = 0.12 + 0.8 * k / n
+            y = gy + L * t
+            out = w * 0.5 * (1 - 0.6 * t) + 0.2
+            _spike(g, (C[0] + out - 0.3, y, C[1]), (C[0] + out + 1.6 - t, y + 1.3, C[1]), 0.55, dark, lit(glow, 1.2))
+        hook = [(C[0] - w * 0.4, gy + L * 0.22, C[1]), (C[0] - w * 1.25, gy + L * 0.3, C[1]), (C[0] - w * 1.5, gy + L * 0.48, C[1]), (C[0] - w * 1.05, gy + L * 0.6, C[1])]
+        g.tube(hook, [0.9, 0.75, 0.45, 0.12], lambda x, y, z, d, f: mixc(dark, glow, f * 0.8) if d < 0.75 else lit(glow, 1.25), 6, smooth=True, squash=(1, 0.45))
+        eye = (C[0], gy + 1.0, C[1])
+        for sz in (-1, 1):
+            g.sphere((eye[0], eye[1], eye[2] + sz * 0.95), 0.95, lambda x, y, z, d: "ffffff" if d < 0.15 else "ff3030" if d < 0.6 else "8a0a14", 9)
+    elif th == "nature":   # 칼날을 감은 덩굴 · 잎 · 교차한 가지
+        leaf, leaf2, bark = "5aa83a", "8fd04a", "5a3a22"
+        for strand in (0, math.pi):
+            pts = []
+            for k in range(14):
+                t = k / 13
+                ang = strand + t * math.pi * 3.2
+                rr = w * 0.5 * (1 - 0.55 * t) + 0.35
+                pts.append((C[0] + math.cos(ang) * rr, gy + 0.5 + L * 0.85 * t, C[1] + math.sin(ang) * 0.9))
+            g.tube(pts, [0.42] * 7 + [0.3] * 7, lambda x, y, z, d, f: bark if d > 0.6 else lit(bark, 0.75), 6, smooth=True)
+            for k in range(2, 13, 3):
+                p = pts[k]
+                g.ellipsoid(p, (1.0, 0.55, 0.35), lambda x, y, z, d: leaf2 if d < 0.4 else leaf, 7)
+        for yy in (gy - 0.4, top - L * 0.18):
+            for sx in (-1, 1):
+                g.tube([(C[0] - sx * 2.6, yy - 1.6, C[1]), (C[0] + sx * 2.6, yy + 1.6, C[1])], [0.4, 0.25], bark, 7)
+            g.ellipsoid((C[0] + 2.2, yy + 1.8, C[1]), (1.2, 0.6, 0.4), leaf2, 8)
+    elif th == "frost":    # 가드에서 휘감아 오르는 영혼 기운 · 끝의 얼음 결정
+        light = lit(glow, 1.45)
+        for k in range(4):
+            sd = -1 if k % 2 == 0 else 1
+            y0 = gy + 0.5 + k * L * 0.18
+            pts = [(C[0] + sd * w * 0.4, y0, C[1]), (C[0] + sd * (w * 0.9 + 1.0), y0 + 1.2, C[1] + 0.4), (C[0] + sd * (w * 0.75 + 1.6), y0 + 2.8, C[1]),
+                   (C[0] + sd * (w * 0.5 + 0.6), y0 + 3.6, C[1] - 0.3)]
+            g.tube(pts, [0.6, 0.5, 0.35, 0.12], lambda x, y, z, d, f: mixc(glow, light, f), 6, smooth=True, squash=(1, 0.6))
+        _fill(g, top - 1.5, top + 3.0, lambda y: (1.1 * (1 - abs(y - top - 0.6) / 2.4), 0.7 * (1 - abs(y - top - 0.6) / 2.4), "diamond"), lambda *q: light, 6)
+    elif th == "inferno":  # 가드 양쪽에서만 작은 불꽃 (칼날은 깔끔하게)
+        _flames(g, (C[0] - w * 0.8, gy, C[1]), 3, 0.5, P, s, up=1.0, spread=-1.0)
+        _flames(g, (C[0] + w * 0.8, gy, C[1]), 2, 0.45, P, s + 3, up=1.0, spread=1.0)
+    elif th == "dragon":   # 한쪽으로 펼친 막 날개 · 빛나는 눈 · 폼멜의 뿔
+        wing_base = (C[0] - w * 0.4, gy + 0.6, C[1])
+        tips = [(C[0] - w * 2.4 - 2.2, gy + L * 0.62, C[1]), (C[0] - w * 2.3 - 2.6, gy + L * 0.38, C[1]), (C[0] - w * 1.9 - 2.4, gy + L * 0.15, C[1]), (C[0] - w * 1.3 - 1.6, gy - 0.8, C[1])]
+        for tp in tips:
+            g.tube([wing_base, tp], [0.4, 0.12], lit(P["guard"], 0.8), 6)
+        for i2 in range(len(tips) - 1):
+            g.triangle(wing_base, tips[i2], tips[i2 + 1], lambda p, wgt: mixc(glow, lit(glow, 0.55), wgt), 5, scallop=0.25, thick=0.3)
+        for sz in (-1, 1):
+            g.sphere((C[0], gy + 1.0, C[1] + sz * 0.95), 0.85, lambda x, y, z, d: "ffffff" if d < 0.2 else lit(glow, 1.3), 9)
+        pom = a.get("pom", gy - 4)
+        for sx in (-1, 1):
+            g.cone((C[0] + sx * 0.5, pom, C[1]), (C[0] + sx * 1.8, pom - 1.6, C[1]), 0.45, 0.1, lit(P["guard"], 1.2), 6)
+    elif th == "holy":     # 칼날 받침의 빛 고리 · 끝의 별
+        g.ring((C[0], gy + 2.6, C[1]), w * 0.75 + 0.6, 0.25, lit(glow, 1.4), 6, axis="y", tilt=0.0)
+        ty = top + 1.2
+        for ang in range(0, 360, 45):
+            rr = 1.6 if ang % 90 == 0 else 0.9
+            g.tube([(C[0], ty, C[1]), (C[0] + math.cos(math.radians(ang)) * rr, ty + math.sin(math.radians(ang)) * rr, C[1])], [0.3, 0.08], lit(glow, 1.5), 7)
+
+
 # ------------------------------------------------------------------ 무기 종류별
 def sword(g, P, s, tier):
     total = 21.5 + min(4, tier) * 0.4
@@ -384,6 +488,7 @@ def sword(g, P, s, tier):
     _fill(g, gy + 0.9, gy + 2.0, lambda y: (width * 0.42, 0.95, "box"), lambda x, y, z, u, w: P["guard"] if abs(u) > 0.5 else lit(P["guard"], 1.2), 6)   # 칼날 받침 (리카소)
     g.dot(C[0], gy + 1.45, C[1] + 0.9, lit(P["gem"], 1.3), 8, 0.8)
     g.dot(C[0], gy + 1.45, C[1] - 0.9, lit(P["gem"], 1.3), 8, 0.8)
+    ANCH.update(kind="blade", gy=gy, top=y0 + total, w=width, pom=y0 + 0.9)
     jag = FIERY["jag"]
     if jag:   # v5.10.23 불꽃 · 가시 칼날 + 가드에서 피어오르는 불꽃
         _jagged(g, gy + 1.6, y0 + total + 2.5, width * 1.15, 1.9, P, s, curve=[0, 0.2, -0.15][s % 3], spikes=0.7 + min(4, tier) * 0.15)
@@ -406,6 +511,7 @@ def dagger(g, P, s, tier):
     gy = y0 + 4.8
     _guard(g, gy, 2.4, P, (s >> 4) % 4)
     curve = [0.0, 0.25, -0.25, 0.4][(s >> 6) % 4]
+    ANCH.update(kind="blade", gy=gy, top=y0 + total, w=3.0, pom=y0 + 0.8)
     if FIERY["jag"]:
         _jagged(g, gy + 0.7, y0 + total + 1.5, 3.2, 1.5, P, s, curve=curve, spikes=0.8)
         if FIERY["flame"]:
@@ -420,6 +526,7 @@ def axe(g, P, s, tier):
     _grip(g, y0 + 0.4, y0 + 4.6, 0.72, P)
     g.sphere((C[0], y0, C[1]), 0.85, P["guard"], 4)
     hy = y1 - 3.6                       # 머리 가운데
+    ANCH.update(kind="axe", gy=hy, top=y1, w=4.0, pom=y0)
     double = (s >> 3) % 3 == 0
     size = 5.4 + min(4, tier) * 0.3
     glow = P.get("glow", P["edge"])
@@ -479,6 +586,7 @@ def spear(g, P, s, tier):
         _fill(g, yy - 0.35, yy + 0.35, lambda y: (0.78, 0.78, "round"), lambda *a: P["guard"], 3)
     g.sphere((C[0], y0, C[1]), 0.75, P["guard"], 3)
     _fill(g, y1 - 0.6, y1 + 0.8, lambda y: (1.1, 1.1, "box"), lambda *a: P["guard"], 4)   # 날 받침
+    ANCH.update(kind="blade", gy=y1, top=y1 + 9.0, w=3.8, pom=y0)
     if FIERY["jag"]:
         _jagged(g, y1 + 0.4, y1 + 9.5, 4.0, 1.6, P, s, spikes=0.8)
         if FIERY["flame"]:
@@ -503,6 +611,7 @@ def staff(g, P, s, tier):
         _fill(g, yy - 0.3, yy + 0.3, lambda y: (0.85, 0.85, "round"), lambda *a: P["guard"], 3)
     style = s % 3
     top = y1 + 3.0
+    ANCH.update(kind="staff", gy=y1, top=top, w=3.0, pom=y0)
     _fill(g, top - 3.0, top + 3.4, lambda y: (1.9 * (1 - abs(y - top - 0.2) / 3.2), 1.9 * (1 - abs(y - top - 0.2) / 3.2), "diamond"),
           lambda x, y, z, u, w: lit(P["gem"], 1.55) if abs(u) < 0.35 and y > top else lit(P["gem"], 1.2) if u > 0 else P["gem"], 4)   # v5.10.22 길쭉한 마력 결정
     _shards(g, [(C[0] - 3.4, top + 1.6, C[1]), (C[0] + 3.4, top - 0.6, C[1]), (C[0] - 0.4, top + 4.6, C[1])], P.get("glow", P["gem"]), 0.6)
@@ -617,7 +726,11 @@ def build(name, img, keys):
     try:
         g = VL.Grid()
         FIERY["jag"], FIERY["flame"] = _fiery(name, _tier(name))
+        ANCH.clear()
+        THEME["name"] = theme_of(name, P, _tier(name)) if kind in ("sword", "dagger", "spear", "axe", "staff") else None
         BUILDERS[kind](g, P, _seed(name), _tier(name))
+        if kind in ("sword", "dagger", "spear"):
+            decorate(g, P, _seed(name), _tier(name))
         pal = bm.Palette()
         m = bm.Model(pal)
         bm.CLAMP_AT_BUILD[0] = False

@@ -146,21 +146,21 @@ public class MiniGameManager implements CommandExecutor {
         Hub(Player p) {
             super(6, "&8미니게임 광장", "event");
             PlayerData d = plugin.data().get(p);
-            int[] top = {10, 12, 14, 16}, bottom = {28, 30, 32, 34};
+            int[] at = {10, 12, 14, 16, 28, 30, 32, 34};   // v5.10.31 8종: 윗줄 · 아랫줄
             Game[] gs = Game.values();
-            for (int i = 0; i < gs.length; i++) {
+            for (int i = 0; i < gs.length && i < at.length; i++) {
                 Game g = gs[i];
                 int left = playsLeft(d, g);
-                set(top[i], Icons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.goal, "",
-                        "&f오늘 남은 판 " + (left > 0 ? "&e" : "&c") + left + " &7/ " + dailyPlays() + (total() ? " &8(모든 게임 합계)" : ""),
-                        left > 0 ? "&e▶ 클릭하여 난이도 선택" : "&c오늘은 더 할 수 없습니다 (자정에 초기화)"), e -> openDifficulty(p, g));
                 List<Integer> rw = plugin.getConfig().getIntegerList("minigames.reward." + g.key());
                 String rs = rw.size() >= 3 ? rw.get(0) + " / " + rw.get(1) + " / " + rw.get(2) : "1 / 3 / 6";
-                set(bottom[i], Icons.of(Coin.EVENT.icon, "&e성공 보상", "&7쉬움 / 보통 / 어려움", "&e미니게임 코인 " + rs + "개"));
+                set(at[i], Icons.of(g.icon, "&e&l" + g.label + (i >= 4 ? " &a&lNEW" : ""), "&7" + g.how, "&7" + g.goal, "",
+                        "&f성공 보상 &e" + rs + " &7(쉬움 / 보통 / 어려움)",
+                        "&f오늘 남은 판 " + (left > 0 ? "&e" : "&c") + left + " &7/ " + dailyPlays() + (total() ? " &8(모든 게임 합계)" : ""),
+                        left > 0 ? "&e▶ 클릭하여 난이도 선택" : "&c오늘은 더 할 수 없습니다 (자정에 초기화)"), e -> openDifficulty(p, g));
             }
             set(40, Icons.of(Coin.EVENT.icon, (int) Math.max(1, Math.min(64, Coin.EVENT.get(d))), "&a&l미니게임 상점", "&7미니게임 코인으로 여러 보상을 살 수 있습니다",
                     "&f보유 &e" + Coin.EVENT.get(d) + " 미니게임 코인", "", "&f오늘 남은 판 " + (playsLeft(d, Game.MOLE) > 0 ? "&e" : "&c") + playsLeft(d, Game.MOLE) + " &7/ " + dailyPlays()
-                            + (total() ? " &8(4종 합계)" : ""), "&e▶ 클릭"), e -> new EventShop(p).open(p));
+                            + (total() ? " &8(모든 게임 합계)" : ""), "&e▶ 클릭"), e -> new EventShop(p).open(p));
             set(49, Gui.button(Material.BOOK, "&f도움말", "&7각 게임은 쉬움 · 보통 · 어려움 3단계", "&7어려울수록 코인을 많이 줍니다",
                     "&7하루에 " + (total() ? "모든 게임 합쳐 " : "게임마다 ") + dailyPlays() + "판 (시작하면 1판 차감)",
                     "&7미니게임 코인은 아이템이 아니라 계정에 쌓이는 재화", "&7창을 닫으면 게임을 그만둡니다"));
@@ -190,6 +190,10 @@ public class MiniGameManager implements CommandExecutor {
             case BREAKOUT -> "&7벽돌 " + d.pick(2, 3, 4) + "줄 · 목숨 " + d.pick(3, 2, 1) + (d == Diff.HARD ? " · 강철 벽돌 · 짧은 받침대" : "");
             case MINES -> "&79x5 판 · 지뢰 " + d.pick(5, 8, 11) + "개";
             case MEMORY -> "&7" + d.pick(6, 10, 14) + "쌍 · 제한 " + d.pick(45, 70, 100) + "초";
+            case SNAKE -> "&7사과 " + d.pick(10, 15, 18) + "개 · 바위 " + d.pick(0, 2, 4) + "개" + (d == Diff.HARD ? " · 벽에 부딪히면 끝" : " · 벽을 넘으면 반대편");
+            case RHYTHM -> "&7" + d.pick("반짝반짝 작은 별", "환희의 송가", "학교 종 + 작은 별 (빠르게)") + " · 정확도 " + d.pick(65, 75, 80) + "%";
+            case G2048 -> "&7목표 " + d.pick(128, 256, 512) + " 타일" + (d == Diff.HARD ? " · 4가 자주 나옴 · 제한 6분" : " · 시간 제한 없음");
+            case FLAPPY -> "&7기둥 " + d.pick(8, 12, 16) + "개 통과 · 틈 " + d.pick(3, 2, 2) + "칸" + (d == Diff.HARD ? " · 빠르고 촘촘하게" : "");
         };
     }
 
@@ -208,6 +212,10 @@ public class MiniGameManager implements CommandExecutor {
             case BREAKOUT -> new BreakoutGame(this, p, d);
             case MINES -> new MinesGame(this, p, d);
             case MEMORY -> new MemoryGame(this, p, d);
+            case SNAKE -> new SnakeGame(this, p, d);
+            case RHYTHM -> new RhythmGame(this, p, d);
+            case G2048 -> new Game2048(this, p, d);
+            case FLAPPY -> new FlappyGame(this, p, d);
         };
         p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.2f);
         mg.begin();

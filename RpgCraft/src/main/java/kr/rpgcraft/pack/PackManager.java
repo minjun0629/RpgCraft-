@@ -501,6 +501,10 @@ public class PackManager implements Listener {
                 case "stock": return '\uE00E';
                 case "eshop": return '\uE00F';
                 case "eshop_sub": return '\uE010';
+                case "snake": return '\uE017';     // v5.10.31 새 미니게임
+                case "rhythm": return '\uE018';
+                case "g2048": return '\uE019';
+                case "flappy": return '\uE01A';
                 default: break;
             }
         }

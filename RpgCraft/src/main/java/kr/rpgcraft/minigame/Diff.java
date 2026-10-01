@@ -23,4 +23,8 @@ public enum Diff {
     public double pick(double easy, double normal, double hard) {
         return this == EASY ? easy : this == NORMAL ? normal : hard;
     }
+
+    public String pick(String easy, String normal, String hard) {
+        return this == EASY ? easy : this == NORMAL ? normal : hard;
+    }
 }

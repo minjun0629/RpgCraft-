@@ -232,6 +232,42 @@
     },
     {
       "type": "bitmap",
+      "file": "rpgcraft:gui/snake.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/rhythm.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/g2048.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "rpgcraft:gui/flappy.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
       "file": "rpgcraft:font/logo.png",
       "ascent": 12,
       "height": 18,

@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.56
+- 스폰 왕국 1000 x 1000 (`/rpg관리 kingdom build confirm`) · 스폰 둘레 몬스터 금지 · 시장 상점 NPC · 모험가 광장 의뢰 NPC.
+
 ## v5.10.55
 - 탈것 8종 · 펫 12종 모델을 곡선 복셀로 새로 조각 (탈것 안장 높이도 새 모델에 맞춤).
 

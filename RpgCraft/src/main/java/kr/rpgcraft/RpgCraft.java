@@ -118,6 +118,7 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.TargetHud targetHud;
     private kr.rpgcraft.feature.MobFightStick mobFight;   // v5.10.45 오른쪽 위 대상 정보   // v5.10.45 보드게임 · 야차 명성
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
+    private kr.rpgcraft.world.KingdomBuilder kingdom;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
     private kr.rpgcraft.mob.MobModelManager mobModels;
@@ -532,6 +533,12 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.TargetHud targetHud() { return targetHud; }
     public kr.rpgcraft.feature.MobFightStick mobFight() { return mobFight; }
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
+
+    /** v5.10.56 스폰 왕국 짓기 */
+    public kr.rpgcraft.world.KingdomBuilder kingdom() {
+        if (kingdom == null) kingdom = new kr.rpgcraft.world.KingdomBuilder(this);
+        return kingdom;
+    }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }
     public kr.rpgcraft.mob.MobModelManager mobModels() { return mobModels; }

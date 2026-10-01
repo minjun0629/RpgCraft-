@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin", "mgreset", "mail");
+            "boss", "npc", "castle", "kingdom", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin", "mgreset", "mail");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -266,6 +266,23 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     else Text.msg(s, "&aNPC 생성 완료");
                 }
                 case "castle" -> castle(s, a);
+                case "kingdom", "왕국" -> {   // v5.10.56 스폰 왕국 (1000 x 1000) — 서 있는 블록이 한가운데
+                    String sub = a.length > 1 ? a[1] : "";
+                    switch (sub) {
+                        case "build" -> {
+                            if (!(s instanceof Player kp)) { Text.msg(s, "&c게임 안에서만 쓸 수 있습니다."); return true; }
+                            if (a.length < 3 || !a[2].equals("confirm")) {
+                                Text.msg(s, "&e내 발밑을 한가운데로 1000 x 1000 부지를 고르고 왕국을 짓습니다. &c원래 지형 · 건물이 사라집니다!");
+                                Text.msg(s, "&e정말 지으려면: &f/rpg관리 kingdom build confirm");
+                                return true;
+                            }
+                            plugin.kingdom().start(s, kp.getLocation().getBlock().getLocation());
+                        }
+                        case "stop" -> { plugin.kingdom().stop(); Text.msg(s, "&e왕국 건설을 멈췄습니다."); }
+                        case "status" -> Text.msg(s, plugin.kingdom().status());
+                        default -> Text.msg(s, "&e/rpg관리 kingdom build confirm &7(내 자리가 스폰 광장) &e| stop | status");
+                    }
+                }
                 case "war" -> {
                     if (a.length >= 3 && a[1].equals("stop")) Text.msg(s, plugin.wars().stop(a[2]) ? "중단했습니다." : "&c진행 중인 전쟁이 없습니다.");
                 }
@@ -966,6 +983,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case "round" -> out.add("next");
             case "structure" -> { if (a.length == 2) out.addAll(StructureManager.NAMES.keySet()); }
+            case "kingdom", "왕국" -> { if (a.length == 2) out.addAll(List.of("build", "stop", "status")); if (a.length == 3 && a[1].equals("build")) out.add("confirm"); }
             case "worldboss" -> { if (a.length == 2) out.addAll(List.of("random", "remove", "desert_nightmare", "siphonia", "kain", "vengeful_spirit")); if (a.length == 3) out.add("here"); }
             case "title" -> {
                 if (a.length == 2) out.addAll(List.of("create", "delete", "give", "take", "list"));

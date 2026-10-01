@@ -115,6 +115,7 @@ public class QuestNpcManager implements Listener {
             double a = rnd.nextDouble() * Math.PI * 2, r = 80 + rnd.nextDouble() * 1400;
             Block top = kr.rpgcraft.util.Locs.surface(w, spawn.clone().add(Math.cos(a) * r, 0, Math.sin(a) * r));
             if (top.isLiquid() || top.getType().name().contains("LEAVES")) continue;
+            if (KingdomBuilder.inKingdom(plugin, top.getLocation())) continue;   // v5.10.56 왕국 안은 정해진 자리에만
             spawn(top.getLocation().add(0.5, 1, 0.5), types[made % types.length]);
             made++;
         }

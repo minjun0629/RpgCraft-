@@ -1102,7 +1102,7 @@ def an_rabbit(g):
 
 
 def an_wolf(g):
-    B = quad(g, "d8d4cc", "f0ece4", "8a8480", L=16, H=7, W=7, leg=6, hump=1.2, leg_r=1.0, fur2="b8b4ac")
+    B = quad(g, "d8d4cc", "f0ece4", "8a8480", L=16, H=7, W=7, leg=6, hump=1.2, leg_r=1.1, fur2="b8b4ac", simple_back=True)
     hc = beast_head(g, B, "d8d4cc", "c8c4bc", "1a1a1a", size=0.85, open_mouth=False)
     g.dot(hc[0], hc[1] - 1.0, hc[2] + 4.6, "1a1a1a", 7, 0.6)
     for i in range(6):   # 목 갈기
@@ -1111,7 +1111,9 @@ def an_wolf(g):
 
 
 def an_fox(g):
-    B = quad(g, "e2843a", "f4f0e8", "2a2420", L=14, H=6, W=6, leg=4, hump=0.8, leg_r=0.9, fur2="c86a28")
+    B = quad(g, "e2843a", "f4f0e8", "2a2420", L=14, H=6, W=6.5, leg=4.6, hump=0.8, leg_r=1.0, fur2="c86a28", simple_back=True)   # v5.10.39 뒷다리 곧게
+    for sx in (-1, 1):   # 엉덩이 아래 허벅지를 몸에 붙여 둥글게 (발목 꺾임 없이)
+        g.ellipsoid((8 + sx * 1.9, B.cy - 0.6, B.z0 + 2.4), (1.4, 2.0, 1.8), lambda x, y, z, d: tex("c86a28", x, y, z), 2)
     hc = beast_head(g, B, "e2843a", "f4f0e8", "1a1a1a", size=0.8, open_mouth=False)
     g.dot(hc[0], hc[1] - 1.0, hc[2] + 4.2, "1a1a1a", 7, 0.5)
     g.tube([B.tail, add(B.tail, (0, 0.6, -3.0)), add(B.tail, (0, -1.0, -6.0))], [1.3, 1.6, 0.8], lambda x, y, z, d, f: "f4f0e8" if f > 1.6 else "e2843a", 4, smooth=True)

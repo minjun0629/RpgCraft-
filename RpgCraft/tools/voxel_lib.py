@@ -781,7 +781,7 @@ def _spear_impl(g, hand, length, shaft, head, pri=5, prongs=1):
 
 
 # ------------------------------------------------------------------ v5.8.3 추가: 네발짐승 · 무기 · 촉수
-def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2, hump=1.0, leg_r=1.9, fur2=None):
+def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2, hump=1.0, leg_r=1.9, fur2=None, simple_back=False):
     """네발 몸통: 앞이 높은 몸 (엉덩이 · 가슴 · 어깨 혹) · 굵은 다리 4개와 발굽. 반환: Body (front_z · back_y · head_base · tail · legs)"""
     B = Body()
     fur2 = fur2 or hx(fur, 0.8)
@@ -802,7 +802,7 @@ def quad(g, fur, belly, hoof, L=20.0, H=10.0, W=11.0, leg=6.0, shift=4.0, pri=2,
             leg_name = "leg_" + ("f" if front else "b") + ("l" if sx < 0 else "r")   # v5.9.1 다리마다 따로 움직임
             g.rig[leg_name] = top
             with g.parting(leg_name):   # 몸 속에 묻히는 윗부분은 몸통이 차지하도록 우선순위를 한 단계 낮춤
-                if front:   # 앞다리: 거의 곧게, 무릎이 살짝 앞으로
+                if front or simple_back:   # 앞다리 (v5.10.39 작은 짐승은 뒷다리도): 거의 곧게, 무릎이 살짝 앞으로
                     knee = (x, leg * 0.5, zz + 0.5)
                     g.tube([top, knee], [leg_r * 1.25, leg_r], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)
                     g.tube([knee, foot], [leg_r, leg_r * 0.9], lambda x_, y, z, d, f: tex(fur2, x_, y, z), pri - 1)

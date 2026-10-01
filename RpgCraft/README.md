@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.39
+- 여우 · 늑대 뒷다리 모델 수정.
+
 ## v5.10.38
 - 크리퍼 폭발 징조 (모델이 부풀며 깜빡임 · 폭발 범위 원). 황새치 · 무지개 송어가 무기 모양이던 문제 수정.
 

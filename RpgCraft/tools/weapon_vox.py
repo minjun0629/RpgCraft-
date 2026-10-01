@@ -15,7 +15,7 @@ import math
 import voxel_lib as VL
 import boss_models as bm
 
-SIZE_VS = 0.5          # 무기 복셀 크기 (모델 좌표 1/32 블록)
+SIZE_VS = 0.32         # v5.10.26 더 촘촘하게 (0.5 → 0.32, 블록 수 약 2.5배)
 C = (8.0, 8.0)         # 가운데 (x, z)
 
 

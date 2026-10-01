@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.26
+- **무기 블록을 더 촘촘하게** (블록 크기 0.5 → 0.32, 약 2.5배).
+
 ## v5.10.25
 - **무기를 깔끔하게**: 불꽃 · 가시 칼날 · 떠 있는 결정 없이 모두 깔끔한 칼날.
 

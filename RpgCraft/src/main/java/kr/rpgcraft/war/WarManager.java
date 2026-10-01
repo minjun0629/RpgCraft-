@@ -314,8 +314,52 @@ public class WarManager {
         return false;
     }
 
+    // ------------------------------------------------------------------ v5.10.20 성 소유 혜택
+    /** 길드가 가진 성 수 */
+    public int ownedCount(String guild) {
+        int n = 0;
+        for (Castle c : castles.values()) if (guild != null && guild.equals(c.owner)) n++;
+        return n;
+    }
+
+    /** 성을 가진 길드의 길드원 버프 (성 하나당, 최대 2개까지 겹침) */
+    public kr.rpgcraft.stat.StatMap castleBonus(UUID id) {
+        kr.rpgcraft.stat.StatMap m = new kr.rpgcraft.stat.StatMap();
+        Guild g = plugin.guilds().of(id);
+        if (g == null) return m;
+        int n = Math.min(plugin.getConfig().getInt("war.castle-buff-max-stack", 2), ownedCount(g.name));
+        if (n <= 0) return m;
+        var cf = plugin.getConfig();
+        double atk = cf.getDouble("war.castle-buff.atk-pct", 5) * n;
+        m.add(kr.rpgcraft.stat.Stat.STR_PCT, atk).add(kr.rpgcraft.stat.Stat.DEX_PCT, atk).add(kr.rpgcraft.stat.Stat.ADV_PCT, atk);
+        m.add(kr.rpgcraft.stat.Stat.HP_PCT, cf.getDouble("war.castle-buff.hp-pct", 5) * n);
+        m.add(kr.rpgcraft.stat.Stat.EXP_PCT, cf.getDouble("war.castle-buff.exp-pct", 10) * n);
+        return m;
+    }
+
+    /** 하루에 한 번 성 수입 (길드 금고 + 길드 경험치) */
+    private void payCastles() {
+        String today = java.time.LocalDate.now().toString();
+        long income = plugin.getConfig().getLong("war.castle-daily-income", 3_000_000);
+        boolean changed = false;
+        for (Castle c : castles.values()) {
+            if (c.owner == null || today.equals(c.paidDay) || wars.containsKey(c.id)) continue;
+            Guild g = plugin.guilds().get(c.owner);
+            c.paidDay = today;
+            changed = true;
+            if (g == null) continue;
+            g.bank += income;
+            plugin.guilds().addExp(g, plugin.getConfig().getLong("war.castle-daily-guild-exp", 500));
+            g.broadcast(Text.PREFIX + Text.c("&6🏰 " + c.name + " 성 수입 &e+" + Text.money(income) + " &7(길드 금고) · 길드 경험치 +" + plugin.getConfig().getLong("war.castle-daily-guild-exp", 500)));
+        }
+        if (changed) { save(); plugin.guilds().save(); }
+    }
+
+    private long nextPay;
+
     private void tick() {
         long now = System.currentTimeMillis();
+        if (now >= nextPay) { nextPay = now + 60_000; payCastles(); }
         for (War w : new ArrayList<>(wars.values())) {
             for (Player o : Bukkit.getOnlinePlayers()) if (!w.bar.getPlayers().contains(o)) w.bar.addPlayer(o);
             if (!w.started) {
@@ -409,6 +453,8 @@ public class WarManager {
     }
 
     private void damageWall(Player p, Castle c, War w, Castle.Wall wall, Block block, double dmg, String extra) {
+        Guild owner = c.owner == null ? null : plugin.guilds().get(c.owner);   // v5.10.20 길드 스킬 견고한 성벽
+        if (owner != null && owner.skill("BULWARK") > 0) dmg *= 1 - 0.06 * owner.skill("BULWARK");
         wall.hp -= dmg;
         block.getWorld().spawnParticle(Particle.BLOCK_CRACK, block.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3, block.getBlockData());
         block.getWorld().playSound(block.getLocation(), Sound.BLOCK_STONE_HIT, 1f, 0.8f);
@@ -587,6 +633,15 @@ public class WarManager {
         }
         long reward = plugin.getConfig().getLong("war.win-reward", 10_000_000);
         if (att != null) att.bank += reward;
+        c.paidDay = java.time.LocalDate.now().toString();   // v5.10.20 점령한 날은 수입이 이미 들어온 것으로 (바로 또 받지 않게)
+        if (att != null) {
+            plugin.guilds().addExp(att, plugin.getConfig().getLong("war.win-guild-exp", 2000));
+            for (Player o : att.online()) {
+                if (plugin.seasonPass() != null) plugin.seasonPass().add(o, 300, "공성전 승리");
+                plugin.stats().refresh(o);   // 성 소유 버프
+            }
+        }
+        if (def != null) for (Player o : def.online()) plugin.stats().refresh(o);
         end(w);
         save();
         plugin.guilds().save();
@@ -819,6 +874,7 @@ public class WarManager {
             c.beacon = Locs.parse(s.getString("beacon"));
             c.attackerSpawn = Locs.parse(s.getString("attacker-spawn"));
             c.defenderSpawn = Locs.parse(s.getString("defender-spawn"));
+            c.paidDay = s.getString("paid-day");
             c.center = Locs.parse(s.getString("area.center"));
             c.r = s.getInt("area.r");
             c.down = s.getInt("area.down");
@@ -848,6 +904,7 @@ public class WarManager {
             y.set(c.id + ".beacon", c.beacon == null ? null : Locs.block(c.beacon));
             y.set(c.id + ".attacker-spawn", c.attackerSpawn == null ? null : Locs.full(c.attackerSpawn));
             y.set(c.id + ".defender-spawn", c.defenderSpawn == null ? null : Locs.full(c.defenderSpawn));
+            y.set(c.id + ".paid-day", c.paidDay);
             y.set(c.id + ".area", null);
             if (c.center != null && c.r > 0) {
                 y.set(c.id + ".area.center", Locs.block(c.center));

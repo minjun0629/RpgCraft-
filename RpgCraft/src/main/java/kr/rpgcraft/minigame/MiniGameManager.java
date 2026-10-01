@@ -119,6 +119,7 @@ public class MiniGameManager implements CommandExecutor {
     /** 성공 보상 지급, 받은 코인 수 반환 */
     long reward(Player p, Game g, Diff diff) {
         PlayerData d = plugin.data().get(p);
+        if (plugin.seasonPass() != null) plugin.seasonPass().add(p, 15, "미니게임");   // v5.10.20
         d.counters.merge("mg_best_" + g.key() + "_" + diff.name().toLowerCase(), 1.0, Double::sum);
         List<Integer> r = plugin.getConfig().getIntegerList("minigames.reward." + g.key());
         long got = r.size() >= 3 ? r.get(diff.ordinal()) : diff.pick(1, 3, 6);

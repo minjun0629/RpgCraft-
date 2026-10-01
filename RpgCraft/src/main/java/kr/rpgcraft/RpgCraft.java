@@ -96,6 +96,9 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.world.HiddenJobManager hiddenJobs;
     private kr.rpgcraft.world.NecromancyManager necro;
     private kr.rpgcraft.world.ChronoManager chrono;
+    private kr.rpgcraft.feature.MailManager mail;
+    private kr.rpgcraft.feature.SeasonPassManager seasonPass;
+    private kr.rpgcraft.feature.CookingManager cooking;
     private kr.rpgcraft.world.HiddenQuestManager hiddenQuests;
     private kr.rpgcraft.world.AuctionManager auction;
     private PartyManager party;
@@ -192,6 +195,12 @@ public final class RpgCraft extends JavaPlugin {
         necro = new kr.rpgcraft.world.NecromancyManager(this);   // v5.10.9 히든 직업 네크로맨서 군단
         command("legion", necro);
         chrono = new kr.rpgcraft.world.ChronoManager(this);   // v5.10.18 히든 직업 시간술사
+        mail = new kr.rpgcraft.feature.MailManager(this);   // v5.10.20 우편함
+        command("mail", mail);
+        seasonPass = new kr.rpgcraft.feature.SeasonPassManager(this);   // v5.10.20 시즌 패스
+        command("seasonpass", seasonPass);
+        cooking = new kr.rpgcraft.feature.CookingManager(this);   // v5.10.20 요리
+        command("cook", cooking);
         auction = new kr.rpgcraft.world.AuctionManager(this);
         command("auction", auction);
         hiddenQuests = new kr.rpgcraft.world.HiddenQuestManager(this);
@@ -304,6 +313,7 @@ public final class RpgCraft extends JavaPlugin {
         if (getConfig().getInt("vfx.max-active", 48) == 70) getConfig().set("vfx.max-active", 48);
         if (Math.abs(getConfig().getDouble("bosses.tier4-double-cast", 0.1) - 0.25) < 1e-9) getConfig().set("bosses.tier4-double-cast", 0.1);   // v5.9.7 예전 기본값 → 0.1
         if (Math.abs(getConfig().getDouble("bosses.minion-exp-mult", 0.05) - 0.4) < 1e-9) getConfig().set("bosses.minion-exp-mult", 0.05);   // v5.9.6 예전 기본값(40%) → 5%
+        if (getConfig().getInt("guild.max-level", 10) == 5) getConfig().set("guild.max-level", 10);   // v5.10.20 길드 최대 레벨 5 → 10
         if (Math.abs(getConfig().getDouble("bosses.max-fly-height", 8) - 4) < 1e-9) getConfig().set("bosses.max-fly-height", 8);   // v5.10.8 공중에서 아래로 기술을 쓰므로 4 → 8
         if (getConfig().getLong("mounts.draw-cost", 3000000) == 300000) getConfig().set("mounts.draw-cost", 3000000);
         if (Math.abs(getConfig().getDouble("weapon-skills.bolt-range", 14) - 18) < 1e-9) getConfig().set("weapon-skills.bolt-range", 14);   // 지팡이 평타 18 → 14칸 (v5.4.29)
@@ -469,6 +479,9 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.NecromancyManager necro() { return necro; }
     public kr.rpgcraft.world.ChronoManager chrono() { return chrono; }
+    public kr.rpgcraft.feature.MailManager mail() { return mail; }
+    public kr.rpgcraft.feature.SeasonPassManager seasonPass() { return seasonPass; }
+    public kr.rpgcraft.feature.CookingManager cooking() { return cooking; }
     public kr.rpgcraft.world.HiddenQuestManager hiddenQuests() { return hiddenQuests; }
     public kr.rpgcraft.world.AuctionManager auction() { return auction; }
     public PartyManager party() { return party; }

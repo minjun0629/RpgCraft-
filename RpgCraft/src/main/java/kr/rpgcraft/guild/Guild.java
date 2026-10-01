@@ -13,6 +13,10 @@ public class Guild implements InventoryHolder {
     public final Set<UUID> members = new LinkedHashSet<>();
     public int level = 1;
     public long bank;
+    /** v5.10.20 길드 경험치 (길드원 사냥 · 보스 · 공성전 · 성 수입) — 레벨업에 필요 */
+    public long exp;
+    /** v5.10.20 길드 스킬 단계 (스킬 키 → 단계) */
+    public final Map<String, Integer> skills = new LinkedHashMap<>();
     public final List<String> totems = new ArrayList<>();
     private Inventory storage;
 
@@ -24,6 +28,17 @@ public class Guild implements InventoryHolder {
 
     public boolean isLeader(UUID id) {
         return leader.equals(id);
+    }
+
+    public int skill(String key) {
+        return skills.getOrDefault(key, 0);
+    }
+
+    /** 레벨마다 스킬 포인트 2 */
+    public int skillPoints() {
+        int used = 0;
+        for (int v : skills.values()) used += v;
+        return level * 2 - used;
     }
 
     public int maxMembers() {

@@ -34,7 +34,7 @@ import java.util.Locale;
 /** /rpg관리 - 운영자 명령어 */
 public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBS = List.of("give", "items", "money", "level", "exp", "stat", "passive", "heal", "starter",
-            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin", "mgreset");
+            "boss", "npc", "castle", "war", "ruin", "round", "reload", "rune", "warp", "pack", "build", "mob", "structure", "reset", "wave", "merchant", "dungeon", "questnpc", "plants", "title", "rex", "bounty", "hiddennpc", "worldboss", "fieldboss", "npcs", "npcbring", "inv", "enderchest", "time", "tickets", "auction", "enhance", "stock", "coin", "mgreset", "mail");
     private final RpgCraft plugin;
 
     public AdminCommand(RpgCraft plugin) {
@@ -46,6 +46,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/rpg관리 items [검색어] &7- 아이템 ID 목록");
         Text.msg(s, "&e/rpg관리 money <플레이어> <set|add|take> <금액>");
         Text.msg(s, "&e/rpg관리 mgreset <플레이어|all> &7- 오늘의 미니게임 판 수 초기화");
+        Text.msg(s, "&e/rpg관리 mail <플레이어|all> <money|아이템ID> <수량> [메시지] &7- 우편 보내기");
         Text.msg(s, "&e/rpg관리 level <플레이어> <레벨> &7| &eexp <플레이어> <양>");
         Text.msg(s, "&e/rpg관리 stat <플레이어> <포인트> &7- 스탯 포인트 지급");
         Text.msg(s, "&e/rpg관리 passive <플레이어> <add|remove|list> [패시브]");
@@ -178,6 +179,27 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     Text.msg(s, "회복 완료");
                 }
                 case "auction" -> auction(s, a);
+                case "mail", "우편" -> {   // v5.10.20 /rpg관리 mail <플레이어|all> <money|아이템ID> <수량> [메시지]
+                    if (a.length < 4) { Text.msg(s, "&e/rpg관리 mail <플레이어|all> <money|아이템ID> <수량> [메시지] &7- 우편 보내기 (접속 안 한 사람도)"); return true; }
+                    long n;
+                    try { n = Long.parseLong(a[3]); } catch (NumberFormatException ex) { Text.msg(s, "&c수량은 숫자로 적어 주세요."); return true; }
+                    boolean money = a[2].equalsIgnoreCase("money") || a[2].equals("돈");
+                    if (!money && plugin.items().get(a[2]) == null) { Text.msg(s, "&c없는 아이템 ID 입니다."); return true; }
+                    String text = a.length > 4 ? String.join(" ", java.util.Arrays.copyOfRange(a, 4, a.length)) : "운영진이 보낸 선물입니다.";
+                    List<org.bukkit.OfflinePlayer> to = new ArrayList<>();
+                    if (a[1].equalsIgnoreCase("all") || a[1].equals("전체")) to.addAll(java.util.Arrays.asList(Bukkit.getOfflinePlayers()));
+                    else {
+                        @SuppressWarnings("deprecation") org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(a[1]);
+                        if (!op.isOnline() && !op.hasPlayedBefore()) { Text.msg(s, "&c그런 플레이어가 없습니다."); return true; }
+                        to.add(op);
+                    }
+                    for (org.bukkit.OfflinePlayer op : to) {
+                        List<org.bukkit.inventory.ItemStack> items = new ArrayList<>();
+                        if (!money) items.add(plugin.items().create(a[2], (int) Math.max(1, Math.min(2304, n))));
+                        plugin.mail().send(op.getUniqueId(), "&c운영진", text, money ? n : 0, items);
+                    }
+                    Text.msg(s, "&a우편 " + to.size() + "통을 보냈습니다.");
+                }
                 case "mgreset", "미니게임초기화" -> {   // v5.10.16 /rpg관리 mgreset <플레이어|all> : 오늘의 미니게임 판 수 초기화
                     if (a.length < 2) { Text.msg(s, "&e/rpg관리 mgreset <플레이어|all> &7- 오늘의 미니게임 판 수 초기화"); return true; }
                     List<Player> targets = new ArrayList<>();

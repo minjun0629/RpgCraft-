@@ -257,6 +257,14 @@ public class CombatService {
                 SWORD_GOD_GUARD.set(false);
             }
         }
+        if (melee && dealt > 0 && !SWORD_GOD_GUARD.get() && plugin.hiddenJobs() != null) {   // v5.10.20 히든 직업 전용 무기 효과
+            SWORD_GOD_GUARD.set(true);
+            try {
+                plugin.hiddenJobs().weaponHit(p, victim, dealt, crit);
+            } finally {
+                SWORD_GOD_GUARD.set(false);
+            }
+        }
         if (crit && dealt > 0 && !SWORD_GOD_GUARD.get() && kr.rpgcraft.world.HiddenJobManager.starfall(plugin.data().get(p)) && victim.isValid() && !victim.isDead()) {
             SWORD_GOD_GUARD.set(true);   // 별똥별
             try {

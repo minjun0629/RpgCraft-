@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class GuildCommand implements CommandExecutor, TabCompleter {
-    private static final List<String> SUBS = List.of("토벌전", "생성", "초대", "수락", "거절", "탈퇴", "추방", "정보", "목록", "입금", "출금",
+    private static final List<String> SUBS = List.of("토벌전", "스킬", "생성", "초대", "수락", "거절", "탈퇴", "추방", "정보", "목록", "입금", "출금",
             "창고", "토템", "레벨업", "해산", "위임", "채팅");
     private final RpgCraft plugin;
 
@@ -31,7 +31,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         Text.msg(s, "&e/길드 초대 <플레이어> &7| &e/길드 수락 &7| &e/길드 거절 &7| &e/길드 탈퇴");
         Text.msg(s, "&e/길드 추방 <플레이어> &7| &e/길드 위임 <플레이어> &7| &e/길드 해산");
         Text.msg(s, "&e/길드 정보 [길드] &7| &e/길드 목록 &7| &e/길드 채팅");
-        Text.msg(s, "&e/길드 입금 <금액> &7| &e/길드 출금 <금액> &7| &e/길드 창고 &7| &e/길드 레벨업");
+        Text.msg(s, "&e/길드 입금 <금액> &7| &e/길드 출금 <금액> &7| &e/길드 창고 &7| &e/길드 레벨업 &7| &e/길드 스킬");
         Text.msg(s, "&e/길드 토템 &7[설치 | 해제 <번호>] - 손에 든 토템 설치");
         Text.msg(s, "&e/길드 토벌전 &7[1~5 | 기록 <단계>] - 길드 토벌전 (길드장이 시작)");
     }
@@ -167,6 +167,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 } else if (a.length >= 2) plugin.guildRaids().start(p, (int) Text.parseLong(a[1], -1));
                 else plugin.guildRaids().info(p);
             }
+            case "스킬", "skill" -> gm.openSkills(p);   // v5.10.20 길드 스킬
             case "창고", "storage" -> {
                 if (g == null) { Text.msg(p, "&c길드가 없습니다."); return true; }
                 p.openInventory(g.storage());
@@ -174,12 +175,14 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
             case "레벨업", "levelup" -> {
                 if (!leader(p, g)) return true;
                 if (g.level >= gm.maxLevel()) { Text.msg(p, "&c최대 레벨입니다."); return true; }
+                if (g.exp < gm.expNeed(g)) { Text.msg(p, "&c길드 경험치가 부족합니다. &7(" + Text.num(g.exp) + " / " + Text.num(gm.expNeed(g)) + ", 길드원이 사냥 · 보스 · 공성전으로 모음)"); return true; }
                 long cost = gm.levelUpCost(g);
                 if (g.bank < cost) { Text.msg(p, "&c길드 금고에 " + Text.money(cost) + "이 필요합니다."); return true; }
                 g.bank -= cost;
+                g.exp -= gm.expNeed(g);
                 g.level++;
                 gm.save();
-                g.broadcast(Text.PREFIX + Text.c("&6길드 레벨이 &e" + g.level + "&6(으)로 올랐습니다! &7(인원 " + g.maxMembers() + ", 토템 " + g.totemSlots() + "칸, 창고 " + g.storageRows() + "줄)"));
+                g.broadcast(Text.PREFIX + Text.c("&6길드 레벨이 &e" + g.level + "&6(으)로 올랐습니다! &7(인원 " + g.maxMembers() + ", 토템 " + g.totemSlots() + "칸, 창고 " + g.storageRows() + "줄, 스킬 포인트 +2 → /길드 스킬)"));
             }
             case "토템", "totem" -> {
                 if (g == null) { Text.msg(p, "&c길드가 없습니다."); return true; }

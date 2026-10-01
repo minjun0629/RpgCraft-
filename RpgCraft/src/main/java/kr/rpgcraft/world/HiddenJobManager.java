@@ -188,6 +188,79 @@ public class HiddenJobManager implements Listener {
         return sb.toString();
     }
 
+    // ------------------------------------------------------------------ v5.10.20 히든 직업 전용 무기
+    private static final String[] WEAPON_NAME = {"명계의 낫", "성운검 스텔라", "망자의 홀", "시간의 바늘"};
+
+    /** 들고 있는 전용 무기의 계열 (A~D), 아니면 null */
+    public String heldWeaponLine(Player p) {
+        String id = ItemData.id(p.getInventory().getItemInMainHand());
+        if (id == null || !id.startsWith("hjw_")) return null;
+        Tier t = of(plugin.data().get(p));
+        String line = id.substring(4, 5).toUpperCase(java.util.Locale.ROOT);
+        return t != null && t.line().equals(line) ? line : null;
+    }
+
+    /** 근접 공격이 맞았을 때 (CombatService.afterHit) */
+    public void weaponHit(Player p, LivingEntity v, double dealt, boolean crit) {
+        String line = heldWeaponLine(p);
+        if (line == null) return;
+        PlayerData d = plugin.data().get(p);
+        int tr = of(d).tier();
+        var r = java.util.concurrent.ThreadLocalRandom.current();
+        double atk = Math.max(d.stats.attack, d.stats.magic);
+        switch (line) {
+            case "A" -> {   // 영혼 베기
+                if (r.nextDouble() >= 0.15 || !v.isValid() || v.isDead()) return;
+                kr.rpgcraft.util.Vfx.slash(v.getLocation().add(0, 1, 0), p.getLocation().getDirection().setY(0), 3, 30, Color.fromRGB(0x7FE8FF));
+                v.getWorld().playSound(v.getLocation(), Sound.ENTITY_VEX_CHARGE, 1f, 0.6f);
+                plugin.combat().dealSkillDamage(p, v, atk * (0.8 + 0.4 * tr), false);
+                plugin.health().healPercent(p, 3);
+            }
+            case "B" -> {   // 별빛 일격
+                if (!crit || r.nextDouble() >= 0.25 || !v.isValid()) return;
+                Location at = v.getLocation();
+                kr.rpgcraft.util.Vfx.beam(at.clone().add(0, 9, 0), at.clone().add(0, 0.5, 0), 0.9, Color.fromRGB(0xFFE9A0));
+                at.getWorld().playSound(at, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1.4f);
+                for (var en : at.getWorld().getNearbyEntities(at, 3, 3, 3))
+                    if (en instanceof LivingEntity le && plugin.combat().isEnemy(p, le))
+                        plugin.combat().dealSkillDamage(p, le, atk * (1 + 0.5 * tr) * (le.equals(v) ? 1 : 0.5), false);
+            }
+            case "C" -> {   // 군단 회복 (공격력 증가는 NecromancyManager 가 확인)
+                if (r.nextDouble() < 0.2 && plugin.necro() != null) plugin.necro().heal(p, 0.05);
+            }
+            case "D" -> {   // 초침: 되감기 대기 감소
+                long until = d.cooldowns.getOrDefault("job_skill", 0L);
+                if (until > System.currentTimeMillis()) d.cooldowns.put("job_skill", until - 250L * tr);
+            }
+            default -> { }
+        }
+    }
+
+    /** 히든 직업창에서 전용 무기 만들기 */
+    private void craftWeapon(Player p, Tier cur) {
+        long money = plugin.getConfig().getLong("hidden-weapon.money", 30_000_000);
+        int cores = plugin.getConfig().getInt("hidden-weapon.cores", 20), crystals = plugin.getConfig().getInt("hidden-weapon.crystals", 10);
+        if (count(p, "loot_core") < cores || count(p, "crystal_high") < crystals) { Text.msg(p, "&c재료가 부족합니다. &7(마력 핵 " + cores + " · 상급 결정 " + crystals + ")"); return; }
+        if (!plugin.economy().take(p, money)) { Text.msg(p, "&c돈이 부족합니다. &7(" + Text.money(money) + ")"); return; }
+        takeItem(p, "loot_core", cores);
+        takeItem(p, "crystal_high", crystals);
+        ItemStack it = plugin.items().create("hjw_" + cur.line().toLowerCase(java.util.Locale.ROOT), 1);
+        if (it != null) for (ItemStack left : p.getInventory().addItem(it).values()) p.getWorld().dropItemNaturally(p.getLocation(), left);
+        p.getWorld().strikeLightningEffect(p.getLocation());
+        p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 1f, 0.6f);
+        Text.announce(Text.PREFIX + Text.c("&5" + Text.name(p) + "&f님이 히든 직업 전용 무기 &5&l" + WEAPON_NAME[lineIdx(cur.line())] + "&f을(를) 손에 넣었습니다!"));
+    }
+
+    private void takeItem(Player p, String id, int n) {
+        for (ItemStack it : p.getInventory().getStorageContents()) {
+            if (n <= 0) return;
+            if (!id.equals(ItemData.id(it))) continue;
+            int t = Math.min(n, it.getAmount());
+            it.setAmount(it.getAmount() - t);
+            n -= t;
+        }
+    }
+
     /** 히든 직업이면 일반 직업창 대신 이 창 (1 · 2 · 3단계 · 조건 · 효과 · 전용 기능) */
     public void openJobWindow(Player p) {
         PlayerData d = plugin.data().get(p);
@@ -243,6 +316,26 @@ public class HiddenJobManager implements Listener {
         }
         if (li == 2 && plugin.necro() != null)
             g.set(31, Gui.button(Material.SOUL_LANTERN, "&5&l☠ 사령 군단", "&7영혼으로 일으킨 군단원 관리 · 소환", "&e▶ 클릭 (/군단)"), e -> plugin.necro().open(p));
+        {   // v5.10.20 전용 무기
+            var wt = plugin.items().get("hjw_" + cur.line().toLowerCase(java.util.Locale.ROOT));
+            long money = plugin.getConfig().getLong("hidden-weapon.money", 30_000_000);
+            int cores = plugin.getConfig().getInt("hidden-weapon.cores", 20), crystals = plugin.getConfig().getInt("hidden-weapon.crystals", 10);
+            List<String> wl = new java.util.ArrayList<>();
+            wl.add("&8이 길을 걷는 자만 쥘 수 있다");
+            if (wt != null) for (String l : wt.desc) wl.add("&7" + l);
+            wl.add("");
+            wl.add("&d제작 재료");
+            wl.add((count(p, "loot_core") >= cores ? " &a✔ " : " &c✘ ") + "&f마력 핵 " + count(p, "loot_core") + "/" + cores);
+            wl.add((count(p, "crystal_high") >= crystals ? " &a✔ " : " &c✘ ") + "&f상급 결정 " + count(p, "crystal_high") + "/" + crystals);
+            wl.add(" &f" + Text.money(money));
+            wl.add("");
+            wl.add("&e▶ 쉬프트 클릭하여 제작");
+            g.set(22, Gui.button(wt == null ? Material.NETHERITE_SWORD : wt.material, "&5&l전용 무기: " + WEAPON_NAME[li], wl.toArray(new String[0])), e -> {
+                if (!e.isShiftClick()) return;
+                p.closeInventory();
+                craftWeapon(p, cur);
+            });
+        }
         g.set(27, Gui.button(Material.PAPER, "&7히든 직업 안내", "&7히든 직업은 다른 직업으로 바꾸거나 초기화할 수 없다.",
                 "&7다음 단계는 직업창이 아니라 맵 먼 곳의", "&7이름 없는 자에게서 받은 전직서로 오른다."), null);
         g.fill(0, 35);

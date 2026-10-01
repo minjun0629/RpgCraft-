@@ -260,7 +260,8 @@ public class NecromancyManager implements Listener, CommandExecutor {
 
     private double attack(Player owner, Minion m) {
         var s = plugin.data().get(owner).stats;
-        return Math.max(s.attack, s.magic) * m.role.atk * GRADE_MULT[m.grade] * (1 + 0.10 * m.lv[1]) * m.trait.atk * tierMult(tier(owner));
+        double weapon = plugin.hiddenJobs() != null && "C".equals(plugin.hiddenJobs().heldWeaponLine(owner)) ? 1 + 0.15 * tier(owner) : 1;   // v5.10.20 망자의 홀
+        return Math.max(s.attack, s.magic) * m.role.atk * GRADE_MULT[m.grade] * (1 + 0.10 * m.lv[1]) * m.trait.atk * tierMult(tier(owner)) * weapon;
     }
 
     private long interval(Minion m) {
@@ -579,6 +580,17 @@ public class NecromancyManager implements Listener, CommandExecutor {
         for (double s = 0; s < len; s += 0.6) {
             a.getWorld().spawnParticle(Particle.REDSTONE, p, 1, 0, 0, 0, 0, o);
             p.add(d);
+        }
+    }
+
+    /** 군단 체력 회복 (v5.10.20 망자의 홀) */
+    public void heal(Player p, double pct) {
+        Book b = books.get(p.getUniqueId());
+        if (b == null || !b.summoned) return;
+        for (Minion m : b.minions) {
+            if (m.entity == null || !(Bukkit.getEntity(m.entity) instanceof LivingEntity w)) continue;
+            m.hp = Math.min(m.maxHp, m.hp + m.maxHp * pct);
+            rename(w, m);
         }
     }
 

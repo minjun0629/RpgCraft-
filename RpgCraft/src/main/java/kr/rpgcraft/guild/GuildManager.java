@@ -54,9 +54,14 @@ public class GuildManager implements Listener {
     private final Map<UUID, String> invites = new HashMap<>();
     private final Map<UUID, Long> inviteTime = new HashMap<>();
 
+    public void saveIfDirty() {
+        if (dirty) { dirty = false; save(); }
+    }
+
     public GuildManager(RpgCraft plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "guilds.yml");
+        Bukkit.getScheduler().runTaskTimer(plugin, this::saveIfDirty, 1200L, 1200L);   // v5.10.20 길드 경험치 저장
         load();
     }
 
@@ -137,7 +142,115 @@ public class GuildManager implements Listener {
     }
 
     public int maxLevel() {
-        return plugin.getConfig().getInt("guild.max-level", 5);
+        return plugin.getConfig().getInt("guild.max-level", 10);
+    }
+
+    // ------------------------------------------------------------------ v5.10.20 길드 경험치 · 길드 스킬
+    /** 다음 레벨까지 필요한 길드 경험치 */
+    public long expNeed(Guild g) {
+        return plugin.getConfig().getLong("guild.exp-per-level", 3000) * g.level * g.level;
+    }
+
+    public void addExp(Guild g, long n) {
+        if (g == null || n <= 0) return;
+        long before = g.exp;
+        g.exp += n;
+        long need = expNeed(g);
+        if (g.level < maxLevel() && before < need && g.exp >= need)
+            g.broadcast(Text.PREFIX + Text.c("&6길드 경험치가 다 찼습니다! &e/길드 레벨업 &7(길드장, 금고 " + Text.money(levelUpCost(g)) + ")"));
+        dirty = true;
+    }
+
+    public void addExp(UUID member, long n) {
+        addExp(of(member), n);
+    }
+
+    private boolean dirty;
+
+    public enum Skill {
+        COMBAT("전투 교리", org.bukkit.Material.IRON_SWORD, "길드원 힘 · 민첩 · 모험 +1.5% / 단계"),
+        VITALITY("강인함", org.bukkit.Material.GOLDEN_APPLE, "길드원 체력 +2% / 단계"),
+        WISDOM("수련", org.bukkit.Material.EXPERIENCE_BOTTLE, "길드원 경험치 +3% / 단계"),
+        FORTUNE("행운", org.bukkit.Material.RABBIT_FOOT, "길드원 치명타 +1% / 단계"),
+        BULWARK("견고한 성벽", org.bukkit.Material.STONE_BRICKS, "우리 성의 성벽이 받는 피해 -6% / 단계");
+        public final String label, desc;
+        public final org.bukkit.Material icon;
+
+        Skill(String label, org.bukkit.Material icon, String desc) {
+            this.label = label;
+            this.icon = icon;
+            this.desc = desc;
+        }
+    }
+
+    public static final int SKILL_MAX = 5;
+
+    /** 길드 스킬로 오르는 길드원 능력치 */
+    public StatMap skillStats(UUID id) {
+        StatMap m = new StatMap();
+        Guild g = of(id);
+        if (g == null) return m;
+        int c = g.skill("COMBAT");
+        if (c > 0) m.add(Stat.STR_PCT, 1.5 * c).add(Stat.DEX_PCT, 1.5 * c).add(Stat.ADV_PCT, 1.5 * c);
+        if (g.skill("VITALITY") > 0) m.add(Stat.HP_PCT, 2.0 * g.skill("VITALITY"));
+        if (g.skill("WISDOM") > 0) m.add(Stat.EXP_PCT, 3.0 * g.skill("WISDOM"));
+        if (g.skill("FORTUNE") > 0) m.add(Stat.CRIT, 1.0 * g.skill("FORTUNE"));
+        return m;
+    }
+
+    /** 길드원이 무언가를 잡으면 길드 경험치 (커스텀 몬스터 2 · 일반 1 · 보스 100) */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onMemberKill(org.bukkit.event.entity.EntityDeathEvent e) {
+        Player k = e.getEntity().getKiller();
+        if (k == null || e.getEntity() instanceof Player) return;
+        Guild g = of(k.getUniqueId());
+        if (g == null) return;
+        boolean boss = e.getEntity().getPersistentDataContainer().has(Keys.BOSS, org.bukkit.persistence.PersistentDataType.STRING);
+        boolean custom = plugin.customMobs() != null && plugin.customMobs().of(e.getEntity()) != null;
+        addExp(g, boss ? 100 : custom ? 2 : 1);
+    }
+
+    public void openSkills(Player p) {
+        Guild g = of(p.getUniqueId());
+        if (g == null) { Text.msg(p, "&c길드가 없습니다."); return; }
+        kr.rpgcraft.gui.Gui gui = new kr.rpgcraft.gui.Gui(4, "&6길드 스킬") {
+        };
+        long need = expNeed(g);
+        gui.set(4, kr.rpgcraft.gui.Gui.button(org.bukkit.Material.BEACON, "&6&l" + g.name + " &7Lv." + g.level,
+                "&7길드 경험치 &e" + Text.num(g.exp) + (g.level >= maxLevel() ? " &6(최대 레벨)" : " &7/ " + Text.num(need)),
+                g.level >= maxLevel() ? "" : Text.bar(Math.min(1, g.exp / (double) Math.max(1, need)), 20, "&a", "&8"),
+                "&7남은 스킬 포인트 &e" + g.skillPoints() + " &8(레벨마다 2)",
+                "", "&8길드원이 사냥 · 보스 · 공성전 · 성 수입으로 경험치를 모으고", "&8길드장이 /길드 레벨업 으로 올림"), null);
+        int[] slots = {19, 20, 21, 23, 24};
+        Skill[] all = Skill.values();
+        for (int i = 0; i < all.length; i++) {
+            Skill s = all[i];
+            int r = g.skill(s.name());
+            boolean can = g.isLeader(p.getUniqueId()) && r < SKILL_MAX && g.skillPoints() > 0;
+            gui.set(slots[i], kr.rpgcraft.gui.Gui.button(s.icon, "&e&l" + s.label + " &7(" + r + "/" + SKILL_MAX + ")",
+                    "&7" + s.desc, "", r >= SKILL_MAX ? "&6최대 단계" : can ? "&e▶ 클릭하여 배우기 (포인트 1)" : g.isLeader(p.getUniqueId()) ? "&c스킬 포인트가 없습니다" : "&8길드장만 배울 수 있음"), e -> {
+                if (!g.isLeader(p.getUniqueId()) || g.skill(s.name()) >= SKILL_MAX || g.skillPoints() <= 0) return;
+                g.skills.merge(s.name(), 1, Integer::sum);
+                save();
+                for (Player o : g.online()) plugin.stats().refresh(o);
+                g.broadcast(Text.PREFIX + Text.c("&6길드 스킬 &e" + s.label + " &6" + g.skill(s.name()) + "단계를 배웠습니다!"));
+                openSkills(p);
+            });
+        }
+        long reset = plugin.getConfig().getLong("guild.skill-reset-cost", 10_000_000);
+        gui.set(31, kr.rpgcraft.gui.Gui.button(org.bukkit.Material.LAVA_BUCKET, "&c스킬 초기화", "&7배운 스킬을 모두 되돌리고 포인트를 돌려받음",
+                "&7비용: 길드 금고 " + Text.money(reset), "&c▶ 쉬프트 + 우클릭 (길드장)"), e -> {
+            if (!e.isShiftClick() || !e.isRightClick() || !g.isLeader(p.getUniqueId())) return;
+            if (g.bank < reset) { Text.msg(p, "&c길드 금고가 부족합니다."); return; }
+            g.bank -= reset;
+            g.skills.clear();
+            save();
+            for (Player o : g.online()) plugin.stats().refresh(o);
+            g.broadcast(Text.PREFIX + Text.c("&7길드 스킬을 초기화했습니다."));
+            openSkills(p);
+        });
+        gui.fill(0, 35);
+        gui.open(p);
     }
 
     // ------------------------------------------------------------------ 토템
@@ -224,6 +337,9 @@ public class GuildManager implements Listener {
                 Guild g = new Guild(name, UUID.fromString(s.getString("leader")));
                 g.level = s.getInt("level", 1);
                 g.bank = s.getLong("bank");
+                g.exp = s.getLong("exp");
+                var sk = s.getConfigurationSection("skills");
+                if (sk != null) for (String k2 : sk.getKeys(false)) g.skills.put(k2, sk.getInt(k2));
                 for (String m : s.getStringList("members")) g.members.add(UUID.fromString(m));
                 g.totems.addAll(s.getStringList("totems"));
                 Inventory inv = g.storage();
@@ -252,6 +368,8 @@ public class GuildManager implements Listener {
             y.set(k + ".leader", g.leader.toString());
             y.set(k + ".level", g.level);
             y.set(k + ".bank", g.bank);
+            y.set(k + ".exp", g.exp);
+            for (var en : g.skills.entrySet()) if (en.getValue() > 0) y.set(k + ".skills." + en.getKey(), en.getValue());
             List<String> ms = new ArrayList<>();
             for (UUID m : g.members) ms.add(m.toString());
             y.set(k + ".members", ms);

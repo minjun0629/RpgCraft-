@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.25
+- **무기를 깔끔하게**: 불꽃 · 가시 칼날 · 떠 있는 결정 없이 모두 깔끔한 칼날.
+
 ## v5.10.24
 - **특별한 무기만 불꽃 칼날**: 사신수 · 유물 · 붕붕이 · 최상위 등급만, 나머지는 깔끔한 칼날.
 

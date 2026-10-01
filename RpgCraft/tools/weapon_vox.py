@@ -336,7 +336,8 @@ def _flames(g, base, n, size, P, seed, up=1.0, spread=1.0, pri=6):
 
 
 def _shards(g, pts, col, size=0.8, pri=7):
-    """공중에 떠 있는 작은 결정 조각 (마름모)"""
+    """공중에 떠 있는 작은 결정 조각 (마름모) — v5.10.25 깔끔하게: 쓰지 않음"""
+    return
     for (x, y, z) in pts:
         h = size
         _fill(g, y - h * 1.6, y + h * 1.6, lambda yy, y=y, h=h, x=x: (h * (1 - abs(yy - y) / (h * 1.6)), h * 0.6 * (1 - abs(yy - y) / (h * 1.6)), "diamond", x - C[0]),
@@ -362,6 +363,7 @@ FIERY = {"jag": False, "flame": False}
 
 
 def _fiery(name, tier):
+    return False, False   # v5.10.25 불꽃 · 가시 칼날 없이 모두 깔끔한 칼날
     special = name.startswith(("spirit_", "relic_", "bungbung_"))
     top = (name.startswith(("armory_", "armory2_", "armory3_")) and tier >= 7) or (name.startswith(("trans_", "bs_")) and tier >= 5)
     return special or top, special or (top and tier >= 8)

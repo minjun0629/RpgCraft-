@@ -129,7 +129,7 @@ public class KingdomBuilder {
                             int rx = ch[0] * 16 + lx, rz = ch[1] * 16 + lz;
                             if (Math.abs(rx) > half || Math.abs(rz) > half) continue;
                             int x = bx + rx, z = bz + rz;
-                            int hy = Math.min(top, Math.max(w.getHighestBlockYAt(x, z), by));
+                            int hy = Math.min(top, Math.max(w.getHighestBlockYAt(x, z, HeightMap.WORLD_SURFACE), by));
                             for (int y = hy; y >= by; y--) {
                                 Block b = w.getBlockAt(x, y, z);
                                 if (!b.getType().isAir()) b.setBlockData(air, false);
@@ -226,7 +226,7 @@ public class KingdomBuilder {
                             int rx = c[0] * 16 + lx, rz = c[1] * 16 + lz;
                             if (Math.abs(rx) > half || Math.abs(rz) > half) continue;
                             int x = bx + rx, z = bz + rz;
-                            int top = w.getHighestBlockYAt(x, z);
+                            int top = w.getHighestBlockYAt(x, z, HeightMap.WORLD_SURFACE);   // v5.10.69 꽃 · 깃발 · 막대기처럼 몸이 막히지 않는 블록까지 (예전엔 빠져서 공중에 남았음)
                             for (int y = Math.max(top, by); y >= by; y--) {
                                 Block b = w.getBlockAt(x, y, z);
                                 if (!b.getType().isAir()) b.setBlockData(air, false);

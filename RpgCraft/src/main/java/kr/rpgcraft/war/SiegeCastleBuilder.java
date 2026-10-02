@@ -256,10 +256,10 @@ public class SiegeCastleBuilder {
         if (safe > 0) {
             int half = 0;
             for (Op o : ops) half = Math.max(half, Math.max(Math.abs(o.x), Math.abs(o.z)));
-            Location sp = w.getSpawnLocation();
-            double d = Math.hypot(ox - sp.getX(), oz - sp.getZ());
+            double d = kr.rpgcraft.world.KingdomBuilder.safeDistance(plugin, at);   // v5.10.58 왕국을 지었으면 성 밖 기준
+            String lb = kr.rpgcraft.world.KingdomBuilder.safeLabel(plugin, w, safe);
             if (d - half * Math.sqrt(2) < safe)
-                return "스폰 근처 " + safe + "칸 안에는 성을 지을 수 없습니다. &7(여기서 스폰까지 " + (int) d + "칸, 성 반지름 " + half + "칸 → 스폰에서 "
+                return lb + " 안에는 성을 지을 수 없습니다. &7(여기까지 " + (int) d + "칸, 성 반지름 " + half + "칸 → "
                         + (int) Math.ceil(safe + half * Math.sqrt(2)) + "칸 이상 떨어진 곳에서)";
         }
         int perTick = Math.max(2000, plugin.getConfig().getInt("war.castle-build-blocks-per-tick", 20000));

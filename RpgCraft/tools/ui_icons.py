@@ -807,6 +807,21 @@ def sym_crown(d):
     ink(d, many(ell(14, 13, 18, 17), ell(7, 17, 10, 20), ell(22, 17, 25, 20)), RED)
 
 
+# v5.10.59 별자리 · 영혼석
+def sym_constellation(d):
+    pts = [(7, 22), (12, 12), (17, 17), (23, 8), (26, 19)]
+    ink(d, line(pts, 1.2), _rgb("9ab8ff"))
+    for i, (x, y) in enumerate(pts):
+        r = 3.6 if i == 3 else 2.6
+        ink(d, star(x, y, r, r * 0.42, n=4, rot=0), _rgb("fff4c0") if i == 3 else _rgb("dfe8ff"))
+
+
+def sym_soul(d):
+    ink(d, poly((16, 4), (23, 13), (21, 24), (16, 28), (11, 24), (9, 13)), _rgb("5ae8d8"))
+    ink(d, poly((16, 9), (20, 15), (18.5, 22), (16, 25), (13.5, 22), (12, 15)), _rgb("c8fff6"))
+    ink(d, many(ell(13, 15, 15, 18), ell(17, 15, 19, 18)), _rgb("1a3a40"))
+
+
 # (이름, 바탕, 색, 그림)
 ICONS = [
     ("season_pass", "medal", "3a6ac8", sym_season), ("skill", "medal", "6a3aa8", sym_skill), ("enhance", "medal", "a86a2a", sym_enhance),
@@ -849,6 +864,7 @@ ICONS = [
     ("ruins", "medal", "3a4a3a", sym_ruins), ("table", "medal", "3a2a4a", sym_table), ("key", "medal", "4a3a14", sym_key),
     ("bone", "medal", "3a3440", sym_bone), ("totem", "medal", "2a4a3a", sym_totem), ("ingot", "medal", "3a3e4a", sym_ingot),
     ("lightning", "medal", "2a2a5a", sym_lightning), ("crown", "medal", "5a1a2a", sym_crown),
+    ("constellation", "medal", "1a2050", sym_constellation), ("soul", "medal", "123a3a", sym_soul),
 ]
 
 

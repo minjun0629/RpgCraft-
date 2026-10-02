@@ -266,6 +266,7 @@ public class WarManager {
 
     /** 성 안에서는 몬스터가 나오지 않음 (설정 war.no-mob-spawn) */
     public boolean noMobs(Location l) {
+        if (kr.rpgcraft.world.KingdomBuilder.inKingdom(plugin, l)) return true;   // v5.10.56 스폰 왕국 (1000 x 1000) 안에는 몬스터가 생기지 않음
         return plugin.getConfig().getBoolean("war.no-mob-spawn", true) && castleArea(l, plugin.getConfig().getInt("war.no-mob-margin", 4)) != null;
     }
 

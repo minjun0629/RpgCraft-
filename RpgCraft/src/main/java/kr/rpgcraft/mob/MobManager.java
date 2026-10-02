@@ -215,6 +215,13 @@ public class MobManager implements Listener {
         int spread = c.getInt("mobs.level.random-spread", 2);
         Location spawn = l.getWorld().getSpawnLocation();
         double dist = Math.hypot(l.getX() - spawn.getX(), l.getZ() - spawn.getZ());
+        // v5.10.57 스폰 왕국을 지었으면 성 밖(왕국 부지 끝)부터 Lv.1 → 멀어질수록 올라감 (네모 부지 바깥까지의 거리)
+        if (w.equals(c.getString("kingdom.world", "")) && c.getBoolean("kingdom.level-from-wall", true)) {
+            int half = c.getInt("kingdom.half", 500);
+            double dx = Math.max(0, Math.abs(l.getX() - c.getDouble("kingdom.x")) - half);
+            double dz = Math.max(0, Math.abs(l.getZ() - c.getDouble("kingdom.z")) - half);
+            dist = Math.hypot(dx, dz);
+        }
         int lv = base + (int) (dist / Math.max(1, per)) + ThreadLocalRandom.current().nextInt(-spread, spread + 1);
         return Math.max(1, Math.min(max, lv));
     }
@@ -313,6 +320,12 @@ public class MobManager implements Listener {
         if (s == null) return;
         e.setDroppedExp(0);
         if (s.bossId != null) {
+            // v5.10.59 근처(48칸)에서 싸운 사람: 별 조각 · 영혼석
+            List<Player> near = new ArrayList<>();
+            for (Player np : ent.getWorld().getPlayers()) if (!np.isDead() && np.getLocation().distanceSquared(ent.getLocation()) < 48 * 48) near.add(np);
+            int sh = plugin.getConfig().getInt("constellation.shards-per-boss", 3);
+            for (Player np : near) plugin.constellation().gainShards(np, sh, "보스 처치");
+            plugin.souls().onKill(ent, s, near);
             plugin.bosses().onBossDeath(ent, s, e);
             return;
         }
@@ -333,6 +346,7 @@ public class MobManager implements Listener {
         if (plugin.tiers() == null || plugin.tiers().tier(ent) == kr.rpgcraft.mob.MonsterTierManager.Tier.NORMAL)
             expMul *= plugin.getConfig().getDouble("mobs.normal-exp-mult", 0.75);   // v5.10.34 일반 몬스터 경험치 75%
         plugin.party().giveKillReward(killer, s, s.exp * expMul, (long) (moneyRoll(s.money) * plugin.jobs().moneyMult(killer)));
+        plugin.souls().onKill(ent, s, List.of(killer));   // v5.10.59 영혼석
         ThreadLocalRandom r = ThreadLocalRandom.current();
         double cc = plugin.getConfig().getDouble("mobs.crystal-chance", 0.06) * (s.level >= 90 ? 0.25 : s.level >= 60 ? 0.4 : s.level >= 30 ? 0.6 : 1.0);   // 고등급 결정일수록 드물게
         if (r.nextDouble() < cc) {

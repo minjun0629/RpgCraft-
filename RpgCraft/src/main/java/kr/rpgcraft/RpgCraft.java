@@ -116,8 +116,11 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.minigame.MiniGameManager minigames;
     private kr.rpgcraft.board.BoardManager boards;
     private kr.rpgcraft.feature.TargetHud targetHud;
-    private kr.rpgcraft.feature.MobFightStick mobFight;   // v5.10.45 오른쪽 위 대상 정보   // v5.10.45 보드게임 · 야차 명성
+    private kr.rpgcraft.feature.MobFightStick mobFight;   // v5.10.45 오른쪽 위 대상 정보   // v5.10.45 보드게임 · PVP 명성
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
+    private kr.rpgcraft.world.KingdomBuilder kingdom;
+    private kr.rpgcraft.feature.ConstellationManager constellation;
+    private kr.rpgcraft.feature.SoulManager souls;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
     private kr.rpgcraft.mob.MobModelManager mobModels;
@@ -227,12 +230,12 @@ public final class RpgCraft extends JavaPlugin {
         command("stock", stocks);   // /주식 (v5.6.0)
         minigames = new kr.rpgcraft.minigame.MiniGameManager(this);
         command("minigame", minigames);   // /미니게임 : 미니게임 · 미니게임 상점 (v5.6.0)
-        boards = new kr.rpgcraft.board.BoardManager(this);   // v5.10.45 /보드게임 (윷놀이 · 부루마블 · 인디언 포커) + 야차 명성
+        boards = new kr.rpgcraft.board.BoardManager(this);   // v5.10.45 /보드게임 (윷놀이 · 부루마블 · 인디언 포커) + PVP 명성
         command("board", boards);
         targetHud = new kr.rpgcraft.feature.TargetHud(this);
         mobFight = new kr.rpgcraft.feature.MobFightStick(this);   // v5.10.45 관리자 몬스터 결투 막대기
         command("commands", new kr.rpgcraft.command.CommandList(this));   // v5.10.45 /명령어
-        duels = new kr.rpgcraft.feature.DuelManager(this);   // /야차 : 1대1 결투 (v5.4.34)
+        duels = new kr.rpgcraft.feature.DuelManager(this);   // /pvp : 1대1 결투 (v5.4.34)
         Bukkit.getPluginManager().registerEvents(duels, this);
         command("duel", duels);
         Bukkit.getPluginManager().registerEvents(new kr.rpgcraft.feature.ProtectionManager(this), this);   // 서버 목록 아이콘 · 봇 방어 · 엑스레이 의심 알림 (v5.5.0)
@@ -245,7 +248,7 @@ public final class RpgCraft extends JavaPlugin {
         playerCommands = pc;
         getServer().getPluginManager().registerEvents(pc, this);
         for (String c : new String[]{"stat", "info", "money", "pay", "check", "potionbag", "rune", "skill", "enhance", "job",
-                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "showoff", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
+                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "showoff", "constellation", "souls", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
         command("guild", new GuildCommand(this));
         command("war", new WarCommand(this));
         AdminCommand adminCmd = new AdminCommand(this);
@@ -294,7 +297,7 @@ public final class RpgCraft extends JavaPlugin {
         if (trades != null) trades.shutdown();
         if (protection != null) protection.restoreAll();
         if (wars != null) wars.shutdown();
-        if (duels != null) duels.shutdown();   // 야차 중이던 사람 원래 자리로
+        if (duels != null) duels.shutdown();   // PVP 중이던 사람 원래 자리로
         if (bosses != null) bosses.shutdown();
         if (hud != null) hud.shutdown();
         if (data != null) data.saveAll();
@@ -532,6 +535,24 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.TargetHud targetHud() { return targetHud; }
     public kr.rpgcraft.feature.MobFightStick mobFight() { return mobFight; }
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
+
+    /** v5.10.59 별자리 특성 트리 */
+    public kr.rpgcraft.feature.ConstellationManager constellation() {
+        if (constellation == null) constellation = new kr.rpgcraft.feature.ConstellationManager(this);
+        return constellation;
+    }
+
+    /** v5.10.59 몬스터 영혼석 수집 */
+    public kr.rpgcraft.feature.SoulManager souls() {
+        if (souls == null) souls = new kr.rpgcraft.feature.SoulManager(this);
+        return souls;
+    }
+
+    /** v5.10.56 스폰 왕국 짓기 */
+    public kr.rpgcraft.world.KingdomBuilder kingdom() {
+        if (kingdom == null) kingdom = new kr.rpgcraft.world.KingdomBuilder(this);
+        return kingdom;
+    }
     public kr.rpgcraft.world.CasinoManager casino() { return casino; }
     public kr.rpgcraft.boss.BossModelManager bossModels() { return bossModels; }
     public kr.rpgcraft.mob.MobModelManager mobModels() { return mobModels; }

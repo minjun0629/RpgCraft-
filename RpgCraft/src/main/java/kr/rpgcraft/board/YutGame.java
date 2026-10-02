@@ -7,30 +7,31 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * v5.10.45 윷놀이 (컴퓨터와 1대1). 창 왼쪽 6x6 이 윷판:
+ * 윷놀이 (v5.10.59 2~4명 · 빈자리는 컴퓨터). 창 왼쪽 6x6 이 윷판:
  *  바깥 20칸 (오른쪽 아래 = 출발 · 도착) + 모서리 지름길 (오른쪽 위 · 왼쪽 위 모서리에서 멈추면 대각선으로) + 가운데 방.
- *  말은 2개씩 (board.yut-pieces). 윷 · 모는 한 번 더, 상대 말을 잡아도 한 번 더, 내 말끼리 겹치면 업어서 같이 움직임.
- *  빽도는 한 칸 뒤로. 말이 출발점을 지나면 도착.
+ *  말은 2개씩 (board.yut-pieces). 윷 · 모는 한 번 더, 다른 사람 말을 잡아도 한 번 더, 내 말끼리 겹치면 업어서 같이 움직임.
+ *  빽도는 한 칸 뒤로. 말이 출발점을 지나면 도착. 말을 모두 먼저 내보낸 사람이 승리.
  */
 public class YutGame extends BoardGameBase {
     // 칸 번호: 0~19 바깥 (0 = 출발 · 도착 모서리), 20 A (오른쪽 위 모서리 → 가운데), 21 가운데, 22 B (가운데 → 왼쪽 아래), 23 D (왼쪽 위 → 가운데), 24 E (가운데 → 출발)
     private static final int A = 20, CENTER = 21, B = 22, D = 23, E = 24, HOME = -1, GOAL = -2;
     private static final int[] SLOT = {50, 41, 32, 23, 14, 5, 4, 3, 2, 1, 0, 9, 18, 27, 36, 45, 46, 47, 48, 49, 13, 20, 37, 10, 40};
     private static final int[] CENTER_SLOTS = {20, 21, 29, 30};
+    private static final int[] SEAT_SLOT = {7, 8, 16, 17};
     private static final String[] RES = {"도", "개", "걸", "윷", "모", "빽도"};
 
     private final int n;
-    private final int[][] pos, prev;   // [0 = 나, 1 = 컴퓨터][말]
+    private final int[][] pos, prev;   // [자리][말]
     private final List<Integer> queue = new ArrayList<>();   // 던진 결과 (1~5, -1 빽도)
-    private int sel;            // 고른 결과
-    private boolean myTurn = true, canThrow = true;
+    private int sel;
+    private boolean canThrow = true;
     private String log = "윷을 던지세요!";
 
-    public YutGame(BoardManager mgr, Player p) {
-        super(mgr, p, BoardManager.BoardGame.YUT, "&8윷놀이 &7- 나(빨강) vs 컴퓨터(파랑)");
+    public YutGame(BoardManager mgr, List<Player> players, int seatCount) {
+        super(mgr, players, seatCount, BoardManager.BoardGame.YUT, "&8윷놀이");
         n = Math.max(1, Math.min(4, plugin.getConfig().getInt("board.yut-pieces", 2)));
-        pos = new int[2][n];
-        prev = new int[2][n];
+        pos = new int[seats][n];
+        prev = new int[seats][n];
         for (int[] a : pos) Arrays.fill(a, HOME);
         for (int[] a : prev) Arrays.fill(a, HOME);
     }
@@ -42,15 +43,14 @@ public class YutGame extends BoardGameBase {
         boolean marked = false;
         for (int i = 0; i < 4; i++) if (r.nextBoolean()) { flats++; if (i == 0) marked = true; }
         if (flats == 0) return 5;            // 모
-        if (flats == 1 && marked) return -1; // 빽도 (표시한 가락 하나만 엎어짐)
-        return flats;                        // 도 개 걸 윷
+        if (flats == 1 && marked) return -1; // 빽도
+        return flats;
     }
 
     private static int resIdx(int r) {
         return r == -1 ? 5 : r - 1;
     }
 
-    /** 한 칸 앞으로 (first = 이번 이동의 첫 걸음, from = 바로 전 칸) */
     private static int step(int at, int from, boolean first) {
         if (at == HOME) return 1;
         if (first && at == 5) return A;
@@ -60,12 +60,11 @@ public class YutGame extends BoardGameBase {
         if (at == B) return 15;
         if (at == D) return CENTER;
         if (at == E) return 0;
-        if (at == 0) return GOAL;   // 출발점에 멈춰 있던 말은 다음 걸음에 도착
+        if (at == 0) return GOAL;
         if (at == 19) return 0;
         return at + 1;
     }
 
-    /** 앞으로 k 칸 → {도착 칸, 그 전 칸} (출발점을 지나치면 GOAL) */
     private static int[] walk(int at, int k) {
         int cur = at, from = HOME;
         for (int i = 0; i < k && cur != GOAL; i++) {
@@ -89,7 +88,6 @@ public class YutGame extends BoardGameBase {
         };
     }
 
-    /** side 의 말 i 를 결과 r 로 옮겼을 때 도착 칸 (못 움직이면 null) */
     private int[] dest(int side, int i, int r) {
         int at = pos[side][i];
         if (at == GOAL) return null;
@@ -109,17 +107,17 @@ public class YutGame extends BoardGameBase {
         return g;
     }
 
-    /** 옮기고 잡았는지 */
-    private boolean move(int side, int i, int r) {
+    /** 옮기고 잡은 말 수 */
+    private int move(int side, int i, int r) {
         int[] d = dest(side, i, r);
-        if (d == null) return false;
-        List<Integer> g = group(side, i);
-        for (int j : g) { pos[side][j] = d[0]; prev[side][j] = d[1]; }
-        boolean caught = false;
-        if (d[0] >= 0) {
-            int o = 1 - side;
-            for (int j = 0; j < n; j++) if (pos[o][j] == d[0]) { pos[o][j] = HOME; prev[o][j] = HOME; caught = true; }
-        }
+        if (d == null) return 0;
+        for (int j : group(side, i)) { pos[side][j] = d[0]; prev[side][j] = d[1]; }
+        int caught = 0;
+        if (d[0] >= 0)
+            for (int o = 0; o < seats; o++) {
+                if (o == side) continue;
+                for (int j = 0; j < n; j++) if (pos[o][j] == d[0]) { pos[o][j] = HOME; prev[o][j] = HOME; caught++; }
+            }
         return caught;
     }
 
@@ -148,7 +146,6 @@ public class YutGame extends BoardGameBase {
     // ------------------------------------------------------------------ 화면
     @Override
     protected void setup() {
-        render();
     }
 
     private String where(int at) {
@@ -159,192 +156,182 @@ public class YutGame extends BoardGameBase {
         return at >= 20 ? "지름길" : "바깥 " + at + "번째 칸";
     }
 
-    private void render() {
-        // 판
+    @Override
+    protected void render(View v) {
+        int me = v.seat;
+        boolean mine = myMove(v);
         for (int at = 0; at < SLOT.length; at++) {
-            int me = 0, ai = 0;
-            for (int i = 0; i < n; i++) { if (pos[0][i] == at) me++; if (pos[1][i] == at) ai++; }
-            int icon = me > 0 && ai > 0 ? BoardIcons.YUT_BOTH : me > 0 ? BoardIcons.YUT_ME : ai > 0 ? BoardIcons.YUT_AI
+            int[] cnt = new int[seats];
+            int kinds = 0, only = -1, total = 0;
+            for (int s = 0; s < seats; s++) {
+                for (int i = 0; i < n; i++) if (pos[s][i] == at) cnt[s]++;
+                if (cnt[s] > 0) { kinds++; only = s; total += cnt[s]; }
+            }
+            int icon = kinds > 1 ? BoardIcons.YUT_MULTI : kinds == 1 ? BoardIcons.YUT_SEAT + only
                     : at == CENTER ? BoardIcons.YUT_CENTER : (at == 0 || at == 5 || at == 10 || at == 15) ? BoardIcons.YUT_CORNER : BoardIcons.YUT_STATION;
             List<String> lore = new ArrayList<>();
             lore.add("&7" + where(at));
-            if (me > 0) lore.add("&c내 말 " + me + "개" + (me > 1 ? " (업힘)" : ""));
-            if (ai > 0) lore.add("&9컴퓨터 말 " + ai + "개");
+            for (int s = 0; s < seats; s++) if (cnt[s] > 0) lore.add(SEAT_COLOR[s] + who(s).substring(2) + " 말 " + cnt[s] + "개" + (cnt[s] > 1 ? " (업힘)" : "") + (s == me ? " &7(나)" : ""));
             int myPiece = -1;
-            for (int i = 0; i < n; i++) if (pos[0][i] == at) { myPiece = i; break; }
-            if (myPiece >= 0 && myTurn && !queue.isEmpty() && !canThrowNow()) {
-                int[] d = dest(0, myPiece, queue.get(sel));
+            for (int i = 0; i < n; i++) if (pos[me][i] == at) { myPiece = i; break; }
+            if (myPiece >= 0 && mine && !queue.isEmpty() && !canThrow) {
+                int[] d = dest(me, myPiece, queue.get(sel));
                 lore.add("");
                 lore.add(d == null ? "&8이 결과로는 못 움직임" : "&e▶ 클릭: " + RES[resIdx(queue.get(sel))] + " → " + where(d[0]));
             }
-            int amount = Math.max(1, Math.max(me, ai));
-            String name = me > 0 ? "&c&l내 말" : ai > 0 ? "&9&l컴퓨터 말" : at == CENTER ? "&6가운데 방" : "&f윷판";
+            String name = kinds == 0 ? (at == CENTER ? "&6가운데 방" : "&f윷판") : kinds == 1 ? who(only) + " &f말" : "&f여러 사람 말";
             int pi = myPiece;
             if (at == CENTER) {
-                for (int s : CENTER_SLOTS) set(s, BoardIcons.of(icon, amount, name, lore), e -> clickPiece(pi));
-            } else set(SLOT[at], BoardIcons.of(icon, amount, name, lore), e -> clickPiece(pi));
+                for (int s : CENTER_SLOTS) v.btn(s, BoardIcons.of(icon, Math.max(1, total), name, lore), () -> clickPiece(v, pi));
+            } else v.btn(SLOT[at], BoardIcons.of(icon, Math.max(1, total), name, lore), () -> clickPiece(v, pi));
         }
-        for (int s : new int[]{11, 12, 19, 22, 28, 31, 38, 39}) set(s, kr.rpgcraft.pack.PackManager.filler(org.bukkit.Material.GRAY_STAINED_GLASS_PANE), e -> { });
-        // 오른쪽
-        int mh = home(0), ah = home(1);
-        List<String> hl = new ArrayList<>(List.of("&7아직 출발하지 않은 말 " + mh + "개"));
-        if (mh > 0 && myTurn && !queue.isEmpty() && !canThrowNow()) {
-            int r = queue.get(sel);
-            hl.add(r == -1 ? "&8빽도로는 새 말을 낼 수 없음" : "&e▶ 클릭: " + RES[resIdx(r)] + " 로 새 말 출발");
+        // 자리 (대기 말 · 도착)
+        for (int s = 0; s < seats; s++) {
+            int h = home(s), side = s;
+            List<String> hl = new ArrayList<>();
+            hl.add(seatLine(s, me));
+            hl.add("&7대기 말 " + h + "개 · 도착 " + finished(s) + " / " + n);
+            if (s == me && h > 0 && mine && !queue.isEmpty() && !canThrow) {
+                int r = queue.get(sel);
+                hl.add(r == -1 ? "&8빽도로는 새 말을 낼 수 없음" : "&e▶ 클릭: " + RES[resIdx(r)] + " 로 새 말 출발");
+            }
+            if (s == turn) hl.add("&e◀ 지금 차례");
+            v.btn(SEAT_SLOT[s], BoardIcons.of(h > 0 ? BoardIcons.YUT_HOME_SEAT + s : BoardIcons.YUT_GOAL, Math.max(1, h > 0 ? h : finished(s)),
+                    who(s) + (s == turn ? " &e◀" : ""), hl), () -> { if (side == me) clickPiece(v, firstHome(me) >= 0 ? -100 : -1); });
         }
-        set(7, BoardIcons.of(mh > 0 ? BoardIcons.YUT_HOME_ME : BoardIcons.YUT_STATION, Math.max(1, mh), "&c&l내 대기 말 &f" + mh, hl), e -> clickPiece(firstHome(0) >= 0 ? -100 : -1));
-        set(8, BoardIcons.of(BoardIcons.YUT_GOAL, Math.max(1, finished(0)), "&c내 도착 &f" + finished(0) + " / " + n));
-        set(16, BoardIcons.of(ah > 0 ? BoardIcons.YUT_HOME_AI : BoardIcons.YUT_STATION, Math.max(1, ah), "&9&l컴퓨터 대기 말 &f" + ah));
-        set(17, BoardIcons.of(BoardIcons.YUT_GOAL, Math.max(1, finished(1)), "&9컴퓨터 도착 &f" + finished(1) + " / " + n));
         int[] qs = {25, 26, 34, 35};
         for (int k = 0; k < qs.length; k++) {
             if (k < queue.size()) {
                 int idx = k;
                 boolean on = k == sel;
-                set(qs[k], BoardIcons.of(BoardIcons.YUT_RESULT + resIdx(queue.get(k)), (on ? "&e&l▶ " : "&f") + RES[resIdx(queue.get(k))],
-                        on ? "&a지금 쓸 결과" : "&7클릭하면 이 결과를 먼저 씀"), e -> { if (myTurn && !busy) { sel = idx; render(); } });
-            } else set(qs[k], kr.rpgcraft.pack.PackManager.filler(org.bukkit.Material.GRAY_STAINED_GLASS_PANE), e -> { });
+                v.btn(qs[k], BoardIcons.of(BoardIcons.YUT_RESULT + resIdx(queue.get(k)), (on ? "&e&l▶ " : "&f") + RES[resIdx(queue.get(k))],
+                        on ? "&a지금 쓸 결과" : "&7클릭하면 이 결과를 먼저 씀"), () -> { if (myMove(v)) { sel = idx; refresh(); } });
+            }
         }
-        boolean t = myTurn && canThrowNow();
-        set(43, BoardIcons.of(t ? BoardIcons.YUT_THROW : BoardIcons.YUT_STATION, t ? "&e&l윷 던지기!" : myTurn ? "&7말을 옮기세요" : "&7컴퓨터 차례…",
-                t ? "&7클릭하여 윷 던지기" : myTurn ? "&7오른쪽 결과를 골라 판의 내 말(빨강)을 클릭" : ""), e -> doThrow());
-        set(44, BoardIcons.of(myTurn ? BoardIcons.YUT_ME : BoardIcons.YUT_AI, myTurn ? "&c&l내 차례" : "&9&l컴퓨터 차례", "&f" + log));
-        set(52, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.HELP, true, "&f규칙", "&7윷 · 모: 한 번 더 던짐", "&7상대 말을 잡으면 한 번 더",
+        boolean t = mine && canThrow;
+        v.btn(43, BoardIcons.of(t ? BoardIcons.YUT_THROW : BoardIcons.YUT_STATION, t ? "&e&l윷 던지기!" : mine ? "&7말을 옮기세요" : who(turn) + " &7차례…",
+                t ? "&7클릭하여 윷 던지기" : mine ? "&7결과를 골라 판의 내 말을 클릭" : ""), () -> doThrow(v));
+        v.set(44, BoardIcons.of(BoardIcons.YUT_SEAT + turn, (turn == me ? "&l내 차례 " : "") + who(turn) + " &f차례", "&f" + log));
+        v.set(52, kr.rpgcraft.gui.Gui.ui(kr.rpgcraft.gui.UiIcon.HELP, true, "&f규칙", "&7윷 · 모: 한 번 더 던짐", "&7다른 사람 말을 잡으면 한 번 더",
                 "&7내 말끼리 겹치면 업어서 함께 움직임", "&7오른쪽 위 · 왼쪽 위 모서리, 가운데에 멈추면 지름길로", "&7빽도: 한 칸 뒤로", "&7말 " + n + "개를 먼저 모두 내보내면 승리"));
-        fill(0, 53);
     }
 
-    private boolean canThrowNow() {
-        return canThrow;
+    // ------------------------------------------------------------------ 사람 차례
+    private void doThrow(View v) {
+        if (!myMove(v) || !canThrow) return;
+        throwOnce();
     }
 
-    // ------------------------------------------------------------------ 내 차례
-    private void doThrow() {
-        if (over || busy || !myTurn || !canThrow) return;
+    private void throwOnce() {
         int r = throwSticks();
         queue.add(r);
-        p.playSound(p.getLocation(), Sound.BLOCK_WOOD_HIT, 1f, 0.9f + ThreadLocalRandom.current().nextFloat() * 0.3f);
-        log = "던짐: " + RES[resIdx(r)] + (r >= 4 ? " — 한 번 더!" : "");
-        if (r >= 4) { p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6f, 1.6f); render(); return; }
+        sound(Sound.BLOCK_WOOD_HIT, 1f, 0.9f + ThreadLocalRandom.current().nextFloat() * 0.3f);
+        log = plain(turn) + ": " + RES[resIdx(r)] + (r >= 4 ? " — 한 번 더!" : "");
+        if (r >= 4) { sound(Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.6f); refresh(); return; }
         canThrow = false;
         sel = 0;
-        skipDead(0);
-        render();
+        skipDead();
+        refresh();
     }
 
     /** 움직일 수 없는 결과는 버림 · 다 쓰면 차례 넘김 */
-    private void skipDead(int side) {
-        queue.removeIf(r -> !anyMovable(side, r));
+    private void skipDead() {
+        queue.removeIf(r -> !anyMovable(turn, r));
         if (sel >= queue.size()) sel = 0;
-        if (queue.isEmpty() && !canThrow) endTurn(side);
+        if (queue.isEmpty() && !canThrow) endTurn();
     }
 
-    /** idx: 판의 내 말 번호, -100 = 대기 말 */
-    private void clickPiece(int idx) {
-        if (over || busy || !myTurn || canThrow || queue.isEmpty()) return;
-        int piece = idx == -100 ? firstHome(0) : idx;
+    private void clickPiece(View v, int idx) {
+        if (!myMove(v) || canThrow || queue.isEmpty()) return;
+        int me = v.seat;
+        int piece = idx == -100 ? firstHome(me) : idx;
         if (piece < 0) return;
         int r = queue.get(sel);
-        if (dest(0, piece, r) == null) { say("&c이 결과로는 그 말을 움직일 수 없습니다."); return; }
+        if (dest(me, piece, r) == null) { say(v, "&c이 결과로는 그 말을 움직일 수 없습니다."); return; }
         queue.remove(sel);
         sel = 0;
-        boolean caught = move(0, piece, r);
-        p.playSound(p.getLocation(), Sound.BLOCK_WOOD_PLACE, 1f, 1.2f);
-        if (finished(0) >= n) { render(); finish(true, "말을 모두 내보냈습니다!"); return; }
-        if (caught) {
-            log = "상대 말을 잡았다! 한 번 더!";
-            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1f, 1.2f);
-            canThrow = true;
-        }
-        skipDead(0);
-        render();
+        apply(piece, r);
     }
 
-    private void endTurn(int side) {
+    /** 지금 차례 자리가 말을 옮김 (사람 · 컴퓨터 공통) */
+    private void apply(int piece, int r) {
+        int caught = move(turn, piece, r);
+        sound(Sound.BLOCK_WOOD_PLACE, 1f, 1.2f);
+        log = plain(turn) + ": " + RES[resIdx(r)] + " 로 이동" + (caught > 0 ? " — 말을 잡았다! 한 번 더!" : "");
+        if (finished(turn) >= n) { finish(turn, plain(turn) + " 님이 말을 모두 내보냈습니다!"); return; }
+        if (caught > 0) {
+            sound(Sound.ENTITY_PLAYER_ATTACK_CRIT, 1f, 1.2f);
+            canThrow = true;
+        }
+        skipDead();
+        refresh();
+    }
+
+    private void endTurn() {
         queue.clear();
         sel = 0;
-        if (side == 0) {
-            myTurn = false;
-            canThrow = true;
-            busy = true;
-            render();
-            later(20, this::aiStep);
-        } else {
-            myTurn = true;
-            canThrow = true;
-            busy = false;
-            log = "내 차례 — 윷을 던지세요!";
-            render();
-        }
+        canThrow = true;
+        log = log + " → 다음 차례";
+        nextTurn(null);
     }
 
     // ------------------------------------------------------------------ 컴퓨터
-    private void aiStep() {
-        if (over) return;
+    @Override
+    protected void aiTurn() {
+        if (over || !isAI(turn)) return;
+        int side = turn;
         if (canThrow) {
-            int r = throwSticks();
-            queue.add(r);
-            p.playSound(p.getLocation(), Sound.BLOCK_WOOD_HIT, 0.8f, 0.8f);
-            log = "컴퓨터: " + RES[resIdx(r)] + (r >= 4 ? " — 한 번 더!" : "");
-            if (r < 4) canThrow = false;
-            render();
-            later(18, this::aiStep);
+            throwOnce();
+            if (!over && turn == side && isAI(side)) later(18, this::aiTurn);
             return;
         }
-        queue.removeIf(r -> !anyMovable(1, r));
-        if (queue.isEmpty()) { endTurn(1); return; }
-        // 결과와 말을 모두 따져 가장 좋은 수
+        queue.removeIf(r -> !anyMovable(side, r));
+        if (queue.isEmpty()) { endTurn(); return; }
         int bestR = -1, bestP = -1;
         double best = -1e9;
         for (int qi = 0; qi < queue.size(); qi++) {
             int r = queue.get(qi);
             Set<Integer> seen = new HashSet<>();
             for (int i = 0; i < n; i++) {
-                int at = pos[1][i];
+                int at = pos[side][i];
                 if (at == GOAL || !seen.add(at)) continue;
-                int[] d = dest(1, i, r);
+                int[] d = dest(side, i, r);
                 if (d == null) continue;
-                double sc = score(i, d[0], r);
+                double sc = score(side, i, d[0], r);
                 if (sc > best) { best = sc; bestR = qi; bestP = i; }
             }
         }
         int r = queue.remove(bestR);
-        boolean caught = move(1, bestP, r);
-        p.playSound(p.getLocation(), Sound.BLOCK_WOOD_PLACE, 0.8f, 0.9f);
-        log = "컴퓨터가 " + RES[resIdx(r)] + " 로 말을 옮김" + (caught ? " &c— 내 말이 잡혔다!" : "");
-        if (caught) p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 0.6f, 1.4f);
-        if (finished(1) >= n) { render(); finish(false, "컴퓨터가 먼저 말을 모두 내보냈습니다"); return; }
-        if (caught) canThrow = true;
-        render();
-        later(20, this::aiStep);
+        sel = 0;
+        apply(bestP, r);
+        if (!over && turn == side && isAI(side)) later(20, this::aiTurn);
     }
 
-    private double score(int piece, int to, int r) {
-        int stack = group(1, piece).size();
+    private double score(int side, int piece, int to, int r) {
+        int stack = group(side, piece).size();
         double s = 0;
         if (to == GOAL) s += 90 * stack;
         else {
             int caught = 0;
-            for (int j = 0; j < n; j++) if (pos[0][j] == to) caught++;
+            for (int o = 0; o < seats; o++) if (o != side) for (int j = 0; j < n; j++) if (pos[o][j] == to) caught++;
             s += caught * 120;
-            for (int j = 0; j < n; j++) if (pos[1][j] == to && j != piece && pos[1][piece] != to) s += 12;   // 업기
+            for (int j = 0; j < n; j++) if (pos[side][j] == to && j != piece && pos[side][piece] != to) s += 12;
             if (to == 5 || to == 10 || to == CENTER) s += 22;
-            s -= danger(to) * 18 * stack;
+            s -= danger(side, to) * 18 * stack;
             s += (r > 0 ? r : -4) * 2;
-            if (pos[1][piece] == HOME) s += 6;
+            if (pos[side][piece] == HOME) s += 6;
         }
-        s += ThreadLocalRandom.current().nextDouble(3);
-        return s;
+        return s + ThreadLocalRandom.current().nextDouble(3);
     }
 
-    /** 내 말이 1~5 칸 뒤에서 이 칸을 노릴 수 있는 정도 */
-    private int danger(int to) {
+    /** 다른 사람 말이 1~5 칸 뒤에서 이 칸을 노릴 수 있는 정도 */
+    private int danger(int side, int to) {
         int c = 0;
-        for (int i = 0; i < n; i++) {
-            if (pos[0][i] == GOAL) continue;
-            for (int k = 1; k <= 5; k++) {
-                int[] w = walk(pos[0][i], k);
-                if (w[0] == to) { c++; break; }
+        for (int o = 0; o < seats; o++) {
+            if (o == side) continue;
+            for (int i = 0; i < n; i++) {
+                if (pos[o][i] == GOAL) continue;
+                for (int k = 1; k <= 5; k++) if (walk(pos[o][i], k)[0] == to) { c++; break; }
             }
         }
         return c;

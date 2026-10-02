@@ -23,10 +23,10 @@ import java.util.*;
 
 /**
  * v5.10.45 보드게임 (오락실) — /보드게임
- *  - 윷놀이 · 부루마블 · 인디언 포커 (컴퓨터와 1대1, 판 수 제한 없음)
+ *  - 윷놀이 · 부루마블 · 인디언 포커 (v5.10.59 2~4명: 컴퓨터와 하거나 방을 만들어 함께, 빈자리는 컴퓨터 · 판 수 제한 없음)
  *  - 이기면(지더라도 조금) 보드 칩: 미니게임 코인과 따로 쌓이는 디지털 재화. 하루에 얻을 수 있는 칩은 board.daily-chip-cap 까지
  *  - 보드 칩 상점: 전용 칭호 · 대미지 스킨 · 장신구 (장신구 · 스킨 아이템은 거래 가능)
- *  - 야차(1대1 결투) 명성: 이기면 오르고 지면 내림 (Elo). 명성 등급 칭호 · 랭킹
+ *  - PVP(1대1 결투) 명성: 이기면 오르고 지면 내림 (Elo). 명성 등급 칭호 · 랭킹 (v5.10.59 랭킹 창은 /pvp 로 옮김)
  */
 public class BoardManager implements CommandExecutor {
     public enum BoardGame {
@@ -52,7 +52,7 @@ public class BoardManager implements CommandExecutor {
     /** 보드 칩 상점 칭호 (칭호 kind 6, idx = 순서) */
     public static final String[] TITLES = {"&6윷놀이 명인", "&a부루마블 재벌", "&b포커페이스", "&d행운의 주사위", "&c&l보드게임 왕"};
     private static final int[] TITLE_PRICE = {60, 60, 60, 120, 300};
-    /** 명성 등급 (야차) */
+    /** 명성 등급 (PVP) */
     public static final String[] TIER_NAME = {"브론즈", "실버", "골드", "플래티넘", "다이아몬드", "마스터", "그랜드마스터"};
     public static final String[] TIER_COLOR = {"&6", "&7", "&e", "&3", "&b", "&d", "&c"};
     private static final int[] TIER_MIN = {0, 1100, 1250, 1400, 1550, 1700, 1700};
@@ -117,6 +117,7 @@ public class BoardManager implements CommandExecutor {
     public boolean onCommand(CommandSender s, Command c, String l, String[] a) {
         if (s instanceof Player p) {
             if (a.length > 0 && (a[0].equals("상점") || a[0].equalsIgnoreCase("shop"))) new ShopGui(p).open(p);
+            else if (a.length > 1 && (a[0].equals("참가") || a[0].equalsIgnoreCase("join"))) join(p, Text.parseInt(a[1], -1));
             else new Hub(p).open(p);
         }
         return true;
@@ -126,14 +127,180 @@ public class BoardManager implements CommandExecutor {
         new Hub(p).open(p);
     }
 
-    public void start(Player p, BoardGame g) {
-        Gui game = switch (g) {
-            case YUT -> new YutGame(this, p);
-            case MARBLE -> new MarbleGame(this, p);
-            case POKER -> new PokerGame(this, p);
+    /** 게임 시작: players = 사람 (앞자리부터), seats = 전체 자리 (나머지는 컴퓨터) */
+    public void start(List<Player> players, int seats, BoardGame g) {
+        BoardGameBase game = switch (g) {
+            case YUT -> new YutGame(this, players, seats);
+            case MARBLE -> new MarbleGame(this, players, seats);
+            case POKER -> new PokerGame(this, players, seats);
         };
-        p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.2f);
-        ((BoardGameBase) game).begin();
+        for (Player q : players) q.playSound(q.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.2f);
+        game.begin();
+    }
+
+    // =================================================================== 방 (여러 명이 함께) — v5.10.59
+    private static final class Room {
+        int id;
+        BoardGame game;
+        UUID host;
+        final List<UUID> members = new ArrayList<>();
+        int bots;
+        long created = System.currentTimeMillis();
+    }
+
+    private final Map<Integer, Room> rooms = new LinkedHashMap<>();
+    private int nextRoom = 1;
+
+    private void purgeRooms() {
+        long ttl = plugin.getConfig().getLong("board.room-minutes", 10) * 60_000L;
+        rooms.values().removeIf(r -> System.currentTimeMillis() - r.created > ttl || Bukkit.getPlayer(r.host) == null);
+        for (Room r : rooms.values()) r.members.removeIf(u -> Bukkit.getPlayer(u) == null);
+    }
+
+    private Room roomOf(UUID u) {
+        purgeRooms();
+        for (Room r : rooms.values()) if (r.members.contains(u)) return r;
+        return null;
+    }
+
+    private void createRoom(Player p, BoardGame g) {
+        Room old = roomOf(p.getUniqueId());
+        if (old != null) leaveRoom(p, old);
+        Room r = new Room();
+        r.id = nextRoom++;
+        r.game = g;
+        r.host = p.getUniqueId();
+        r.members.add(p.getUniqueId());
+        rooms.put(r.id, r);
+        announce(r, p);
+        new RoomGui(p, r).open(p);
+    }
+
+    /** 다른 사람들에게 채팅으로 [참가] 버튼 */
+    private void announce(Room r, Player host) {
+        var msg = new net.md_5.bungee.api.chat.ComponentBuilder("");
+        msg.append(net.md_5.bungee.api.chat.TextComponent.fromLegacyText(Text.c("&d&l[보드게임] &f" + Text.name(host) + "&f님이 &e" + r.game.label + " &f방을 열었습니다 &7(" + r.members.size() + "/4) ")));
+        net.md_5.bungee.api.chat.TextComponent btn = new net.md_5.bungee.api.chat.TextComponent(net.md_5.bungee.api.chat.TextComponent.fromLegacyText(Text.c("&a&l[참가]")));
+        btn.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/보드게임 참가 " + r.id));
+        btn.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(Text.c("&e클릭하면 방에 들어갑니다"))));
+        msg.append(btn, net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE);
+        var built = msg.create();
+        for (Player o : Bukkit.getOnlinePlayers()) if (!r.members.contains(o.getUniqueId())) o.spigot().sendMessage(built);
+    }
+
+    private void join(Player p, int id) {
+        purgeRooms();
+        Room r = rooms.get(id);
+        if (r == null) { Text.msg(p, "&c없거나 이미 시작한 방입니다."); return; }
+        if (r.members.contains(p.getUniqueId())) { new RoomGui(p, r).open(p); return; }
+        if (r.members.size() + r.bots >= 4) { Text.msg(p, "&c방이 가득 찼습니다. (최대 4명)"); return; }
+        Room old = roomOf(p.getUniqueId());
+        if (old != null) leaveRoom(p, old);
+        r.members.add(p.getUniqueId());
+        for (UUID u : r.members) {
+            Player q = Bukkit.getPlayer(u);
+            if (q != null && q != p) Text.actionBar(q, "&a" + Text.name(p) + "님이 방에 들어왔습니다 &7(" + r.members.size() + "명)");
+        }
+        refreshRoom(r);
+        new RoomGui(p, r).open(p);
+    }
+
+    private void leaveRoom(Player p, Room r) {
+        r.members.remove(p.getUniqueId());
+        if (r.host.equals(p.getUniqueId())) {
+            rooms.remove(r.id);
+            for (UUID u : r.members) {
+                Player q = Bukkit.getPlayer(u);
+                if (q != null) { Text.msg(q, "&7방장이 나가서 방이 닫혔습니다."); if (q.getOpenInventory().getTopInventory().getHolder() instanceof RoomGui) new Hub(q).open(q); }
+            }
+            return;
+        }
+        refreshRoom(r);
+    }
+
+    /** 방 창을 보고 있는 사람들 창을 새로 그림 */
+    private void refreshRoom(Room r) {
+        for (UUID u : r.members) {
+            Player q = Bukkit.getPlayer(u);
+            if (q != null && q.getOpenInventory().getTopInventory().getHolder() instanceof RoomGui rg && rg.room == r) new RoomGui(q, r).open(q);
+        }
+    }
+
+    private void startRoom(Player p, Room r) {
+        purgeRooms();
+        if (!r.host.equals(p.getUniqueId())) return;
+        List<Player> ps = new ArrayList<>();
+        for (UUID u : r.members) {
+            Player q = Bukkit.getPlayer(u);
+            if (q != null && !BoardGameBase.isView(q.getOpenInventory().getTopInventory().getHolder())) ps.add(q);
+        }
+        int seats = ps.size() + r.bots;
+        if (seats < 2) { Text.msg(p, "&c2명 이상이어야 시작할 수 있습니다. &7(사람을 기다리거나 컴퓨터를 추가하세요)"); return; }
+        rooms.remove(r.id);
+        start(ps, Math.min(4, seats), r.game);
+    }
+
+    private class GameMenu extends Gui {
+        GameMenu(Player p, BoardGame g) {
+            super(4, "&8" + g.label);
+            for (int k = 1; k <= 3; k++) {
+                int seats = k + 1;
+                set(9 + k, BoardIcons.of(BoardIcons.ROOM_BOT, k, "&f&l컴퓨터 " + k + "명과 하기", "&7나 + 컴퓨터 " + k + " (" + seats + "명 게임)", "&e▶ 클릭하여 바로 시작"),
+                        e -> start(List.of(p), seats, g));
+            }
+            set(15, BoardIcons.of(BoardIcons.ROOM, "&a&l방 만들기", "&7다른 사람들과 함께 (최대 4명)", "&7채팅으로 [참가] 버튼이 퍼짐 · 빈자리는 컴퓨터로 채울 수 있음", "&e▶ 클릭"), e -> createRoom(p, g));
+            purgeRooms();
+            int slot = 19;
+            for (Room r : rooms.values()) {
+                if (r.game != g || slot > 25) continue;
+                Player h = Bukkit.getPlayer(r.host);
+                List<String> lore = new ArrayList<>();
+                for (UUID u : r.members) { Player q = Bukkit.getPlayer(u); if (q != null) lore.add("&f● " + Text.name(q)); }
+                if (r.bots > 0) lore.add("&7+ 컴퓨터 " + r.bots);
+                lore.add("");
+                lore.add(r.members.size() + r.bots >= 4 ? "&c가득 참" : "&e▶ 클릭하여 참가");
+                int id = r.id;
+                set(slot++, BoardIcons.of(BoardIcons.ROOM, Math.max(1, r.members.size()), "&e" + (h == null ? "?" : Text.name(h)) + "&f님의 방 &7(" + (r.members.size() + r.bots) + "/4)", lore), e -> join(p, id));
+            }
+            if (slot == 19) set(22, Gui.ui(UiIcon.LOCKED, false, "&7열린 방이 없습니다", "&7방을 만들어 친구를 불러 보세요"));
+            set(31, BoardIcons.of(g.icon, "&e&l" + g.label, "&7" + g.how, "&7" + g.rule, "&72 ~ 4명"));
+            fill(0, 35);
+        }
+    }
+
+    private class RoomGui extends Gui {
+        final Room room;
+
+        RoomGui(Player p, Room r) {
+            super(3, "&8" + r.game.label + " 방 #" + r.id);
+            this.room = r;
+            boolean host = r.host.equals(p.getUniqueId());
+            int i = 0;
+            for (UUID u : r.members) {
+                Player q = Bukkit.getPlayer(u);
+                if (q == null) continue;
+                set(10 + i, BoardIcons.of(BoardIcons.TOK_SEAT + i, BoardGameBase.SEAT_COLOR[i] + "&l" + Text.name(q) + (u.equals(r.host) ? " &6(방장)" : ""), "&7" + BoardGameBase.SEAT_NAME[i] + " 자리"));
+                i++;
+            }
+            for (int b = 0; b < r.bots && i < 4; b++, i++)
+                set(10 + i, BoardIcons.of(BoardIcons.ROOM_BOT, BoardGameBase.SEAT_COLOR[i] + "&l컴퓨터", "&7" + BoardGameBase.SEAT_NAME[i] + " 자리"));
+            for (; i < 4; i++) set(10 + i, Gui.ui(UiIcon.LOCKED, false, "&7빈자리", "&7/보드게임 참가 " + r.id));
+            if (host) {
+                set(15, BoardIcons.of(BoardIcons.ROOM_BOT, "&f컴퓨터 추가", r.members.size() + r.bots >= 4 ? "&c자리가 없음" : "&e▶ 클릭"), e -> {
+                    if (r.members.size() + r.bots < 4) r.bots++;
+                    refreshRoom(r);
+                });
+                set(16, BoardIcons.of(BoardIcons.FOLD, "&f컴퓨터 빼기", r.bots > 0 ? "&e▶ 클릭" : "&7컴퓨터 없음"), e -> {
+                    if (r.bots > 0) r.bots--;
+                    refreshRoom(r);
+                });
+                int total = r.members.size() + r.bots;
+                set(22, BoardIcons.of(BoardIcons.ROOM_START, total >= 2 ? "&a&l게임 시작! &7(" + total + "명)" : "&7시작하려면 2명 이상", "&7사람 " + r.members.size() + " · 컴퓨터 " + r.bots), e -> startRoom(p, r));
+                set(24, BoardIcons.of(BoardIcons.ROOM, "&e다시 알리기", "&7채팅으로 [참가] 버튼을 한 번 더"), e -> { announce(r, p); Text.actionBar(p, "&a방을 다시 알렸습니다."); });
+            } else set(22, BoardIcons.of(BoardIcons.ROOM_START, "&7방장이 시작하기를 기다리는 중…", "&7사람 " + r.members.size() + " · 컴퓨터 " + r.bots));
+            set(18, BoardIcons.of(BoardIcons.FOLD, "&c방 나가기"), e -> { leaveRoom(p, r); new Hub(p).open(p); });
+            fill(0, 26);
+        }
     }
 
     private class Hub extends Gui {
@@ -145,18 +312,13 @@ public class BoardManager implements CommandExecutor {
                 int w = (int) d.counter("board_win_" + g.key()), lo = (int) d.counter("board_lose_" + g.key());
                 set(at[g.ordinal()], BoardIcons.of(g.icon, "&e&l" + g.label + " &a&lNEW", "&7" + g.how, "&7" + g.rule, "",
                         "&f전적 &a" + w + "승 &c" + lo + "패", "&f보상 &d보드 칩 &7(승리 " + plugin.getConfig().getLong("board.reward." + g.key() + ".win", g == BoardGame.MARBLE ? 12 : 8)
-                                + " · 패배 " + plugin.getConfig().getLong("board.reward." + g.key() + ".lose", 2) + ")", "", "&e▶ 클릭하여 시작 (컴퓨터와 1대1)"), e -> start(p, g));
+                                + " · 패배 " + plugin.getConfig().getLong("board.reward." + g.key() + ".lose", 2) + ")", "", "&f2 ~ 4명 &7(빈자리는 컴퓨터)", "&e▶ 클릭: 컴퓨터와 하기 · 방 만들기 · 참가"), e -> new GameMenu(p, g).open(p));
             }
             set(29, BoardIcons.of(BoardIcons.BOARD_CHIP, (int) Math.max(1, Math.min(64, chips(d))), "&d&l보드 칩 상점",
                     "&f보유 &d" + chips(d) + " 보드 칩", "&7오늘 얻은 칩 " + earnedToday(d) + " / " + dailyCap(),
                     "", "&7전용 칭호 · 대미지 스킨 · 장신구", "&e▶ 클릭"), e -> new ShopGui(p).open(p));
-            int f = fame(p.getUniqueId());
-            int t = tier(p.getUniqueId());
-            set(31, BoardIcons.of(BoardIcons.TIER + t, "&c&l야차 명성 &7(1대1 결투)", "&f내 명성 " + TIER_COLOR[t] + TIER_NAME[t] + " &f" + f,
-                    "&7/야차 <닉네임> 으로 결투 신청", "&7이기면 명성이 오르고 지면 내려감", "&7같은 상대와는 하루 3판까지만 명성 반영", "", "&e▶ 클릭: 명성 랭킹 · 등급 칭호"),
-                    e -> new FameGui(p).open(p));
-            set(33, Gui.ui(UiIcon.HELP, true, "&f도움말", "&7보드게임은 판 수 제한 없이 즐길 수 있음",
-                    "&7보드 칩은 하루 " + dailyCap() + "개까지 얻을 수 있음", "&7창을 닫으면 그 판은 패배 처리 (보상 없음)",
+            set(33, Gui.ui(UiIcon.HELP, true, "&f도움말", "&7보드게임은 판 수 제한 없이 즐길 수 있음", "&7방을 만들어 2~4명이 함께 (빈자리는 컴퓨터)", "&7PVP(1대1 결투) 명성 랭킹은 &e/pvp",
+                    "&7보드 칩은 하루 " + dailyCap() + "개까지 얻을 수 있음", "&7창을 닫으면 기권 (보상 없음 · 자리는 컴퓨터가 이어서)",
                     "&7미니게임(/미니게임) 코인과는 따로 쌓임"));
             fill(0, 44);
         }
@@ -248,7 +410,7 @@ public class BoardManager implements CommandExecutor {
         return idx >= 0 && idx < TITLES.length && d.counter("btitle_" + idx) > 0 ? Text.c(TITLES[idx] + "&d") : "";
     }
 
-    // =================================================================== 야차 명성
+    // =================================================================== PVP 명성
     public int fame(UUID u) {
         return fame.getInt(u + ".fame", 1000);
     }
@@ -258,6 +420,25 @@ public class BoardManager implements CommandExecutor {
         ids.removeIf(k -> fame.getInt(k + ".wins") + fame.getInt(k + ".losses") == 0);
         ids.sort((x, y) -> Integer.compare(fame.getInt(y + ".fame", 1000), fame.getInt(x + ".fame", 1000)));
         return ids;
+    }
+
+    /** v5.10.61 랭킹 메뉴 PVP 탭용: 한 판 이상 한 사람을 명성 순으로 */
+    public List<UUID> fameRanking() {
+        List<UUID> out = new ArrayList<>();
+        for (String k : ranked()) try { out.add(UUID.fromString(k)); } catch (IllegalArgumentException ignored) { }
+        return out;
+    }
+
+    public String fameName(UUID u) {
+        return fame.getString(u + ".name", "?");
+    }
+
+    public int wins(UUID u) {
+        return fame.getInt(u + ".wins");
+    }
+
+    public int losses(UUID u) {
+        return fame.getInt(u + ".losses");
     }
 
     /** 0 브론즈 ~ 5 마스터, 6 그랜드마스터 (명성 1700 이상 중 1위) */
@@ -280,7 +461,7 @@ public class BoardManager implements CommandExecutor {
     private final Map<String, Integer> pairToday = new HashMap<>();
     private long pairDay;
 
-    /** 야차 승패 반영. 반환: [승자 변화, 패자 변화] (같은 상대와 하루 3판 넘으면 0) */
+    /** PVP 승패 반영. 반환: [승자 변화, 패자 변화] (같은 상대와 하루 3판 넘으면 0) */
     public int[] recordDuel(Player w, Player l) {
         String pairKey = "duelpair_" + (w.getUniqueId().compareTo(l.getUniqueId()) < 0 ? w.getUniqueId() + "_" + l.getUniqueId() : l.getUniqueId() + "_" + w.getUniqueId());
         if (pairDay != today()) { pairDay = today(); pairToday.clear(); }
@@ -302,7 +483,7 @@ public class BoardManager implements CommandExecutor {
             fame.set(w.getUniqueId() + ".fame", fw + delta[0]);
             fame.set(l.getUniqueId() + ".fame", fl + delta[1]);
             int afterW = tier(w.getUniqueId()), afterL = tier(l.getUniqueId());
-            if (afterW > beforeW) Text.announce(Text.PREFIX + Text.c("&c⚔ &e" + Text.name(w) + "&f님이 야차 명성 " + TIER_COLOR[afterW] + "&l" + TIER_NAME[afterW] + "&f 등급이 되었습니다!"));
+            if (afterW > beforeW) Text.announce(Text.PREFIX + Text.c("&c⚔ &e" + Text.name(w) + "&f님이 PVP 명성 " + TIER_COLOR[afterW] + "&l" + TIER_NAME[afterW] + "&f 등급이 되었습니다!"));
             if (afterL < beforeL) Text.msg(l, "&7명성 등급이 " + TIER_COLOR[afterL] + TIER_NAME[afterL] + "&7(으)로 내려갔습니다.");
         }
         fame.set(w.getUniqueId() + ".wins", fame.getInt(w.getUniqueId() + ".wins") + 1);
@@ -324,7 +505,7 @@ public class BoardManager implements CommandExecutor {
 
     public class FameGui extends Gui {
         public FameGui(Player p) {
-            super(6, "&8야차 명성 랭킹");
+            super(6, "&8PVP 명성 랭킹");
             List<String> r = ranked();
             int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
             for (int i = 0; i < Math.min(slots.length, r.size()); i++) {
@@ -345,13 +526,13 @@ public class BoardManager implements CommandExecutor {
             for (int i = 0; i < 6; i++) lore.add(TIER_COLOR[i] + TIER_NAME[i] + " &7명성 " + TIER_MIN[i] + "+");
             lore.add(TIER_COLOR[6] + TIER_NAME[6] + " &7마스터 중 1위");
             lore.add("");
-            lore.add(played ? (eq ? "&b명성 칭호 장착 중 (클릭해서 해제)" : "&e▶ 클릭: 명성 등급을 칭호로 장착") : "&8야차를 한 번 이상 해야 칭호를 쓸 수 있음");
+            lore.add(played ? (eq ? "&b명성 칭호 장착 중 (클릭해서 해제)" : "&e▶ 클릭: 명성 등급을 칭호로 장착") : "&8PVP를 한 번 이상 해야 칭호를 쓸 수 있음");
             set(49, BoardIcons.of(BoardIcons.TIER + t, "&e&l내 명성 " + TIER_COLOR[t] + TIER_NAME[t], lore), e -> {
                 if (!played || plugin.content() == null) return;
                 plugin.content().equipTitle(plugin.data().get(p), 7, 0);
                 new FameGui(p).open(p);
             });
-            set(4, BoardIcons.of(BoardIcons.HUB_DUEL, "&c&l야차 명성", "&7/야차 <닉네임> 으로 1대1 결투", "&7이긴 사람은 명성 +, 진 사람은 명성 -",
+            set(4, BoardIcons.of(BoardIcons.HUB_DUEL, "&c&lPVP 명성", "&7/pvp <닉네임> 으로 1대1 결투 (친선전 · 랭킹전)", "&7랭킹전에서 이긴 사람은 명성 +, 진 사람은 명성 -", "&7친선전은 명성 변화 없음",
                     "&7강한 상대를 이길수록 많이 오름", "&7같은 상대와는 하루 " + plugin.getConfig().getInt("duel.fame-pair-daily", 3) + "판까지만 반영"));
             fill(0, 53);
         }
@@ -365,6 +546,6 @@ public class BoardManager implements CommandExecutor {
     public void shutdown() {
         save();
         for (Player p : Bukkit.getOnlinePlayers())
-            if (p.getOpenInventory().getTopInventory().getHolder() instanceof BoardGameBase) p.closeInventory();
+            if (BoardGameBase.isView(p.getOpenInventory().getTopInventory().getHolder())) p.closeInventory();
     }
 }

@@ -255,7 +255,7 @@ public class ContentManager implements Listener {
                 if (t != null) return Text.c("&5" + t.label() + "&d");
             }
             case 6 -> { if (plugin.boards() != null) return plugin.boards().boardTitle(d, idx); }   // v5.10.45 보드 칩 상점 칭호
-            case 7 -> { if (plugin.boards() != null) return plugin.boards().fameTitle(d); }       // v5.10.45 야차 명성 등급
+            case 7 -> { if (plugin.boards() != null) return plugin.boards().fameTitle(d); }       // v5.10.45 PVP 명성 등급
             case 5 -> {   // 히든 패시브 (가지고 있는 동안만)
                 if (idx < HIDDEN_PASSIVES.length && d.passives.contains(HIDDEN_PASSIVES[idx].name())) return Text.c("&b" + HIDDEN_PASSIVE_TITLE[idx] + "&d");
             }
@@ -539,10 +539,10 @@ public class ContentManager implements Listener {
         e.setCancelled(true);
         Player p = e.getPlayer();
         double safe = plugin.getConfig().getDouble("summon.spawn-safe-radius", 300);   // 스폰 근처에서는 보스 소환 금지 (v5.4.5)
-        Location sp = p.getWorld().getSpawnLocation();
-        double dist = Math.hypot(p.getLocation().getX() - sp.getX(), p.getLocation().getZ() - sp.getZ());
+        double dist = KingdomBuilder.safeDistance(plugin, p.getLocation());   // v5.10.58 왕국을 지었으면 성 밖 기준
         if (safe > 0 && dist < safe) {
-            Text.msg(p, "&c스폰 " + (int) safe + "칸 안에서는 소환할 수 없습니다. &7(지금 스폰에서 " + (int) dist + "칸)");
+            boolean kd = KingdomBuilder.safeLabel(plugin, p.getWorld(), 0).startsWith("성");
+            Text.msg(p, "&c" + KingdomBuilder.safeLabel(plugin, p.getWorld(), (int) safe) + " 안에서는 소환할 수 없습니다. &7(지금 " + (kd ? "성 밖 " : "스폰에서 ") + (int) dist + "칸)");
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.7f);
             return;
         }

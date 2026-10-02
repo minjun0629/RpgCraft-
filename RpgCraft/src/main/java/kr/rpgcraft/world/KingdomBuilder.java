@@ -27,6 +27,7 @@ public class KingdomBuilder {
     private final NamespacedKey NPC_KEY;
     private BukkitRunnable task;
     private int done, total;
+    private boolean removing;
 
     public KingdomBuilder(RpgCraft plugin) {
         this.plugin = plugin;
@@ -80,16 +81,96 @@ public class KingdomBuilder {
     }
 
     public String status() {
-        return task == null ? "&7짓는 중인 왕국이 없습니다." : "&e왕국 건설 중 &f" + done + "&7/&f" + total + " 청크 (" + (total == 0 ? 0 : done * 100 / total) + "%)";
+        return task == null ? "&7짓거나 철거 중인 왕국이 없습니다." : (removing ? "&c왕국 철거 중 &f" : "&e왕국 건설 중 &f") + done + "&7/&f" + total + " 청크 (" + (total == 0 ? 0 : done * 100 / total) + "%)";
     }
 
     public void stop() {
         if (task != null) task.cancel();
         task = null;
+        removing = false;
+    }
+
+    /**
+     * v5.10.66 왕국 철거 — /rpg관리 kingdom remove confirm.
+     * 지은 자리(config kingdom.world · x · y · z)의 1000 x 1000 부지를 평지(잔디)로 되돌린다: 바닥 위 블록은 모두 걷어 내고, 해자 · 분수 물은 흙으로 메움.
+     * 왕국 상점 · 의뢰 NPC 도 지움. 원래 지형은 되살릴 수 없다 (지을 때 이미 사라짐).
+     */
+    public void remove(CommandSender s) {
+        if (task != null) { Text.msg(s, "&c이미 작업 중입니다. " + status()); return; }
+        var c = plugin.getConfig();
+        String wn = c.getString("kingdom.world", "");
+        World w = wn.isEmpty() ? null : Bukkit.getWorld(wn);
+        if (w == null) { Text.msg(s, "&c지어진 왕국이 없습니다."); return; }
+        int bx = c.getInt("kingdom.x"), by = c.getInt("kingdom.y", w.getSpawnLocation().getBlockY()), bz = c.getInt("kingdom.z");
+        final int half = KingdomPlan.HALF;
+        int r = Math.floorDiv(half, 16) + 1;
+        List<int[]> order = new ArrayList<>();
+        for (int cx = -r; cx <= r; cx++) for (int cz = -r; cz <= r; cz++) order.add(new int[]{cx, cz});
+        order.sort(Comparator.comparingInt(a -> -(a[0] * a[0] + a[1] * a[1])));   // 바깥에서 안으로
+        total = order.size();
+        done = 0;
+        removing = true;
+        BlockData grass = Material.GRASS_BLOCK.createBlockData(), dirt = Material.DIRT.createBlockData(), air = Material.AIR.createBlockData();
+        long budget = c.getLong("kingdom.ms-per-tick", 30);
+        int top = Math.min(w.getMaxHeight() - 1, by + 230);
+        Text.msg(s, "&e왕국을 철거합니다... &7(중심 " + bx + ", " + by + ", " + bz + " · " + total + " 청크)");
+        task = new BukkitRunnable() {
+            int i = 0;
+            long lastMsg = 0;
+            int npcs = 0;
+
+            @Override
+            public void run() {
+                long until = System.currentTimeMillis() + budget;
+                while (i < order.size() && System.currentTimeMillis() < until) {
+                    int[] ch = order.get(i++);
+                    for (int lx = 0; lx < 16; lx++)
+                        for (int lz = 0; lz < 16; lz++) {
+                            int rx = ch[0] * 16 + lx, rz = ch[1] * 16 + lz;
+                            if (Math.abs(rx) > half || Math.abs(rz) > half) continue;
+                            int x = bx + rx, z = bz + rz;
+                            int hy = Math.min(top, Math.max(w.getHighestBlockYAt(x, z), by));
+                            for (int y = hy; y >= by; y--) {
+                                Block b = w.getBlockAt(x, y, z);
+                                if (!b.getType().isAir()) b.setBlockData(air, false);
+                            }
+                            w.getBlockAt(x, by - 1, z).setBlockData(grass, false);
+                            for (int y = by - 2; y >= by - 5; y--) w.getBlockAt(x, y, z).setBlockData(dirt, false);
+                        }
+                    for (int[] q : new int[][]{{0, 0}, {15, 0}, {0, 15}, {15, 15}}) {   // 이 칸의 왕국 NPC 지우기
+                        Chunk wc = w.getChunkAt(Math.floorDiv(bx + ch[0] * 16 + q[0], 16), Math.floorDiv(bz + ch[1] * 16 + q[1], 16));
+                        for (Entity e : wc.getEntities())
+                            if (e.getPersistentDataContainer().has(NPC_KEY, PersistentDataType.BYTE)) {
+                                plugin.questNpcs().forget(e);
+                                e.remove();
+                                npcs++;
+                            }
+                    }
+                    done = i;
+                }
+                if (System.currentTimeMillis() - lastMsg > 3000) {
+                    lastMsg = System.currentTimeMillis();
+                    for (Player p : Bukkit.getOnlinePlayers()) if (p.hasPermission("rpgcraft.admin")) Text.actionBar(p, status());
+                }
+                if (i >= order.size()) {
+                    cancel();
+                    task = null;
+                    removing = false;
+                    c.set("kingdom.world", "");
+                    c.set("kingdom.x", null);
+                    c.set("kingdom.y", null);
+                    c.set("kingdom.z", null);
+                    plugin.saveConfig();
+                    Text.msg(s, "&a&l왕국 철거 완료! &f부지를 잔디 평지로 되돌리고 왕국 NPC " + npcs + "명을 지웠습니다.");
+                }
+            }
+        };
+        task.runTaskTimer(plugin, 1L, 1L);
     }
 
     public void start(CommandSender s, Location center) {
-        if (task != null) { Text.msg(s, "&c이미 짓고 있습니다. " + status()); return; }
+        if (task != null) { Text.msg(s, "&c이미 작업 중입니다. " + status()); return; }
+        removing = false;
         World w = center.getWorld();
         int bx = center.getBlockX(), by = center.getBlockY(), bz = center.getBlockZ();
         List<String> shops = new ArrayList<>();

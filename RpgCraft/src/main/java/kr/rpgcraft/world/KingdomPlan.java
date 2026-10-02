@@ -1092,9 +1092,10 @@ public final class KingdomPlan {
                 set(x, -1, z, g);
             }
         int i = 0;
+        int stalls = Math.max(15, (shops.size() + 1) / 2), step = stalls > 15 ? Math.max(9, 146 / (stalls - 1)) : 10;
         for (int side = -1; side <= 1; side += 2)
-            for (int k = 0; k < 15; k++) {
-                int sx = 60 + k * 10, sz = side * 14;
+            for (int k = 0; k < stalls; k++) {   // v5.10.72 상점이 많으면 노점을 더 촘촘히 (모든 상점에 NPC 가 서도록 — /상점 명령어가 없어짐)
+                int sx = 60 + k * step, sz = side * 14;
                 String[] c = canopy[(k + (side > 0 ? 3 : 0)) % canopy.length];
                 String shop = i < shops.size() ? shops.get(i) : "";
                 stall(sx, sz, side, c[0], c[1], k, shop);

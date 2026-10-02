@@ -158,9 +158,7 @@ public class CookingManager implements Listener, CommandExecutor {
                 if (made > 0) open(p);
             });
         }
-        g.set(31, Gui.button(Material.BARREL, "&e요리 재료 상점", "&7감자 · 고기 · 밀가루 · 향신료 …", "&7생선은 낚시, 마력 핵은 사냥으로", "&e▶ 클릭"), e -> {
-            if (plugin.shops().get("cook") != null) plugin.shops().open(p, "cook", 0);
-        });
+        g.set(31, Gui.button(Material.BARREL, "&e요리 재료", "&7감자 · 고기 · 밀가루 · 향신료 …: 왕국 시장의 &f요리 재료 상인&7에게서 삽니다", "&7생선은 낚시, 마력 핵은 사냥으로"), e -> { });   // v5.10.72 상점은 NPC 에게서만
         g.fill(0, 35);
         g.open(p);
     }

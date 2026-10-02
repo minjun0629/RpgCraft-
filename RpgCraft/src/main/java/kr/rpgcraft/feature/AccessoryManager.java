@@ -107,7 +107,7 @@ public class AccessoryManager {
             for (int i = 0; i < 3; i++) inv.setItem(SLOTS[i], d.accessories[i] == null ? null : d.accessories[i].clone());
             for (int i = 0; i < 3; i++) set(SLOTS[i] - 9, button(Material.GRAY_STAINED_GLASS_PANE, "&7▼ " + KIND_KO[i] + " 자리"));
             set(22, button(Material.BOOK, "&e장신구 안내", "&7반지 · 목걸이 · 귀걸이를 각 자리에 넣으면 장착됩니다.",
-                    "&7정예·중간 보스·던전·보물에서 얻거나 상점(/상점 accessory)에서 삽니다.", "&7옵션 재설정: 장신구를 들고 &e/장신구 변경 &7(룬 변경권)"));
+                    "&7정예·중간 보스·던전·보물에서 얻거나 왕국 시장의 장신구 상인에게서 삽니다.", "&7옵션 재설정: 장신구를 들고 &e/장신구 변경 &7(룬 변경권)"));
             fill(0, 26);
         }
 

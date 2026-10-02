@@ -1034,7 +1034,7 @@ def vn_phantom(g):
 
 # ---- 야생 동물
 def an_cow(g):
-    B = quad(g, "5a3a24", "e8e4dc", "2a2420", L=18, H=10, W=10, leg=6, hump=0.9, leg_r=1.6, fur2="4a3020")
+    B = quad(g, "5a3a24", "e8e4dc", "2a2420", L=18, H=10, W=10, leg=6, hump=0.9, leg_r=1.6, fur2="4a3020", simple_back=True)   # v5.10.71 다리 관절을 몸 아래쪽에 (걸을 때 다리가 몸 밖으로 튀지 않게)
     for k in range(6):   # 흰 얼룩
         p = (8 + (rnd(k, 4) - 0.5) * 9, B.cy + (rnd(k, 5) - 0.3) * 6, B.z0 + 3 + k * 2.4)
         g.ellipsoid(p, (2.0, 1.6, 2.0), "e8e4dc", 3)
@@ -1044,16 +1044,28 @@ def an_cow(g):
 
 
 def an_pig(g):
-    B = quad(g, "f0a0a8", "f8b8c0", "c87880", L=15, H=9, W=9.5, leg=3.6, hump=0.6, leg_r=1.4, fur2="e090a0")
-    hc = beast_head(g, B, "f0a0a8", "f8b8c0", "1a1a1a", size=0.95, open_mouth=False)
-    g.box(add(hc, (-1.6, -1.8, 5.0)), add(hc, (1.6, 0.2, 6.0)), "e88890", 6)   # 납작 코
+    """v5.10.71 돼지 다시: 매끈한 분홍 통 몸 · 둥근 머리 · 앞을 보는 납작 코(콧구멍) · 앞으로 접힌 귀 · 볼 홍조 · 짧은 다리와 진한 발굽 · 말린 꼬리.
+    다리 관절을 몸 아래쪽에 (simple_back) — 예전엔 관절이 몸 한가운데라 걸을 때 다리가 크게 벌어지며 몸 밖으로 튀어나왔음"""
+    PK, PK2, SN, HF = "f2a4ac", "e8949e", "f8c0c8", "a8606a"
+    B = quad(g, PK, PK, HF, L=15, H=8.5, W=9.5, leg=3.4, hump=0.45, leg_r=1.35, fur2=PK2, simple_back=True)
+    g.ellipsoid((8, B.cy + 0.2, B.z0 + 7.5), (5.0, 4.5, 7.6), lambda x, y, z, d: tex(PK, x, y, z, 0.035), 3)   # 매끈한 통 몸
+    for (fx, fy, fz), name in zip(B.legs, ("leg_bl", "leg_br", "leg_fl", "leg_fr")):
+        with g.parting(name):
+            g.tube([(fx, 3.6, fz), (fx, 1.4, fz)], [1.35, 1.3], lambda x, y, z, d, f: tex(PK2, x, y, z, 0.03), 3)
+    hc = (8, B.cy + 0.8, B.front_z + 2.4)
+    g.ellipsoid(hc, (3.5, 3.2, 3.0), lambda x, y, z, d: tex(PK, x, y, z, 0.03), 4)   # 머리
+    g.tube([add(hc, (0, -0.7, 2.0)), add(hc, (0, -0.8, 4.3))], [1.9, 1.9], lambda x, y, z, d, f: tex(SN, x, y, z, 0.03), 5)   # 코 (원통)
+    g.ellipsoid(add(hc, (0, -0.8, 4.5)), (1.9, 1.6, 0.45), "ec8e9a", 6)   # 코 앞 판
     for sx in (-1, 1):
-        g.dot(hc[0] + sx * 0.7, hc[1] - 0.8, hc[2] + 6.0, "8a3a4a", 7, 0.4)
-    g.tube([B.tail, add(B.tail, (0.6, 0.8, -0.8)), add(B.tail, (-0.4, 1.2, -1.2))], [0.35, 0.3, 0.2], "e090a0", 4, smooth=True)
+        g.dot(hc[0] + sx * 0.7, hc[1] - 0.8, hc[2] + 4.9, "8a3a4a", 7, 0.5)                                       # 콧구멍
+        g.dot(hc[0] + sx * 1.7, hc[1] + 1.0, hc[2] + 2.4, "1a1a1a", 8, 0.6)                                        # 눈
+        g.ellipsoid(add(hc, (sx * 2.5, -0.7, 1.7)), (0.6, 0.5, 0.45), "f48a9c", 6)                                 # 볼 홍조
+        g.cone(add(hc, (sx * 2.1, 2.3, 0.0)), add(hc, (sx * 3.0, 3.1, 2.3)), 1.15, 0.25, PK2, 5)                   # 앞으로 접힌 귀
+    g.tube([B.tail, add(B.tail, (0.6, 0.8, -0.8)), add(B.tail, (-0.4, 1.2, -1.2)), add(B.tail, (0.3, 1.6, -0.9))], [0.4, 0.35, 0.3, 0.2], PK2, 4, smooth=True)   # 말린 꼬리
 
 
 def an_sheep(g):
-    B = quad(g, "f0ece4", "e8e4dc", "3a3a3a", L=16, H=10, W=11, leg=5, hump=0.7, leg_r=1.3, fur2="d8d4cc")
+    B = quad(g, "f0ece4", "e8e4dc", "3a3a3a", L=16, H=10, W=11, leg=5, hump=0.7, leg_r=1.3, fur2="d8d4cc", simple_back=True)   # v5.10.71 다리 관절을 몸 아래쪽에 (걸을 때 다리가 몸 밖으로 튀지 않게)
     for k in range(22):   # 몽실몽실 양털
         p = (8 + (rnd(k, 1) - 0.5) * 10, B.cy + (rnd(k, 2) - 0.3) * 8, B.z0 + 1 + rnd(k, 3) * 15)
         g.sphere(p, 2.0, lambda x, y, z, d: "fffcf4" if d < 0.5 else "e8e4dc", 3)
@@ -1134,13 +1146,13 @@ def an_fox(g):
 
 
 def an_goat(g):
-    B = quad(g, "e8e4dc", "f4f0e8", "4a4440", L=16, H=9, W=8.5, leg=6, hump=0.9, leg_r=1.2, fur2="d8d4cc")
+    B = quad(g, "e8e4dc", "f4f0e8", "4a4440", L=16, H=9, W=8.5, leg=6, hump=0.9, leg_r=1.2, fur2="d8d4cc", simple_back=True)   # v5.10.71 다리 관절을 몸 아래쪽에 (걸을 때 다리가 몸 밖으로 튀지 않게)
     hc = beast_head(g, B, "e8e4dc", "e8e4dc", "c8a030", size=0.85, horns="a8a090", open_mouth=False)
     g.cone(add(hc, (0, -2.6, 3.6)), add(hc, (0, -4.6, 3.4)), 0.7, 0.2, "d8d4cc", 6)   # 수염
 
 
 def an_polar_bear(g):
-    B = quad(g, "f4f4ee", "e8e8e2", "2a2a2a", L=20, H=12, W=12, leg=6, hump=1.1, leg_r=2.2, fur2="e4e4de")
+    B = quad(g, "f4f4ee", "e8e8e2", "2a2a2a", L=20, H=12, W=12, leg=6, hump=1.1, leg_r=2.2, fur2="e4e4de", simple_back=True)   # v5.10.71 다리 관절을 몸 아래쪽에 (걸을 때 다리가 몸 밖으로 튀지 않게)
     hc = beast_head(g, B, "f4f4ee", "e8e8e2", "1a1a1a", size=1.1, open_mouth=False)
     g.dot(hc[0], hc[1] - 1.2, hc[2] + 5.8, "1a1a1a", 7, 0.7)
 

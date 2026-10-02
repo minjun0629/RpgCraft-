@@ -262,6 +262,12 @@ public class MenuManager implements Listener {
             set(46, icon(kr.rpgcraft.gui.UiIcon.CONSTELLATION, "&b&l별자리", List.of("&7별 조각으로 별을 밝혀 영구 능력치", "&7밝힌 별 " + plugin.constellation().litCount(d) + "/48 · 조각 " + plugin.constellation().shards(d), "&e▶ 클릭")),
                     e -> plugin.constellation().open(p));   // v5.10.59
             set(52, icon(kr.rpgcraft.gui.UiIcon.SOUL, "&3&l영혼석", List.of("&7몬스터 영혼석을 모아 1~5성", "&7계열 세트 효과", "&e▶ 클릭")), e -> plugin.souls().open(p));   // v5.10.59
+            if (plugin.royal() != null) {   // v5.11.0 로열 로드 · 조각술
+                set(48, icon(Material.NETHER_STAR, "&6&l로열 로드", List.of("&7명성 " + Text.num(plugin.royal().fame(d)) + " · " + kr.rpgcraft.royal.RoyalRoadManager.fameTitle(plugin.royal().fame(d)),
+                        "&7행동 스탯 6종 · 캐릭터 정보창 · 기도", "&e▶ 클릭")), e -> plugin.royal().openMenu(p));
+                set(50, icon(Material.FLINT, "&d&l조각술", List.of("&7" + plugin.sculpt().skillLabel(d), "&7조각칼 · 재료 · 달빛 조각사 · 생명체", "&e▶ 클릭")),
+                        e -> plugin.sculpt().openMenu(p));
+            }
             set(49, Gui.ui(kr.rpgcraft.gui.UiIcon.NAV_CLOSE, true, "&c닫기"), e -> p.closeInventory());
             border(this, 6);
             // UI 설명 제거: 값(숫자)이나 ▶ 가 있는 줄만 남긴다

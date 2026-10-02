@@ -48,6 +48,7 @@ public class LevelService {
                     : plugin.getConfig().getInt("player.stat-per-level", 5) + plugin.getConfig().getInt("rebirth.stat-points", 2) * (int) d.counter("rebirth");
         }
         if (d.level >= maxLevel(d)) d.exp = 0;
+        if (d.level > before && plugin.royal() != null) plugin.royal().payDebt(d);   // v5.11.0 사망 · 생명부여로 진 스탯 빚
         if (d.level > before) {
             plugin.constellation().gainShards(p, (d.level - before) * plugin.getConfig().getInt("constellation.shards-per-level", 1), "레벨 업");   // v5.10.59 별자리
             plugin.stats().refresh(p);

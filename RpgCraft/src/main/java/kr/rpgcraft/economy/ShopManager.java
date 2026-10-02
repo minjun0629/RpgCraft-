@@ -215,6 +215,8 @@ public class ShopManager implements Listener {
             return;
         }
         long total = price * amount;
+        double disc = plugin.royal() == null ? 0 : plugin.royal().discount(plugin.data().get(p));   // v5.11.0 매력 · 명성 할인
+        if (disc > 0) total = Math.max(1, (long) Math.ceil(total * (1 - disc)));
         if (!plugin.economy().take(p, total)) {
             Text.msg(p, "&c소지금이 부족합니다. (" + Text.money(total) + ")");
             return;
@@ -223,7 +225,7 @@ public class ShopManager implements Listener {
         for (ItemStack left : p.getInventory().addItem(it).values()) p.getWorld().dropItemNaturally(p.getLocation(), left);
         if (s.limited.containsKey(e.id())) addSold(s, e.id(), amount);
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.2f);
-        Text.actionBar(p, "&a구매: " + t.name + " x" + amount + " &7(-" + Text.money(total) + ")");
+        Text.actionBar(p, "&a구매: " + t.name + " x" + amount + " &7(-" + Text.money(total) + (disc > 0 ? String.format(" · 매력 할인 %.1f%%", disc * 100) : "") + ")");
     }
 
     public void sell(Player p, Entry e, boolean all) {

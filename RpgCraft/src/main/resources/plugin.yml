@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.10.72'
+version: '5.11.0'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -179,6 +179,21 @@ commands:
   tower:
     description: 무한의 탑
     aliases: [탑, 무한의탑]
+  royalroad:
+    description: 로열 로드 메뉴 (행동 스탯 · 명성 · 조각술 · 사망 페널티)
+    aliases: [로열로드, 로열, rr]
+  status:
+    description: 캐릭터 정보창
+    aliases: [상태창, 정보창]
+  pray:
+    description: 하루 한 번 기도 (신앙)
+    aliases: [기도]
+  sculpt:
+    description: 조각술 (조각칼 · 재료 · 달빛 조각사)
+    aliases: [조각, 조각술]
+  life:
+    description: 조각 생명부여로 태어난 생명체
+    aliases: [생명체]
   limitbreak:
     description: 한계 돌파
     aliases: [한계돌파]

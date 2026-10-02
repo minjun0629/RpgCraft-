@@ -204,6 +204,7 @@ public class StatCalculator {
         if (plugin.wars() != null) t.addAll(plugin.wars().castleBonus(p.getUniqueId()));   // v5.10.20 성 소유 혜택
         if (plugin.cooking() != null) t.addAll(plugin.cooking().bonus(d));   // v5.10.20 요리 버프
         if (plugin.mastery() != null) t.addAll(plugin.mastery().bonus(d));   // v5.10.30 직업 숙련
+        if (plugin.royal() != null) t.addAll(plugin.royal().bonus(p, d));     // v5.11.0 로열 로드 스탯 · 조각품 감상 · 조각 검술
 
         s.str = Math.max(0, (d.str + t.get(STR)) * (1 + t.get(STR_PCT) / 100));
         s.dex = Math.max(0, (d.dex + t.get(DEX)) * (1 + t.get(DEX_PCT) / 100));

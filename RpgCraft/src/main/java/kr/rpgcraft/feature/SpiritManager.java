@@ -259,6 +259,9 @@ public class SpiritManager implements Listener {
         return it;
     }
 
+    /** v5.10.68 좌우 대칭: 사신수 무기는 자기 방어구 줄 위쪽 (왼쪽 무리: 0·2 번, 오른쪽 무리: 3·1 번) */
+    private static final int[] WEAPON_SLOT = {10, 16, 11, 15};
+
     private class EssenceGui extends Gui {
         EssenceGui(Player p) {
             super(6, "&d기운 조합 (사신수 / 사흉수)", "spirit");
@@ -269,7 +272,7 @@ public class SpiritManager implements Listener {
             for (int i = 0; i < els.length; i++) {
                 String el = els[i];
                 ItemTemplate crystal = plugin.items().get("crystal_" + el);
-                set(1 + i, show("crystal_" + el, "&d" + crystal.name + " 교환",
+                set(2 + i, show("crystal_" + el, "&d" + crystal.name + " 교환",
                         "&f" + plugin.items().get("shard_" + el).name + " " + em.count(p, "shard_" + el) + "/" + need, "&e클릭하여 교환"), e -> {
                     if (!em.take(p, "shard_" + el, need)) {
                         Text.msg(p, "&c기운 파편이 부족합니다.");
@@ -288,7 +291,7 @@ public class SpiritManager implements Listener {
                 String essence = "essence_" + be[0];
                 WeaponClass wc = WeaponClass.valueOf(be[3]);
                 ItemTemplate wt = plugin.items().get("spirit_" + be[2]);
-                set(10 + b * 2, show(wt.id, "&c" + wt.name, "&f" + plugin.items().get(essence).name + " " + em.count(p, essence) + "/" + essW,
+                set(WEAPON_SLOT[b], show(wt.id, "&c" + wt.name, "&f" + plugin.items().get(essence).name + " " + em.count(p, essence) + "/" + essW,
                         "&f+ 초월 " + (wc == WeaponClass.SPEAR ? "무기(종류 무관)" : wc.label) + " 1개 " + (findUnique(p, wc, null) != null ? "&a✔" : "&c✘"),
                         "", "&d" + skillLabel(wt.skill), "&e클릭하여 조합"), e -> {
                     ItemStack base = findUnique(p, wc, null);
@@ -330,7 +333,7 @@ public class SpiritManager implements Listener {
             for (int s = 0; s < 4; s++) {
                 ArmorSlot slot = ArmorSlot.values()[s];
                 ItemTemplate ft = plugin.items().get("fiend_" + FIENDS[s]);
-                set(38 + s, show(ft.id, "&8&l" + ft.name, "&f어둠(흑룡)의 기운 " + em.count(p, "essence_dark") + "/" + essA,
+                set(s < 2 ? 38 + s : 39 + s, show(ft.id, "&8&l" + ft.name, "&f어둠(흑룡)의 기운 " + em.count(p, "essence_dark") + "/" + essA,
                         "&f+ 초월 " + slot.label + " 1개 " + (findUnique(p, null, slot) != null ? "&a✔" : "&c✘"), "&e클릭하여 조합"), e -> {
                     ItemStack base = findUnique(p, null, slot);
                     if (base == null || em.count(p, "essence_dark") < essA) {
@@ -346,6 +349,7 @@ public class SpiritManager implements Listener {
                     p.closeInventory();
                 });
             }
+            set(40, show("essence_dark", "&8&l사흉수 갑주", "&7어둠(흑룡)의 기운으로 조합", "&7양옆 4부위 (투구 · 갑옷 · 각반 · 신발)"), e -> {});
             set(49, button(Material.BOOK, "&e기운 안내", "&7월드보스(사막의 악몽/시포니아/카인)와 채집에서 기운 파편 획득",
                     "&7파편 " + need + "개 → 기운 뽑기 결정 → 우클릭 시 확률적으로 기운 획득",
                     "&71행: 결정 교환 | 2행: 사신수 무기 | 3~4행: 사신수 방어구 | 5행: 사흉수 갑주"));

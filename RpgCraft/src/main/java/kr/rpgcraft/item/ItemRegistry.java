@@ -624,7 +624,7 @@ public class ItemRegistry {
         };
         for (Object[] l : L) {
             reg(new ItemTemplate((String) l[0], (String) l[1], (Material) l[2], Category.MATERIAL).grade((Grade) l[4])
-                    .price(-1, (Long) l[3]).desc((String) l[5], "전리품 상인에게 판매 (/상점 loot)"));
+                    .price(-1, (Long) l[3]).desc((String) l[5], "왕국 시장 전리품 상인에게 판매"));
         }
         // 낚시 보상
         Object[][] F = {
@@ -635,12 +635,12 @@ public class ItemRegistry {
         int fi = 0;
         for (Object[] f : F)
             reg(new ItemTemplate((String) f[0], (String) f[1], (Material) f[2], Category.MATERIAL).grade((Grade) f[4]).price(-1, (Long) f[3]).model(1430 + fi++)
-                    .desc("낚시로 얻은 물고기", "어부에게 판매 (/상점 fish)"));
+                    .desc("낚시로 얻은 물고기", "왕국 시장 어부에게 판매"));
         int ni = 0;   // v5.2.0 어종 (모델 1600 + 순번)
         for (kr.rpgcraft.world.FishSpecies.Species f : kr.rpgcraft.world.FishSpecies.NEW) {
             String when = f.cond().contains("NIGHT") ? " &8(밤)" : f.cond().contains("RAIN") ? " &8(비 올 때)" : "";
             reg(new ItemTemplate(f.id(), f.name(), f.material(), Category.MATERIAL).grade(f.grade()).price(-1, f.price()).model(1600 + ni++)
-                    .desc("낚시로 얻은 물고기", "&7서식지: &f" + kr.rpgcraft.world.FishSpecies.habitatKo(f) + when, "어부에게 판매 (/상점 fish)"));
+                    .desc("낚시로 얻은 물고기", "&7서식지: &f" + kr.rpgcraft.world.FishSpecies.habitatKo(f) + when, "왕국 시장 어부에게 판매"));
         }
         // 장신구 (반지·목걸이·귀걸이 × 하급·중급·상급)
         Material[] am = {Material.GOLD_NUGGET, Material.HEART_OF_THE_SEA, Material.AMETHYST_SHARD};

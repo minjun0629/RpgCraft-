@@ -1,6 +1,6 @@
 # ============================================================
 #  상점. items: "아이템ID" 또는 "아이템ID:구매가:판매가" (-1 = 불가)
-#  command: true 면 /상점 <id> 로 열 수 있음. false 면 NPC(/rpg관리 npc <id>) 전용
+#  v5.10.72 /상점 명령어는 없어졌습니다. 모든 상점은 NPC(왕국 시장 · /rpg관리 npc <id>)에게서만 이용 (command 값은 쓰지 않음)
 #  limited: 회차당 서버 전체 한정 재고 (/rpg관리 round next 로 초기화)
 # ============================================================
 
@@ -329,7 +329,7 @@ armory3_spear:
   command: true
   items: [armory3_spear_1, armory3_spear_2, armory3_spear_3, armory3_spear_4, armory3_spear_5, armory3_spear_6, armory3_spear_7, armory3_spear_8, armory3_spear_9, armory3_spear_10]
 
-cook:                        # v5.10.20 요리 재료 상점 (/상점 cook · /요리 에서 열기)
+cook:                        # v5.10.20 요리 재료 상점 (v5.10.72 부터 NPC 전용)
   title: "&6요리 재료 상점"
   npc-name: "&6요리사"
   command: true

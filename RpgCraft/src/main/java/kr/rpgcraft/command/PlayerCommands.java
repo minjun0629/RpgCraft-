@@ -242,18 +242,6 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                     Text.msg(p, d.guildChat ? "&a길드 채팅 모드 켜짐" : "&7길드 채팅 모드 꺼짐");
                 } else g.broadcast(Text.c("&a[길드] &f" + Text.name(p) + "&7: &a") + String.join(" ", a));
             }
-            case "shop" -> {
-                if (a.length == 0) {
-                    Text.msg(p, "&e명령어로 열 수 있는 상점:");
-                    for (ShopManager.Shop s : plugin.shops().all())
-                        if (s.command || p.hasPermission("rpgcraft.admin")) p.sendMessage(Text.c(" &f/상점 " + s.id + " &7- " + s.title));
-                    return true;
-                }
-                if (a[0].equals("hidden")) { Text.msg(p, "&d히든 상점은 맵 어딘가에 나타나는 히든 상인에게서만 이용할 수 있습니다."); return true; }
-                ShopManager.Shop s = plugin.shops().get(a[0]);
-                if (s == null || (!s.command && !p.hasPermission("rpgcraft.admin"))) { Text.msg(p, "&c이 상점은 NPC를 통해서만 이용할 수 있습니다."); return true; }
-                plugin.shops().open(p, a[0], 0);
-            }
             case "absorb" -> {
                 if (a.length == 0) { Text.msg(p, "&c/흡수 <플레이어>"); return true; }
                 plugin.passives().designateAbsorb(p, a[0]);
@@ -319,7 +307,7 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 "§l§6레벨 · 스탯§r\n\n§0레벨업마다 스탯 포인트.\n\n§c힘§0 공격력\n§a민첩§0 치명타·속도\n§b모험§0 체력·방어\n\n장비는 §l직접 찍은 스탯§r§0으로 조건을 채워야 합니다.",
                 "§l§6성장§r\n\n§0· Lv.10 직업\n· Lv.40 2차 전직\n· Lv.100 3차 전직\n· 강화 최대 +15\n· 룬 · 장신구 · 잠재능력\n· 최대 레벨에서 환생 (+300 레벨)",
                 "§l§6사냥 요령§r\n\n§0· 나보다 높은 몬스터는 피해가 잘 안 들어갑니다.\n· 빨간 고리 = 곧 공격!\n· 낮엔 인간형, 밤엔 몬스터가 많습니다.\n· 보스는 기여도 7% 이상이어야 보상.",
-                "§l§6돈 벌기§r\n\n§0· 전리품은 /상점 loot\n· 무엇이든 /상점 pawn\n· 의뢰 NPC · 현상수배\n· 보물 지도\n· /옥션 거래\n\n§8행운을 빕니다!");
+                "§l§6돈 벌기§r\n\n§0· 전리품은 시장 전리품 상인\n· 무엇이든 시장 전당포\n· 의뢰 NPC · 현상수배\n· 보물 지도\n· /옥션 거래\n\n§8행운을 빕니다!");
         book.setItemMeta(m);
         return book;
     }
@@ -542,7 +530,6 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
     public List<String> onTabComplete(CommandSender s, Command c, String l, String[] a) {
         List<String> out = new ArrayList<>();
         switch (c.getName()) {
-            case "shop" -> { if (a.length == 1) for (ShopManager.Shop sh : plugin.shops().all()) if (sh.command) out.add(sh.id); }
             case "rune" -> { if (a.length == 1) out.add("변경"); }
             case "job" -> {
                 if (a.length == 1) out.addAll(List.of("선택", "전직", "대장장이"));

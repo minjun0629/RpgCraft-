@@ -248,7 +248,7 @@ public final class RpgCraft extends JavaPlugin {
         playerCommands = pc;
         getServer().getPluginManager().registerEvents(pc, this);
         for (String c : new String[]{"stat", "info", "money", "pay", "check", "potionbag", "rune", "skill", "enhance", "job",
-                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "showoff", "constellation", "souls", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
+                "craft", "rename", "look", "essence", "gc", "absorb", "menu", "trade", "showoff", "constellation", "souls", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
         command("guild", new GuildCommand(this));
         command("war", new WarCommand(this));
         AdminCommand adminCmd = new AdminCommand(this);

@@ -438,9 +438,7 @@ public class PetManager implements Listener, CommandExecutor {
                     "&7같은 등급의 남는 " + Text.strip(Text.c(GRADE[gr])) + " 펫 " + need + "마리 → " + Text.strip(Text.c(GRADE[gr + 1])) + " 펫 알 1개", "", "&f가진 재료: &e" + have + " / " + need,
                     have >= need ? "&e▶ 클릭" : "&8재료 부족"), e -> { gradeFuse(p, fg); open(p); });
         }
-        g.set(50, Gui.button(Material.COOKIE, "&a&l펫 간식 사기", "&7요리 재료 상점에서 팝니다", "&e▶ 클릭"), e -> {
-            if (plugin.shops().get("cook") != null) plugin.shops().open(p, "cook", 0);
-        });
+        g.set(50, Gui.button(Material.COOKIE, "&a&l펫 간식", "&7왕국 시장의 &f요리 재료 상인&7에게서 삽니다"), e -> { });   // v5.10.72 상점은 NPC 에게서만
         int owned = 0;
         for (Pet pet : Pet.values()) if (owns(d, pet)) owned++;
         g.set(4, Gui.button(Material.BOOK, "&e&l펫 도감 &f" + owned + " / " + Pet.values().length,

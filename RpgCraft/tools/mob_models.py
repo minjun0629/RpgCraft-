@@ -1111,12 +1111,26 @@ def an_wolf(g):
 
 
 def an_fox(g):
-    B = quad(g, "e2843a", "f4f0e8", "2a2420", L=14, H=6, W=6.5, leg=4.6, hump=0.8, leg_r=1.0, fur2="c86a28", simple_back=True)   # v5.10.39 뒷다리 곧게
-    for sx in (-1, 1):   # 엉덩이 아래 허벅지를 몸에 붙여 둥글게 (발목 꺾임 없이)
-        g.ellipsoid((8 + sx * 1.9, B.cy - 0.6, B.z0 + 2.4), (1.4, 2.0, 1.8), lambda x, y, z, d: tex("c86a28", x, y, z), 2)
-    hc = beast_head(g, B, "e2843a", "f4f0e8", "1a1a1a", size=0.8, open_mouth=False)
-    g.dot(hc[0], hc[1] - 1.0, hc[2] + 4.2, "1a1a1a", 7, 0.5)
-    g.tube([B.tail, add(B.tail, (0, 0.6, -3.0)), add(B.tail, (0, -1.0, -6.0))], [1.3, 1.6, 0.8], lambda x, y, z, d, f: "f4f0e8" if f > 1.6 else "e2843a", 4, smooth=True)
+    """v5.10.70 여우 다시: 주황 머리 · 흰 볼과 턱 · 검은 귀 끝 · 뾰족한 주둥이와 검은 코 · 흰 가슴 · 검은 양말 · 끝만 흰 풍성한 꼬리
+    (예전엔 머리가 작고 흰 주둥이가 커서 머리 전체가 희게 보였고, 꼬리도 대부분 흰색이었음)"""
+    OR, OR2, WH, BK = "e07a30", "cc6a24", "f4eee4", "2a1e18"
+    B = quad(g, OR, WH, BK, L=14, H=5.6, W=6.0, leg=4.6, hump=0.7, leg_r=0.95, fur2=OR2, simple_back=True)
+    for (fx, fy, fz), name in zip(B.legs, ("leg_bl", "leg_br", "leg_fl", "leg_fr")):   # 검은 양말 (다리 아래쪽)
+        with g.parting(name):
+            g.tube([(fx, 2.4, fz - 0.2), (fx, 0.7, fz)], [1.05, 1.1], BK, 3)
+    g.ellipsoid((8, B.cy - 0.3, B.front_z - 1.0), (2.3, 2.1, 1.7), lambda x, y, z, d: tex(WH, x, y, z, 0.04), 3)   # 흰 가슴
+    hc = (8, B.cy + 1.8, B.front_z + 2.2)
+    g.ellipsoid(hc, (3.0, 2.7, 2.8), lambda x, y, z, d: tex(OR, x, y, z, 0.06), 4)   # 머리
+    for sx in (-1, 1):
+        g.ellipsoid(add(hc, (sx * 1.8, -1.1, 1.0)), (1.4, 1.2, 1.6), lambda x, y, z, d: tex(WH, x, y, z, 0.04), 5)   # 흰 볼
+        g.cone(add(hc, (sx * 1.6, 1.9, -0.3)), add(hc, (sx * 2.1, 4.9, 0.0)), 1.2, 0.15, OR, 5)    # 귀
+        g.cone(add(hc, (sx * 1.95, 3.9, -0.08)), add(hc, (sx * 2.1, 4.9, 0.0)), 0.55, 0.12, BK, 6)  # 귀 끝 검정
+        g.dot(hc[0] + sx * 1.45, hc[1] + 0.5, hc[2] + 2.3, "1a1a1a", 8, 0.6)                        # 눈
+    g.tube([add(hc, (0, -0.5, 2.0)), add(hc, (0, -0.9, 5.0))], [1.6, 0.7],
+           lambda x, y, z, d, f: tex(WH, x, y, z, 0.03) if y < hc[1] - 1.2 else tex(OR, x, y, z, 0.05), 5)   # 주둥이 (위 주황 · 아래 흰색)
+    g.sphere(add(hc, (0, -0.8, 5.3)), 0.55, BK, 7)   # 코
+    g.tube([B.tail, add(B.tail, (0, 0.3, -2.6)), add(B.tail, (0, -0.4, -5.6)), add(B.tail, (0, -1.3, -8.2))], [1.1, 1.9, 1.8, 0.5],
+           lambda x, y, z, d, f: WH if z < B.tail[2] - 5.4 else tex(OR, x, y, z, 0.06), 4, smooth=True)   # 꼬리 (끝만 흰색)
 
 
 def an_goat(g):

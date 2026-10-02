@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.70
+- 여우 3D 모델을 새로 만들었습니다 (주황 머리 · 흰 볼 · 검은 귀 끝과 양말 · 끝만 흰 꼬리). 리소스팩이 바뀌었습니다.
+
 ## v5.10.69
 - 왕국 짓기 · 철거 때 꽃 · 막대기 · 깃발이 하늘에 떠 남던 버그를 고쳤습니다 (가장 높은 블록을 WORLD_SURFACE 기준으로 찾음).
 

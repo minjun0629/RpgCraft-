@@ -109,7 +109,7 @@ public final class KingdomPlan {
     /** 성벽 돌 (돌벽돌 + 이끼 · 금 간 돌벽돌 · 안산암 섞기) */
     static String stone(int x, int y, int z) {
         double r = h(x, y, z);
-        return r < 0.70 ? "stone_bricks" : r < 0.82 ? "mossy_stone_bricks" : r < 0.93 ? "cracked_stone_bricks" : "andesite";
+        return r < 0.62 ? "stone_bricks" : r < 0.86 ? "polished_andesite" : r < 0.96 ? "cracked_stone_bricks" : "chiseled_stone_bricks";   // v5.10.63 4R 풍 밝게 (이끼 뺌)
     }
 
     static String light(int x, int y, int z) {
@@ -164,7 +164,7 @@ public final class KingdomPlan {
     void tree(int x, int z, int kind) {
         int hgt = 5 + (int) (h(x, 7, z) * 3);
         String log = kind == 1 ? "birch_log" : kind == 2 ? "spruce_log" : kind == 3 ? "cherry_log" : "oak_log";
-        String leaf = (kind == 1 ? "birch_leaves" : kind == 2 ? "spruce_leaves" : kind == 3 ? "cherry_leaves" : "oak_leaves") + "[persistent=true]";
+        String leaf = (kind == 1 ? "birch_leaves" : kind == 2 ? "spruce_leaves" : kind == 3 ? "cherry_leaves" : kind == 4 ? "flowering_azalea_leaves" : "oak_leaves") + "[persistent=true]";
         for (int y = 0; y < hgt; y++) set(x, y, z, log);
         if (kind == 2) {   // 원뿔 가문비
             for (int y = 2; y <= hgt + 1; y++) {
@@ -187,12 +187,12 @@ public final class KingdomPlan {
     /** 가로등: 기둥 · 팔 · 매단 등불 */
     void lamp(int x, int z, String dir) {
         set(x, 0, z, "polished_andesite");
-        for (int y = 1; y <= 4; y++) set(x, y, z, "dark_oak_fence");
-        set(x, 5, z, "dark_oak_planks");
+        for (int y = 1; y <= 4; y++) set(x, y, z, "birch_fence");
+        set(x, 5, z, "gold_block");
         int dx = dir.equals("east") ? 1 : dir.equals("west") ? -1 : 0, dz = dir.equals("south") ? 1 : dir.equals("north") ? -1 : 0;
-        set(x + dx, 5, z + dz, "dark_oak_fence");
+        set(x + dx, 5, z + dz, "birch_fence");
         set(x + dx, 4, z + dz, "lantern[hanging=true]");
-        set(x, 6, z, "dark_oak_slab");
+        set(x, 6, z, "quartz_slab");
     }
 
     /** v5.10.62 돌 조각상 (영웅 · 검을 든 기사): 받침대 위 약 9칸, face 쪽을 바라봄 */
@@ -295,8 +295,8 @@ public final class KingdomPlan {
 
     private String pave(int x, int z, boolean center) {
         double r = h(x, -1, z);
-        if (center) return r < 0.8 ? "polished_andesite" : "andesite";
-        return r < 0.55 ? "stone_bricks" : r < 0.75 ? "cobblestone" : r < 0.9 ? "andesite" : "mossy_stone_bricks";
+        if (center) return r < 0.8 ? "polished_diorite" : "calcite";   // v5.10.63 밝은 크림색 길
+        return r < 0.5 ? "smooth_sandstone" : r < 0.8 ? "cut_sandstone" : r < 0.93 ? "sandstone" : "chiseled_sandstone";
     }
 
     private void roads() {
@@ -375,10 +375,10 @@ public final class KingdomPlan {
                 double d = Math.sqrt(x * x + z * z);
                 if (d > 44.5 && !(Math.abs(x) <= 6 || Math.abs(z) <= 6)) continue;
                 int ring = (int) d;
-                String s = d > 43.5 ? "stone_bricks"
-                        : ring % 8 == 0 ? "polished_andesite"
-                        : ring % 8 == 4 ? "chiseled_stone_bricks"
-                        : ((int) (Math.atan2(z, x) / Math.PI * 16 + 16) % 2 == 0) ? "smooth_stone" : "polished_diorite";
+                String s = d > 43.5 ? "cut_sandstone"
+                        : ring % 8 == 0 ? "light_blue_terracotta"
+                        : ring % 8 == 4 ? "chiseled_quartz_block"
+                        : ((int) (Math.atan2(z, x) / Math.PI * 16 + 16) % 2 == 0) ? "smooth_quartz" : "polished_diorite";
                 set(x, -1, z, s);
             }
         // 3단 분수
@@ -508,7 +508,7 @@ public final class KingdomPlan {
             }
         cyl(cx, cz, r + 1, hgt + 1, hgt + 1, (a, b, c) -> "polished_andesite", false);   // 돌출 갓돌
         cyl(cx, cz, r + 1, hgt + 2, hgt + 2, (a, b, c) -> h(a, b, c) < 0.5 ? "stone_brick_wall" : "stone_bricks", true);
-        spire(cx, cz, r + 0.5, hgt + 3, big ? 18 : 13, "deepslate_tiles", "gold_block");
+        spire(cx, cz, r + 0.5, hgt + 3, big ? 18 : 13, "dark_prismarine", "gold_block");
         for (int k = 0; k < 4; k++) {   // 깃발
             String f = new String[]{"south", "north", "east", "west"}[k];
             int dx = k == 2 ? r + 1 : k == 3 ? -r - 1 : 0, dz = k == 0 ? r + 1 : k == 1 ? -r - 1 : 0;
@@ -528,7 +528,7 @@ public final class KingdomPlan {
             for (int y = 9; y < 34; y += 8) cyl(tx, tz, 7, y, y, (a, b, c) -> "spruce_planks", false);
             cyl(tx, tz, 9, 35, 35, (a, b, c) -> "polished_andesite", false);
             cyl(tx, tz, 9, 36, 36, (a, b, c) -> h(a, b, c) < 0.5 ? "stone_brick_wall" : "stone_bricks", true);
-            spire(tx, tz, 8.5, 37, 17, "deepslate_tiles", "gold_block");
+            spire(tx, tz, 8.5, 37, 17, "dark_prismarine", "gold_block");
         }
         // 문 사이 성문 건물: 폭 19 · 깊이 12 · 높이 26
         int w = 9, d = 7;
@@ -714,7 +714,7 @@ public final class KingdomPlan {
                 if (Math.floorMod(dx + dz, 2) == 0) set(cx + dx, hgt, cz + dz, "quartz_stairs[facing=" + f + ",half=top]");
             }
         int sh = (int) (r * 2.0);
-        spire(cx, cz, r + 0.6, hgt + 3, sh, "deepslate_tiles", "gold_block", "blue");
+        spire(cx, cz, r + 0.6, hgt + 3, sh, "dark_prismarine", "gold_block", "blue");
         for (int k = 0; k < 4; k++) {   // 첨탑 지붕창 (4방향)
             int dx = k == 0 ? 1 : k == 1 ? -1 : 0, dz = k == 2 ? 1 : k == 3 ? -1 : 0;
             int rr = (int) Math.round((r + 0.6) * (1 - 3.0 / sh)) , y = hgt + 6;
@@ -726,9 +726,9 @@ public final class KingdomPlan {
                     set(x - dx, yy, z - dz, "smooth_quartz");
                 }
             String face = dx > 0 ? "east" : dx < 0 ? "west" : dz > 0 ? "south" : "north";
-            set(bx + (dz != 0 ? -1 : 0), y + 3, bz + (dx != 0 ? -1 : 0), "deepslate_tile_stairs[facing=" + (dz != 0 ? "east" : "south") + "]");
-            set(bx + (dz != 0 ? 1 : 0), y + 3, bz + (dx != 0 ? 1 : 0), "deepslate_tile_stairs[facing=" + (dz != 0 ? "west" : "north") + "]");
-            set(bx, y + 3, bz, "deepslate_tiles");
+            set(bx + (dz != 0 ? -1 : 0), y + 3, bz + (dx != 0 ? -1 : 0), "dark_prismarine_stairs[facing=" + (dz != 0 ? "east" : "south") + "]");
+            set(bx + (dz != 0 ? 1 : 0), y + 3, bz + (dx != 0 ? 1 : 0), "dark_prismarine_stairs[facing=" + (dz != 0 ? "west" : "north") + "]");
+            set(bx, y + 3, bz, "dark_prismarine");
             set(bx, y + 4, bz, "gold_block");
             set(bx + dx, y - 1, bz + dz, "quartz_slab[type=top]");
         }
@@ -775,25 +775,25 @@ public final class KingdomPlan {
         for (int k = 0; k <= W; k++) {
             int y = hgt + 1 + k;
             for (int x = x0 - 2; x <= x1 + 2; x++) {
-                set(x, y, z0 - 2 + k, "deepslate_tile_stairs[facing=south]");
-                set(x, y, z1 + 2 - k, "deepslate_tile_stairs[facing=north]");
-                if (z0 - 1 + k <= z1 + 1 - k) for (int z = z0 - 1 + k; z <= z1 + 1 - k; z++) if (x == x0 - 2 || x == x1 + 2) set(x, y, z, "deepslate_tiles");
+                set(x, y, z0 - 2 + k, "dark_prismarine_stairs[facing=south]");
+                set(x, y, z1 + 2 - k, "dark_prismarine_stairs[facing=north]");
+                if (z0 - 1 + k <= z1 + 1 - k) for (int z = z0 - 1 + k; z <= z1 + 1 - k; z++) if (x == x0 - 2 || x == x1 + 2) set(x, y, z, "dark_prismarine");
             }
         }
-        for (int x = x0 - 2; x <= x1 + 2; x++) set(x, hgt + W + 2, (z0 + z1) / 2, x % 4 == 0 ? "gold_block" : "deepslate_tile_slab");
+        for (int x = x0 - 2; x <= x1 + 2; x++) set(x, hgt + W + 2, (z0 + z1) / 2, x % 4 == 0 ? "gold_block" : "dark_prismarine_slab");
         for (int x = x0 + 6; x <= x1 - 6; x += 12)   // 지붕창 (dormer)
             for (int s : new int[]{z0 + 5, z1 - 5}) {
                 box(x - 1, hgt + 4, s - 1, x + 1, hgt + 7, s + 1, "smooth_quartz");
                 set(x, hgt + 5, s + (s < (z0 + z1) / 2 ? -1 : 1), "light_blue_stained_glass");
                 set(x, hgt + 6, s + (s < (z0 + z1) / 2 ? -1 : 1), "light_blue_stained_glass");
-                spire(x, s, 1.6, hgt + 8, 4, "deepslate_tiles", "gold_block");
+                spire(x, s, 1.6, hgt + 8, 4, "dark_prismarine", "gold_block");
             }
         // v5.10.59 버팀벽 위 작은 첨탑 (지붕선 장식)
         for (int x = x0; x <= x1; x += 8)
             for (int zz : new int[]{z1 + 1, z0 - 1}) {
                 if (zz == z1 + 1 && Math.abs(x) <= 16) continue;
                 for (int y = hgt - 3; y <= hgt + 1; y++) set(x, y, zz, "quartz_pillar");
-                spire(x, zz, 0.9, hgt + 2, 3, "deepslate_tiles", "gold_block");
+                spire(x, zz, 0.9, hgt + 2, 3, "dark_prismarine", "gold_block");
             }
         // v5.10.59 앞으로 튀어나온 정면 누각 (박공 + 장미창) · 기둥 현관 (삼각 박공 · 발코니)
         int px0 = -14, px1 = 14, pz0 = z1 - 1, pz1 = z1 + 5, ph = hgt + 4;
@@ -812,8 +812,8 @@ public final class KingdomPlan {
             for (int z = pz0 - 2; z <= pz1 + 1; z++) {
                 int y = ph + 1 + k;
                 if (px0 - 1 + k > px1 + 1 - k) break;
-                set(px0 - 1 + k, y, z, "deepslate_tile_stairs[facing=east]");
-                set(px1 + 1 - k, y, z, "deepslate_tile_stairs[facing=west]");
+                set(px0 - 1 + k, y, z, "dark_prismarine_stairs[facing=east]");
+                set(px1 + 1 - k, y, z, "dark_prismarine_stairs[facing=west]");
                 if (z == pz1) for (int x = px0 + k; x <= px1 - k; x++) set(x, y, z, light(x, y, z));
             }
         for (int z = pz0 - 2; z <= pz1 + 1; z++) set(0, ph + 16, z, "gold_block");
@@ -923,7 +923,7 @@ public final class KingdomPlan {
             box(54, 0, tz - 2, 58, 14, tz + 2, "stone_bricks");
             for (int y = 2; y <= 12; y += 4) { set(53, y, tz, "glass_pane"); set(59, y, tz, "glass_pane"); }
             box(53, 15, tz - 3, 59, 15, tz + 3, "polished_andesite");
-            spire(56, tz, 3.4, 16, 8, "deepslate_tiles", "gold_block", "orange");
+            spire(56, tz, 3.4, 16, 8, "dark_prismarine", "gold_block", "orange");
         }
         for (int z = -8; z <= 8; z++)
             for (int y = 11; y <= 15; y++) {
@@ -1163,8 +1163,8 @@ public final class KingdomPlan {
         // 가파른 지붕
         for (int k = 0; k <= 17; k++)
             for (int z = z0 - 1; z <= z1 + 1; z++) {
-                set(x0 - 1 + k, hgt + 1 + k, z, "deepslate_tile_stairs[facing=east]");
-                set(x1 + 1 - k, hgt + 1 + k, z, "deepslate_tile_stairs[facing=west]");
+                set(x0 - 1 + k, hgt + 1 + k, z, "dark_prismarine_stairs[facing=east]");
+                set(x1 + 1 - k, hgt + 1 + k, z, "dark_prismarine_stairs[facing=west]");
                 if (x0 + k <= x1 - k) for (int x = x0 + k; x <= x1 - k; x++) { if (z == z0 || z == z1) set(x, hgt + 1 + k, z, light(x, hgt + 1 + k, z)); }
             }
         // 앞면 쌍둥이 종탑 · 장미창 · 정문
@@ -1178,7 +1178,7 @@ public final class KingdomPlan {
             box(tx - 4, 46, tz - 4, tx + 4, 46, tz + 4, "polished_andesite");
             for (int k = 0; k < 14; k++) {
                 int r = 4 - k * 4 / 14;
-                for (int x = -r; x <= r; x++) for (int z = -r; z <= r; z++) if (Math.abs(x) == r || Math.abs(z) == r) set(tx + x, 47 + k, tz + z, "deepslate_tiles");
+                for (int x = -r; x <= r; x++) for (int z = -r; z <= r; z++) if (Math.abs(x) == r || Math.abs(z) == r) set(tx + x, 47 + k, tz + z, "dark_prismarine");
             }
             set(tx, 61, tz, "gold_block");
             set(tx, 62, tz, "lightning_rod");
@@ -1496,9 +1496,10 @@ public final class KingdomPlan {
         int mx = (x0 + x1) / 2, mz = (z0 + z1) / 2;
         double r = h(mx, 5, mz);
         if (r < 0.35) well(mx, mz);
-        else if (r < 0.75) tree(mx, mz, (int) (h(mx, 6, mz) * 4));
+        else if (r < 0.75) tree(mx, mz, new int[]{3, 3, 4, 0, 1}[(int) (h(mx, 6, mz) * 5)]);   // v5.10.63 벚꽃 · 꽃 진달래 위주
         else { planter(mx - 2, mz - 2, mx + 2, mz + 2); set(mx, 1, mz, "lantern"); }
-        for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) if (h(x, 8, z) < 0.03) set(x, 0, z, h(x, 9, z) < 0.5 ? "fern" : "poppy");
+        String[] fl = {"poppy", "dandelion", "cornflower", "allium", "azure_bluet", "oxeye_daisy", "pink_tulip", "orange_tulip", "lily_of_the_valley", "pink_petals[flower_amount=4]"};
+        for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) if (h(x, 8, z) < 0.06) set(x, 0, z, fl[(int) (h(x, 9, z) * fl.length)]);
         // v5.10.60 마당: 텃밭 · 장작더미 · 벤치 · 빨랫줄
         double q = h(x0, 7, z1);
         if (q < 0.5) {
@@ -1538,14 +1539,16 @@ public final class KingdomPlan {
      *  창 양옆 열린 덧문 · 위층 창 꽃 상자 · 문 위 차양 · 박공지붕 (용마루 · 큰 집은 지붕창) · 굴뚝 갓 · 안: 사다리 · 침대 · 탁자 · 화덕 · 책장
      */
     void house(int x0, int z0, int w, int d, int floors, int seed, String door) {
-        String[] roofs = {"spruce", "dark_oak", "deepslate_tile", "brick", "oak", "mud_brick", "stone_brick", "mangrove", "cherry"};
-        String[] plaster = {"white_terracotta", "smooth_sandstone", "stripped_birch_wood", "mushroom_stem", "calcite", "light_gray_terracotta", "white_concrete_powder"};
-        String[] frames = {"dark_oak", "spruce", "oak", "mangrove"};
-        String[] bases = {"cobblestone", "stone_bricks", "mossy_cobblestone", "bricks", "andesite", "tuff"};
+        // v5.10.63 4R 풍: 선명한 지붕 (주황 · 분홍 · 청록 · 하늘 · 보라 · 진홍 · 빨강 · 남색) · 하얀 회벽 · 밝은 기단
+        String[] roofs = {"acacia", "cherry", "warped", "prismarine_brick", "purpur", "crimson", "mangrove", "dark_prismarine", "red_nether_brick"};
+        String[] plaster = {"white_concrete", "smooth_quartz", "calcite", "white_concrete", "smooth_sandstone", "birch_planks"};
+        String[] frames = {"dark_oak", "spruce", "dark_oak", "mangrove"};
+        String[] bases = {"stone_bricks", "bricks", "polished_andesite", "mud_bricks", "smooth_sandstone"};
         String[] beds = {"red_bed", "blue_bed", "green_bed", "yellow_bed", "purple_bed", "white_bed"};
         Random r = new Random(seed * 7919L);
         String roof = roofs[r.nextInt(roofs.length)], wall = plaster[r.nextInt(plaster.length)], fw = frames[r.nextInt(frames.length)], base = bases[r.nextInt(bases.length)];
-        String frame = fw + "_log", fstairs = fw + "_stairs", fslab = fw + "_slab", trap = fw + "_trapdoor";
+        String frame = fw + "_log", fstairs = fw + "_stairs", fslab = fw + "_slab";
+        String trap = new String[]{"cherry_trapdoor", "warped_trapdoor", "crimson_trapdoor", "acacia_trapdoor", "birch_trapdoor", "mangrove_trapdoor"}[r.nextInt(6)];   // 알록달록 덧문
         String floor = new String[]{"spruce_planks", "oak_planks", "dark_oak_planks", "birch_planks"}[r.nextInt(4)];
         boolean ns = door.equals("south") || door.equals("north");
         int out = door.equals("south") || door.equals("east") ? 1 : -1;
@@ -1612,7 +1615,7 @@ public final class KingdomPlan {
             set(dx - 1, y + 2, dzR, rs + "[facing=east]");
             set(dx + 1, y + 2, dzR, rs + "[facing=west]");
             set(dx, y + 2, dzR, rs + "[facing=" + (door.equals("south") ? "north" : "south") + "]");
-            set(dx, y + 3, dzR - (door.equals("south") ? 1 : -1), roof.equals("deepslate_tile") ? "deepslate_tile_slab" : fslab);
+            set(dx, y + 3, dzR - (door.equals("south") ? 1 : -1), roof.equals("deepslate_tile") ? "dark_prismarine_slab" : fslab);
         }
         // 문 · 차양 · 등 · 디딤돌 · 길
         int dx = ns ? (x0 + x1) / 2 : (out > 0 ? x1 : x0), dz = ns ? (out > 0 ? z1 : z0) : (z0 + z1) / 2;

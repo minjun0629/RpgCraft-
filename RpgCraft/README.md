@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.62
+- 왕국 디테일 강화: 광장 열주 · 조각상, 모험가 광장 훈련장 · 주점 · 숙소, 투기장 개선문 · 차양 · 귀빈석, 농가 · 헛간 · 허수아비, 골목 가로등.
+
 ## v5.10.61
 - 야차 → PVP (/pvp · 친선전 · 랭킹전), 랭킹 메뉴에 PVP 탭.
 

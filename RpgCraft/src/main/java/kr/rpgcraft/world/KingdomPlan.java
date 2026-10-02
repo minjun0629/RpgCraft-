@@ -195,6 +195,48 @@ public final class KingdomPlan {
         set(x, 6, z, "dark_oak_slab");
     }
 
+    /** v5.10.62 돌 조각상 (영웅 · 검을 든 기사): 받침대 위 약 9칸, face 쪽을 바라봄 */
+    void statue(int x, int z, String face, String cape) {
+        box(x - 2, 0, z - 2, x + 2, 0, z + 2, "polished_andesite");
+        box(x - 1, 1, z - 1, x + 1, 2, z + 1, "chiseled_stone_bricks");
+        for (int sx = -1; sx <= 1; sx += 2) { set(x + sx, 3, z, "stone_brick_wall"); set(x + sx, 4, z, "stone_brick_wall"); }   // 다리
+        box(x - 1, 5, z, x + 1, 7, z, "polished_andesite");   // 몸
+        set(x, 6, z, "chiseled_stone_bricks");
+        set(x, 8, z, "stone_bricks");   // 머리
+        set(x, 9, z, "gold_block");     // 왕관
+        int fx = face.equals("east") ? 1 : face.equals("west") ? -1 : 0, fz = face.equals("south") ? 1 : face.equals("north") ? -1 : 0;
+        int lx = fz != 0 ? 1 : 0, lz = fx != 0 ? 1 : 0;
+        set(x + 2 * lx, 6, z + 2 * lz, "polished_andesite");   // 팔
+        set(x - 2 * lx, 6, z - 2 * lz, "polished_andesite");
+        for (int y = 4; y <= 11; y++) set(x + 2 * lx + fx, y, z + 2 * lz + fz, y == 6 ? "gold_block" : y < 6 ? "air" : "iron_bars");   // 치켜든 검
+        set(x + 2 * lx + fx, 5, z + 2 * lz + fz, "air");
+        for (int y = 3; y <= 7; y++) set(x - fx, y, z - fz, cape);   // 망토
+        set(x + 2 * fx, 1, z + 2 * fz, "oak_wall_sign[facing=" + face + "]");
+    }
+
+    /** v5.10.62 둥근 열주 (기둥 고리 + 위 테두리 들보), 큰길 자리는 비움 */
+    void colonnade(int cx, int cz, double r, int hgt, int step) {
+        int n = (int) (2 * Math.PI * r / step);
+        for (int k = 0; k < n; k++) {
+            double a = k * 2 * Math.PI / n;
+            int x = cx + (int) Math.round(Math.cos(a) * r), z = cz + (int) Math.round(Math.sin(a) * r);
+            if (Math.abs(x) <= 8 || Math.abs(z) <= 8) continue;
+            set(x, 0, z, "chiseled_quartz_block");
+            for (int y = 1; y < hgt; y++) set(x, y, z, "quartz_pillar");
+            set(x, hgt, z, "chiseled_quartz_block");
+        }
+        int R = (int) Math.ceil(r) + 1;
+        for (int dx = -R; dx <= R; dx++)
+            for (int dz = -R; dz <= R; dz++) {
+                double d = Math.sqrt(dx * dx + dz * dz);
+                if (Math.abs(d - r) > 0.75) continue;
+                int x = cx + dx, z = cz + dz;
+                if (Math.abs(x) <= 8 || Math.abs(z) <= 8) continue;
+                set(x, hgt + 1, z, "smooth_quartz");
+                set(x, hgt + 2, z, Math.floorMod(dx * 3 + dz, 4) == 0 ? "quartz_pillar" : "quartz_slab");
+            }
+    }
+
     void bench(int x, int z, String facing, int len, boolean alongX) {
         for (int i = 0; i < len; i++) set(alongX ? x + i : x, 0, alongX ? z : z + i, "spruce_stairs[facing=" + facing + "]");
     }
@@ -302,6 +344,15 @@ public final class KingdomPlan {
                     if (!inCastle(s, g + t, 6) && !reserved(s, g + t)) set(s, -1, g + t, p);
                 }
         }
+        // v5.10.62 골목 가로등 (16칸마다 · 골목 가장자리, 팔은 길 위로)
+        for (int g = -448; g <= 448; g += 64) {
+            if (Math.abs(g) < 20) continue;
+            for (int s2 = -WALL + 20; s2 <= WALL - 20; s2 += 16) {
+                if (Math.abs(s2) <= 12 || Math.abs(Math.abs(s2) - 330) <= 6 || Math.abs(s2 - g) <= 4) continue;
+                if (!inCastle(g + 2, s2, 8) && !reserved(g + 2, s2) && Math.max(Math.abs(g), Math.abs(s2)) < 400) lamp(g + 2, s2, "west");
+                if (!inCastle(s2, g + 2, 8) && !reserved(s2, g + 2) && Math.max(Math.abs(g), Math.abs(s2)) < 400) lamp(s2, g + 2, "north");
+            }
+        }
     }
 
     /** 특수 구역 (집을 짓지 않음) */
@@ -373,6 +424,24 @@ public final class KingdomPlan {
             tree(q[0] * 44, q[1] * 44, 3);
             tree(q[0] * 38, q[1] * 47, 0);
             tree(q[0] * 47, q[1] * 38, 1);
+        }
+        // v5.10.62 둥근 열주 · 영웅 조각상 · 꽃 고리
+        colonnade(0, 0, 40.5, 8, 6);
+        statue(-20, -32, "south", "blue_wool");
+        statue(20, -32, "south", "red_wool");
+        statue(-20, 32, "north", "green_wool");
+        statue(20, 32, "north", "yellow_wool");
+        for (int k = 0; k < 24; k++) {   // 분수 둘레 꽃 고리
+            double a = k * Math.PI / 12;
+            int x = (int) Math.round(Math.cos(a) * 12.5), z = (int) Math.round(Math.sin(a) * 12.5);
+            if (Math.abs(x) <= 2 || Math.abs(z) <= 2) continue;
+            set(x, -1, z, "grass_block");
+            set(x, 0, z, k % 3 == 0 ? "rose_bush[half=lower]" : k % 3 == 1 ? "lilac[half=lower]" : "peony[half=lower]");
+            set(x, 1, z, k % 3 == 0 ? "rose_bush[half=upper]" : k % 3 == 1 ? "lilac[half=upper]" : "peony[half=upper]");
+        }
+        for (int k = 0; k < 8; k++) {   // 안쪽 고리 가로등
+            double a = k * Math.PI / 4 + Math.PI / 8;
+            lamp((int) Math.round(Math.cos(a) * 22), (int) Math.round(Math.sin(a) * 22), "north");
         }
         // 스폰 표지 (분수 남쪽): 금 테 원판
         cyl(0, 22, 2.5, -1, -1, (a, b, c) -> "gold_block", true);
@@ -937,19 +1006,68 @@ public final class KingdomPlan {
             float yaw = (float) Math.toDegrees(Math.atan2(-(bx - x), bz - z));
             npcs.add(new Npc(x, 0, z, yaw, "quest", quests.get(k % quests.size())));
         }
-        // 모닥불 · 훈련 허수아비 · 통
-        for (int k = 0; k < 4; k++) {
-            int x = -200 + k * 8, z = 35;
-            set(x, 0, z, "hay_block");
+        // v5.10.62 게시판 지붕 (기둥 4 + 박공)
+        for (int[] q : new int[][]{{-7, -3}, {7, -3}, {-7, 3}, {7, 3}}) for (int y = 0; y <= 5; y++) set(bx + q[0], y, bz + q[1], "spruce_log");
+        gable(bx - 8, bz - 4, bx + 8, bz + 4, 6, "dark_oak", "spruce_planks");
+        for (int x = bx - 6; x <= bx + 6; x++) for (int z = bz - 2; z <= bz + 2; z++) set(x, -1, z, "spruce_planks");
+        // 훈련장 (북서): 울타리 · 허수아비 · 과녁 · 무기 걸이
+        int tx0 = -212, tx1 = -178, tz0 = -46, tz1 = -12;
+        for (int x = tx0; x <= tx1; x++)
+            for (int z = tz0; z <= tz1; z++) {
+                boolean edge = x == tx0 || x == tx1 || z == tz0 || z == tz1;
+                set(x, -1, z, h(x, 3, z) < 0.7 ? "coarse_dirt" : "dirt_path");
+                if (edge && !(z == tz1 && Math.abs(x - (tx0 + tx1) / 2) <= 1)) set(x, 0, z, "spruce_fence");
+            }
+        for (int k = 0; k < 5; k++) {   // 허수아비
+            int x = tx0 + 5 + k * 6, z = tz0 + 8;
+            set(x, 0, z, "spruce_fence");
             set(x, 1, z, "hay_block");
-            set(x, 2, z, "carved_pumpkin[facing=north]");
+            set(x, 2, z, "carved_pumpkin[facing=south]");
             set(x - 1, 1, z, "spruce_fence");
             set(x + 1, 1, z, "spruce_fence");
         }
-        set(-100, 0, 30, "campfire[lit=true]");
-        bench(-104, 33, "north", 3, true);
-        bench(-104, 27, "south", 3, true);
-        for (int k = 0; k < 6; k++) set(-210 + k, 0, -10, "barrel[facing=up]");
+        for (int k = 0; k < 4; k++) {   // 과녁 (궁술)
+            int x = tx0 + 6 + k * 7, z = tz0 + 2;
+            set(x, 0, z, "hay_block");
+            set(x, 1, z, "target");
+        }
+        for (int k = 0; k < 6; k++) { set(tx0 + 4 + k * 2, 0, tz1 - 4, "white_carpet"); }   // 사격선
+        for (int k = 0; k < 3; k++) {   // 무기 걸이
+            int x = tx1 - 3, z = tz0 + 6 + k * 6;
+            for (int y = 0; y <= 2; y++) { set(x, y, z - 1, "spruce_fence"); set(x, y, z + 1, "spruce_fence"); }
+            set(x, 2, z, "spruce_slab[type=top]");
+            set(x, 0, z, "grindstone[face=floor,facing=north]");
+            set(x, 1, z, "lightning_rod");
+        }
+        set(tx1 - 6, 0, tz1 - 6, "anvil[facing=east]");
+        // 주점 (북동) · 바깥 탁자
+        hall(-112, -48, -76, -26, "south");
+        set(-94, 9, -25, "oak_wall_sign[facing=south]");
+        for (int k = 0; k < 4; k++) {
+            int x = -108 + k * 9, z = -17;
+            set(x, 0, z, "oak_fence");
+            set(x, 1, z, "oak_pressure_plate");
+            set(x - 1, 0, z, "oak_stairs[facing=east]");
+            set(x + 1, 0, z, "oak_stairs[facing=west]");
+        }
+        for (int x = -110; x <= -78; x++) { set(x, 4, -15, (x & 1) == 0 ? "orange_wool" : "white_wool"); if (x % 8 == 0) for (int y = 0; y <= 3; y++) set(x, y, -15, "spruce_fence"); }
+        set(-80, 0, -19, "barrel[facing=up]");
+        set(-80, 1, -19, "barrel[facing=up]");
+        set(-79, 0, -19, "barrel[facing=up]");
+        // 남쪽: 모험가 조각상 · 작은 분수 · 화단 · 가로등
+        hall(-208, 27, -166, 47, "north");   // 모험가 숙소
+        set(-187, 9, 26, "oak_wall_sign[facing=north]");
+        statue(-152, 38, "north", "brown_wool");
+        int fx = -95, fz = 32;
+        cyl(fx, fz, 5, 0, 0, (a, b, c) -> "stone_bricks", true);
+        disc(fx, -1, fz, 4.1, "water");
+        disc(fx, -2, fz, 4.1, "stone_bricks");
+        for (int y = 0; y <= 3; y++) set(fx, y, fz, y == 3 ? "lantern" : "mossy_stone_bricks");
+        for (int x = -160; x <= -70; x += 18) { planter(x, 44, x + 4, 47); tree(x + 2, 45, 0); }
+        for (int x = -205; x <= -65; x += 20) { lamp(x, 9, "south"); lamp(x + 10, -9, "north"); }
+        bench(-104, 40, "north", 3, true);
+        bench(-88, 40, "north", 3, true);
+        set(-100, 0, 36, "campfire[lit=true]");
     }
 
     /** 반목조 큰 회관 (문은 door 방향) */
@@ -973,6 +1091,10 @@ public final class KingdomPlan {
             for (int x = mx - 2; x <= mx + 2; x++) for (int y = 0; y <= 4; y++) set(x, y, z1, "air");
             set(mx, 7, z1 + 1, "orange_wall_banner[facing=south]");
             for (int x = mx - 3; x <= mx + 3; x += 6) set(x, 3, z1 + 1, "lantern");
+        } else if (door.equals("north")) {
+            for (int x = mx - 2; x <= mx + 2; x++) for (int y = 0; y <= 4; y++) set(x, y, z0, "air");
+            set(mx, 7, z0 - 1, "orange_wall_banner[facing=north]");
+            for (int x = mx - 3; x <= mx + 3; x += 6) set(x, 3, z0 - 1, "lantern");
         } else {
             int wx = door.equals("east") ? x1 : x0, o = door.equals("east") ? 1 : -1;
             for (int z = mz - 2; z <= mz + 2; z++) for (int y = 0; y <= 4; y++) set(wx, y, z, "air");
@@ -1107,6 +1229,45 @@ public final class KingdomPlan {
             double a = k * Math.PI / 4 + 0.2;
             set(cx + (int) (Math.cos(a) * 20), 0, cz + (int) (Math.sin(a) * 20), "lantern");
         }
+        // v5.10.62 네 방향 개선문 (기둥 · 아치 · 깃발)
+        for (int k = 0; k < 4; k++) {
+            int dx = k == 0 ? 1 : k == 1 ? -1 : 0, dz = k == 2 ? 1 : k == 3 ? -1 : 0;
+            int gx = cx + dx * (R + 2), gz = cz + dz * (R + 2);
+            int lx = dz != 0 ? 1 : 0, lz = dx != 0 ? 1 : 0;
+            for (int t = -6; t <= 6; t++)
+                for (int y = 0; y <= 14; y++) {
+                    boolean open = Math.abs(t) <= 3 && (y <= 8 || y == 9 && Math.abs(t) <= 2 || y == 10 && Math.abs(t) <= 1);
+                    for (int dd = -1; dd <= 1; dd++) {
+                        int x = gx + lx * t + dx * dd, z = gz + lz * t + dz * dd;
+                        set(x, y, z, open ? "air" : Math.abs(t) >= 5 ? (y % 5 == 0 ? "chiseled_sandstone" : "cut_sandstone") : y >= 13 ? "smooth_sandstone" : "sandstone");
+                    }
+                }
+            for (int t = -6; t <= 6; t += 2) set(gx + lx * t, 15, gz + lz * t, "sandstone_wall");
+            String f = dx > 0 ? "east" : dx < 0 ? "west" : dz > 0 ? "south" : "north";
+            for (int t = -4; t <= 4; t += 8) {
+                set(gx + lx * t + dx * 2, 11, gz + lz * t + dz * 2, "red_wall_banner[facing=" + f + "]");
+                set(gx + lx * t + dx * 2, 6, gz + lz * t + dz * 2, "lantern");
+            }
+            for (int t = -3; t <= 3; t++) for (int dd = -1; dd <= 1; dd++) set(gx + lx * t + dx * dd, -1, gz + lz * t + dz * dd, "smooth_sandstone");
+        }
+        // 차양 (꼭대기 둘레 붉은 · 흰 천)
+        for (int dx = -R; dx <= R; dx++)
+            for (int dz = -R; dz <= R; dz++) {
+                double d = Math.sqrt(dx * dx + dz * dz);
+                if (d < R - 6 || d > R - 1.5) continue;
+                double ang = Math.atan2(dz, dx);
+                if (Math.abs(Math.sin(ang)) < 0.12 || Math.abs(Math.cos(ang)) < 0.12) continue;
+                int top = 3 + (int) ((R - 1.6 - r) / 2.2) * 2 + 6;
+                int y = top - (int) ((R - 1.5 - d) * 0.5);
+                set(cx + dx, y, cz + dz, ((int) Math.floor((ang + Math.PI) / (Math.PI / 16))) % 2 == 0 ? "red_wool" : "white_wool");
+            }
+        // 귀빈석 (북쪽)
+        for (int x = cx - 6; x <= cx + 6; x++) {
+            for (int y = 7; y <= 8; y++) set(x, y, cz - r - 3, y == 7 ? "red_wool" : "gold_block");
+            set(x, 9, cz - r - 3, x % 2 == 0 ? "red_carpet" : "air");
+        }
+        for (int x = cx - 6; x <= cx + 6; x += 3) for (int y = 9; y <= 13; y++) set(x, y, cz - r - 4, y == 13 ? "gold_block" : "quartz_pillar");
+        for (int x = cx - 7; x <= cx + 7; x++) set(x, 14, cz - r - 4, (x & 1) == 0 ? "red_wool" : "yellow_wool");
     }
 
     // ------------------------------------------------------------------ 호수 공원
@@ -1206,9 +1367,66 @@ public final class KingdomPlan {
                 set(x, -1, z, "farmland[moisture=7]");
                 set(x, 0, z, crops[Math.floorMod(fx * 7 + fz * 3, crops.length)]);
             }
-        for (int[] p : new int[][]{{430, 300}, {-430, -300}, {300, -430}, {-300, 430}, {430, -150}, {-150, 430}}) windmill(p[0], p[1]);
+        for (int[] p : new int[][]{{430, 300}, {-430, -300}, {300, -430}, {-300, 430}, {430, -150}, {-150, 430}}) {
+            windmill(p[0], p[1]);
+            boolean xBelt = Math.abs(p[0]) > Math.abs(p[1]);
+            farmstead(p[0] + (xBelt ? 0 : 26), p[1] + (xBelt ? 26 : 0), xBelt, (int) Math.signum(xBelt ? p[0] : p[1]));
+        }
+        // 밭마다 가끔 허수아비
+        for (int fxk = -26; fxk <= 26; fxk++)
+            for (int fzk = -26; fzk <= 26; fzk++) {
+                int x = fxk * 18 + 9, z = fzk * 18 + 4;
+                int m = Math.max(Math.abs(x), Math.abs(z));
+                if (m < 410 || m > WALL - 8 || h(fxk, 11, fzk) > 0.18) continue;
+                set(x, 0, z, "spruce_fence");
+                set(x, 1, z, "hay_block");
+                set(x, 2, z, "carved_pumpkin[facing=south]");
+                set(x - 1, 1, z, "spruce_fence");
+                set(x + 1, 1, z, "spruce_fence");
+            }
         npcs.add(new Npc(420, 0, 120, 270f, "quest", "HERDER"));
         npcs.add(new Npc(-420, 0, -120, 90f, "quest", "COLLECTOR"));
+    }
+
+    /** v5.10.62 농가: 붉은 헛간 · 농가 집 · 짚더미 · 울타리 우리 · 마차 */
+    private void farmstead(int cx, int cz, boolean xBelt, int outward) {
+        for (int dx = -14; dx <= 14; dx++) for (int dz = -12; dz <= 12; dz++) set(cx + dx, -1, cz + dz, h(cx + dx, 4, cz + dz) < 0.8 ? "grass_block" : "coarse_dirt");
+        // 헛간 (붉은 벽 · 흰 테 · 큰 문)
+        int bx0 = cx - 12, bz0 = cz - 10, bx1 = cx - 1, bz1 = cz + 2;
+        for (int x = bx0; x <= bx1; x++)
+            for (int z = bz0; z <= bz1; z++) {
+                boolean edge = x == bx0 || x == bx1 || z == bz0 || z == bz1;
+                boolean corner = (x == bx0 || x == bx1) && (z == bz0 || z == bz1);
+                for (int y = 0; y <= 7; y++) {
+                    if (!edge) { set(x, y, z, y == 0 ? (h(x, y, z) < 0.3 ? "hay_block" : "air") : y == 4 ? "spruce_planks" : "air"); continue; }
+                    boolean door = z == bz1 && Math.abs(x - (bx0 + bx1) / 2) <= 2 && y <= 4;
+                    set(x, y, z, door ? "air" : corner || y == 0 || y == 7 ? "stripped_birch_wood" : (x + y) % 6 == 0 && z == bz1 ? "birch_planks" : "red_terracotta");
+                }
+            }
+        gable(bx0 - 1, bz0 - 1, bx1 + 1, bz1 + 1, 8, "dark_oak", "red_terracotta");
+        for (int y = 0; y <= 4; y++) { set((bx0 + bx1) / 2 - 3, y, bz1 + 1, "spruce_trapdoor[facing=south,open=true]"); set((bx0 + bx1) / 2 + 3, y, bz1 + 1, "spruce_trapdoor[facing=south,open=true]"); }
+        set((bx0 + bx1) / 2, 6, bz1 + 1, "spruce_trapdoor[facing=south,open=true]");
+        // 농가 집
+        house(cx + 2, cz - 10, 10, 8, 2, cx * 31 + cz, "south");
+        // 짚더미 · 우리 · 마차 · 우물
+        for (int k = 0; k < 3; k++) {
+            int x = cx - 10 + k * 3, z = cz + 6;
+            box(x, 0, z, x + 1, 1 + (k == 1 ? 1 : 0), z + 1, "hay_block");
+        }
+        for (int x = cx + 2; x <= cx + 12; x++) for (int z = cz + 3; z <= cz + 11; z++) {
+            boolean edge = x == cx + 2 || x == cx + 12 || z == cz + 3 || z == cz + 11;
+            if (edge && !(z == cz + 3 && x == cx + 7)) set(x, 0, z, "oak_fence");
+            else if (!edge) set(x, -1, z, h(x, 5, z) < 0.5 ? "coarse_dirt" : "podzol");
+        }
+        set(cx + 7, 0, cz + 3, "oak_fence_gate[facing=south]");
+        set(cx + 4, 0, cz + 9, "composter");
+        set(cx + 10, 0, cz + 9, "cauldron");
+        for (int x = cx - 12; x <= cx - 9; x++) set(x, 0, cz + 10, "spruce_slab[type=top]");   // 마차
+        set(cx - 12, 0, cz + 9, "dark_oak_trapdoor[facing=north,open=true]");
+        set(cx - 9, 0, cz + 9, "dark_oak_trapdoor[facing=north,open=true]");
+        set(cx - 11, 1, cz + 10, "pumpkin");
+        set(cx - 10, 1, cz + 10, "hay_block");
+        lamp(cx, cz + 12, "north");
     }
 
     private void windmill(int cx, int cz) {

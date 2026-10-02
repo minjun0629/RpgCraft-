@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.69
+- 왕국 짓기 · 철거 때 꽃 · 막대기 · 깃발이 하늘에 떠 남던 버그를 고쳤습니다 (가장 높은 블록을 WORLD_SURFACE 기준으로 찾음).
+
 ## v5.10.68
 - 기운 조합 창을 좌우 대칭으로 다시 배치했습니다 (결정 가운데 정렬 · 무기는 자기 방어구 위 · 사흉수 갑주 가운데 안내). 리소스팩 배경도 함께 바꿨습니다.
 

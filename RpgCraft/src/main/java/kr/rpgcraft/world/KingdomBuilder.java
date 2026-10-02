@@ -53,6 +53,28 @@ public class KingdomBuilder {
         return Math.abs(l.getX() - cx) <= half && Math.abs(l.getZ() - cz) <= half;
     }
 
+    /**
+     * v5.10.58 "스폰에서 몇 칸" 안전 거리의 기준 거리. 이 월드에 왕국을 지었으면 왕국 성벽 부지 끝(성 밖)까지의 거리 (성 안은 0),
+     * 아니면 예전처럼 월드 스폰까지의 거리. 보스 소환 · 자연 보스 · 토벌전 · 공성 성 짓기 금지 거리에 씀.
+     */
+    public static double safeDistance(RpgCraft plugin, Location l) {
+        var c = plugin.getConfig();
+        World w = l.getWorld();
+        if (w != null && w.getName().equals(c.getString("kingdom.world", ""))) {
+            int half = c.getInt("kingdom.half", KingdomPlan.HALF);
+            double dx = Math.max(0, Math.abs(l.getX() - c.getDouble("kingdom.x")) - half);
+            double dz = Math.max(0, Math.abs(l.getZ() - c.getDouble("kingdom.z")) - half);
+            return Math.hypot(dx, dz);
+        }
+        Location sp = w.getSpawnLocation();
+        return Math.hypot(l.getX() - sp.getX(), l.getZ() - sp.getZ());
+    }
+
+    /** 안전 거리 문구: 왕국이 있으면 "성 밖 N칸", 없으면 "스폰 N칸" */
+    public static String safeLabel(RpgCraft plugin, World w, int n) {
+        return w != null && w.getName().equals(plugin.getConfig().getString("kingdom.world", "")) ? "성 밖 " + n + "칸" : "스폰 " + n + "칸";
+    }
+
     public boolean running() {
         return task != null;
     }

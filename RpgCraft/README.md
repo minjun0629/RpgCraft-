@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.58
+- 보스 소환 · 자연 보스 · 토벌전 · 공성 성 짓기 금지 거리를 왕국 성 밖 기준 300칸으로.
+
 ## v5.10.57
 - 왕국을 지은 월드는 몬스터 레벨을 성 밖(왕국 부지 끝)부터 Lv.1 로 셈.
 

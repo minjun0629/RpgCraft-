@@ -406,6 +406,8 @@ public final class KingdomPlan {
         for (int k = 0; k < 8; k++) {   // 물 뿜는 돌 사자 머리 대신 장식 등
             double a = k * Math.PI / 4;
             int x = (int) Math.round(Math.cos(a) * 9.5), z = (int) Math.round(Math.sin(a) * 9.5);
+            set(x, 0, z, "stone_bricks");   // v5.10.67 등 받침 (대각선 자리는 둘레 밖이라 등이 떠 있었음)
+            set(x, 1, z, "stone_brick_slab");
             set(x, 2, z, "lantern");
         }
         // 오벨리스크 4 · 화단 · 벤치 · 가로등
@@ -567,7 +569,7 @@ public final class KingdomPlan {
         for (int a = -8; a <= 8; a += 16) {   // 늘어진 왕실 깃발 (파랑 · 금 테) · 횃불
             int x = ns ? cx + a : cx + sgn * (d + 1), z = ns ? cz + sgn * (d + 1) : cz + a;
             for (int y = 16; y <= 38; y++) set(x, y, z, y == 38 ? "gold_block" : y == 16 ? "blue_wall_banner[facing=" + face + "]" : "blue_wool");
-            set(x, 10, z, "lantern");
+            set(x, 10, z, "wall_torch[facing=" + face + "]");
         }
         int ex = ns ? cx : cx + sgn * (d + 1), ez = ns ? cz + sgn * (d + 1) : cz;   // 문장 (금 방패)
         for (int a = -2; a <= 2; a++) for (int y = 27; y <= 33; y++) if (Math.abs(a) + Math.max(0, 29 - y) <= 2) set(ns ? ex + a : ex, y, ns ? ez : ez + a, a == 0 && y >= 29 ? "gold_block" : "yellow_terracotta");
@@ -739,16 +741,15 @@ public final class KingdomPlan {
         // 대계단: 기단 앞 (z1+1 → z1+16) · 폭 25 · 중간 참 (높이 8)
         for (int k = 0; k < H; k++) {
             int y = H - 1 - k, z = z1 + 1 + k + (k >= 8 ? 3 : 0);
-            for (int x = -12; x <= 12; x++) {
+            for (int x = -12; x <= 12; x++) {   // v5.10.67 가운데 붉은 길도 계단으로 (카펫이 계단 높이와 어긋나 떠 보이던 것 고침)
                 for (int yy = -1; yy < y; yy++) set(x, yy, z, "stone_bricks");
-                set(x, y, z, Math.abs(x) <= 2 ? "red_carpet" : "quartz_stairs[facing=north]");
-                if (Math.abs(x) <= 2) set(x, y - 1, z, "quartz_block");
+                set(x, y, z, Math.abs(x) <= 2 ? "red_nether_brick_stairs[facing=north]" : Math.abs(x) == 3 ? "smooth_sandstone_stairs[facing=north]" : "quartz_stairs[facing=north]");
             }
             for (int x : new int[]{-13, 13}) { for (int yy = -1; yy <= y; yy++) set(x, yy, z, stone(x, yy, z)); set(x, y + 1, z, "quartz_slab"); }
             if (k == 7) for (int q = 1; q <= 3; q++) for (int x = -13; x <= 13; x++) {   // 중간 참
                 for (int yy = -1; yy < y; yy++) set(x, yy, z + q, "stone_bricks");
-                set(x, y, z + q, Math.abs(x) <= 2 ? "red_carpet" : Math.abs(x) == 13 ? "quartz_slab" : "polished_diorite");
-                if (Math.abs(x) <= 2) set(x, y - 1, z + q, "quartz_block");
+                set(x, y, z + q, Math.abs(x) <= 2 ? "red_nether_bricks" : Math.abs(x) == 3 ? "smooth_sandstone" : Math.abs(x) == 13 ? "quartz_block" : "polished_diorite");
+                if (Math.abs(x) == 13) set(x, y + 1, z + q, "quartz_slab");
             }
         }
         for (int sx = -1; sx <= 1; sx += 2) {   // 대계단 양옆 거대 화로 기둥 (아래 · 참 · 위)
@@ -1307,16 +1308,16 @@ public final class KingdomPlan {
         if (door.equals("south")) {
             for (int x = mx - 2; x <= mx + 2; x++) for (int y = 0; y <= 4; y++) set(x, y, z1, "air");
             set(mx, 7, z1 + 1, "orange_wall_banner[facing=south]");
-            for (int x = mx - 3; x <= mx + 3; x += 6) set(x, 3, z1 + 1, "lantern");
+            for (int x = mx - 3; x <= mx + 3; x += 6) set(x, 3, z1 + 1, "wall_torch[facing=south]");
         } else if (door.equals("north")) {
             for (int x = mx - 2; x <= mx + 2; x++) for (int y = 0; y <= 4; y++) set(x, y, z0, "air");
             set(mx, 7, z0 - 1, "orange_wall_banner[facing=north]");
-            for (int x = mx - 3; x <= mx + 3; x += 6) set(x, 3, z0 - 1, "lantern");
+            for (int x = mx - 3; x <= mx + 3; x += 6) set(x, 3, z0 - 1, "wall_torch[facing=north]");
         } else {
             int wx = door.equals("east") ? x1 : x0, o = door.equals("east") ? 1 : -1;
             for (int z = mz - 2; z <= mz + 2; z++) for (int y = 0; y <= 4; y++) set(wx, y, z, "air");
             set(wx + o, 7, mz, "blue_wall_banner[facing=" + door + "]");
-            for (int z = mz - 3; z <= mz + 3; z += 6) set(wx + o, 3, z, "lantern");
+            for (int z = mz - 3; z <= mz + 3; z += 6) set(wx + o, 3, z, "wall_torch[facing=" + (o > 0 ? "east" : "west") + "]");
         }
         for (int x = x0 + 3; x < x1; x += 6) { set(x, 1, z0 + 1, "bookshelf"); set(x + 1, 1, z0 + 1, "bookshelf"); set(x, 2, z0 + 1, "bookshelf"); }
         for (int x = x0 + 4; x < x1 - 2; x += 8) { set(x, 1, (z0 + z1) / 2, "spruce_fence"); set(x, 2, (z0 + z1) / 2, "spruce_pressure_plate"); set(x, 5, (z0 + z1) / 2, "lantern[hanging=true]"); }
@@ -1701,6 +1702,25 @@ public final class KingdomPlan {
     private void lot(int x0, int z0, int x1, int z1, String[] walls) {
         int id = (int) (h(x0, 9, z0) * 1000);
         int[][] corners = {{x0, z0, 0}, {x1, z0, 1}, {x0, z1, 2}, {x1, z1, 3}};
+        // v5.10.67 들꽃은 집 · 마당 소품보다 먼저 깔고 (나중 것이 덮음), 집 둘레 3칸 · 마당 가운데는 비움
+        //  — 예전엔 꽃을 맨 나중에 깔아 집 벽 · 문 · 가구 · 나무 밑동 · 우물 맨 아랫줄을 꽃이 덮어써서 블록이 공중에 뜬 것처럼 보였음
+        List<int[]> rects = new ArrayList<>();
+        for (int k = 0; k < 4; k++) {
+            int w = 9 + (int) (h(x0 + k, 1, z0) * 4), d = 8 + (int) (h(x0, 2, z0 + k) * 3);
+            int[] c = corners[k];
+            int hx0 = c[2] % 2 == 0 ? c[0] : c[0] - w, hz0 = c[2] < 2 ? c[1] : c[1] - d;
+            rects.add(new int[]{hx0 - 3, hz0 - 4, hx0 + w + 3, hz0 + d + 4});
+        }
+        int cmx = (x0 + x1) / 2, cmz = (z0 + z1) / 2;
+        rects.add(new int[]{cmx - 8, cmz - 4, cmx + 8, cmz + 4});
+        String[] fl = {"poppy", "dandelion", "cornflower", "azure_bluet", "oxeye_daisy", "lily_of_the_valley", "grass", "fern"};
+        for (int x = x0; x <= x1; x++)
+            flower:
+            for (int z = z0; z <= z1; z++) {
+                if (h(x, 8, z) >= 0.035) continue;
+                for (int[] q : rects) if (x >= q[0] && x <= q[2] && z >= q[1] && z <= q[3]) continue flower;
+                set(x, 0, z, fl[(int) (h(x, 9, z) * fl.length)]);
+            }
         for (int k = 0; k < 4; k++) {
             int w = 9 + (int) (h(x0 + k, 1, z0) * 4), d = 8 + (int) (h(x0, 2, z0 + k) * 3);
             int floors = 1 + (int) (h(x0 + k, 3, z0 + k) * 2.6);
@@ -1715,8 +1735,6 @@ public final class KingdomPlan {
         if (r < 0.35) well(mx, mz);
         else if (r < 0.75) tree(mx, mz, new int[]{0, 0, 2, 1, 3}[(int) (h(mx, 6, mz) * 5)]);
         else { planter(mx - 2, mz - 2, mx + 2, mz + 2); set(mx, 1, mz, "lantern"); }
-        String[] fl = {"poppy", "dandelion", "cornflower", "azure_bluet", "oxeye_daisy", "lily_of_the_valley", "grass", "fern"};
-        for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) if (h(x, 8, z) < 0.035) set(x, 0, z, fl[(int) (h(x, 9, z) * fl.length)]);
         // v5.10.60 마당: 텃밭 · 장작더미 · 벤치 · 빨랫줄
         double q = h(x0, 7, z1);
         if (q < 0.5) {
@@ -1745,6 +1763,7 @@ public final class KingdomPlan {
     private void well(int x, int z) {
         cyl(x, z, 2, 0, 0, (a, b, c) -> "cobblestone", true);
         disc(x, -1, z, 1.2, "water");
+        disc(x, 0, z, 1.2, "air");
         for (int[] p : new int[][]{{-2, 0}, {2, 0}}) for (int y = 1; y <= 3; y++) set(x + p[0], y, z + p[1], "spruce_fence");
         for (int dx = -2; dx <= 2; dx++) set(x + dx, 4, z, "spruce_slab");
         set(x, 3, z, "chain");

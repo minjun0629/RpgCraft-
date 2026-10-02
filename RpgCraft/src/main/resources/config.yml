@@ -479,7 +479,7 @@ events:
     enabled: true            # 토 · 일요일 경험치 이벤트
     mult: 1.5                # 경험치 배율
 
-duel:                        # 야차 (1대1 결투, /야차 <닉네임>)
+duel:                        # PVP (1대1 결투, /pvp <닉네임>)
   time-limit-seconds: 180    # 제한 시간 (끝나면 무승부)
   arena-y: 250               # 하늘 결투장 높이
   arena-offset-x: 20000      # 월드 스폰에서 동쪽으로 떨어진 거리 (결투장 8개가 64칸 간격)

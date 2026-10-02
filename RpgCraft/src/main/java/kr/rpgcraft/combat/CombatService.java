@@ -366,9 +366,9 @@ public class CombatService {
         if (isNpc(victim)) return false;
         if (!(victim instanceof Player vp)) return true;
         if (vp.equals(attacker)) return false;
-        if (plugin.duels() != null && (plugin.duels().inDuel(attacker) || plugin.duels().inDuel(vp))) {   // 야차: 서로만, 시작 후에만 (PvP 설정 · 길드 · 초보 보호 무시)
+        if (plugin.duels() != null && (plugin.duels().inDuel(attacker) || plugin.duels().inDuel(vp))) {   // PVP: 서로만, 시작 후에만 (PvP 설정 · 길드 · 초보 보호 무시)
             if (plugin.duels().fighting(attacker, vp)) return true;
-            Text.actionBar(attacker, plugin.duels().pair(attacker, vp) ? "&e야차 시작 전입니다." : "&c야차 중인 사람과는 싸울 수 없습니다.");
+            Text.actionBar(attacker, plugin.duels().pair(attacker, vp) ? "&ePVP 시작 전입니다." : "&cPVP 중인 사람과는 싸울 수 없습니다.");
             return false;
         }
         Guild ga = plugin.guilds().of(attacker.getUniqueId());

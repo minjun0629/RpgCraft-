@@ -23,7 +23,7 @@ public final class BoardIcons {
             ROLL = 58, MONEY = 59;
     // 인디언 포커
     public static final int CARD_BACK = 60, CARD = 60, CHIP = 71, CALL = 72, FOLD = 73;   // CARD + 1~10
-    // 야차 명성 등급 · 허브
+    // PVP 명성 등급 · 허브
     public static final int TIER = 80, BOARD_CHIP = 87, HUB_YUT = 88, HUB_MARBLE = 89, HUB_POKER = 90, HUB_DUEL = 91;
     // v5.10.59 여러 명 (자리 0~3: 빨강 · 파랑 · 초록 · 노랑)
     public static final int YUT_SEAT = 100, YUT_MULTI = 104, YUT_HOME_SEAT = 105, TOK_SEAT = 110, TOK_MULTI = 114, CITY_SEAT = 120,   // CITY_SEAT + 자리 × 8 + 색 무리

@@ -26,7 +26,7 @@ import java.util.*;
  *  - 윷놀이 · 부루마블 · 인디언 포커 (v5.10.59 2~4명: 컴퓨터와 하거나 방을 만들어 함께, 빈자리는 컴퓨터 · 판 수 제한 없음)
  *  - 이기면(지더라도 조금) 보드 칩: 미니게임 코인과 따로 쌓이는 디지털 재화. 하루에 얻을 수 있는 칩은 board.daily-chip-cap 까지
  *  - 보드 칩 상점: 전용 칭호 · 대미지 스킨 · 장신구 (장신구 · 스킨 아이템은 거래 가능)
- *  - 야차(1대1 결투) 명성: 이기면 오르고 지면 내림 (Elo). 명성 등급 칭호 · 랭킹 (v5.10.59 랭킹 창은 /야차 로 옮김)
+ *  - PVP(1대1 결투) 명성: 이기면 오르고 지면 내림 (Elo). 명성 등급 칭호 · 랭킹 (v5.10.59 랭킹 창은 /pvp 로 옮김)
  */
 public class BoardManager implements CommandExecutor {
     public enum BoardGame {
@@ -52,7 +52,7 @@ public class BoardManager implements CommandExecutor {
     /** 보드 칩 상점 칭호 (칭호 kind 6, idx = 순서) */
     public static final String[] TITLES = {"&6윷놀이 명인", "&a부루마블 재벌", "&b포커페이스", "&d행운의 주사위", "&c&l보드게임 왕"};
     private static final int[] TITLE_PRICE = {60, 60, 60, 120, 300};
-    /** 명성 등급 (야차) */
+    /** 명성 등급 (PVP) */
     public static final String[] TIER_NAME = {"브론즈", "실버", "골드", "플래티넘", "다이아몬드", "마스터", "그랜드마스터"};
     public static final String[] TIER_COLOR = {"&6", "&7", "&e", "&3", "&b", "&d", "&c"};
     private static final int[] TIER_MIN = {0, 1100, 1250, 1400, 1550, 1700, 1700};
@@ -317,7 +317,7 @@ public class BoardManager implements CommandExecutor {
             set(29, BoardIcons.of(BoardIcons.BOARD_CHIP, (int) Math.max(1, Math.min(64, chips(d))), "&d&l보드 칩 상점",
                     "&f보유 &d" + chips(d) + " 보드 칩", "&7오늘 얻은 칩 " + earnedToday(d) + " / " + dailyCap(),
                     "", "&7전용 칭호 · 대미지 스킨 · 장신구", "&e▶ 클릭"), e -> new ShopGui(p).open(p));
-            set(33, Gui.ui(UiIcon.HELP, true, "&f도움말", "&7보드게임은 판 수 제한 없이 즐길 수 있음", "&7방을 만들어 2~4명이 함께 (빈자리는 컴퓨터)", "&7야차(1대1 결투) 명성 랭킹은 &e/야차",
+            set(33, Gui.ui(UiIcon.HELP, true, "&f도움말", "&7보드게임은 판 수 제한 없이 즐길 수 있음", "&7방을 만들어 2~4명이 함께 (빈자리는 컴퓨터)", "&7PVP(1대1 결투) 명성 랭킹은 &e/pvp",
                     "&7보드 칩은 하루 " + dailyCap() + "개까지 얻을 수 있음", "&7창을 닫으면 기권 (보상 없음 · 자리는 컴퓨터가 이어서)",
                     "&7미니게임(/미니게임) 코인과는 따로 쌓임"));
             fill(0, 44);
@@ -410,7 +410,7 @@ public class BoardManager implements CommandExecutor {
         return idx >= 0 && idx < TITLES.length && d.counter("btitle_" + idx) > 0 ? Text.c(TITLES[idx] + "&d") : "";
     }
 
-    // =================================================================== 야차 명성
+    // =================================================================== PVP 명성
     public int fame(UUID u) {
         return fame.getInt(u + ".fame", 1000);
     }
@@ -420,6 +420,25 @@ public class BoardManager implements CommandExecutor {
         ids.removeIf(k -> fame.getInt(k + ".wins") + fame.getInt(k + ".losses") == 0);
         ids.sort((x, y) -> Integer.compare(fame.getInt(y + ".fame", 1000), fame.getInt(x + ".fame", 1000)));
         return ids;
+    }
+
+    /** v5.10.61 랭킹 메뉴 PVP 탭용: 한 판 이상 한 사람을 명성 순으로 */
+    public List<UUID> fameRanking() {
+        List<UUID> out = new ArrayList<>();
+        for (String k : ranked()) try { out.add(UUID.fromString(k)); } catch (IllegalArgumentException ignored) { }
+        return out;
+    }
+
+    public String fameName(UUID u) {
+        return fame.getString(u + ".name", "?");
+    }
+
+    public int wins(UUID u) {
+        return fame.getInt(u + ".wins");
+    }
+
+    public int losses(UUID u) {
+        return fame.getInt(u + ".losses");
     }
 
     /** 0 브론즈 ~ 5 마스터, 6 그랜드마스터 (명성 1700 이상 중 1위) */
@@ -442,7 +461,7 @@ public class BoardManager implements CommandExecutor {
     private final Map<String, Integer> pairToday = new HashMap<>();
     private long pairDay;
 
-    /** 야차 승패 반영. 반환: [승자 변화, 패자 변화] (같은 상대와 하루 3판 넘으면 0) */
+    /** PVP 승패 반영. 반환: [승자 변화, 패자 변화] (같은 상대와 하루 3판 넘으면 0) */
     public int[] recordDuel(Player w, Player l) {
         String pairKey = "duelpair_" + (w.getUniqueId().compareTo(l.getUniqueId()) < 0 ? w.getUniqueId() + "_" + l.getUniqueId() : l.getUniqueId() + "_" + w.getUniqueId());
         if (pairDay != today()) { pairDay = today(); pairToday.clear(); }
@@ -464,7 +483,7 @@ public class BoardManager implements CommandExecutor {
             fame.set(w.getUniqueId() + ".fame", fw + delta[0]);
             fame.set(l.getUniqueId() + ".fame", fl + delta[1]);
             int afterW = tier(w.getUniqueId()), afterL = tier(l.getUniqueId());
-            if (afterW > beforeW) Text.announce(Text.PREFIX + Text.c("&c⚔ &e" + Text.name(w) + "&f님이 야차 명성 " + TIER_COLOR[afterW] + "&l" + TIER_NAME[afterW] + "&f 등급이 되었습니다!"));
+            if (afterW > beforeW) Text.announce(Text.PREFIX + Text.c("&c⚔ &e" + Text.name(w) + "&f님이 PVP 명성 " + TIER_COLOR[afterW] + "&l" + TIER_NAME[afterW] + "&f 등급이 되었습니다!"));
             if (afterL < beforeL) Text.msg(l, "&7명성 등급이 " + TIER_COLOR[afterL] + TIER_NAME[afterL] + "&7(으)로 내려갔습니다.");
         }
         fame.set(w.getUniqueId() + ".wins", fame.getInt(w.getUniqueId() + ".wins") + 1);
@@ -486,7 +505,7 @@ public class BoardManager implements CommandExecutor {
 
     public class FameGui extends Gui {
         public FameGui(Player p) {
-            super(6, "&8야차 명성 랭킹");
+            super(6, "&8PVP 명성 랭킹");
             List<String> r = ranked();
             int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
             for (int i = 0; i < Math.min(slots.length, r.size()); i++) {
@@ -507,13 +526,13 @@ public class BoardManager implements CommandExecutor {
             for (int i = 0; i < 6; i++) lore.add(TIER_COLOR[i] + TIER_NAME[i] + " &7명성 " + TIER_MIN[i] + "+");
             lore.add(TIER_COLOR[6] + TIER_NAME[6] + " &7마스터 중 1위");
             lore.add("");
-            lore.add(played ? (eq ? "&b명성 칭호 장착 중 (클릭해서 해제)" : "&e▶ 클릭: 명성 등급을 칭호로 장착") : "&8야차를 한 번 이상 해야 칭호를 쓸 수 있음");
+            lore.add(played ? (eq ? "&b명성 칭호 장착 중 (클릭해서 해제)" : "&e▶ 클릭: 명성 등급을 칭호로 장착") : "&8PVP를 한 번 이상 해야 칭호를 쓸 수 있음");
             set(49, BoardIcons.of(BoardIcons.TIER + t, "&e&l내 명성 " + TIER_COLOR[t] + TIER_NAME[t], lore), e -> {
                 if (!played || plugin.content() == null) return;
                 plugin.content().equipTitle(plugin.data().get(p), 7, 0);
                 new FameGui(p).open(p);
             });
-            set(4, BoardIcons.of(BoardIcons.HUB_DUEL, "&c&l야차 명성", "&7/야차 <닉네임> 으로 1대1 결투", "&7이긴 사람은 명성 +, 진 사람은 명성 -",
+            set(4, BoardIcons.of(BoardIcons.HUB_DUEL, "&c&lPVP 명성", "&7/pvp <닉네임> 으로 1대1 결투 (친선전 · 랭킹전)", "&7랭킹전에서 이긴 사람은 명성 +, 진 사람은 명성 -", "&7친선전은 명성 변화 없음",
                     "&7강한 상대를 이길수록 많이 오름", "&7같은 상대와는 하루 " + plugin.getConfig().getInt("duel.fame-pair-daily", 3) + "판까지만 반영"));
             fill(0, 53);
         }

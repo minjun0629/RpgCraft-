@@ -7,6 +7,9 @@
 - 아이템 디자인 설계: `ITEM_DESIGN.md`
 - 빌드: `build.bat` / `./build.sh` → `dist/RpgCraft.jar` · 리소스팩: `dist/RpgCraft-ResourcePack.zip`
 
+## v5.10.61
+- 야차 → PVP (/pvp · 친선전 · 랭킹전), 랭킹 메뉴에 PVP 탭.
+
 ## v5.10.60
 - 왕국 마을 집(튀어나온 위층 · 덧문 · 꽃 상자 · 지붕창 · 실내 가구 · 마당) · 시장(상점별 진열 · 깃발 줄 · 시계탑 성문 · 무늬 포석) 디테일 강화.
 

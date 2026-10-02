@@ -650,19 +650,35 @@ public class MenuManager implements Listener {
     }
 
     private class RankGui extends Gui {
-        private static final String[] TABS = {"레벨", "전투력", "재산", "길드"};
+        private static final String[] TABS = {"레벨", "전투력", "재산", "길드", "PVP"};
 
         RankGui(Player p, int tab) {
             super(6, "&8랭킹 - " + TABS[tab]);
-            Material[] tabIcons = {Material.EXPERIENCE_BOTTLE, Material.DIAMOND_SWORD, Material.GOLD_BLOCK, Material.BLUE_BANNER};
-            for (int i = 0; i < 4; i++) {
+            Material[] tabIcons = {Material.EXPERIENCE_BOTTLE, Material.DIAMOND_SWORD, Material.GOLD_BLOCK, Material.BLUE_BANNER, Material.IRON_SWORD};
+            for (int i = 0; i < TABS.length; i++) {
                 int t = i;
-                set(2 + i + (i >= 2 ? 1 : 0), icon(tabIcons[i], (i == tab ? "&a&l▶ " : "&f") + TABS[i], List.of("&e▶ 클릭")), e -> new RankGui(p, t).open(p));
+                set(2 + i, icon(tabIcons[i], (i == tab ? "&a&l▶ " : "&f") + TABS[i], List.of("&e▶ 클릭")), e -> new RankGui(p, t).open(p));
             }
             if (System.currentTimeMillis() - ranksBuilt > 60_000) rebuildRanks();
             int[] slots = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
             String[] medal = {"&6&l1위", "&f&l2위", "&c&l3위"};
-            if (tab == 3) {
+            if (tab == 4 && plugin.boards() != null) {   // v5.10.61 PVP 명성 랭킹
+                var bm = plugin.boards();
+                List<UUID> fr = bm.fameRanking();
+                for (int i = 0; i < Math.min(slots.length, fr.size()); i++) {
+                    UUID u = fr.get(i);
+                    int t = bm.tier(u);
+                    Player online = Bukkit.getPlayer(u);
+                    List<String> lore = List.of(kr.rpgcraft.board.BoardManager.TIER_COLOR[t] + kr.rpgcraft.board.BoardManager.TIER_NAME[t] + " &f명성 " + bm.fame(u),
+                            "&7" + bm.wins(u) + "승 " + bm.losses(u) + "패", online != null ? "&a● 접속 중" : "&8● 오프라인");
+                    String title = (i < 3 ? medal[i] : "&7" + (i + 1) + "위") + " &f" + bm.fameName(u);
+                    set(slots[i], online != null ? head(online, title, lore) : kr.rpgcraft.board.BoardIcons.of(kr.rpgcraft.board.BoardIcons.TIER + t, title, lore));
+                }
+                if (fr.isEmpty()) set(22, icon(Material.IRON_SWORD, "&7아직 PVP 기록이 없습니다", List.of("&7/pvp <닉네임> 으로 1대1 결투 신청")));
+                int my = fr.indexOf(p.getUniqueId());
+                set(49, head(p, "&e내 PVP 순위: " + (my < 0 ? "-" : (my + 1) + "위"), List.of("&7명성 " + bm.fame(p.getUniqueId()) + " · " + bm.tierLabel(p.getUniqueId()),
+                        "&7이기면 명성 +, 지면 - (강한 상대일수록 많이)", "&e▶ 클릭: 명성 등급 칭호 (/pvp)")), e -> bm.new FameGui(p).open(p));
+            } else if (tab == 3) {
                 List<Guild> gs = new ArrayList<>(plugin.guilds().all());
                 gs.sort((a, b) -> a.level != b.level ? Integer.compare(b.level, a.level) : Long.compare(b.bank, a.bank));
                 for (int i = 0; i < Math.min(slots.length, gs.size()); i++) {

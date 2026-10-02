@@ -106,7 +106,9 @@ public enum UiIcon {
     TOTEM,
     INGOT,
     LIGHTNING,
-    CROWN;
+    CROWN,
+    CONSTELLATION,
+    SOUL;
 
     public static final int BASE = 12600;
 

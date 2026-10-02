@@ -134,13 +134,31 @@ public final class KingdomPlan {
 
     /** 원뿔 첨탑 (반지름 r → 0, 높이 hgt) + 금 장식 */
     void spire(int cx, int cz, double r, int y0, int hgt, String mat, String tip) {
+        spire(cx, cz, r, y0, hgt, mat, tip, null);
+    }
+
+    /** 원뿔 첨탑 — v5.10.59 바깥 테두리는 가운데를 향한 계단으로 깔아 비늘 지붕처럼 매끈하게. flag 가 있으면 꼭대기에 깃대 + 깃발 */
+    void spire(int cx, int cz, double r, int y0, int hgt, String mat, String tip, String flag) {
+        String stairs = mat.endsWith("_tiles") ? mat.substring(0, mat.length() - 6) + "_tile_stairs" : mat.endsWith("_bricks") ? mat.substring(0, mat.length() - 1) + "_stairs" : mat + "_stairs";
         for (int k = 0; k < hgt; k++) {
-            double rr = r * (1 - (double) k / hgt);
-            if (rr < 0.4) rr = 0.4;
-            cyl(cx, cz, rr, y0 + k, y0 + k, (a, b, c) -> mat, true);
+            double rr = Math.max(0.4, r * (1 - (double) k / hgt));
+            int R = (int) Math.ceil(rr);
+            for (int dx = -R; dx <= R; dx++)
+                for (int dz = -R; dz <= R; dz++) {
+                    double d = Math.sqrt(dx * dx + dz * dz);
+                    if (d > rr + 0.3 || d < rr - 1.25) continue;
+                    boolean edge = d > rr - 0.7 && rr > 1.2;
+                    String f = Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? "west" : "east") : (dz > 0 ? "north" : "south");
+                    set(cx + dx, y0 + k, cz + dz, edge ? stairs + "[facing=" + f + "]" : mat);
+                }
         }
         set(cx, y0 + hgt, cz, tip);
-        set(cx, y0 + hgt + 1, cz, "lightning_rod");
+        if (flag == null) set(cx, y0 + hgt + 1, cz, "lightning_rod");
+        else {
+            set(cx, y0 + hgt + 1, cz, "end_rod");
+            set(cx, y0 + hgt + 2, cz, "end_rod");
+            set(cx, y0 + hgt + 3, cz, flag + "_banner[rotation=4]");
+        }
     }
 
     void tree(int x, int z, int kind) {
@@ -517,6 +535,15 @@ public final class KingdomPlan {
                 set(-R - 1, top - 3, cz + s, "blue_wall_banner[facing=west]");
             }
         }
+        for (int s = -R + 12; s <= R - 12; s += 12) {   // 바깥 면 붙임기둥 + 첨탑 장식
+            if (Math.abs(s) < 22) continue;
+            int[][] faces = {{s, cz + R + 1, 0}, {s, cz - R - 1, 0}, {R + 1, cz + s, 1}, {-R - 1, cz + s, 1}};
+            for (int[] f : faces) {
+                for (int y = 3; y <= top - 2; y++) set(f[0], y, f[1], y % 7 == 0 ? "chiseled_quartz_block" : "quartz_pillar");
+                for (int y = top + 1; y <= top + 3; y++) set(f[0], y, f[1], y == top + 3 ? "gold_block" : "quartz_pillar");
+                set(f[0], top + 4, f[1], "end_rod");
+            }
+        }
         for (int[] q : new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}) castleTower(q[0] * R, cz + q[1] * R, 11, 44);
         for (int[] q : new int[][]{{0, -1}, {1, 0}, {-1, 0}}) castleTower(q[0] * R, cz + q[1] * R, 8, 36);
         // 남쪽 성문루 (광장을 바라봄)
@@ -610,7 +637,32 @@ public final class KingdomPlan {
         cyl(cx, cz, r + 1, hgt + 1, hgt + 1, (a, b, c) -> "smooth_quartz", false);
         cyl(cx, cz, r + 1, hgt + 2, hgt + 2, (a, b, c) -> h(a, b, c) < 0.55 ? "quartz_slab" : "smooth_quartz", true);
         cyl(cx, cz, r + 1, hgt + 1, hgt + 1, (a, b, c) -> "gold_block", true);
-        spire(cx, cz, r + 0.6, hgt + 3, (int) (r * 2.0), "deepslate_tiles", "gold_block");
+        for (int dx = -r - 1; dx <= r + 1; dx++)   // 돌출 까치발 (난간 아래)
+            for (int dz = -r - 1; dz <= r + 1; dz++) {
+                double d = Math.sqrt(dx * dx + dz * dz);
+                if (d > r + 1.3 || d < r + 0.45) continue;
+                String f = Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? "west" : "east") : (dz > 0 ? "north" : "south");
+                if (Math.floorMod(dx + dz, 2) == 0) set(cx + dx, hgt, cz + dz, "quartz_stairs[facing=" + f + ",half=top]");
+            }
+        int sh = (int) (r * 2.0);
+        spire(cx, cz, r + 0.6, hgt + 3, sh, "deepslate_tiles", "gold_block", "blue");
+        for (int k = 0; k < 4; k++) {   // 첨탑 지붕창 (4방향)
+            int dx = k == 0 ? 1 : k == 1 ? -1 : 0, dz = k == 2 ? 1 : k == 3 ? -1 : 0;
+            int rr = (int) Math.round((r + 0.6) * (1 - 3.0 / sh)) , y = hgt + 6;
+            int bx = cx + dx * rr, bz = cz + dz * rr;
+            for (int t = -1; t <= 1; t++)
+                for (int yy = y; yy <= y + 2; yy++) {
+                    int x = bx + (dz != 0 ? t : 0), z = bz + (dx != 0 ? t : 0);
+                    set(x, yy, z, t == 0 && yy <= y + 1 ? "light_blue_stained_glass" : "smooth_quartz");
+                    set(x - dx, yy, z - dz, "smooth_quartz");
+                }
+            String face = dx > 0 ? "east" : dx < 0 ? "west" : dz > 0 ? "south" : "north";
+            set(bx + (dz != 0 ? -1 : 0), y + 3, bz + (dx != 0 ? -1 : 0), "deepslate_tile_stairs[facing=" + (dz != 0 ? "east" : "south") + "]");
+            set(bx + (dz != 0 ? 1 : 0), y + 3, bz + (dx != 0 ? 1 : 0), "deepslate_tile_stairs[facing=" + (dz != 0 ? "west" : "north") + "]");
+            set(bx, y + 3, bz, "deepslate_tiles");
+            set(bx, y + 4, bz, "gold_block");
+            set(bx + dx, y - 1, bz + dz, "quartz_slab[type=top]");
+        }
         for (int k = 0; k < 4; k++) {
             String f = new String[]{"south", "north", "east", "west"}[k];
             int dx = k == 2 ? r + 1 : k == 3 ? -r - 1 : 0, dz = k == 0 ? r + 1 : k == 1 ? -r - 1 : 0;
@@ -624,7 +676,6 @@ public final class KingdomPlan {
         // 기단 (3칸 높이) + 정문 큰 계단
         box(x0 - 3, 0, z0 - 3, x1 + 3, 2, z1 + 3, "polished_andesite");
         for (int x = x0 - 3; x <= x1 + 3; x++) set(x, 3, z1 + 3, "quartz_slab");
-        for (int i = 0; i < 4; i++) for (int x = -9; x <= 9; x++) set(x, i - 1 + 1, z1 + 7 - i, "quartz_stairs[facing=north]");
         // 벽: 버팀벽 · 큰 아치 창 · 띠
         for (int x = x0; x <= x1; x++)
             for (int z = z0; z <= z1; z++) {
@@ -668,6 +719,60 @@ public final class KingdomPlan {
                 set(x, hgt + 6, s + (s < (z0 + z1) / 2 ? -1 : 1), "light_blue_stained_glass");
                 spire(x, s, 1.6, hgt + 8, 4, "deepslate_tiles", "gold_block");
             }
+        // v5.10.59 버팀벽 위 작은 첨탑 (지붕선 장식)
+        for (int x = x0; x <= x1; x += 8)
+            for (int zz : new int[]{z1 + 1, z0 - 1}) {
+                if (zz == z1 + 1 && Math.abs(x) <= 16) continue;
+                for (int y = hgt - 3; y <= hgt + 1; y++) set(x, y, zz, "quartz_pillar");
+                spire(x, zz, 0.9, hgt + 2, 3, "deepslate_tiles", "gold_block");
+            }
+        // v5.10.59 앞으로 튀어나온 정면 누각 (박공 + 장미창) · 기둥 현관 (삼각 박공 · 발코니)
+        int px0 = -14, px1 = 14, pz0 = z1 - 1, pz1 = z1 + 5, ph = hgt + 4;
+        box(-16, 0, z1 + 1, 16, 2, z1 + 12, "polished_andesite");
+        for (int x = px0; x <= px1; x++)
+            for (int z = pz0; z <= pz1; z++) {
+                boolean edge = x == px0 || x == px1 || z == pz1;
+                for (int y = 3; y <= ph; y++) {
+                    if (!edge) { set(x, y, z, y == 3 ? "polished_deepslate" : "air"); continue; }
+                    boolean corner = (x == px0 || x == px1) && z == pz1;
+                    boolean win = !corner && z == pz1 && Math.abs(x) >= 7 && Math.abs(x) <= 11 && (y >= 6 && y <= 13 || y >= 21 && y <= 27);
+                    set(x, y, z, corner ? (y % 6 == 0 ? "chiseled_quartz_block" : "quartz_pillar") : y == 17 || y == 18 ? "gold_block" : win ? "blue_stained_glass_pane" : light(x, y, z));
+                }
+            }
+        for (int k = 0; k <= 16; k++)   // 남쪽을 보는 박공 (용마루가 남북)
+            for (int z = pz0 - 2; z <= pz1 + 1; z++) {
+                int y = ph + 1 + k;
+                if (px0 - 1 + k > px1 + 1 - k) break;
+                set(px0 - 1 + k, y, z, "deepslate_tile_stairs[facing=east]");
+                set(px1 + 1 - k, y, z, "deepslate_tile_stairs[facing=west]");
+                if (z == pz1) for (int x = px0 + k; x <= px1 - k; x++) set(x, y, z, light(x, y, z));
+            }
+        for (int z = pz0 - 2; z <= pz1 + 1; z++) set(0, ph + 16, z, "gold_block");
+        for (int dx = -5; dx <= 5; dx++)   // 장미창
+            for (int dy = -5; dy <= 5; dy++) {
+                double d = Math.sqrt(dx * dx + dy * dy);
+                if (d > 5.3) continue;
+                double a = Math.atan2(dy, dx);
+                String g = d < 1.3 ? "yellow_stained_glass" : d > 4.4 ? "gold_block" : ((int) ((a + Math.PI) / (Math.PI / 6)) % 2 == 0 ? "blue_stained_glass" : "light_blue_stained_glass");
+                set(dx, ph + 7 + dy, pz1, g);
+            }
+        for (int x = -4; x <= 4; x++) for (int y = 3; y <= 14 - (Math.abs(x) >= 3 ? 1 : 0) - (Math.abs(x) == 4 ? 1 : 0); y++) set(x, y, pz1, "air");
+        for (int y = 3; y <= 15; y++) { set(-5, y, pz1, "chiseled_quartz_block"); set(5, y, pz1, "chiseled_quartz_block"); }
+        int cz1 = pz1 + 6;   // 현관 기둥 줄
+        for (int x : new int[]{-11, -6, 6, 11})
+            for (int y = 3; y <= 16; y++) set(x, y, cz1, y == 3 || y == 16 ? "chiseled_quartz_block" : "quartz_pillar");
+        for (int x = -12; x <= 12; x++)
+            for (int z = pz1 + 1; z <= cz1 + 1; z++) {
+                set(x, 17, z, "smooth_quartz");
+                if (z == cz1 + 1 || Math.abs(x) == 12) set(x, 18, z, Math.floorMod(x + z, 2) == 0 ? "quartz_pillar" : "smooth_quartz_slab");   // 발코니 난간
+            }
+        for (int k = 0; k <= 7; k++)   // 삼각 박공 (현관 위)
+            for (int x = -12 + k * 12 / 7; x <= 12 - k * 12 / 7; x++) set(x, 19 + k, cz1 + 1, k == 0 || Math.abs(x) >= 12 - k * 12 / 7 - 1 ? "quartz_bricks" : "smooth_quartz");
+        set(0, 22, cz1 + 2, "blue_wall_banner[facing=south]");
+        set(0, 27, cz1 + 1, "gold_block");
+        for (int z = pz1 + 2; z <= cz1; z += 2) { set(-8, 16, z, "chain"); set(-8, 15, z, "lantern[hanging=true]"); set(8, 16, z, "chain"); set(8, 15, z, "lantern[hanging=true]"); }
+        for (int i = 0; i < 4; i++) for (int x = -10; x <= 10; x++) set(x, 2 - i, cz1 + 2 + i, "quartz_stairs[facing=north]");   // 큰 계단
+        for (int z = pz1 + 1; z <= cz1 + 1; z++) for (int x = -2; x <= 2; x++) set(x, 3, z, Math.abs(x) == 2 ? "yellow_carpet" : "red_carpet");
         // 모서리 탑 · 가운데 대탑
         for (int[] q : new int[][]{{x0, z0}, {x1, z0}, {x0, z1}, {x1, z1}}) castleTower(q[0], q[1], 8, 52);
         castleTower(0, z0 - 6, 12, 74);

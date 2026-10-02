@@ -97,6 +97,59 @@ def yut_station(kind):
     return done(img)
 
 
+SEAT_COLS = ["e84a4a", "3a8aff", "4ac85a", "f0c83a"]
+
+
+def yut_seat(k):
+    img, d = new()
+    tile(d, "a8784a")
+    token(d, 16, 16, SEAT_COLS[k])
+    return done(img)
+
+
+def yut_multi():
+    img, d = new()
+    tile(d, "a8784a")
+    for k, (x, y) in enumerate(((11, 11), (21, 11), (11, 21), (21, 21))):
+        token(d, x, y, SEAT_COLS[k], 4.6)
+    return done(img)
+
+
+def tok_seat(k):
+    img, d = new()
+    tile(d, "f4ecd8", "3a2a1a", 3)
+    token(d, 16, 16, SEAT_COLS[k], 7)
+    return done(img)
+
+
+def tok_multi():
+    img, d = new()
+    tile(d, "f4ecd8", "3a2a1a", 3)
+    for k, (x, y) in enumerate(((11, 11), (21, 11), (11, 21), (21, 21))):
+        token(d, x, y, SEAT_COLS[k], 4.6)
+    return done(img)
+
+
+def room(kind):
+    img, d = new()
+    if kind == "room":
+        tile(d, "3a5a8a")
+        for k, x in enumerate((9, 16, 23)):
+            d.ellipse(B(x - 3, 8, x + 3, 14), fill=_rgb(SEAT_COLS[k]))
+            d.rectangle(B(x - 4, 15, x + 4, 24), fill=_rgb(SEAT_COLS[k]))
+    elif kind == "bot":
+        tile(d, "4a4e5a")
+        d.rectangle(B(8, 10, 24, 24), fill=_rgb("c8ccd8"))
+        d.ellipse(B(11, 14, 15, 18), fill=_rgb("3a8aff"))
+        d.ellipse(B(17, 14, 21, 18), fill=_rgb("3a8aff"))
+        d.line(P((16, 10), (16, 6)), fill=_rgb("c8ccd8"), width=int(1.2 * K))
+        d.ellipse(B(14.5, 4, 17.5, 7), fill=_rgb("ff6a6a"))
+    else:
+        tile(d, "3ab84a")
+        d.polygon(P((12, 8), (25, 16), (12, 24)), fill=_rgb("f8fff0"))
+    return done(img)
+
+
 def yut_piece(who):
     img, d = new()
     tile(d, "a8784a")
@@ -169,7 +222,7 @@ def city(gi, owner=None):
         d.rectangle(B(x, 19 - k * 2, x + 5, 27), fill=_rgb("b8ac94"))
         d.rectangle(B(x + 1.2, 21 - k * 2, x + 2.4, 22.4 - k * 2), fill=_rgb("6a5e4a"))
     if owner:
-        col = "e84a4a" if owner == "me" else "3a8aff"
+        col = SEAT_COLS[owner] if isinstance(owner, int) else "e84a4a" if owner == "me" else "3a8aff"
         d.line(P((22, 9), (22, 28)), fill=_rgb("3a2a1a"), width=int(1.2 * K))
         d.polygon(P((22.6, 9), (30, 12.5), (22.6, 16)), fill=_rgb(col))
     return done(img)
@@ -377,6 +430,15 @@ def entries():
         out.append((80 + i, "tier_" + TIERS[i][0], lambda i=i: emblem(i)))
     out += [(87, "board_chip", lambda: hub("chip")), (88, "hub_yut", lambda: hub("yut")), (89, "hub_marble", lambda: hub("marble")),
             (90, "hub_poker", lambda: hub("poker")), (91, "hub_duel", lambda: hub("duel"))]
+    # v5.10.59 여러 명 (자리 색)
+    for k in range(4):
+        out.append((100 + k, "yut_seat%d" % k, lambda k=k: yut_seat(k)))
+        out.append((105 + k, "yut_home_seat%d" % k, lambda k=k: yut_home(SEAT_COLS[k])))
+        out.append((110 + k, "tok_seat%d" % k, lambda k=k: tok_seat(k)))
+        for g in range(8):
+            out.append((120 + k * 8 + g, "city%d_seat%d" % (g, k), lambda g=g, k=k: city(g, k)))
+    out += [(104, "yut_multi", yut_multi), (114, "tok_multi", tok_multi),
+            (160, "room", lambda: room("room")), (161, "room_bot", lambda: room("bot")), (162, "room_start", lambda: room("start"))]
     return out
 
 

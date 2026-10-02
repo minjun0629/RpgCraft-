@@ -119,6 +119,8 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.feature.MobFightStick mobFight;   // v5.10.45 오른쪽 위 대상 정보   // v5.10.45 보드게임 · 야차 명성
     private kr.rpgcraft.world.QuestNpcManager questNpcs;
     private kr.rpgcraft.world.KingdomBuilder kingdom;
+    private kr.rpgcraft.feature.ConstellationManager constellation;
+    private kr.rpgcraft.feature.SoulManager souls;
     private kr.rpgcraft.world.CasinoManager casino;
     private kr.rpgcraft.boss.BossModelManager bossModels;
     private kr.rpgcraft.mob.MobModelManager mobModels;
@@ -246,7 +248,7 @@ public final class RpgCraft extends JavaPlugin {
         playerCommands = pc;
         getServer().getPluginManager().registerEvents(pc, this);
         for (String c : new String[]{"stat", "info", "money", "pay", "check", "potionbag", "rune", "skill", "enhance", "job",
-                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "showoff", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
+                "craft", "rename", "look", "essence", "gc", "shop", "absorb", "menu", "trade", "showoff", "constellation", "souls", "escape", "casino", "call", "accessory", "coupon", "quickkey", "rebirth", "potential", "bounty", "dummy", "runefuse", "trash", "guidebook", "tpa", "tpaccept", "tpdeny", "ticket", "partychat", "nick", "enderchest", "limitbreak", "pack", "dismantle", "rebirthshop"}) command(c, pc);
         command("guild", new GuildCommand(this));
         command("war", new WarCommand(this));
         AdminCommand adminCmd = new AdminCommand(this);
@@ -533,6 +535,18 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.TargetHud targetHud() { return targetHud; }
     public kr.rpgcraft.feature.MobFightStick mobFight() { return mobFight; }
     public kr.rpgcraft.world.QuestNpcManager questNpcs() { return questNpcs; }
+
+    /** v5.10.59 별자리 특성 트리 */
+    public kr.rpgcraft.feature.ConstellationManager constellation() {
+        if (constellation == null) constellation = new kr.rpgcraft.feature.ConstellationManager(this);
+        return constellation;
+    }
+
+    /** v5.10.59 몬스터 영혼석 수집 */
+    public kr.rpgcraft.feature.SoulManager souls() {
+        if (souls == null) souls = new kr.rpgcraft.feature.SoulManager(this);
+        return souls;
+    }
 
     /** v5.10.56 스폰 왕국 짓기 */
     public kr.rpgcraft.world.KingdomBuilder kingdom() {

@@ -99,6 +99,7 @@ public class DuelManager implements CommandExecutor, TabCompleter, Listener {
     public boolean onCommand(CommandSender s, Command c, String label, String[] a) {
         if (!(s instanceof Player p)) return true;
         if (a.length < 1) {
+            if (plugin.boards() != null) plugin.boards().new FameGui(p).open(p);   // v5.10.59 명성 랭킹은 /야차 에서 (보드게임에서 옮김)
             Text.msg(p, "&e/야차 <닉네임> &7- 1대1 결투 신청 (Tab 자동완성)");
             Text.msg(p, "&e/야차 수락 &7· &e/야차 거절 &7- 받은 신청에 답하기");
             Text.msg(p, "&e/야차 랭킹 &7- 명성 랭킹 · 등급 칭호 (이기면 명성 +, 지면 -)");

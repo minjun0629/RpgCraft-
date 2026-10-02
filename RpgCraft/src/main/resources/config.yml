@@ -314,6 +314,18 @@ kingdom:                    # v5.10.56 스폰 왕국 (/rpg관리 kingdom build c
   ms-per-tick: 30           # 짓는 동안 한 틱에 쓸 시간 (클수록 빨리 짓지만 서버가 느려짐)
   level-from-wall: true     # 왕국을 지은 월드: 몬스터 레벨을 스폰이 아니라 왕국 부지 끝(성 밖)부터 셈 → 성 밖 바로 앞이 Lv.1, mobs.level.blocks-per-level 칸마다 +1
 
+constellation:              # v5.10.59 별자리 특성 트리 (/별자리)
+  shards-per-level: 1       # 레벨 업마다 별 조각
+  shards-per-boss: 3        # 보스 처치 (근처 48칸 참여자 모두)
+  cost-mult: 1.0            # 별 밝히는 비용 배율 (별자리 하나 다 밝히면 기본 248 조각)
+  reset-cost: 3000000       # 초기화 비용 (쓴 조각은 모두 돌려받음)
+
+souls:                      # v5.10.59 몬스터 영혼석 (/영혼석)
+  enabled: true
+  chance: 0.004             # 일반 몬스터 영혼석 확률 (0.4%)
+  elite-mult: 5             # 정예 · 중간 보스 배율
+  boss-chance: 0.35         # 보스 (근처 48칸 참여자마다)
+
 showoff:                    # /자랑 (손에 든 아이템을 채팅에 자랑, 아이템 보기 버튼)
   cooldown-seconds: 30
 

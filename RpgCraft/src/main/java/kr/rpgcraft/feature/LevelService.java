@@ -49,6 +49,7 @@ public class LevelService {
         }
         if (d.level >= maxLevel(d)) d.exp = 0;
         if (d.level > before) {
+            plugin.constellation().gainShards(p, (d.level - before) * plugin.getConfig().getInt("constellation.shards-per-level", 1), "레벨 업");   // v5.10.59 별자리
             plugin.stats().refresh(p);
             d.hp = d.stats.maxHp;
             Text.actionBar(p, "&6&l▲ 레벨 업! &eLv." + d.level + " &7(스탯 +" + (d.level - before) * plugin.getConfig().getInt("player.stat-per-level", 5) + ")");

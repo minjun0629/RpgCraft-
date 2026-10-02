@@ -1,5 +1,5 @@
 name: RpgCraft
-version: '5.10.58'
+version: '5.10.59'
 main: kr.rpgcraft.RpgCraft
 api-version: '1.20'
 description: RpgCraft 대규모 RPG·PvP 플러그인 (레벨/스탯/강화/보스/대장장이/룬/사신수/길드/공성전)
@@ -194,6 +194,12 @@ commands:
   trade:
     description: 플레이어 거래
     aliases: [거래]
+  constellation:
+    description: 별자리 특성 트리 (별 조각으로 별을 밝혀 영구 능력치)
+    aliases: [별자리]
+  souls:
+    description: 몬스터 영혼석 수집 (1~5성 · 계열 세트)
+    aliases: [영혼석]
   showoff:
     description: 손에 든 아이템 자랑 (채팅에 아이템 보기 버튼)
     aliases: [자랑]

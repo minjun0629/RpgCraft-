@@ -171,6 +171,8 @@ public class StatCalculator {
         t.addAll(plugin.jobs().bonus(d));
         if (plugin.accessories() != null) t.addAll(plugin.accessories().bonus(d));
         if (plugin.pets() != null) t.addAll(plugin.pets().bonus(d));   // 꺼내 둔 펫
+        t.addAll(plugin.constellation().bonus(d));   // v5.10.59 별자리
+        t.addAll(plugin.souls().bonus(d));           // v5.10.59 영혼석
         HiddenStat.apply(d, t);   // 히든 스탯
         t.addAll(kr.rpgcraft.world.HiddenJobManager.bonus(d));
         int reb = (int) d.counter("rebirth");

@@ -253,6 +253,9 @@ public class MenuManager implements Listener {
             set(41, icon(kr.rpgcraft.gui.UiIcon.HELP, "&f&l도움말", List.of("&7조작키와 시스템 안내", "&e▶ 클릭")), e -> new HelpGui(p).open(p));
             set(47, icon(kr.rpgcraft.gui.UiIcon.TOWER, "&5&l무한의 탑", List.of("&7최고 " + (int) d.counter("tower_best") + "층", "&e▶ 클릭")), e -> plugin.tower().open(p));   // v5.10.30
             set(51, icon(kr.rpgcraft.gui.UiIcon.MASTERY, "&b&l숙련도", List.of("&7생활 · 전투 · 직업 (최대 50)", "&e▶ 클릭")), e -> plugin.mastery().open(p));   // v5.10.30
+            set(46, icon(kr.rpgcraft.gui.UiIcon.CONSTELLATION, "&b&l별자리", List.of("&7별 조각으로 별을 밝혀 영구 능력치", "&7밝힌 별 " + plugin.constellation().litCount(d) + "/48 · 조각 " + plugin.constellation().shards(d), "&e▶ 클릭")),
+                    e -> plugin.constellation().open(p));   // v5.10.59
+            set(52, icon(kr.rpgcraft.gui.UiIcon.SOUL, "&3&l영혼석", List.of("&7몬스터 영혼석을 모아 1~5성", "&7계열 세트 효과", "&e▶ 클릭")), e -> plugin.souls().open(p));   // v5.10.59
             set(49, Gui.ui(kr.rpgcraft.gui.UiIcon.NAV_CLOSE, true, "&c닫기"), e -> p.closeInventory());
             border(this, 6);
             // UI 설명 제거: 값(숫자)이나 ▶ 가 있는 줄만 남긴다

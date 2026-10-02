@@ -89,6 +89,8 @@ public class PlayerCommands implements CommandExecutor, TabCompleter, org.bukkit
                 }
             }
             case "showoff" -> showOff.handle(p, a);   // v5.10.54 /자랑
+            case "constellation" -> plugin.constellation().open(p);   // v5.10.59 /별자리
+            case "souls" -> plugin.souls().open(p);                   // v5.10.59 /영혼석
             case "escape" -> escape(p);
             case "casino" -> plugin.casino().open(p);
             case "call" -> callAdmin(p, String.join(" ", a));

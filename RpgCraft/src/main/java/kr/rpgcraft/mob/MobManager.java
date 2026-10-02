@@ -320,6 +320,12 @@ public class MobManager implements Listener {
         if (s == null) return;
         e.setDroppedExp(0);
         if (s.bossId != null) {
+            // v5.10.59 근처(48칸)에서 싸운 사람: 별 조각 · 영혼석
+            List<Player> near = new ArrayList<>();
+            for (Player np : ent.getWorld().getPlayers()) if (!np.isDead() && np.getLocation().distanceSquared(ent.getLocation()) < 48 * 48) near.add(np);
+            int sh = plugin.getConfig().getInt("constellation.shards-per-boss", 3);
+            for (Player np : near) plugin.constellation().gainShards(np, sh, "보스 처치");
+            plugin.souls().onKill(ent, s, near);
             plugin.bosses().onBossDeath(ent, s, e);
             return;
         }
@@ -340,6 +346,7 @@ public class MobManager implements Listener {
         if (plugin.tiers() == null || plugin.tiers().tier(ent) == kr.rpgcraft.mob.MonsterTierManager.Tier.NORMAL)
             expMul *= plugin.getConfig().getDouble("mobs.normal-exp-mult", 0.75);   // v5.10.34 일반 몬스터 경험치 75%
         plugin.party().giveKillReward(killer, s, s.exp * expMul, (long) (moneyRoll(s.money) * plugin.jobs().moneyMult(killer)));
+        plugin.souls().onKill(ent, s, List.of(killer));   // v5.10.59 영혼석
         ThreadLocalRandom r = ThreadLocalRandom.current();
         double cc = plugin.getConfig().getDouble("mobs.crystal-chance", 0.06) * (s.level >= 90 ? 0.25 : s.level >= 60 ? 0.4 : s.level >= 30 ? 0.6 : 1.0);   // 고등급 결정일수록 드물게
         if (r.nextDouble() < cc) {

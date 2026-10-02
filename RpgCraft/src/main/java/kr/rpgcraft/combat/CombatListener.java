@@ -68,13 +68,14 @@ public class CombatListener implements Listener {
     public void onMobInfight(org.bukkit.event.entity.EntityTargetLivingEntityEvent e) {
         if (!(e.getTarget() instanceof Player) && e.getTarget() != null && !(e.getEntity() instanceof Player)
                 && !(e.getEntity() instanceof org.bukkit.entity.Tameable t && t.isTamed())
-                && !kr.rpgcraft.world.NecromancyManager.isMinion(e.getTarget())
+                && !kr.rpgcraft.world.NecromancyManager.isMinion(e.getTarget()) && !kr.rpgcraft.royal.SculptManager.isLife(e.getTarget())
                 && !kr.rpgcraft.feature.MobFightStick.fighting(e.getEntity(), e.getTarget())) e.setCancelled(true);   // v5.10.9 · v5.10.45 결투 막대기로 붙인 짝은 예외 네크로맨서 군단원은 몬스터가 노릴 수 있음
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onMobHitMob(EntityDamageByEntityEvent e) {
-        if (e.getEntity() instanceof Player || !(e.getEntity() instanceof LivingEntity) || kr.rpgcraft.world.NecromancyManager.isMinion(e.getEntity())) return;
+        if (e.getEntity() instanceof Player || !(e.getEntity() instanceof LivingEntity) || kr.rpgcraft.world.NecromancyManager.isMinion(e.getEntity())
+                || kr.rpgcraft.royal.SculptManager.isLife(e.getEntity())) return;   // v5.11.0 생명체도 몬스터에게 맞음
         Entity src = e.getDamager() instanceof Projectile pr && pr.getShooter() instanceof Entity sh ? sh : e.getDamager();
         if (src instanceof Player || src instanceof org.bukkit.entity.Tameable t && t.isTamed()) return;
         if (kr.rpgcraft.feature.MobFightStick.fighting(src, e.getEntity())) return;   // v5.10.45 관리자 몬스터 결투

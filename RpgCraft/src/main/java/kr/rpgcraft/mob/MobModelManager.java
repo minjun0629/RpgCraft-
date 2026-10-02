@@ -104,7 +104,7 @@ public class MobModelManager implements Listener {
         java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
         for (UUID id : new ArrayList<>(rigs.keySet())) {
             if (!(Bukkit.getEntity(id) instanceof Mob m) || !m.isValid() || m.isDead() || !m.isOnGround()) continue;
-            if (kr.rpgcraft.world.NecromancyManager.isMinion(m)) continue;   // 군단원은 주인을 따라다님
+            if (kr.rpgcraft.world.NecromancyManager.isMinion(m) || kr.rpgcraft.royal.SculptManager.isLife(m)) continue;   // 군단원 · 생명체는 주인을 따라다님
             if (m.getTarget() != null && m.getTarget().isValid()) continue;   // 싸우는 중이면 게임 AI 가 쫓아감
             if (m instanceof Slime || rnd.nextDouble() > 0.22) continue;
             if (nearest(m, 48) > 48) continue;

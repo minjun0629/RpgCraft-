@@ -127,6 +127,8 @@ public final class RpgCraft extends JavaPlugin {
     private kr.rpgcraft.mob.CustomMobManager customMobs;
     private kr.rpgcraft.util.LegacyMigrator migrator;
     private kr.rpgcraft.pack.PackManager pack;
+    private kr.rpgcraft.royal.RoyalRoadManager royal;   // v5.11.0 로열 로드 (행동 스탯 · 명성 · 사망 페널티)
+    private kr.rpgcraft.royal.SculptManager sculpt;     // v5.11.0 조각술 · 달빛 조각사 · 조각 생명부여
 
     public static RpgCraft get() {
         return instance;
@@ -215,6 +217,11 @@ public final class RpgCraft extends JavaPlugin {
         command("mastery", mastery);
         tower = new kr.rpgcraft.world.TowerManager(this);   // v5.10.30 무한의 탑
         command("tower", tower);
+        royal = new kr.rpgcraft.royal.RoyalRoadManager(this);   // v5.11.0 로열 로드
+        for (String c : new String[]{"royalroad", "status", "pray"}) command(c, royal);
+        sculpt = new kr.rpgcraft.royal.SculptManager(this);     // v5.11.0 조각술
+        command("sculpt", sculpt);
+        command("life", sculpt);
         invStats = new kr.rpgcraft.feature.InvStatManager(this);   // v5.10.34 인벤토리 위 스탯 칸
         damageSkins = new kr.rpgcraft.feature.DamageSkinManager(this);   // v5.10.35 대미지 스킨
         command("damageskin", damageSkins);
@@ -284,6 +291,8 @@ public final class RpgCraft extends JavaPlugin {
             if (data != null) kr.rpgcraft.listener.PlayerListener.pauseBuffs(data.get(op));
         if (pack != null) pack.shutdown();
         if (necro != null) necro.shutdown();
+        if (sculpt != null) sculpt.shutdown();   // v5.11.0
+        if (royal != null) royal.save();
         if (compass != null) compass.shutdown();
         if (dungeons != null) dungeons.shutdown();
         if (tower != null) tower.shutdown();   // v5.10.30
@@ -512,6 +521,8 @@ public final class RpgCraft extends JavaPlugin {
     public kr.rpgcraft.feature.LimitBreakManager limitBreak() { return limitBreak; }
     public kr.rpgcraft.world.HiddenJobManager hiddenJobs() { return hiddenJobs; }
     public kr.rpgcraft.world.NecromancyManager necro() { return necro; }
+    public kr.rpgcraft.royal.RoyalRoadManager royal() { return royal; }
+    public kr.rpgcraft.royal.SculptManager sculpt() { return sculpt; }
     public kr.rpgcraft.world.ChronoManager chrono() { return chrono; }
     public kr.rpgcraft.feature.MailManager mail() { return mail; }
     public kr.rpgcraft.feature.SeasonPassManager seasonPass() { return seasonPass; }

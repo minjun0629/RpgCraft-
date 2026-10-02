@@ -1160,19 +1160,31 @@ public final class KingdomPlan {
                 if (dz == 0) set(x, y - 1, z, Math.floorMod(x, 2) == 0 ? c1.replace("_wool", "_carpet") : "air");
             }
         for (int x = x0; x <= x0 + 6; x++) set(x, 6, side > 0 ? zb + 1 : za - 1, "spruce_slab");
+        // v5.10.66 앞(큰길 쪽)과 뒤가 분명하게: 뒤는 막힌 판자 벽 + 진열 선반, 양옆은 낮은 난간, 앞은 열린 계산대 + 간판 깃발
+        for (int x = x0; x <= x0 + 6; x++)
+            for (int y = 0; y <= 3; y++) set(x, y, z1, x == x0 || x == x0 + 6 ? "spruce_fence" : y == 3 ? "stripped_spruce_log[axis=x]" : "spruce_planks");
+        for (int x = x0 + 1; x <= x0 + 5; x++) set(x, 2, z1 - side, "spruce_slab[type=bottom]");   // 뒤 벽 선반
+        for (int z = za; z <= zb; z++) {
+            if (z == z0 || z == z1) continue;
+            set(x0, 0, z, "spruce_fence");
+            set(x0 + 6, 0, z, "spruce_fence");
+        }
         for (int x = x0 + 1; x <= x0 + 5; x++) set(x, 0, z0 + side, "spruce_planks");   // 계산대
         for (int x = x0 + 1; x <= x0 + 5; x++) set(x, 1, z0 + side, "spruce_slab");
         String[] goods = goods(shop, k);
-        for (int t = 0; t < 3; t++) set(x0 + 1 + t * 2, 2, z0 + side, goods[t]);   // 계산대 위 물건
+        set(x0 + 1, 2, z0 + side, goods[0]);   // 계산대 양끝 물건 (가운데 상인 얼굴은 가리지 않음)
+        set(x0 + 5, 2, z0 + side, goods[2]);
         set(x0 + 1, 0, z1 - side, goods[3]);   // 뒤 진열
         set(x0 + 5, 0, z1 - side, goods[4]);
         set(x0 + 3, 0, z1 - side, "barrel[facing=up]");
+        set(x0 + 3, 3, z1 - side, "lantern[hanging=true]");
+        set(x0 + 3, 1, z1 - side, goods[1]);   // 통 위 진열
         set(x0 + 5, 1, z1 - side, "lantern");
-        set(x0 + 3, 3, z0 + side * 2, "lantern[hanging=true]");
-        set(x0 + 3, 3, z1, c1.replace("_wool", "_wall_banner") + "[facing=" + face + "]");
+        set(x0 + 1, 3, z0 + side, "lantern[hanging=true]");
+        set(x0 + 5, 3, z0 + side, "lantern[hanging=true]");
+        set(x0 + 3, 3, z0, c1.replace("_wool", "_wall_banner") + "[facing=" + face + "]");   // 간판 깃발: 앞(큰길)을 바라봄
     }
 
-    /** 상점 종류에 맞는 진열품: [계산대 3 · 뒤 2] */
     private static String[] goods(String shop, int k) {
         String id = shop == null ? "" : shop;
         if (id.startsWith("armory") || id.startsWith("weapon")) return new String[]{"grindstone[face=floor,facing=north]", "anvil[facing=east]", "lightning_rod", "smithing_table", "iron_block"};

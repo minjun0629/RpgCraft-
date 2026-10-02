@@ -230,7 +230,13 @@ public class MenuManager implements Listener {
             ItemStack quest = icon(kr.rpgcraft.gui.UiIcon.QUEST, "&a&l일일 · 주간 의뢰", List.of("&7일일: 매일 자정 · 주간: 매주 월요일 (한국 시간)", "&f일일 " + done + "/3 &7· &b주간 " + plugin.quests().weeklyCompleted(d) + "/3", "&e▶ 클릭"));
             if (done > 0) quest.setAmount(done);
             set(28, quest, e -> new QuestGui(p).open(p));
-            set(29, icon(kr.rpgcraft.gui.UiIcon.SHOP, "&a&l상점", List.of("&7이용 가능한 상점 목록", "&e▶ 클릭")), e -> new ShopListGui(p).open(p));
+            var bm = plugin.boards();   // v5.10.65 상점 자리 → PVP (상점은 왕국 상점 NPC · /상점)
+            if (bm != null) {
+                int tier = bm.tier(p.getUniqueId());
+                set(29, kr.rpgcraft.board.BoardIcons.of(kr.rpgcraft.board.BoardIcons.TIER + tier, "&c&lPVP",
+                        List.of(bm.tierLabel(p.getUniqueId()) + " &7· 명성 &f" + bm.fame(p.getUniqueId()), "&7" + bm.wins(p.getUniqueId()) + "승 " + bm.losses(p.getUniqueId()) + "패",
+                                "&7/pvp 친선 <닉네임> · /pvp 랭킹전 <닉네임>", "&e▶ 클릭: 명성 등급 · 랭킹")), e -> bm.new FameGui(p).open(p));
+            }
             set(30, icon(kr.rpgcraft.gui.UiIcon.WARP, "&3&l워프", List.of("&7" + warps.size() + "개 지역", "&73초 시전 후 이동 (움직이거나 피격 시 취소)", "&e▶ 클릭")), e -> new WarpGui(p).open(p));
             set(31, icon(kr.rpgcraft.gui.UiIcon.GUILD, "&b&l길드", List.of(g == null ? "&7소속 길드 없음" : "&f" + g.name + " &7Lv." + g.level + " · " + g.members.size() + "명", "&e▶ 클릭")),
                     e -> new GuildGui(p).open(p));

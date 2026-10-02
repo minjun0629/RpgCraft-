@@ -345,6 +345,12 @@ public class QuestNpcManager implements Listener {
         plugin.data().get(e.getPlayer()).counters.keySet().removeIf(k -> k.startsWith("qn_") && !k.contains(today));
     }
 
+    /** v5.10.66 이 의뢰 NPC 를 목록에서 지움 (왕국 철거 등으로 엔티티를 없앨 때) */
+    public void forget(org.bukkit.entity.Entity e) {
+        String id = e.getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
+        if (id != null && npcs.remove(id) != null) save();
+    }
+
     public int count() {
         return npcs.size();
     }

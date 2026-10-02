@@ -278,9 +278,17 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                             }
                             plugin.kingdom().start(s, kp.getLocation().getBlock().getLocation());
                         }
-                        case "stop" -> { plugin.kingdom().stop(); Text.msg(s, "&e왕국 건설을 멈췄습니다."); }
+                        case "remove", "철거" -> {   // v5.10.66
+                            if (a.length < 3 || !a[2].equals("confirm")) {
+                                Text.msg(s, "&e지어 둔 왕국(1000 x 1000)을 모두 걷어 내고 잔디 평지로 되돌립니다. &c왕국 건물 · NPC 가 사라지고, 짓기 전 원래 지형은 돌아오지 않습니다!");
+                                Text.msg(s, "&e정말 철거하려면: &f/rpg관리 kingdom remove confirm");
+                                return true;
+                            }
+                            plugin.kingdom().remove(s);
+                        }
+                        case "stop" -> { plugin.kingdom().stop(); Text.msg(s, "&e왕국 작업(건설 · 철거)을 멈췄습니다."); }
                         case "status" -> Text.msg(s, plugin.kingdom().status());
-                        default -> Text.msg(s, "&e/rpg관리 kingdom build confirm &7(내 자리가 스폰 광장) &e| stop | status");
+                        default -> Text.msg(s, "&e/rpg관리 kingdom build confirm &7(내 자리가 스폰 광장) &e| remove confirm &7(철거) &e| stop | status");
                     }
                 }
                 case "war" -> {

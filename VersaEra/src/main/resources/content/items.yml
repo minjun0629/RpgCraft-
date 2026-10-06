@@ -1,0 +1,58 @@
+# 아이템 종류. category: WEAPON ARMOR TOOL ARTWORK 는 고유 아이템(DB 인스턴스), 나머지는 묶음.
+# source: CANON / SOURCE-BASED / ORIGINAL / RESEARCH_REQUIRED (모두 이 게임용으로 새로 정한 아이템 → ORIGINAL)
+items:
+  # ---- 광물 · 금속
+  copper_ore:      {name: 구리 원석,   category: MATERIAL, material: RAW_COPPER,     weight: 2, tags: [ore]}
+  iron_ore:        {name: 철 원석,     category: MATERIAL, material: RAW_IRON,       weight: 2, tags: [ore]}
+  silver_ore:      {name: 은 원석,     category: MATERIAL, material: RAW_GOLD,       weight: 2, tags: [ore]}
+  iron_ingot:      {name: 철 주괴,     category: MATERIAL, material: IRON_INGOT,     weight: 2, tags: [metal, mineral]}
+  silver_ingot:    {name: 은 주괴,     category: MATERIAL, material: GOLD_INGOT,     weight: 2, tags: [metal, mineral]}
+  sky_metal:       {name: 하늘 금속 조각, category: MATERIAL, material: NETHERITE_SCRAP, weight: 1, tags: [metal, mineral, sky]}
+  raw_gem:         {name: 보석 원석,   category: MATERIAL, material: AMETHYST_SHARD, weight: 1, tags: [gem]}
+  frost_crystal:   {name: 서리 수정,   category: MATERIAL, material: PRISMARINE_CRYSTALS, weight: 1, tags: [gem, frost]}
+  # ---- 목재 · 석재
+  oak_timber:      {name: 참나무 목재, category: MATERIAL, material: OAK_LOG,        weight: 3, tags: [wood]}
+  highland_timber: {name: 고원 가문비 목재, category: MATERIAL, material: SPRUCE_LOG, weight: 3, tags: [wood]}
+  marble_block:    {name: 대리석,      category: MATERIAL, material: CALCITE,        weight: 5, tags: [stone, marble]}
+  sandstone_block: {name: 사암,        category: MATERIAL, material: SANDSTONE,      weight: 4, tags: [stone]}
+  glass_sand:      {name: 유리 모래,   category: MATERIAL, material: SAND,           weight: 2, tags: [sand]}
+  # ---- 섬유 · 가죽 · 염료
+  flax_fiber:      {name: 아마 섬유,   category: MATERIAL, material: STRING,         weight: 1, tags: [fiber]}
+  linen_cloth:     {name: 리넨 천,     category: MATERIAL, material: WHITE_WOOL,     weight: 1, tags: [cloth]}
+  hide:            {name: 생가죽,      category: MATERIAL, material: RABBIT_HIDE,    weight: 2, tags: [hide]}
+  leather:         {name: 무두질한 가죽, category: MATERIAL, material: LEATHER,      weight: 2, tags: [leather]}
+  indigo_dye:      {name: 쪽빛 염료,   category: MATERIAL, material: BLUE_DYE,       weight: 1, tags: [dye]}
+  madder_dye:      {name: 꼭두서니 염료, category: MATERIAL, material: RED_DYE,      weight: 1, tags: [dye]}
+  # ---- 약초 · 식재료
+  moonleaf:        {name: 달잎풀,      category: MATERIAL, material: FERN,           weight: 1, tags: [herb]}
+  saltroot:        {name: 소금뿌리,    category: MATERIAL, material: DEAD_BUSH,      weight: 1, tags: [herb]}
+  wheat_sheaf:     {name: 밀 다발,     category: MATERIAL, material: WHEAT,          weight: 1, tags: [grain]}
+  salmon:          {name: 연어,        category: MATERIAL, material: SALMON,         weight: 2, tags: [fish]}
+  deep_eel:        {name: 심해 장어,   category: MATERIAL, material: COD,            weight: 2, tags: [fish, deep]}
+  sea_salt:        {name: 바다 소금,   category: MATERIAL, material: SUGAR,          weight: 1, tags: [seasoning]}
+  # ---- 음식 · 소모품
+  grilled_fish:    {name: 생선 구이,   category: FOOD, material: COOKED_SALMON, weight: 1, tags: [food]}
+  hearty_stew:     {name: 든든한 스튜, category: FOOD, material: RABBIT_STEW,   weight: 1, tags: [food]}
+  minor_tonic:     {name: 작은 강장제, category: CONSUMABLE, material: POTION,   weight: 1, tags: [potion]}
+  # ---- 도구 (고유)
+  smithing_hammer: {name: 대장 망치,   category: TOOL, material: IRON_AXE,     durability: 300, weight: 3, tags: [tool_hammer]}
+  carving_knife:   {name: 조각칼,      category: TOOL, material: SHEARS,       durability: 250, weight: 1, tags: [tool_carving]}
+  sewing_kit:      {name: 바느질 도구, category: TOOL, material: SHEARS,       durability: 250, weight: 1, tags: [tool_sewing]}
+  mortar:          {name: 막자사발,    category: TOOL, material: BOWL,         durability: 250, weight: 2, tags: [tool_alchemy]}
+  cooking_pot:     {name: 요리 냄비,   category: TOOL, material: CAULDRON,     durability: 400, weight: 4, tags: [tool_cook]}
+  iron_pickaxe:    {name: 철 곡괭이,   category: TOOL, material: IRON_PICKAXE, durability: 350, weight: 3, tags: [tool_pick]}
+  iron_hatchet:    {name: 철 손도끼,   category: TOOL, material: IRON_AXE,     durability: 350, weight: 3, tags: [tool_axe]}
+  ash_rod:         {name: 물푸레 낚싯대, category: TOOL, material: FISHING_ROD, durability: 200, weight: 1, tags: [tool_rod]}
+  # ---- 무기 · 방어구 (고유)
+  iron_longsword:  {name: 철 장검,     category: WEAPON, material: IRON_SWORD,  durability: 400, weight: 4, tags: [sword], stats: {attack: 12}, requires: {mastery.swordsmanship: 3}}
+  iron_dagger:     {name: 철 단검,     category: WEAPON, material: IRON_SWORD,  durability: 300, weight: 2, tags: [dagger], stats: {attack: 8}}
+  ash_bow:         {name: 물푸레 활,   category: WEAPON, material: BOW,         durability: 300, weight: 2, tags: [bow], stats: {attack: 10}}
+  silver_spear:    {name: 은 창,       category: WEAPON, material: TRIDENT,     durability: 450, weight: 4, tags: [spear], stats: {attack: 14}, requires: {mastery.spearmanship: 8}}
+  leather_jerkin:  {name: 가죽 조끼,   category: ARMOR,  material: LEATHER_CHESTPLATE, durability: 300, weight: 3, stats: {defense: 6}}
+  iron_mail:       {name: 철 사슬 갑옷, category: ARMOR, material: CHAINMAIL_CHESTPLATE, durability: 500, weight: 8, stats: {defense: 12}, requires: {mastery.smithing: 1}}
+  linen_robe:      {name: 리넨 로브,   category: ARMOR,  material: LEATHER_CHESTPLATE, durability: 200, weight: 2, stats: {defense: 3}}
+  # ---- 예술품 (고유, 실제 아이템 — 인벤토리 보관 · 거래 · 판매 가능)
+  figurine:        {name: 작은 조각상, category: ARTWORK, material: ARMOR_STAND, durability: 100, weight: 2, tags: [art, sculpture]}
+  statuette:       {name: 대리석 조각상, category: ARTWORK, material: ARMOR_STAND, durability: 150, weight: 6, tags: [art, sculpture]}
+  relief_plaque:   {name: 부조 명판,   category: ARTWORK, material: ITEM_FRAME, durability: 120, weight: 4, tags: [art, relief]}
+  wind_chime:      {name: 바람 풍경,   category: ARTWORK, material: BELL,       durability: 80,  weight: 1, tags: [art, sky]}

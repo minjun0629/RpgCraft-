@@ -1,0 +1,12 @@
+# 테스트 전용 히든 규칙 예시 (실제 서버 규칙은 jar 에 넣지 않고 서버에서 봉인한다)
+hidden:
+  test.wind_listener:
+    title: 바람을 듣는 자
+    when:
+      all:
+        - {counter: gather.herbalism, at_least: 30}
+        - {region: fallen_crater}
+        - {hours: [20, 4]}
+        - {affinity: yuna_alchemist, at_least: 50}
+    rumor: 추락 분화구의 밤바람 소리를 오래 들은 누군가가 무언가를 깨달았다는 소문이 돈다
+    reward: {recipe: craft_wind_chime}

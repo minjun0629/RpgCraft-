@@ -1,0 +1,23 @@
+# NPC — 모두 후대 시대의 새 인물 (ORIGINAL). 원작 인물은 NPC 로 등장하지 않고 이야기 · 기록으로만 남는다.
+# schedule: "시작-끝:장소" (게임 시각 0 ~ 24)
+npcs:
+  oren_smith:     {name: 오렌, job: 대장장이, personality: 무뚝뚝하지만 솜씨를 알아봄, faction: hammer_pact, region: thor_deep_hammer,
+                   likes: [metal, ore], dislikes: [potion], schedule: ["6-12:forge", "12-13:tavern", "13-20:forge", "20-6:home"]}
+  liese_weaver:   {name: 리제, job: 직조공, personality: 수다스럽고 소문에 밝음, faction: northern_artisans, region: morata_free_city,
+                   likes: [cloth, dye, fiber], dislikes: [hide], schedule: ["7-18:loom", "18-22:square", "22-7:home"]}
+  bram_sculptor:  {name: 브람, job: 석공, personality: 옛 조각상을 보수하는 고집쟁이, faction: northern_artisans, region: morata_free_city,
+                   likes: [stone, marble, art], schedule: ["5-11:garden", "11-19:workshop", "19-5:home"]}
+  kael_trader:    {name: 카엘, job: 상회 중개인, personality: 계산이 빠르고 공정함을 자랑함, faction: harden_merchants, region: harden,
+                   likes: [gem, metal], dislikes: [food], schedule: ["8-20:exchange", "20-8:home"]}
+  mira_cook:      {name: 미라, job: 주점 요리사, personality: 손님의 입맛을 기억함, region: harden,
+                   likes: [fish, grain, herb, seasoning], schedule: ["10-23:tavern", "23-10:home"]}
+  sena_archivist: {name: 세나, job: 기록관, personality: 조용하지만 유적 이야기에는 눈을 빛냄, faction: dawn_archive, region: calamor_ruins,
+                   likes: [art, gem], schedule: ["6-18:dig_site", "18-6:camp"]}
+  tobi_fisher:    {name: 토비, job: 어부, personality: 날씨를 귀신같이 맞힘, faction: rosaim_ports, region: rosaim_harbor,
+                   likes: [fish, seasoning], dislikes: [ore], schedule: ["4-12:pier", "12-16:market", "16-4:home"]}
+  yuna_alchemist: {name: 유나, job: 연금술사, personality: 실험에 진심, faction: astra_academy, region: astra_academy,
+                   likes: [herb, gem, sand], schedule: ["9-21:lab", "21-9:library"]}
+  dariq_caravan:  {name: 다리크, job: 대상단장, personality: 약속을 목숨처럼 지킴, faction: sand_caravan, region: azil_oasis,
+                   likes: [cloth, metal], schedule: ["0-24:caravanserai"]}
+  hana_scout:     {name: 하나, job: 개척 정찰병, personality: 지도에 없는 길을 좋아함, faction: settlers_council, region: risvel_outpost,
+                   likes: [wood, food], schedule: ["5-19:palisade", "19-5:bunk"]}

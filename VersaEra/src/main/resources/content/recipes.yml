@@ -1,0 +1,52 @@
+# 제작법. accepts: "type:<아이템>" 또는 "tag:<태그>". optional 칸은 채우면 bonus 만큼 품질이 오른다.
+# 조각만 특별하지 않다 — 대장 · 재봉 · 가죽 · 요리 · 연금 · 조각이 같은 구조와 비슷한 깊이를 가진다.
+recipes:
+  # ---- 대장
+  smelt_iron:       {name: 철 제련,   discipline: smithing, min_level: 1, action_level: 1, output: iron_ingot, xp: 6,
+                     slots: {ore: {accepts: "type:iron_ore", count: 2}}}
+  smelt_silver:     {name: 은 제련,   discipline: smithing, min_level: 8, action_level: 10, output: silver_ingot, xp: 14,
+                     slots: {ore: {accepts: "type:silver_ore", count: 2}}}
+  forge_hammer:     {name: 대장 망치, discipline: smithing, min_level: 1, action_level: 2, output: smithing_hammer, xp: 15,
+                     slots: {head: {accepts: "tag:metal", count: 2, weight: 2}, handle: {accepts: "tag:wood", count: 1}}}
+  forge_longsword:  {name: 철 장검,   discipline: smithing, min_level: 3, action_level: 6, output: iron_longsword, tool: tool_hammer, xp: 30,
+                     slots: {blade: {accepts: "type:iron_ingot", count: 3, weight: 3}, grip: {accepts: "tag:wood", count: 1},
+                             wrap: {accepts: "tag:leather", count: 1, optional: true, bonus: 40}}}
+  forge_mail:       {name: 철 사슬 갑옷, discipline: smithing, min_level: 6, action_level: 10, output: iron_mail, tool: tool_hammer, xp: 45,
+                     slots: {rings: {accepts: "type:iron_ingot", count: 5, weight: 3}, lining: {accepts: "tag:cloth", count: 2}}}
+  forge_spear:      {name: 은 창,     discipline: smithing, min_level: 12, action_level: 15, output: silver_spear, tool: tool_hammer, xp: 70,
+                     slots: {head: {accepts: "type:silver_ingot", count: 2, weight: 3}, shaft: {accepts: "type:highland_timber", count: 2}}}
+  forge_knife:      {name: 조각칼,    discipline: smithing, min_level: 2, action_level: 3, output: carving_knife, xp: 15,
+                     slots: {blade: {accepts: "type:iron_ingot", count: 1, weight: 2}, handle: {accepts: "tag:wood", count: 1}}}
+  forge_pickaxe:    {name: 철 곡괭이, discipline: smithing, min_level: 2, action_level: 3, output: iron_pickaxe, xp: 15,
+                     slots: {head: {accepts: "type:iron_ingot", count: 3, weight: 2}, handle: {accepts: "tag:wood", count: 2}}}
+  # ---- 재봉 · 가죽
+  weave_linen:      {name: 리넨 짜기, discipline: tailoring, min_level: 1, action_level: 1, output: linen_cloth, xp: 6,
+                     slots: {fiber: {accepts: "type:flax_fiber", count: 3}}}
+  sew_robe:         {name: 리넨 로브, discipline: tailoring, min_level: 3, action_level: 5, output: linen_robe, tool: tool_sewing, xp: 25,
+                     slots: {cloth: {accepts: "tag:cloth", count: 4, weight: 3}, dye: {accepts: "tag:dye", count: 1, optional: true, bonus: 50}}}
+  tan_leather:      {name: 무두질,   discipline: leatherwork, min_level: 1, action_level: 1, output: leather, xp: 6,
+                     slots: {hide: {accepts: "type:hide", count: 2, weight: 2}, salt: {accepts: "tag:seasoning", count: 1}}}
+  stitch_jerkin:    {name: 가죽 조끼, discipline: leatherwork, min_level: 3, action_level: 5, output: leather_jerkin, tool: tool_sewing, xp: 25,
+                     slots: {leather: {accepts: "tag:leather", count: 4, weight: 3}, thread: {accepts: "tag:fiber", count: 1}}}
+  # ---- 요리 · 연금
+  grill_fish:       {name: 생선 구이, discipline: cooking, min_level: 1, action_level: 1, output: grilled_fish, xp: 5,
+                     slots: {fish: {accepts: "tag:fish", count: 1, weight: 2}, salt: {accepts: "tag:seasoning", count: 1, optional: true, bonus: 60}}}
+  cook_stew:        {name: 든든한 스튜, discipline: cooking, min_level: 4, action_level: 6, output: hearty_stew, tool: tool_cook, xp: 15, output_count: 2,
+                     slots: {grain: {accepts: "tag:grain", count: 2}, fish: {accepts: "tag:fish", count: 1, weight: 2},
+                             herb: {accepts: "tag:herb", count: 1, optional: true, bonus: 50}}}
+  brew_tonic:       {name: 작은 강장제, discipline: alchemy, min_level: 1, action_level: 2, output: minor_tonic, tool: tool_alchemy, xp: 10,
+                     slots: {herb: {accepts: "tag:herb", count: 2, weight: 2}, base: {accepts: "type:glass_sand", count: 1}}}
+  # ---- 조각 (여러 재료 조합)
+  carve_figurine:   {name: 작은 조각상, discipline: sculpting, min_level: 1, action_level: 2, output: figurine, tool: tool_carving, xp: 12,
+                     slots: {base: {accepts: "tag:wood", count: 2, weight: 3}, detail: {accepts: "tag:mineral", count: 1},
+                             accent: {accepts: "tag:gem", count: 1, optional: true, bonus: 60}, finish: {accepts: "tag:dye", count: 1, optional: true, bonus: 30}}}
+  carve_statuette:  {name: 대리석 조각상, discipline: sculpting, min_level: 8, action_level: 12, output: statuette, tool: tool_carving, xp: 50,
+                     slots: {base: {accepts: "tag:marble", count: 4, weight: 4}, frame: {accepts: "tag:metal", count: 2},
+                             accent: {accepts: "tag:gem", count: 1, optional: true, bonus: 80}, finish: {accepts: "tag:dye", count: 1, optional: true, bonus: 30}}}
+  carve_relief:     {name: 부조 명판, discipline: sculpting, min_level: 4, action_level: 6, output: relief_plaque, tool: tool_carving, xp: 25,
+                     slots: {slab: {accepts: "tag:stone", count: 3, weight: 3}, inlay: {accepts: "tag:mineral", count: 1, weight: 1},
+                             color: {accepts: "tag:dye", count: 1}}}
+  # 발견해야 아는 제작법 (히든 콘텐츠 보상으로만 해금)
+  craft_wind_chime: {name: 바람 풍경, discipline: sculpting, min_level: 10, action_level: 14, output: wind_chime, tool: tool_carving, xp: 60,
+                     discovery: required, slots: {chimes: {accepts: "type:sky_metal", count: 3, weight: 3}, frame: {accepts: "tag:wood", count: 1},
+                     tone: {accepts: "type:frost_crystal", count: 1, optional: true, bonus: 90}}}

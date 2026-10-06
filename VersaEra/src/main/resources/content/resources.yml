@@ -1,0 +1,19 @@
+# 채집 · 채광 · 벌목 · 낚시 자원. blocks: 이 자원으로 취급하는 블록. rich_in: 많이 나는 지역 태그 (지역 간 교역이 생기게).
+resources:
+  copper_vein:  {name: 구리 광맥, discipline: mining, min_level: 1,  action_level: 1,  blocks: [COPPER_ORE, DEEPSLATE_COPPER_ORE], yield: copper_ore, amount: 1, bonus: 2, rich_in: [mountain], respawn_seconds: 90,  tool: tool_pick, xp: 4}
+  iron_vein:    {name: 철 광맥,   discipline: mining, min_level: 1,  action_level: 4,  blocks: [IRON_ORE, DEEPSLATE_IRON_ORE],     yield: iron_ore,   amount: 1, bonus: 2, rich_in: [mountain], respawn_seconds: 120, tool: tool_pick, xp: 6}
+  silver_vein:  {name: 은 광맥,   discipline: mining, min_level: 8,  action_level: 12, blocks: [GOLD_ORE, DEEPSLATE_GOLD_ORE],     yield: silver_ore, amount: 1, bonus: 1, rich_in: [mountain, deep], respawn_seconds: 240, tool: tool_pick, xp: 14}
+  gem_pocket:   {name: 보석 결정, discipline: mining, min_level: 12, action_level: 16, blocks: [AMETHYST_CLUSTER, DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE], yield: raw_gem, amount: 1, bonus: 1, rich_in: [deep], respawn_seconds: 600, tool: tool_pick, xp: 25}
+  frost_vein:   {name: 서리 수정맥, discipline: mining, min_level: 18, action_level: 22, blocks: [BLUE_ICE], yield: frost_crystal, amount: 1, bonus: 1, rich_in: [frozen], respawn_seconds: 900, tool: tool_pick, xp: 40}
+  sky_shard:    {name: 하늘 파편, discipline: mining, min_level: 14, action_level: 18, blocks: [CRYING_OBSIDIAN], yield: sky_metal, amount: 1, bonus: 1, rich_in: [sky], respawn_seconds: 900, tool: tool_pick, xp: 35}
+  marble_face:  {name: 대리석 단면, discipline: mining, min_level: 4, action_level: 6, blocks: [CALCITE, DIORITE], yield: marble_block, amount: 1, bonus: 1, rich_in: [artisan], respawn_seconds: 180, tool: tool_pick, xp: 8}
+  sandstone:    {name: 사암 지층, discipline: mining, min_level: 1,  action_level: 2,  blocks: [SANDSTONE], yield: sandstone_block, amount: 1, bonus: 2, rich_in: [desert], respawn_seconds: 90, tool: tool_pick, xp: 3}
+  oak_tree:     {name: 참나무,    discipline: logging, min_level: 1, action_level: 1,  blocks: [OAK_LOG], yield: oak_timber, amount: 1, bonus: 2, rich_in: [plains, forest], respawn_seconds: 120, tool: tool_axe, xp: 4}
+  spruce_tree:  {name: 고원 가문비, discipline: logging, min_level: 5, action_level: 8, blocks: [SPRUCE_LOG], yield: highland_timber, amount: 1, bonus: 2, rich_in: [highland], respawn_seconds: 180, tool: tool_axe, xp: 8}
+  flax_patch:   {name: 아마밭,    discipline: herbalism, min_level: 1, action_level: 1, blocks: [GRASS, TALL_GRASS], yield: flax_fiber, amount: 1, bonus: 2, rich_in: [farmland], respawn_seconds: 60, xp: 2}
+  moonleaf:     {name: 달잎풀,    discipline: herbalism, min_level: 3, action_level: 5, blocks: [FERN, LARGE_FERN], yield: moonleaf, amount: 1, bonus: 1, rich_in: [forest, scholar], respawn_seconds: 120, xp: 5}
+  saltroot:     {name: 소금뿌리,  discipline: herbalism, min_level: 6, action_level: 9, blocks: [DEAD_BUSH], yield: saltroot, amount: 1, bonus: 1, rich_in: [desert], respawn_seconds: 180, xp: 8}
+  wheat_field:  {name: 밀밭,      discipline: herbalism, min_level: 1, action_level: 1, blocks: [WHEAT], yield: wheat_sheaf, amount: 1, bonus: 2, rich_in: [farmland], respawn_seconds: 60, xp: 2}
+  # 낚시는 블록이 아니라 낚시 이벤트로 처리 (blocks 는 물 종류 표시용)
+  river_fish:   {name: 강 낚시,   discipline: fishing, min_level: 1, action_level: 1, blocks: [WATER], yield: salmon, amount: 1, bonus: 1, rich_in: [river, coast], respawn_seconds: 0, tool: tool_rod, xp: 5}
+  deep_fish:    {name: 먼바다 낚시, discipline: fishing, min_level: 10, action_level: 14, blocks: [WATER], yield: deep_eel, amount: 1, bonus: 1, rich_in: [sea], respawn_seconds: 0, tool: tool_rod, xp: 14}

@@ -1,0 +1,19 @@
+# 숙련 분야. 모든 분야가 같은 곡선(초급 · 중급 · 고급 · 마스터)을 쓴다 — 어느 하나만 특별하지 않게.
+disciplines:
+  swordsmanship: {name: 검술,     category: COMBAT,      source: SOURCE-BASED}
+  spearmanship:  {name: 창술,     category: COMBAT,      source: ORIGINAL}
+  archery:       {name: 궁술,     category: COMBAT,      source: SOURCE-BASED}
+  mining:        {name: 채광,     category: GATHERING,   hand: true, source: SOURCE-BASED}
+  logging:       {name: 벌목,     category: GATHERING,   hand: true, source: ORIGINAL}
+  herbalism:     {name: 채집,     category: GATHERING,   hand: true, source: SOURCE-BASED}
+  fishing:       {name: 낚시,     category: GATHERING,   hand: true, source: SOURCE-BASED}
+  smithing:      {name: 대장 기술, category: PRODUCTION, hand: true, source: SOURCE-BASED}
+  tailoring:     {name: 재봉,     category: PRODUCTION,  hand: true, source: SOURCE-BASED}
+  leatherwork:   {name: 가죽 공예, category: PRODUCTION, hand: true, source: ORIGINAL}
+  cooking:       {name: 요리,     category: PRODUCTION,  hand: true, source: SOURCE-BASED}
+  alchemy:       {name: 연금,     category: PRODUCTION,  hand: true, source: RESEARCH_REQUIRED}
+  sculpting:     {name: 조각,     category: ART,         hand: true, source: SOURCE-BASED}
+  repair:        {name: 수리,     category: SUPPORT,     hand: true, source: SOURCE-BASED}
+  dexterity:     {name: 손재주,   category: SUPPORT,     source: SOURCE-BASED}
+  exploration:   {name: 탐험,     category: EXPLORATION, source: ORIGINAL}
+  trading:       {name: 교역,     category: SOCIAL,      source: ORIGINAL}

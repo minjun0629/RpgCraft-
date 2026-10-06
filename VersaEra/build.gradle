@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+}
+
+group = 'io.versaera'
+version = '0.1.0'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+// -PapiJar=<경로> : Paper 저장소에 접속할 수 없는 환경에서 로컬 API jar 로 컴파일 (CI · 오프라인용)
+def localApi = project.findProperty('apiJar')
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://plugins.gradle.org/m2/' }   // Maven Central 미러 (속도 제한 대비)
+    if (!localApi) maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    if (localApi) {
+        compileOnly files(localApi)
+        compileOnly 'org.joml:joml:1.10.5'
+    } else {
+        compileOnly 'io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT'
+    }
+    compileOnly 'org.yaml:snakeyaml:2.2'              // Paper 서버에 이미 들어 있음
+    compileOnly 'org.xerial:sqlite-jdbc:3.45.3.0'     // Spigot · Paper 서버에 SQLite 드라이버가 이미 들어 있음 (jar 에 넣지 않음)
+    testImplementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+
+    testImplementation 'org.yaml:snakeyaml:2.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs << '-Xlint:unchecked'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging { events 'failed'; exceptionFormat 'full' }
+}
+
+processResources {
+    filteringCharset = 'UTF-8'
+    filesMatching('plugin.yml') { expand(version: project.version) }
+}
+
+jar {
+    archiveFileName = "VersaEra-${project.version}.jar"
+}

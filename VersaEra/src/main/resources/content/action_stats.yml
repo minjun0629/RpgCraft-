@@ -1,0 +1,9 @@
+# 행동 스탯 (CANON 개념: 반복 행동으로 스탯이 오르고, 조건을 채우면 새 스탯이 생긴다). 수치는 ORIGINAL.
+# per: 첫 1 포인트에 필요한 횟수 (n 번째 포인트는 n × per 더 필요) · unlock_at: 이만큼 해야 스탯이 처음 생김
+stats:
+  endurance:   {name: 인내,   counter: hit_taken,          per: 150, effect: "최대 체력 +1% / 포인트", source: SOURCE-BASED}
+  artistry:    {name: 예술,   counter: art.experience,     per: 20,  effect: "예술품 품질 · 감상 효과", source: SOURCE-BASED}
+  charm:       {name: 매력,   counter: talk.npc,           per: 30,  effect: "NPC 호감 상승 · 상점 가격", source: SOURCE-BASED}
+  insight:     {name: 통찰,   counter: discover.landmark,  per: 3,   unlock_at: 5,   effect: "숨은 지형 · 기록을 알아봄", source: ORIGINAL}
+  seafaring:   {name: 항해감, counter: gather.fishing,     per: 40,  unlock_at: 300,  effect: "바다 위 이동 · 해상 이벤트", source: ORIGINAL}
+  steady_hand: {name: 정밀,   counter: craft.smithing,     per: 25,  unlock_at: 100, effect: "대장 · 조각 품질 흔들림 감소", source: ORIGINAL}

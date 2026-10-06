@@ -1,0 +1,2 @@
+# VersaEra 설정. 콘텐츠(아이템 · 레시피 · 지역 · NPC · 보스)는 plugins/VersaEra/content/*.yml 에서 고칩니다.
+timezone: Asia/Seoul   # 하루 단위 규칙(NPC 대화 등)의 날짜 기준

@@ -1,0 +1,85 @@
+# 거대 보스 — 모두 ORIGINAL. scale 은 모델 · 판정 · 공격 범위 · 전투 공간에 모두 곱해진다 (일반 몬스터의 7 ~ 15배 크기).
+# shape: CIRCLE · CONE(width=각도) · LINE(width=폭) · RING(inner=안쪽 반지름). telegraph_ms: 바닥에 범위를 보여 주는 예고 시간.
+bosses:
+  fallen_colossus:
+    name: 무너진 파수거상
+    scale: 7
+    hit_radius: 2.2
+    max_hp: 60000
+    arena_radius: 40
+    weak_arc: 80
+    enrage_ms: 600000
+    model: boss/fallen_colossus
+    patterns:
+      stomp:        {shape: CIRCLE, radius: 1.4, height: 1.0, telegraph_ms: 1800, damage: 60, cooldown_ms: 5000, effect: stagger}
+      sweep:        {shape: CONE, radius: 2.0, width: 120, height: 1.2, telegraph_ms: 1500, damage: 45, cooldown_ms: 4000}
+      pillar_drop:  {shape: LINE, radius: 4.0, width: 0.5, height: 3.0, telegraph_ms: 2200, damage: 80, cooldown_ms: 9000}
+      quake_ring:   {shape: RING, radius: 3.5, inner: 1.6, height: 1.0, telegraph_ms: 2000, damage: 70, cooldown_ms: 8000}
+    phases:
+      - {hp_below: 1.0, patterns: [stomp, sweep]}
+      - {hp_below: 0.6, patterns: [stomp, sweep, pillar_drop], announce: "거상의 몸에서 돌기둥이 떨어져 나온다!"}
+      - {hp_below: 0.25, patterns: [quake_ring, pillar_drop, sweep, stomp], announce: "거상이 무너지는 광장 전체를 흔든다!"}
+  shard_warden:
+    name: 파편 수호수
+    scale: 8
+    hit_radius: 2.0
+    max_hp: 75000
+    arena_radius: 48
+    weak_arc: 70
+    enrage_ms: 600000
+    model: boss/shard_warden
+    patterns:
+      dive:         {shape: LINE, radius: 4.5, width: 0.6, height: 2.0, telegraph_ms: 1600, damage: 70, cooldown_ms: 6000, effect: knockback}
+      feather_rain: {shape: CIRCLE, radius: 2.5, height: 4.0, telegraph_ms: 2400, damage: 40, cooldown_ms: 7000}
+      gale:         {shape: CONE, radius: 3.0, width: 70, height: 2.0, telegraph_ms: 1400, damage: 35, cooldown_ms: 4500, effect: knockback}
+    phases:
+      - {hp_below: 1.0, patterns: [gale, dive]}
+      - {hp_below: 0.5, patterns: [feather_rain, dive, gale], announce: "수호수가 하늘섬 조각 위로 날아오른다!"}
+  frost_husk:
+    name: 서리 군주의 껍데기
+    scale: 8
+    hit_radius: 2.4
+    max_hp: 110000
+    arena_radius: 44
+    weak_arc: 90
+    enrage_ms: 720000
+    model: boss/frost_husk
+    patterns:
+      ice_spikes:   {shape: LINE, radius: 3.5, width: 0.4, height: 2.0, telegraph_ms: 1700, damage: 65, cooldown_ms: 5000, effect: slow}
+      frost_nova:   {shape: CIRCLE, radius: 2.2, height: 1.5, telegraph_ms: 2300, damage: 90, cooldown_ms: 9000, effect: freeze}
+      glacier_ring: {shape: RING, radius: 4.0, inner: 2.0, height: 1.0, telegraph_ms: 2100, damage: 60, cooldown_ms: 8000, effect: slow}
+    phases:
+      - {hp_below: 1.0, patterns: [ice_spikes, frost_nova]}
+      - {hp_below: 0.5, patterns: [glacier_ring, ice_spikes, frost_nova], announce: "얼음 궁전의 바닥이 얼어붙기 시작한다!"}
+  dune_rake_worm:
+    name: 사구 갈퀴웜
+    scale: 10
+    hit_radius: 1.6
+    max_hp: 90000
+    arena_radius: 56
+    weak_arc: 60
+    enrage_ms: 600000
+    model: boss/dune_rake_worm
+    patterns:
+      burst:        {shape: CIRCLE, radius: 1.0, height: 3.0, telegraph_ms: 1500, damage: 75, cooldown_ms: 4500, effect: knockup}
+      rake:         {shape: LINE, radius: 5.0, width: 0.4, height: 1.5, telegraph_ms: 1800, damage: 55, cooldown_ms: 6000}
+      sand_ring:    {shape: RING, radius: 3.0, inner: 1.5, height: 1.0, telegraph_ms: 2000, damage: 50, cooldown_ms: 8000, effect: blind}
+    phases:
+      - {hp_below: 1.0, patterns: [burst, rake]}
+      - {hp_below: 0.4, patterns: [sand_ring, burst, rake], announce: "웜이 모래 아래로 깊이 파고든다!"}
+  abyss_carapace:
+    name: 심해 갑각왕
+    scale: 9
+    hit_radius: 2.0
+    max_hp: 95000
+    arena_radius: 50
+    weak_arc: 75
+    enrage_ms: 660000
+    model: boss/abyss_carapace
+    patterns:
+      claw:         {shape: CONE, radius: 1.8, width: 100, height: 1.5, telegraph_ms: 1300, damage: 60, cooldown_ms: 3500}
+      tide:         {shape: LINE, radius: 5.5, width: 1.0, height: 2.0, telegraph_ms: 2000, damage: 50, cooldown_ms: 7000, effect: knockback}
+      whirlpool:    {shape: CIRCLE, radius: 2.6, height: 2.0, telegraph_ms: 2500, damage: 70, cooldown_ms: 10000, effect: pull}
+    phases:
+      - {hp_below: 1.0, patterns: [claw, tide]}
+      - {hp_below: 0.5, patterns: [whirlpool, claw, tide], announce: "갑각왕이 암초를 부수며 소용돌이를 일으킨다!"}

@@ -1,0 +1,751 @@
+# Feature Registry — 정본 (사람이 읽는 요약: 03_FEATURE_REGISTRY.md)
+# classification: CANON / SOURCE-BASED / ORIGINAL / RESEARCH_REQUIRED
+# status: PLANNED DESIGNED IMPLEMENTING IMPLEMENTED PARTIAL TESTING VERIFIED BLOCKED RESEARCH_REQUIRED PAPER_LIMITATION EXTERNAL_ASSET_REQUIRED
+# 규칙 (RegistryAuditTest 가 검사):
+#   - IMPLEMENTED 는 tests 에 적힌 테스트 클래스가 실제로 있어야 한다.
+#   - VERIFIED 는 실제 Paper 서버 테스트(server_test: PASSED)가 있어야 한다. 이 개발 환경은 Paper · Mojang 서버 다운로드가 막혀 있어 아직 하나도 없다.
+#   - IMPLEMENTED = 코드 + 자동 테스트 통과 (서버 테스트 전). PARTIAL = 일부만 있음. 서버 연결 코드(platform)는 서버 테스트 전까지 PARTIAL.
+
+features:
+  - id: CORE-01
+    feature: DB · 트랜잭션 · 마이그레이션
+    category: 인프라
+    source: 04_ARCHITECTURE §8-9
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: SQLite 연결 하나 · 중첩 트랜잭션 · 버전별 마이그레이션 · 적용 파일 해시 검증
+    player_experience: 재시작 · 업데이트 뒤에도 기록이 그대로
+    dependencies: []
+    implementation: persistence.Database · Migrator · SqlTxRunner
+    data_model: schema_version
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: SQLite 쓰기 1개 — 전용 스레드로 직렬화. 대형 서버는 PostgreSQL 이전 필요 (Dialect 분리 예정)
+    security_risk: 이미 적용한 마이그레이션 수정 시 시작 거부
+    persistence: 파일 DB (WAL)
+    tests: [MigratorTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: CORE-02
+    feature: DB 전용 스레드 · 비동기 흐름
+    category: 인프라
+    source: 요구 §45
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 모든 서비스 호출을 versa-db 단일 스레드로. 메인 스레드는 기다리지 않고 콜백으로 돌아옴. 종료 시 남은 작업을 끝까지 처리
+    player_experience: 렉 없이 저장
+    dependencies: [CORE-01]
+    implementation: persistence.DbExecutor · platform.bukkit.Async
+    data_model: 없음
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 큐 적체 시 반응 지연 — 큐 길이 측정 필요 (PLANNED)
+    security_risk: 동시 요청을 한 줄로 세워 경쟁 상태 제거
+    persistence: 없음
+    tests: [TradeServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: CORE-03
+    feature: 감사 로그
+    category: 보안
+    source: 요구 §60
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: ITEM_CREATED · ITEM_DESTROYED · ITEM_REPAIRED · ITEM_QUARANTINED · MONEY_ADDED · MONEY_REMOVED · MONEY_TRANSFERRED · TRADE_COMPLETED · TRADE_CANCELLED · CRAFTED
+    player_experience: "(운영자) 사고 원인 추적"
+    dependencies: [CORE-01]
+    implementation: persistence.JdbcAuditLog · /va audit
+    data_model: audit_log
+    ui: /va audit <행동>
+    resource_pack: 없음
+    performance_risk: 낮음 (인덱스)
+    security_risk: 개인정보 없이 uuid · 아이템 id 만 기록
+    persistence: DB
+    tests: [EconomyServiceTest, TradeServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: CONT-01
+    feature: 데이터 중심 콘텐츠 로더
+    category: 인프라
+    source: 요구 §55 · §80
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 아이템 · 숙련 · 행동 스탯 · 레시피 · 자원 · 지역 · NPC · 보스를 YAML 로. SafeConstructor · 중복 키 거부 · 참조 무결성 검사
+    player_experience: 업데이트로 콘텐츠가 자주 늘어남
+    dependencies: []
+    implementation: content.ContentLoader · ContentBundle
+    data_model: content/*.yml
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 시작 시 1회
+    security_risk: YAML 임의 객체 생성 차단
+    persistence: 파일
+    tests: [ContentIntegrityTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: ITM-01
+    feature: 고유 아이템 인스턴스
+    category: 아이템
+    source: 로열 로드/아이템 (내구도 · 최대 내구도)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: UUID · 종류 · 품질 · 내구도 · 최대 내구도 · 무게 · 제작자 · 제작 방법 · 속성 · 보관 위치 · 내력 · 버전(낙관적 잠금)
+    player_experience: 같은 이름의 검도 하나하나 다르고, 누가 만들었는지 남는다
+    dependencies: [CORE-01]
+    implementation: domain.item.* · application.ItemService · persistence.JdbcItemRepository
+    data_model: item_instance · item_history
+    ui: 아이템 이름 · 등급 · 수치 · 내구 · 제작자 (짧게)
+    resource_pack: 아이템별 모델은 EXTERNAL_ASSET_REQUIRED (지금은 바닐라 재질)
+    performance_risk: 묶음 재료는 인스턴스로 만들지 않음 (DB 폭증 방지)
+    security_risk: PDC 는 식별용. 진짜 소유 · 상태는 DB
+    persistence: DB
+    tests: [ItemServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: ITM-02
+    feature: 배달함 (안전한 지급)
+    category: 아이템 · 보안
+    source: 요구 §39 · §41
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 모든 지급은 배달함 경유. 고유 = 넣고 → 확정(거부 시 회수), 묶음 = 지우고 → 지급. 서버가 중간에 꺼져도 사라지거나 두 개가 되지 않음
+    player_experience: 가방이 차면 나중에 자동으로 받음
+    dependencies: [ITM-01]
+    implementation: ItemService.pendingDeliveries · confirmDelivered · takeBulk · SessionListener.deliver
+    data_model: item_instance.custody = DELIVERY · delivery_bulk
+    ui: "받음: <이름>"
+    resource_pack: 없음
+    performance_risk: 10초마다 접속자 배달 확인 (DB 스레드)
+    security_risk: 중복 확정 · 중복 수령 방지 (테스트)
+    persistence: DB
+    tests: [ItemServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: ITM-03
+    feature: 인벤토리 검증 · 격리 (복제 방지)
+    category: 보안
+    source: 요구 §40 · §59
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 접속 · 2초마다 한 명씩 인벤토리 · 엔더 상자의 고유 아이템을 DB 와 대조. 위조 · 파괴됨 · 남의 것 · 보관 중 · 같은 id 두 개 → 회수 + 감사 로그
+    player_experience: "(정상 플레이어는 느끼지 못함)"
+    dependencies: [ITM-01]
+    implementation: platform.bukkit.listener.InventoryGuard · ItemService.validate
+    data_model: 없음
+    ui: "확인되지 않은 아이템 N개를 회수했습니다"
+    resource_pack: 없음
+    performance_risk: 한 번에 한 명 · 2초 간격
+    security_risk: 검사 사이 짧은 창(최대 접속자 × 2초)에는 복제품이 잠시 존재할 수 있음 → 사용 · 거래 시점 검증으로 보완 (거래는 서버 검증 완료)
+    persistence: 없음
+    tests: [ItemServiceTest]
+    server_test: BLOCKED
+    status: PARTIAL
+
+  - id: ITM-04
+    feature: 내구도 · 수리
+    category: 아이템 · 생산
+    source: 로열 로드/스킬 (수리) · 로열 로드/아이템
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 사용하면 닳고, 강한 충격은 최대 내구도를 깎음. 초급 수리는 많이 닳은 물건의 최대 내구도를 깎고, 중급 이상은 되살림. 최대 내구도 0 이면 수리 불가
+    player_experience: 장비를 아껴 쓰고 수리 숙련이 의미 있음
+    dependencies: [ITM-01, SKL-01]
+    implementation: domain.item.Repair · ItemService.repair · StationListener(대장장이 작업대)
+    data_model: item_instance.durability · max_durability
+    ui: "수리 N/M · 최대 -K"
+    resource_pack: 없음
+    performance_risk: 전투 마모는 5초마다 모아서 저장
+    security_risk: 남의 물건 수리 불가
+    persistence: DB
+    tests: [ItemServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: ECO-01
+    feature: 돈 · 원장
+    category: 경제
+    source: 요구 §38-40
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 잔액은 DB 에만. 0 이하 · 상한 초과 · 오버플로 거부. idempotency key 로 중복 지급 금지. 모든 변동은 원장 + 감사 로그
+    player_experience: 돈이 사라지거나 두 번 들어오지 않음
+    dependencies: [CORE-01]
+    implementation: application.EconomyService · persistence.JdbcWalletRepository
+    data_model: wallet · ledger
+    ui: 캐릭터 창 금액
+    resource_pack: 없음
+    performance_risk: 낮음
+    security_risk: 음수 · Long.MIN_VALUE · 자기 송금 · 중복 키 테스트
+    persistence: DB
+    tests: [EconomyServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: TRD-01
+    feature: 1:1 거래
+    category: 경제 · 보안
+    source: 요구 §39
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 상태 기계(고정 → 확인), 제안이 바뀌면 확인 해제, 올린 아이템은 즉시 보관(ESCROW), 확정은 트랜잭션 하나, 취소 · 퇴장 · 재시작 시 원래 주인 배달함으로
+    player_experience: 사기 · 복제 걱정 없는 거래
+    dependencies: [ITM-02, ECO-01]
+    implementation: domain.trade.TradeSession · application.TradeService · ui.TradeMenu · /거래
+    data_model: trade · trade_offer
+    ui: 거래 창 (임시 상자 창 — UI-01)
+    resource_pack: 전용 거래 창 배경 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 낮음
+    security_risk: 남의 아이템 · 같은 아이템 두 번 · 확인 후 바꾸기 · 확정 중 잔액 부족 · 연타 40회 동시 확인 · 재시작 복구 테스트
+    persistence: DB
+    tests: [TradeServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: TRD-02
+    feature: 묶음 재료 거래 · 경매장 · 개인 상점
+    category: 경제
+    source: 원작 경제 세부 미확인
+    source_type: RESEARCH_REQUIRED
+    classification: RESEARCH_REQUIRED
+    description: 재료 묶음 거래, 하르덴 경매장, 지역 시세
+    player_experience: 지역 간 교역
+    dependencies: [TRD-01]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: "(설계 예정)"
+    resource_pack: 없음
+    performance_risk: 경매 검색 인덱스
+    security_risk: 경매 낙찰 동시성
+    persistence: DB
+    tests: []
+    status: PLANNED
+
+  - id: SKL-01
+    feature: 숙련 (초급 · 중급 · 고급 · 마스터)
+    category: 성장
+    source: 로열 로드/스킬 (초급 · 중급 · 고급)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 17개 분야가 같은 곡선. 다음 레벨 = 100 × 레벨^1.6 (마스터까지 약 26만). 너무 쉬운 행동은 경험치가 크게 줄어 노가다를 막음. 손을 쓰는 분야는 손재주로 빨라짐
+    player_experience: 무엇을 하든 그 분야가 자란다
+    dependencies: [CORE-01]
+    implementation: domain.skill.Mastery · application.GrowthService
+    data_model: mastery
+    ui: 캐릭터 창 (분야 · 단계 · 진행도)
+    resource_pack: 분야 아이콘 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 전투 경험치는 모아서 저장
+    security_risk: 음수 · 과도한 증가량 거부
+    persistence: DB
+    tests: [CraftingServiceTest, ContentIntegrityTest, GrowthAndWorldTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: SKL-02
+    feature: 행동 스탯 (조건 해금)
+    category: 성장
+    source: 로열 로드/스탯 (반복 행동으로 상승 · 조건 시 새 스탯)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 인내 · 예술 · 매력 + 해금형 통찰 · 항해감 · 정밀. n 번째 포인트는 n × per 가 더 필요
+    player_experience: 하는 일에 따라 캐릭터마다 다른 스탯이 생김
+    dependencies: [SKL-01]
+    implementation: domain.skill.ActionStat · GrowthService.record
+    data_model: action_counter
+    ui: 캐릭터 창
+    resource_pack: 없음
+    performance_risk: 카운터 1줄씩
+    security_risk: 증가량 상한
+    persistence: DB
+    tests: [GrowthAndWorldTest, ContentIntegrityTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: SKL-03
+    feature: 행동 스탯의 실제 효과 (체력 · 가격 등)
+    category: 성장
+    source: 효과 수치 미확인
+    source_type: RESEARCH_REQUIRED
+    classification: ORIGINAL
+    description: 인내 → 최대 체력, 매력 → NPC 가격 등 실제 반영
+    player_experience: 스탯이 숫자로 끝나지 않음
+    dependencies: [SKL-02, CMB-01]
+    implementation: 예술 → 제작 품질만 반영됨. 나머지 없음
+    data_model: 없음
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 낮음
+    security_risk: 낮음
+    persistence: 없음
+    tests: [CraftingServiceTest]
+    status: PARTIAL
+
+  - id: CLS-01
+    feature: 직업 체계
+    category: 성장
+    source: 로열 로드/직업 (검사 · 기사 · 궁수 · 암살자 · 마법사 확인, 나머지 미확인)
+    source_type: 원작 개념
+    classification: RESEARCH_REQUIRED
+    description: 숙련 · 행동 기록 조합으로 열리는 직업 (레벨 만능 금지). 원작 히든 직업 조건은 쓰지 않음
+    player_experience: 자연스럽게 생기는 전문성
+    dependencies: [SKL-01, SKL-02]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: "(설계 예정)"
+    resource_pack: 직업 아이콘
+    performance_risk: 낮음
+    security_risk: 낮음
+    persistence: DB
+    tests: []
+    status: RESEARCH_REQUIRED
+
+  - id: CRF-01
+    feature: 제작 공통 엔진 (대장 · 재봉 · 가죽 · 요리 · 연금 · 조각)
+    category: 생산
+    source: 로열 로드/스킬 · 아이템 (대장장이 길드 · 금속 장비)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 모든 생산이 같은 구조 — 재료 칸(종류 · 태그) · 선택 칸 보너스 · 도구 · 숙련 · 품질(숙련 40 · 재료 35 · 도구 15 · 스탯 10, 흔들림 ±40). 희귀 결과를 낮은 확률에 걸지 않음. 실패 시 재료 환불(생산 전 실패만)
+    player_experience: 좋은 재료 · 도구 · 숙련이 곧 좋은 결과
+    dependencies: [ITM-01, ITM-02, SKL-01]
+    implementation: domain.crafting.* · application.CraftingService · StationListener
+    data_model: content/recipes.yml · item_instance(props.materials)
+    ui: 제작대 우클릭 → 레시피 창 (임시 상자 창)
+    resource_pack: 결과물 모델 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 낮음
+    security_risk: 결과 · 품질은 서버 계산. 허용 속성만 받음(제작자 위조 차단). 연타 잠금
+    persistence: DB
+    tests: [CraftingServiceTest, ContentIntegrityTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: CRF-02
+    feature: 조각 (여러 재료 조합 · 실제 아이템)
+    category: 생산 · 예술
+    source: 원작 조각술 (입체 미술 전반)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 목재 · 석재 · 대리석 + 금속 · 광물 + 보석 · 염료. 결과는 고유 아이템(제작자 · 재료 · 제목 · 주제 기록) — 보관 · 거래 · 판매 가능. 하우징 · 전시 없음
+    player_experience: 내 이름이 새겨진 작품을 팔고 거래
+    dependencies: [CRF-01]
+    implementation: recipes.yml carve_* · CraftingService (extraProps subject · title)
+    data_model: item_instance.props
+    ui: 석재 절단기 우클릭. 제목 입력 UI 는 PLANNED
+    resource_pack: 조각품 모델 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 낮음
+    security_risk: 제목 32자 제한
+    persistence: DB
+    tests: [CraftingServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: GAT-01
+    feature: 채집 · 채광 · 벌목 · 낚시
+    category: 생산
+    source: 생활 스킬 (원작 개념)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 자원 블록 → 숙련 · 지역 풍부도에 따른 양 · 품질. 도구 필요. 캔 자리는 정해진 시간 뒤 재생, 종료 시 복구. 낚시는 지역(강 · 바다)과 숙련에 따라 어종이 다름
+    player_experience: 지역마다 나는 것이 달라 교역이 생김
+    dependencies: [SKL-01, WLD-01, ITM-02]
+    implementation: domain.gathering.ResourceNode · GatherListener
+    data_model: content/resources.yml
+    ui: 배달 메시지
+    resource_pack: 없음
+    performance_risk: 재생 목록 5초마다 확인. 서버가 꺼질 때 재생 대기 블록 복구
+    security_risk: 숙련 부족 · 도구 없음 거부
+    persistence: 재생 대기는 메모리 (종료 시 복구)
+    tests: [ContentIntegrityTest]
+    server_test: BLOCKED
+    status: PARTIAL
+
+  - id: WLD-01
+    feature: 지역 · 위험도 · 공간 인덱스
+    category: 월드
+    source: 02_WORLD
+    source_type: 원작 지리 + 후대 설계
+    classification: ORIGINAL
+    description: 20개 지역(원작 지명은 후대 변화 필수), 위험도 0 ~ 6, 청크 격자 인덱스, 지하 수로는 높이로 구분
+    player_experience: 지역에 들어서면 이름 · 위험도
+    dependencies: [CONT-01]
+    implementation: domain.world.* · RegionTracker
+    data_model: content/regions.yml
+    ui: 액션바 · 첫 발견 타이틀
+    resource_pack: 없음
+    performance_risk: 블록 이동 때만 O(1) 조회
+    security_risk: 없음
+    persistence: 없음
+    tests: [GrowthAndWorldTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: WLD-02
+    feature: 실제 지형 · 건축 (월드맵 제작)
+    category: 월드
+    source: 02_WORLD
+    source_type: 후대 설계
+    classification: ORIGINAL
+    description: 12000 × 12000 월드의 도시 · 폐허 · 분화구 · 빙원 · 사막 · 수로 지형과 건축
+    player_experience: 살아 있는 대륙
+    dependencies: [WLD-01]
+    implementation: 없음 (지역 데이터만 있음)
+    data_model: 월드 파일
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 월드 크기 · 청크 생성
+    security_risk: 없음
+    persistence: 월드 파일
+    tests: []
+    status: EXTERNAL_ASSET_REQUIRED
+
+  - id: EXP-01
+    feature: 발견 기록 · 최초 발견자
+    category: 탐험
+    source: 명성 (던전 첫 발견 · 지역 탐험) 원작 개념
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 지역 · NPC · 레시피 등 발견 기록, 서버 최초 발견자 1명 기록 · 알림, 탐험 숙련 경험치
+    player_experience: 처음 밟는 땅의 기록이 남음
+    dependencies: [WLD-01, SKL-01]
+    implementation: application.ExplorationService
+    data_model: discovery · world_first
+    ui: 첫 발견 타이틀 · 서버 알림
+    resource_pack: 없음
+    performance_risk: 낮음
+    security_risk: 최초 발견 자리는 DB 기본 키로 한 명만
+    persistence: DB
+    tests: [GrowthAndWorldTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: MAP-01
+    feature: MMORPG 지도
+    category: 탐험 · UI
+    source: 요구 §36
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 발견한 지역만 보이고 미발견은 ???. 최종 목표는 리소스팩 지도 화면(안개 · 현재 위치 · 랜드마크)
+    player_experience: 지도를 채워 가는 재미
+    dependencies: [EXP-01]
+    implementation: "/versa 지도 (임시: 지역 목록 창)"
+    data_model: discovery
+    ui: 임시 상자 창
+    resource_pack: 지도 텍스처 · 폰트 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 지도 갱신은 열 때만
+    security_risk: 미발견 정보 노출 금지
+    persistence: DB
+    tests: []
+    status: PARTIAL
+
+  - id: NPC-01
+    feature: NPC 정의 · 관계
+    category: 사회
+    source: 요구 §32
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 10명의 후대 인물(원작 인물 아님). 이름 · 직업 · 성격 · 소속 · 지역 · 취향 · 일과. 플레이어별 호감(하루 첫 대화만 상승 · 선물 취향)
+    player_experience: 단골 NPC 와 관계가 쌓임
+    dependencies: [CONT-01]
+    implementation: domain.npc.* · application.RelationService · NpcListener · /va npc spawn
+    data_model: npc_relation · content/npcs.yml
+    ui: 대화 한 줄 + 관계 단계
+    resource_pack: NPC 외형 EXTERNAL_ASSET_REQUIRED
+    performance_risk: NPC 는 AI 꺼짐 · 매 틱 갱신 없음
+    security_risk: 같은 날 반복 대화로 호감 올리기 차단
+    persistence: DB
+    tests: [GrowthAndWorldTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: NPC-02
+    feature: NPC 일과 이동 · 상점 · 의뢰
+    category: 사회
+    source: 요구 §18 · §32 · §34
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 시간대별 장소 이동(거리 기반 활성화), 관계 단계별 상점 가격 · 정보 · 의뢰
+    player_experience: 도시가 살아 있음
+    dependencies: [NPC-01]
+    implementation: 일과 데이터 · placeAt 계산만 있음
+    data_model: npcs.yml schedule
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 근처 플레이어가 있을 때만 이동
+    security_risk: 낮음
+    persistence: DB
+    tests: []
+    status: PLANNED
+
+  - id: QST-01
+    feature: 퀘스트 (탐험 · 생산 · 관계 · 연속 · 선택 · 숨김)
+    category: 콘텐츠
+    source: 퀘스트 난이도 등급 미확인
+    source_type: RESEARCH_REQUIRED
+    classification: RESEARCH_REQUIRED
+    description: 처치 반복이 아닌 다양한 목표. 원작 퀘스트 등급 체계는 확인 후 반영
+    player_experience: 하고 싶은 일이 곧 의뢰
+    dependencies: [NPC-01, EXP-01, CRF-01]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: "(설계 예정)"
+    resource_pack: 없음
+    performance_risk: 낮음
+    security_risk: 보상 중복 지급 — ECO-01 의 idempotency key 사용 예정
+    persistence: DB
+    tests: []
+    status: RESEARCH_REQUIRED
+
+  - id: HID-01
+    feature: 히든 콘텐츠 엔진 (봉인 · 행동 조합 · 최초 발견 · 소문)
+    category: 발견
+    source: 요구 §4-6 (원작 히든 조건 복제 금지)
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 조건은 서버별 키로 AES-GCM 봉인 (평문 노출 방지 · 변조 감지). 행동 기록 · 숙련 · 관계 · 장소 · 시간 · 발견의 조합, 확률 조건 없음. 해금 1회 · 최초 발견자 기록 · 다른 사람에게는 소문 한 줄
+    player_experience: 정답표가 아니라 내 행동으로 발견
+    dependencies: [SKL-02, NPC-01, EXP-01]
+    implementation: domain.hidden.* · application.HiddenService · security.Sealer · /va seal
+    data_model: hidden_unlock · world_first(kind=hidden) · hidden.sealed · secret.key
+    ui: "(해금 연출 PLANNED)"
+    resource_pack: 없음
+    performance_risk: 카운터가 바뀌면 그 카운터를 쓰는 규칙만 판정
+    security_risk: 서버 관리자는 키를 가짐 (완전한 비밀 아님) — 목적은 쉬운 노출 방지
+    persistence: DB · 봉인 파일
+    tests: [HiddenServiceTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: HID-02
+    feature: 실제 히든 콘텐츠 목록
+    category: 발견
+    source: 원작 히든 요소 (복제 금지)
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 실제 규칙은 저장소에 넣지 않는다 (공략 독점 방지). 서버 운영자가 hidden-src 로 작성 후 봉인
+    player_experience: 서버마다 다른 비밀
+    dependencies: [HID-01]
+    implementation: 테스트용 예시 1개(src/test/resources)만
+    data_model: hidden.sealed
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 없음
+    security_risk: 평문 원본은 서버에서 치울 것
+    persistence: 파일
+    tests: []
+    status: PLANNED
+
+  - id: CMB-01
+    feature: 전투 기본 (무기 · 방어구 · 숙련 · 약점 · 마모)
+    category: 전투
+    source: 요구 §23 · §25
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 고유 무기 공격력 × 품질 × 무기 숙련, 등 뒤 1.5배, 방어 = 100/(100+방어), 막기 0.4배, 피해 0 불가. 맞은 횟수 · 숙련 · 마모는 5초마다 묶어 저장
+    player_experience: 장비 품질 · 숙련이 전투에서 체감됨
+    dependencies: [ITM-01, SKL-01]
+    implementation: domain.combat.DamageCalculator · CombatListener
+    data_model: mastery · action_counter · item_instance.durability
+    ui: 없음
+    resource_pack: 무기 모델 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 타격마다 DB 쓰기 없음
+    security_risk: 아이템 수치는 DB 캐시값 (PDC 값 미사용)
+    persistence: DB (배치)
+    tests: [BossAndCombatTest]
+    server_test: BLOCKED
+    status: PARTIAL
+
+  - id: CMB-02
+    feature: 스킬 · 콤보 · 회피 · 상태 이상 · 직업 특성
+    category: 전투
+    source: 로열 로드/스킬/전투 (세부 미확인)
+    source_type: RESEARCH_REQUIRED
+    classification: RESEARCH_REQUIRED
+    description: 좌클릭 외 전투 행동
+    player_experience: MMORPG 전투
+    dependencies: [CMB-01, CLS-01]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: 스킬 바 (리소스팩)
+    resource_pack: 스킬 아이콘 · 이펙트
+    performance_risk: 이펙트 예산
+    security_risk: 쿨다운은 서버 판정
+    persistence: DB
+    tests: []
+    status: PLANNED
+
+  - id: BOS-01
+    feature: 거대 보스 규칙 (페이즈 · 패턴 · 예고 · 광폭화 · 약점)
+    category: 보스
+    source: 요구 §26-28
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 5종(크기 7 ~ 10배). 크기를 판정 · 공격 범위 · 전투 공간에 곱함. 원 · 부채꼴 · 직선 · 고리를 수학으로 판정. 확률이 아닌 순서 패턴 · 예고 0.3초 이상 · 체력 비율 페이즈 · 시간 광폭화 · 등 뒤 약점
+    player_experience: 배워서 피하는 큰 보스
+    dependencies: [CONT-01]
+    implementation: domain.boss.* · content/bosses.yml
+    data_model: bosses.yml
+    ui: 보스바 · 페이즈 문구
+    resource_pack: 없음
+    performance_risk: 판정이 엔티티 수와 무관
+    security_risk: 없음
+    persistence: 없음
+    tests: [BossAndCombatTest]
+    server_test: BLOCKED
+    status: IMPLEMENTED
+
+  - id: BOS-02
+    feature: 거대 보스 실행 (모델 · 판정 상자 · 예고 연출 · 보상)
+    category: 보스
+    source: 요구 §27 · §52
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: Interaction 1개 + ItemDisplay 1개. 예고는 외곽선 파티클 48개. 지금은 임시 블록 모델 · 이동 없음 · 보상 없음
+    player_experience: 멀리서도 보이는 보스
+    dependencies: [BOS-01]
+    implementation: platform.bukkit.boss.BossRuntime · /va boss spawn
+    data_model: 없음
+    ui: 보스바
+    resource_pack: 보스 모델 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 엔티티 2개 · 0.25초 갱신
+    security_risk: 보스 피해는 서버 계산
+    persistence: 없음
+    tests: []
+    status: PARTIAL
+
+  - id: GLD-01
+    feature: 길드 · 사회
+    category: 사회
+    source: 원작 길드 (세부 미확인)
+    source_type: RESEARCH_REQUIRED
+    classification: RESEARCH_REQUIRED
+    description: 길드 · 길드원 · 길드 활동
+    player_experience: 함께하는 플레이
+    dependencies: [ECO-01]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: "(설계 예정)"
+    resource_pack: 길드 문장
+    performance_risk: 낮음
+    security_risk: 길드 금고 동시성
+    persistence: DB
+    tests: []
+    status: RESEARCH_REQUIRED
+
+  - id: DUN-01
+    feature: 던전 (구조 · 퍼즐 · 숨은 공간)
+    category: 콘텐츠
+    source: 02_WORLD (황제의 수로 · 매몰 도시 · 폐광)
+    source_type: 후대 설계
+    classification: ORIGINAL
+    description: 역사가 있는 던전
+    player_experience: 수직 탐험
+    dependencies: [WLD-02, BOS-02]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 인스턴스 · 엔티티 수
+    security_risk: 보상 중복
+    persistence: DB
+    tests: []
+    status: PLANNED
+
+  - id: EVT-01
+    feature: 월드 이벤트 (모래폭풍 · 매몰 도시 입구 등)
+    category: 월드
+    source: 02_WORLD
+    source_type: 후대 설계
+    classification: ORIGINAL
+    description: 실제로 월드가 바뀌는 이벤트
+    player_experience: 세계가 움직임
+    dependencies: [WLD-02]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 블록 변경 예산
+    security_risk: 낮음
+    persistence: DB
+    tests: []
+    status: PLANNED
+
+  - id: DTH-01
+    feature: 사망 페널티
+    category: 성장
+    source: 로열 로드 (24시간 접속 불가 · 레벨 · 숙련 하락)
+    source_type: 원작 개념
+    classification: SOURCE-BASED
+    description: 서버 게임에 맞게 완화한 사망 규칙 (수치 설계 필요)
+    player_experience: 죽음이 가볍지 않음
+    dependencies: [SKL-01]
+    implementation: 없음
+    data_model: "(설계 예정)"
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: 낮음
+    security_risk: 낮음
+    persistence: DB
+    tests: []
+    status: DESIGNED
+
+  - id: UI-01
+    feature: 전용 MMORPG UI (상자 창 탈피)
+    category: UI
+    source: 요구 §48-50
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 리소스팩 폰트 · 배경으로 상자 창 느낌 제거. 지금은 짧은 문구 규칙만 지킨 임시 상자 창
+    player_experience: 고급 판타지 UI
+    dependencies: []
+    implementation: platform.bukkit.ui.Menu (임시)
+    data_model: 없음
+    ui: 임시
+    resource_pack: 폰트 · 배경 · 아이콘 EXTERNAL_ASSET_REQUIRED
+    performance_risk: 낮음
+    security_risk: 모든 클릭 취소 후 정해진 칸만 동작
+    persistence: 없음
+    tests: []
+    status: PARTIAL
+
+  - id: RP-01
+    feature: 리소스팩 (모델 · 텍스처 · 폰트 · 보스 모델)
+    category: 리소스팩
+    source: 요구 §51-52
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: VersaEra 전용 리소스팩 (RpgCraft 리소스팩 재사용 금지)
+    player_experience: 고유한 외형
+    dependencies: []
+    implementation: 없음
+    data_model: 없음
+    ui: 없음
+    resource_pack: 전부
+    performance_risk: 팩 크기
+    security_risk: 없음
+    persistence: 없음
+    tests: []
+    status: EXTERNAL_ASSET_REQUIRED
+
+  - id: SRV-01
+    feature: 실제 Paper 서버 테스트
+    category: 검증
+    source: 요구 §87
+    source_type: 설계 요구
+    classification: ORIGINAL
+    description: 접속 · 재접속 · 재시작 · 거래 · 제작 · 보스 등 실제 서버 시나리오
+    player_experience: —
+    dependencies: []
+    implementation: 테스트 계획만 (README)
+    data_model: 없음
+    ui: 없음
+    resource_pack: 없음
+    performance_risk: —
+    security_risk: —
+    persistence: —
+    tests: []
+    status: BLOCKED
